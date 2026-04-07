@@ -40,11 +40,15 @@ app.get('/api/health', (req, res) => {
 const courseRoutes = require('./routes/courses')
 const lectureRoutes = require('./routes/lectures')
 const mcqRoutes = require('./routes/mcqs')
+const testRoutes = require('./routes/tests')
+const adminRoutes = require('./routes/admin')
 
 app.use('/api/auth', authRoutes)
 app.use('/api/courses', courseRoutes)
 app.use('/api/lectures', lectureRoutes)
 app.use('/api/mcqs', mcqRoutes)
+app.use('/api/tests', testRoutes)
+app.use('/api/admin', adminRoutes)
 
 // ==================== ERROR HANDLING ====================
 app.use((err, req, res, next) => {

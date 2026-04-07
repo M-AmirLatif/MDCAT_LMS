@@ -54,12 +54,41 @@ exports.createMcq = async (req, res) => {
   }
 }
 
-// ==================== GET MCQS BY COURSE ====================
+const stripCorrectOptions = (mcqs) => {
+  return mcqs.map((mcq) => ({
+    ...mcq,
+    options: mcq.options?.map((opt) => ({ text: opt.text })) || [],
+  }))
+}
+
+// ==================== GET MCQS BY COURSE (Student-safe) ====================
 exports.getMcqsByCourse = async (req, res) => {
   try {
     const mcqs = await MCQ.find({
       courseId: req.params.courseId,
       isPublished: true,
+    })
+      .populate('createdBy', 'firstName lastName email')
+      .lean()
+      .sort({ createdAt: -1 })
+
+    const safeMcqs = stripCorrectOptions(mcqs)
+
+    res.status(200).json({
+      success: true,
+      count: safeMcqs.length,
+      mcqs: safeMcqs,
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+}
+
+// ==================== GET MCQS BY COURSE (Teacher/Admin) ====================
+exports.getMcqsByCourseFull = async (req, res) => {
+  try {
+    const mcqs = await MCQ.find({
+      courseId: req.params.courseId,
     })
       .populate('createdBy', 'firstName lastName email')
       .sort({ createdAt: -1 })

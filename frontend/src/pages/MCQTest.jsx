@@ -12,6 +12,10 @@ export default function MCQTest() {
   const [loading, setLoading] = useState(true)
   const [submitted, setSubmitted] = useState(false)
   const [score, setScore] = useState(0)
+  const [totalQuestions, setTotalQuestions] = useState(0)
+  const [percentage, setPercentage] = useState(0)
+  const [results, setResults] = useState({})
+  const [error, setError] = useState('')
 
   useEffect(() => {
     const fetchData = async () => {
@@ -21,9 +25,12 @@ export default function MCQTest() {
           API.get(`/mcqs/course/${courseId}`),
         ])
         setCourse(courseRes.data.course)
-        setMcqs(mcqRes.data.mcqs || [])
+        const mcqList = mcqRes.data.mcqs || []
+        setMcqs(mcqList)
+        setTotalQuestions(mcqList.length)
       } catch (error) {
         console.error('Error loading MCQs:', error)
+        setError('Failed to load MCQs')
       } finally {
         setLoading(false)
       }
@@ -37,19 +44,39 @@ export default function MCQTest() {
     setAnswers((prev) => ({ ...prev, [mcqId]: optionIndex }))
   }
 
-  const handleSubmit = () => {
-    let correct = 0
-    mcqs.forEach((mcq) => {
-      const chosenIndex = answers[mcq._id]
-      if (
-        chosenIndex !== undefined &&
-        mcq.options?.[chosenIndex]?.isCorrect
-      ) {
-        correct += 1
-      }
-    })
-    setScore(correct)
-    setSubmitted(true)
+  const handleSubmit = async () => {
+    setError('')
+    if (mcqs.length === 0) return
+
+    const payload = {
+      courseId,
+      answers: mcqs
+        .map((mcq) => ({
+          mcqId: mcq._id,
+          selectedIndex: answers[mcq._id],
+        }))
+        .filter((item) => item.selectedIndex !== undefined),
+    }
+
+    if (payload.answers.length === 0) {
+      setError('Please answer at least one question before submitting.')
+      return
+    }
+
+    try {
+      const res = await API.post('/tests/submit', payload)
+      const map = {}
+      res.data.results?.forEach((item) => {
+        map[item.mcqId] = item
+      })
+      setResults(map)
+      setScore(res.data.score || 0)
+      setTotalQuestions(res.data.totalQuestions || mcqs.length)
+      setPercentage(res.data.percentage || 0)
+      setSubmitted(true)
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to submit test')
+    }
   }
 
   if (loading)
@@ -69,6 +96,7 @@ export default function MCQTest() {
       <div className="mcq-container">
         <h2>{course?.name || 'MCQ Test'}</h2>
         <p className="subtitle">Answer all questions and submit</p>
+        {error && <p className="error-message">{error}</p>}
 
         {mcqs.length === 0 ? (
           <p>No MCQs available for this course yet.</p>
@@ -83,9 +111,14 @@ export default function MCQTest() {
                   <div className="options">
                     {mcq.options?.map((opt, idx) => {
                       const selected = answers[mcq._id] === idx
-                      const isCorrect = submitted && opt.isCorrect
+                      const result = results[mcq._id]
+                      const isCorrect =
+                        submitted && result && result.correctIndex === idx
                       const isWrong =
-                        submitted && selected && opt.isCorrect !== true
+                        submitted &&
+                        result &&
+                        selected &&
+                        result.isCorrect === false
 
                       return (
                         <button
@@ -100,9 +133,10 @@ export default function MCQTest() {
                       )
                     })}
                   </div>
-                  {submitted && mcq.explanation && (
+                  {submitted && results[mcq._id]?.explanation && (
                     <div className="explanation">
-                      <strong>Explanation:</strong> {mcq.explanation}
+                      <strong>Explanation:</strong>{' '}
+                      {results[mcq._id]?.explanation}
                     </div>
                   )}
                 </div>
@@ -116,7 +150,7 @@ export default function MCQTest() {
                 </button>
               ) : (
                 <div className="score-box">
-                  Score: {score} / {mcqs.length}
+                  Score: {score} / {totalQuestions} ({percentage}%)
                 </div>
               )}
             </div>
@@ -126,3 +160,4 @@ export default function MCQTest() {
     </div>
   )
 }
+

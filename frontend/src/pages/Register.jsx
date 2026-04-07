@@ -9,7 +9,6 @@ export default function Register() {
     lastName: '',
     email: '',
     password: '',
-    role: 'student',
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -74,10 +73,6 @@ export default function Register() {
             onChange={handleChange}
             required
           />
-          <select name="role" value={formData.role} onChange={handleChange}>
-            <option value="student">Student</option>
-            <option value="teacher">Teacher</option>
-          </select>
           <button type="submit" disabled={loading}>
             {loading ? 'Registering...' : 'Register'}
           </button>
@@ -89,3 +84,4 @@ export default function Register() {
     </div>
   )
 }
+

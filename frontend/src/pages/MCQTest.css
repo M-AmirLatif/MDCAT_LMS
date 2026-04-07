@@ -18,6 +18,15 @@
   margin-bottom: 20px;
 }
 
+.error-message {
+  color: #dc2626;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
 .mcq-list {
   display: flex;
   flex-direction: column;

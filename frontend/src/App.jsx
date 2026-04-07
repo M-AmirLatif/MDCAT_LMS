@@ -9,6 +9,11 @@ import LecturePlayer from './pages/LecturePlayer'
 import CreateLecture from './pages/CreateLecture'
 import MCQTest from './pages/MCQTest'
 import CreateMCQ from './pages/CreateMCQ'
+import Performance from './pages/Performance'
+import TeacherCourses from './pages/TeacherCourses'
+import CreateCourse from './pages/CreateCourse'
+import EditCourse from './pages/EditCourse'
+import AdminDashboard from './pages/AdminDashboard'
 import './App.css'
 
 function App() {
@@ -28,6 +33,11 @@ function App() {
         />
         <Route path="/course/:courseId/mcqs" element={<MCQTest />} />
         <Route path="/course/:courseId/create-mcq" element={<CreateMCQ />} />
+        <Route path="/performance" element={<Performance />} />
+        <Route path="/teacher/courses" element={<TeacherCourses />} />
+        <Route path="/teacher/courses/create" element={<CreateCourse />} />
+        <Route path="/teacher/courses/:courseId/edit" element={<EditCourse />} />
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </Router>
   )

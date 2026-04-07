@@ -1,16 +1,42 @@
 const User = require('../models/User')
 const jwt = require('jsonwebtoken')
 
+const normalizeString = (value) => {
+  return typeof value === 'string' ? value.trim() : ''
+}
+
+const normalizeEmail = (value) => {
+  return normalizeString(value).toLowerCase()
+}
+
+const isValidEmail = (value) => {
+  const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+  return emailRegex.test(value)
+}
+
 // ==================== REGISTER ====================
 exports.register = async (req, res) => {
   try {
-    const { firstName, lastName, email, password, role } = req.body
+    const firstName = normalizeString(req.body.firstName)
+    const lastName = normalizeString(req.body.lastName)
+    const email = normalizeEmail(req.body.email)
+    const password = req.body.password
 
     // Validation
     if (!firstName || !lastName || !email || !password) {
       return res
         .status(400)
         .json({ error: 'Please provide all required fields' })
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ error: 'Please provide a valid email' })
+    }
+
+    if (password.length < 6) {
+      return res
+        .status(400)
+        .json({ error: 'Password must be at least 6 characters' })
     }
 
     // Check if user exists
@@ -25,7 +51,7 @@ exports.register = async (req, res) => {
       lastName,
       email,
       password,
-      role: role || 'student',
+      role: 'student',
     })
 
     // Generate token
@@ -57,13 +83,18 @@ exports.register = async (req, res) => {
 // ==================== LOGIN ====================
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body
+    const email = normalizeEmail(req.body.email)
+    const password = req.body.password
 
     // Validation
     if (!email || !password) {
       return res
         .status(400)
         .json({ error: 'Please provide email and password' })
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ error: 'Please provide a valid email' })
     }
 
     // Find user and include password

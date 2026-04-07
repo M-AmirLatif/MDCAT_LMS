@@ -49,12 +49,17 @@ export default function Courses() {
   return (
     <div className="courses">
       <div className="navbar">
-        <h1>🎓 MDCAT LMS</h1>
+        <h1>MDCAT LMS</h1>
         <button onClick={() => navigate('/dashboard')}>Dashboard</button>
       </div>
 
       <div className="courses-container">
-        <h2>Available Courses</h2>
+        <div className="header-row">
+          <div>
+            <h2>Available Courses</h2>
+            <p>Enroll in a course and start learning today.</p>
+          </div>
+        </div>
         <div className="courses-grid">
           {courses.length > 0 ? (
             courses.map((course) => (
@@ -64,14 +69,16 @@ export default function Courses() {
                 onClick={() => navigate(`/course/${course._id}`)}
                 style={{ cursor: 'pointer' }}
               >
-                <h3>{course.name}</h3>
-                <p className="category">📚 {course.category}</p>
+                <div className="course-card-header">
+                  <h3>{course.name}</h3>
+                  <span className="category">{course.category}</span>
+                </div>
                 <p className="description">{course.description}</p>
                 <p className="instructor">
                   By: {course.createdBy?.firstName} {course.createdBy?.lastName}
                 </p>
                 <p className="students">
-                  👥 {course.enrolledCount ?? course.enrolledStudents?.length ?? 0} students enrolled
+                  Students: {course.enrolledCount ?? course.enrolledStudents?.length ?? 0}
                 </p>
                 <button
                   className="enroll-btn"
@@ -92,4 +99,3 @@ export default function Courses() {
     </div>
   )
 }
-

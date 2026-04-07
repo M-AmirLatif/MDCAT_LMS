@@ -47,21 +47,24 @@ export default function CourseDetail() {
   return (
     <div className="course-detail">
       <div className="navbar">
-        <h1>🎓 MDCAT LMS</h1>
-        <button onClick={() => navigate('/courses')}>← Back to Courses</button>
+        <h1>MDCAT LMS</h1>
+        <button onClick={() => navigate('/courses')}>Back to Courses</button>
       </div>
 
       <div className="course-detail-container">
         <div className="course-header">
-          <h2>{course.name}</h2>
-          <p className="category">📚 {course.category}</p>
+          <div>
+            <p className="label">Course</p>
+            <h2>{course.name}</h2>
+            <p className="category">{course.category}</p>
+          </div>
+          <div className="stats">
+            <span>Students: {course.enrolledCount ?? course.enrolledStudents?.length ?? 0}</span>
+            <span>Lectures: {lectures.length}</span>
+          </div>
           <p className="description">{course.description}</p>
           <p className="instructor">
-            Instructor: {course.createdBy?.firstName}{' '}
-            {course.createdBy?.lastName}
-          </p>
-          <p className="students">
-            👥 {course.enrolledCount ?? course.enrolledStudents?.length ?? 0} students enrolled
+            Instructor: {course.createdBy?.firstName} {course.createdBy?.lastName}
           </p>
         </div>
 
@@ -98,7 +101,7 @@ export default function CourseDetail() {
 
         <div className="lectures-section">
           <div className="lectures-header">
-            <h3>📹 Lectures ({lectures.length})</h3>
+            <h3>Lectures ({lectures.length})</h3>
             {isTeacher && (
               <button
                 className="create-lecture-btn"
@@ -117,15 +120,15 @@ export default function CourseDetail() {
                     <p className="topic">Topic: {lecture.topic}</p>
                     <p className="description">{lecture.description}</p>
                     <div className="lecture-meta">
-                      <span>👁️ {lecture.views} views</span>
-                      <span>⏱️ {Math.floor(lecture.videoDuration / 60)}m</span>
+                      <span>Views: {lecture.views}</span>
+                      <span>Duration: {Math.floor(lecture.videoDuration / 60)}m</span>
                     </div>
                   </div>
                   <button
                     className="watch-btn"
                     onClick={() => navigate(`/lecture/${lecture._id}`)}
                   >
-                    Watch →
+                    Watch
                   </button>
                 </div>
               ))}
@@ -138,9 +141,3 @@ export default function CourseDetail() {
     </div>
   )
 }
-
-
-
-
-
-

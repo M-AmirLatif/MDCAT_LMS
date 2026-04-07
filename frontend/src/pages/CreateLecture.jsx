@@ -140,3 +140,4 @@ export default function CreateLecture() {
     </div>
   )
 }
+

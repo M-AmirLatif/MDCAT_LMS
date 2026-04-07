@@ -43,64 +43,75 @@ export default function Dashboard() {
       </div>
     )
 
+  const isTeacher = user?.role === 'teacher' || user?.role === 'admin'
+  const isAdmin = user?.role === 'admin'
+
   return (
     <div className="dashboard">
       <div className="navbar">
-        <h1>🎓 MDCAT LMS</h1>
+        <h1>MDCAT LMS</h1>
         <button onClick={handleLogout}>Logout</button>
       </div>
 
       <div className="dashboard-content">
         <div className="welcome-card">
-          <h2>Welcome, {user?.firstName}! 👋</h2>
-          <p>
-            Role: <strong>{user?.role}</strong>
-          </p>
+          <p className="label">Dashboard</p>
+          <h2>Welcome, {user?.firstName}</h2>
+          <p className="role">Role: {user?.role}</p>
         </div>
 
         <div className="user-info">
           <h3>Your Profile</h3>
-          <p>
-            <strong>Name:</strong> {user?.firstName} {user?.lastName}
-          </p>
-          <p>
-            <strong>Email:</strong> {user?.email}
-          </p>
-          <p>
-            <strong>Phone:</strong> {user?.phone || 'Not provided'}
-          </p>
-          <p>
-            <strong>Status:</strong>{' '}
-            {user?.isActive ? '✅ Active' : '❌ Inactive'}
-          </p>
+          <div className="info-grid">
+            <div>
+              <span>Name</span>
+              <p>
+                {user?.firstName} {user?.lastName}
+              </p>
+            </div>
+            <div>
+              <span>Email</span>
+              <p>{user?.email}</p>
+            </div>
+            <div>
+              <span>Phone</span>
+              <p>{user?.phone || 'Not provided'}</p>
+            </div>
+            <div>
+              <span>Status</span>
+              <p>{user?.isActive ? 'Active' : 'Inactive'}</p>
+            </div>
+          </div>
         </div>
 
         <div className="features">
-          <h3>Quick Links:</h3>
+          <h3>Quick Links</h3>
           <ul>
             <li>
-              <a
-                href="/courses"
-                style={{
-                  color: '#667eea',
-                  textDecoration: 'none',
-                  fontWeight: 'bold',
-                }}
-              >
-                📚 Browse Courses
-              </a>
+              <a href="/courses">Browse Courses</a>
             </li>
+            <li>
+              <a href="/performance">View Performance</a>
+            </li>
+            {isTeacher && (
+              <li>
+                <a href="/teacher/courses">Manage Courses</a>
+              </li>
+            )}
+            {isAdmin && (
+              <li>
+                <a href="/admin">Admin Panel</a>
+              </li>
+            )}
           </ul>
         </div>
 
-        <div className="features">
-          <h3>Coming Soon Features:</h3>
+        <div className="features muted">
+          <h3>Coming Soon</h3>
           <ul>
-            <li>📚 Browse Courses</li>
-            <li>📝 Take MCQ Tests</li>
-            <li>📊 View Performance</li>
-            <li>🎥 Watch Lectures</li>
-            <li>👨‍🏫 Join Live Classes</li>
+            <li>Live classes and announcements</li>
+            <li>Topic-based study plans</li>
+            <li>Peer discussions</li>
           </ul>
         </div>
       </div>

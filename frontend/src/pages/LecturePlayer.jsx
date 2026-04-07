@@ -41,8 +41,8 @@ export default function LecturePlayer() {
   return (
     <div className="lecture-player">
       <div className="navbar">
-        <h1>🎓 MDCAT LMS</h1>
-        <button onClick={() => navigate(-1)}>← Back</button>
+        <h1>MDCAT LMS</h1>
+        <button onClick={() => navigate(-1)}>Back</button>
       </div>
 
       <div className="player-container">
@@ -55,18 +55,20 @@ export default function LecturePlayer() {
 
         <div className="lecture-info-section">
           <h2>{lecture.title}</h2>
-          <p className="topic">📚 Topic: {lecture.topic}</p>
+          <p className="topic">Topic: {lecture.topic}</p>
           <p className="instructor">
             By: {lecture.uploadedBy?.firstName} {lecture.uploadedBy?.lastName}
           </p>
 
           <div className="stats">
-            <span>👁️ {lecture.views} views</span>
+            <span>Views: {lecture.views}</span>
             <span>
-              ⏱️ {Math.floor(lecture.videoDuration / 60)}m{' '}
+              Duration: {Math.floor(lecture.videoDuration / 60)}m{' '}
               {lecture.videoDuration % 60}s
             </span>
-            <span>📅 {new Date(lecture.createdAt).toLocaleDateString()}</span>
+            <span>
+              Date: {new Date(lecture.createdAt).toLocaleDateString()}
+            </span>
           </div>
 
           <div className="description-section">
@@ -76,14 +78,14 @@ export default function LecturePlayer() {
 
           {lecture.notes && (
             <div className="notes-section">
-              <h3>📝 Notes</h3>
+              <h3>Notes</h3>
               <p>{lecture.notes}</p>
             </div>
           )}
 
           {lecture.attachments?.length > 0 && (
             <div className="attachments-section">
-              <h3>📎 Attachments</h3>
+              <h3>Attachments</h3>
               <ul>
                 {lecture.attachments.map((attachment, idx) => (
                   <li key={idx}>
@@ -92,7 +94,7 @@ export default function LecturePlayer() {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      📄 {attachment.fileName}
+                      {attachment.fileName}
                     </a>
                   </li>
                 ))}
