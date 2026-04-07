@@ -236,6 +236,46 @@
   margin-bottom: 30px;
 }
 
+.assignment-section {
+  background: white;
+  padding: 30px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 30px;
+}
+
+.assignment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.assignment-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.assignment-actions button {
+  background: var(--brand);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.3s ease;
+}
+
+.assignment-actions button:hover {
+  transform: translateY(-2px);
+}
+
+.create-assignment-btn {
+  background: var(--brand-dark);
+}
+
 .mcq-header {
   display: flex;
   justify-content: space-between;

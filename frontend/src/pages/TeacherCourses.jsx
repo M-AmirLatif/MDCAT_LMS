@@ -40,7 +40,7 @@ export default function TeacherCourses() {
   return (
     <div className="teacher-courses">
       <div className="navbar">
-        <h1>🎓 MDCAT LMS</h1>
+        <h1>MDCAT LMS</h1>
         <button onClick={() => navigate('/dashboard')}>Dashboard</button>
       </div>
 
@@ -89,4 +89,5 @@ export default function TeacherCourses() {
     </div>
   )
 }
+
 

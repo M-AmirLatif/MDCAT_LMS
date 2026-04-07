@@ -1,6 +1,5 @@
 .admin-dashboard {
   min-height: 100vh;
-  background: #f5f5f5;
 }
 
 .admin-container {
@@ -12,8 +11,8 @@
 .section {
   background: white;
   padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
   margin-bottom: 24px;
 }
 
@@ -38,12 +37,13 @@
 }
 
 .admin-table button {
-  background: #667eea;
+  background: var(--brand);
   color: white;
   border: none;
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: 999px;
   cursor: pointer;
+  font-weight: 600;
 }
 
 .error-message {

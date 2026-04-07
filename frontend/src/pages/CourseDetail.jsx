@@ -80,7 +80,25 @@ export default function CourseDetail() {
           </ul>
         </div>
 
-        <div className="mcq-section">
+        
+        <div className="assignment-section">
+          <div className="assignment-header">
+            <h3>Assignments</h3>
+            <div className="assignment-actions">
+              <button onClick={() => navigate(`/course/${courseId}/assignments`)}>
+                View Assignments
+              </button>
+              {isTeacher && (
+                <button
+                  className="create-assignment-btn"
+                  onClick={() => navigate(`/course/${courseId}/create-assignment`)}
+                >
+                  Add Assignment
+                </button>
+              )}
+            </div>
+          </div>
+        </div>\n<div className="mcq-section">
           <div className="mcq-header">
             <h3>MCQ Tests</h3>
             <div className="mcq-actions">
@@ -141,3 +159,5 @@ export default function CourseDetail() {
     </div>
   )
 }
+
+

@@ -89,7 +89,7 @@ export default function MCQTest() {
   return (
     <div className="mcq-test">
       <div className="navbar">
-        <h1>🎓 MDCAT LMS</h1>
+        <h1>MDCAT LMS</h1>
         <button onClick={() => navigate(-1)}>Back</button>
       </div>
 
@@ -160,4 +160,5 @@ export default function MCQTest() {
     </div>
   )
 }
+
 

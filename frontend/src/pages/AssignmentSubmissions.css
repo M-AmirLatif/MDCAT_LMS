@@ -1,0 +1,76 @@
+.assignment-submissions {
+  min-height: 100vh;
+}
+
+.assignment-submissions-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.submission-list {
+  display: grid;
+  gap: 16px;
+}
+
+.submission-card {
+  background: white;
+  padding: 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: grid;
+  gap: 12px;
+}
+
+.submission-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.submission-header p {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.grade-form {
+  display: grid;
+  grid-template-columns: 120px 1fr auto;
+  gap: 10px;
+}
+
+.grade-form input {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+.grade-form button {
+  background: var(--brand);
+  color: white;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.graded {
+  color: #15803d;
+  font-weight: 600;
+}
+
+.error-message {
+  color: #b91c1c;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 900px) {
+  .grade-form {
+    grid-template-columns: 1fr;
+  }
+}

@@ -93,6 +93,15 @@ export default function Dashboard() {
             <li>
               <a href="/performance">View Performance</a>
             </li>
+            <li>
+              <a href="/notifications">Notifications</a>
+            </li>
+            <li>
+              <a href="/live-sessions">Live Classes</a>
+            </li>
+            <li>
+              <a href="/payments">Payments</a>
+            </li>
             {isTeacher && (
               <li>
                 <a href="/teacher/courses">Manage Courses</a>
@@ -109,9 +118,9 @@ export default function Dashboard() {
         <div className="features muted">
           <h3>Coming Soon</h3>
           <ul>
-            <li>Live classes and announcements</li>
             <li>Topic-based study plans</li>
             <li>Peer discussions</li>
+            <li>Certificates</li>
           </ul>
         </div>
       </div>

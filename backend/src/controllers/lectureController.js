@@ -13,6 +13,7 @@ exports.createLecture = async (req, res) => {
       videoDuration,
       notes,
       isPublished,
+      attachments,
     } = req.body
 
     if (!title || !description || !courseId || !topic || !videoUrl) {
@@ -45,6 +46,7 @@ exports.createLecture = async (req, res) => {
       videoUrl,
       videoDuration: videoDuration || 0,
       notes: notes || null,
+      attachments: Array.isArray(attachments) ? attachments : [],
       uploadedBy: req.user.id,
       isPublished: typeof isPublished === 'boolean' ? isPublished : false,
     })
@@ -112,6 +114,7 @@ exports.updateLecture = async (req, res) => {
       videoDuration,
       notes,
       isPublished,
+      attachments,
     } = req.body
 
     let lecture = await Lecture.findById(req.params.lectureId)
@@ -130,17 +133,23 @@ exports.updateLecture = async (req, res) => {
         .json({ error: 'Not authorized to update this lecture' })
     }
 
+    const updateData = {
+      title,
+      description,
+      topic,
+      videoUrl,
+      videoDuration,
+      notes,
+      isPublished,
+    }
+
+    if (Array.isArray(attachments)) {
+      updateData.attachments = attachments
+    }
+
     lecture = await Lecture.findByIdAndUpdate(
       req.params.lectureId,
-      {
-        title,
-        description,
-        topic,
-        videoUrl,
-        videoDuration,
-        notes,
-        isPublished,
-      },
+      updateData,
       { new: true, runValidators: true },
     )
 

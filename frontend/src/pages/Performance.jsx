@@ -52,7 +52,7 @@ export default function Performance() {
   return (
     <div className="performance">
       <div className="navbar">
-        <h1>🎓 MDCAT LMS</h1>
+        <h1>MDCAT LMS</h1>
         <button onClick={() => navigate('/dashboard')}>Back</button>
       </div>
 
@@ -114,4 +114,5 @@ export default function Performance() {
     </div>
   )
 }
+
 

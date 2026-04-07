@@ -14,6 +14,13 @@ import TeacherCourses from './pages/TeacherCourses'
 import CreateCourse from './pages/CreateCourse'
 import EditCourse from './pages/EditCourse'
 import AdminDashboard from './pages/AdminDashboard'
+import Assignments from './pages/Assignments'
+import CreateAssignment from './pages/CreateAssignment'
+import AssignmentSubmissions from './pages/AssignmentSubmissions'
+import Notifications from './pages/Notifications'
+import LiveSessions from './pages/LiveSessions'
+import CreateLiveSession from './pages/CreateLiveSession'
+import Payments from './pages/Payments'
 import './App.css'
 
 function App() {
@@ -38,6 +45,19 @@ function App() {
         <Route path="/teacher/courses/create" element={<CreateCourse />} />
         <Route path="/teacher/courses/:courseId/edit" element={<EditCourse />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/course/:courseId/assignments" element={<Assignments />} />
+        <Route
+          path="/course/:courseId/create-assignment"
+          element={<CreateAssignment />}
+        />
+        <Route
+          path="/assignments/:assignmentId/submissions"
+          element={<AssignmentSubmissions />}
+        />
+        <Route path="/notifications" element={<Notifications />} />
+        <Route path="/live-sessions" element={<LiveSessions />} />
+        <Route path="/live-sessions/create" element={<CreateLiveSession />} />
+        <Route path="/payments" element={<Payments />} />
       </Routes>
     </Router>
   )

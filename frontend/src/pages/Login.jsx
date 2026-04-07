@@ -37,6 +37,7 @@ export default function Login() {
     <div className="auth-container">
       <div className="auth-box">
         <h2>Login</h2>
+        <p className="subtitle">Welcome back. Continue your preparation.</p>
         {error && <p className="error-message">{error}</p>}
         <form onSubmit={handleSubmit}>
           <input
@@ -66,4 +67,3 @@ export default function Login() {
     </div>
   )
 }
-

@@ -1,6 +1,5 @@
 .teacher-courses {
   min-height: 100vh;
-  background: #f5f5f5;
 }
 
 .teacher-courses-container {
@@ -17,12 +16,18 @@
 }
 
 .header-row button {
-  background: #667eea;
+  background: var(--brand);
   color: white;
   border: none;
   padding: 10px 16px;
-  border-radius: 6px;
+  border-radius: 999px;
   cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.3s ease;
+}
+
+.header-row button:hover {
+  transform: translateY(-2px);
 }
 
 .course-grid {
@@ -34,21 +39,24 @@
 .course-card {
   background: white;
   padding: 18px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
 .course-card .category {
-  color: #667eea;
-  font-weight: bold;
+  color: var(--brand);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  font-size: 12px;
 }
 
 .course-card .status {
   font-size: 14px;
-  color: #666;
+  color: var(--muted);
 }
 
 .actions {
@@ -60,14 +68,15 @@
   flex: 1;
   border: none;
   padding: 8px 10px;
-  border-radius: 6px;
+  border-radius: 999px;
   cursor: pointer;
-  background: #667eea;
+  background: var(--brand);
   color: white;
+  font-weight: 600;
 }
 
 .actions .edit-btn {
-  background: #0f766e;
+  background: var(--brand-dark);
 }
 
 .error-message {

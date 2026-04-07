@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import API from '../services/api'
 import './CreateMCQ.css'
@@ -6,8 +6,10 @@ import './CreateMCQ.css'
 const defaultOptions = ['', '', '', '']
 
 export default function CreateMCQ() {
-  const { courseId } = useParams()
+  const { courseId: courseIdParam } = useParams()
   const navigate = useNavigate()
+  const [courseId, setCourseId] = useState(courseIdParam || '')
+  const [courses, setCourses] = useState([])
   const [topic, setTopic] = useState('')
   const [question, setQuestion] = useState('')
   const [options, setOptions] = useState(defaultOptions)
@@ -16,6 +18,24 @@ export default function CreateMCQ() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const user = JSON.parse(localStorage.getItem('user') || 'null')
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        if (!user) return
+        const res =
+          user.role === 'admin'
+            ? await API.get('/admin/courses')
+            : await API.get('/courses/teacher/my-courses')
+        setCourses(res.data.courses || [])
+      } catch (err) {
+        setError('Failed to load courses')
+      }
+    }
+
+    fetchCourses()
+  }, [])
 
   const handleOptionChange = (index, value) => {
     const updated = [...options]
@@ -30,6 +50,11 @@ export default function CreateMCQ() {
     setSuccess('')
 
     try {
+      if (!courseId) {
+        setError('Please select a course')
+        setLoading(false)
+        return
+      }
       const payload = {
         courseId,
         topic,
@@ -51,7 +76,7 @@ export default function CreateMCQ() {
       setExplanation('')
 
       setTimeout(() => {
-        navigate(`/course/${courseId}`)
+        navigate(`/course/${courseId || courseIdParam}`)
       }, 1200)
     } catch (err) {
       setError(err.response?.data?.error || 'Error creating MCQ')
@@ -63,8 +88,10 @@ export default function CreateMCQ() {
   return (
     <div className="create-mcq">
       <div className="navbar">
-        <h1>🎓 MDCAT LMS</h1>
-        <button onClick={() => navigate(`/course/${courseId}`)}>Back</button>
+        <h1>MDCAT LMS</h1>
+        <button onClick={() => navigate(`/course/${courseId || courseIdParam}`)}>
+          Back
+        </button>
       </div>
 
       <div className="create-mcq-container">
@@ -74,6 +101,21 @@ export default function CreateMCQ() {
         {success && <div className="success-message">{success}</div>}
 
         <form onSubmit={handleSubmit} className="mcq-form">
+          <div className="form-group">
+            <label>Course *</label>
+            <select
+              value={courseId}
+              onChange={(e) => setCourseId(e.target.value)}
+              required
+            >
+              <option value="">Select course</option>
+              {courses.map((course) => (
+                <option key={course._id} value={course._id}>
+                  {course.name}
+                </option>
+              ))}
+            </select>
+          </div>
           <div className="form-group">
             <label>Topic *</label>
             <input
@@ -139,4 +181,6 @@ export default function CreateMCQ() {
     </div>
   )
 }
+
+
 

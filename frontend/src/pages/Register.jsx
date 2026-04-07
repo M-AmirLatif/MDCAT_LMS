@@ -38,7 +38,8 @@ export default function Register() {
   return (
     <div className="auth-container">
       <div className="auth-box">
-        <h2>Register</h2>
+        <h2>Create Account</h2>
+        <p className="subtitle">Start your MDCAT journey in minutes.</p>
         {error && <p className="error-message">{error}</p>}
         <form onSubmit={handleSubmit}>
           <input
@@ -84,4 +85,3 @@ export default function Register() {
     </div>
   )
 }
-

@@ -1,6 +1,5 @@
 .mcq-test {
   min-height: 100vh;
-  background: #f6f7fb;
   padding: 20px;
 }
 
@@ -9,8 +8,8 @@
   margin: 30px auto;
   background: #fff;
   padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
 
 .subtitle {
@@ -35,8 +34,9 @@
 
 .mcq-card {
   border: 1px solid #e6e6e6;
-  border-radius: 10px;
-  padding: 16px;
+  border-radius: 12px;
+  padding: 18px;
+  background: #ffffff;
 }
 
 .options {
@@ -50,14 +50,14 @@
   border: 1px solid #ddd;
   background: #fff;
   padding: 10px 12px;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   text-align: left;
 }
 
 .option.selected {
-  border-color: #667eea;
-  background: #eef0ff;
+  border-color: var(--brand);
+  background: rgba(15, 118, 110, 0.08);
 }
 
 .option.correct {
@@ -73,9 +73,9 @@
 .explanation {
   margin-top: 10px;
   background: #f8fafc;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid var(--brand);
   padding: 10px 12px;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 .actions {
@@ -85,19 +85,25 @@
 }
 
 .submit-btn {
-  background: #667eea;
+  background: var(--brand);
   color: #fff;
   border: none;
   padding: 10px 16px;
-  border-radius: 8px;
+  border-radius: 999px;
   cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.3s ease;
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
 }
 
 .score-box {
   font-weight: bold;
   background: #f1f5f9;
   padding: 10px 14px;
-  border-radius: 8px;
+  border-radius: 12px;
 }
 
 @media (max-width: 768px) {

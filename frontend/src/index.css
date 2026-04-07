@@ -77,3 +77,42 @@ a {
     transform: translateY(0);
   }
 }
+
+.navbar {
+  background: linear-gradient(120deg, var(--brand-dark), var(--brand));
+  color: #f8fafc;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow);
+}
+
+.navbar h1 {
+  margin: 0;
+  font-size: 22px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.navbar button {
+  background: rgba(248, 250, 252, 0.9);
+  color: var(--brand-dark);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.navbar button:hover {
+  background: white;
+}
+
+@media (max-width: 860px) {
+  .navbar {
+    padding: 16px 20px;
+    flex-direction: column;
+    gap: 12px;
+  }
+}

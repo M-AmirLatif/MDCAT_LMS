@@ -63,7 +63,7 @@ export default function CreateCourse() {
   return (
     <div className="create-course">
       <div className="navbar">
-        <h1>🎓 MDCAT LMS</h1>
+        <h1>MDCAT LMS</h1>
         <button onClick={() => navigate(-1)}>Back</button>
       </div>
 
@@ -168,4 +168,5 @@ export default function CreateCourse() {
     </div>
   )
 }
+
 
