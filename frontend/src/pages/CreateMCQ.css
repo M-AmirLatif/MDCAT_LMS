@@ -1,0 +1,55 @@
+.create-mcq {
+  min-height: 100vh;
+  background: #f6f7fb;
+  padding: 20px;
+}
+
+.create-mcq-container {
+  max-width: 800px;
+  margin: 30px auto;
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.mcq-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.options-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.submit-btn {
+  background: #667eea;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .option-row {
+    grid-template-columns: 1fr;
+  }
+}
