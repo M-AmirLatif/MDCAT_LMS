@@ -35,6 +35,10 @@ const testSessionSchema = new mongoose.Schema(
       ref: 'Course',
       required: true,
     },
+    topic: {
+      type: String,
+      default: null, // null means all topics
+    },
     totalQuestions: {
       type: Number,
       required: true,
@@ -43,9 +47,25 @@ const testSessionSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    negativeScore: {
+      type: Number,
+      default: 0,
+    },
+    finalScore: {
+      type: Number,
+      default: 0, // score - negativeScore
+    },
     percentage: {
       type: Number,
       required: true,
+    },
+    timeLimitSeconds: {
+      type: Number,
+      default: null, // null means untimed
+    },
+    timeSpentSeconds: {
+      type: Number,
+      default: null,
     },
     startedAt: {
       type: Date,
@@ -67,5 +87,9 @@ const testSessionSchema = new mongoose.Schema(
   },
   { timestamps: true },
 )
+
+// ==================== INDEXES ====================
+testSessionSchema.index({ studentId: 1, courseId: 1 })
+testSessionSchema.index({ studentId: 1, submittedAt: -1 })
 
 module.exports = mongoose.model('TestSession', testSessionSchema)

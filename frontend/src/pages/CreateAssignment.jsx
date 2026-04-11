@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import API from '../services/api'
+import RoleTabs from '../components/RoleTabs'
 import './CreateAssignment.css'
 
 export default function CreateAssignment() {
@@ -27,7 +28,7 @@ export default function CreateAssignment() {
       try {
         if (!user) return
         const res =
-          user.role === 'admin'
+          user.role === 'admin' || user.role === 'superadmin'
             ? await API.get('/admin/courses')
             : await API.get('/courses/teacher/my-courses')
         setCourses(res.data.courses || [])
@@ -110,6 +111,7 @@ export default function CreateAssignment() {
         <h1>MDCAT LMS</h1>
         <button onClick={() => navigate(-1)}>Back</button>
       </div>
+      <RoleTabs user={user} />
 
       <div className="create-assignment-container">
         <h2>Create Assignment</h2>

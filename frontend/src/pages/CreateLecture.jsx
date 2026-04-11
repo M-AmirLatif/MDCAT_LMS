@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import API from '../services/api'
+import RoleTabs from '../components/RoleTabs'
 import './CreateLecture.css'
 
 export default function CreateLecture() {
@@ -28,7 +29,7 @@ export default function CreateLecture() {
       try {
         if (!user) return
         const res =
-          user.role === 'admin'
+          user.role === 'admin' || user.role === 'superadmin'
             ? await API.get('/admin/courses')
             : await API.get('/courses/teacher/my-courses')
         setCourses(res.data.courses || [])
@@ -136,6 +137,7 @@ export default function CreateLecture() {
           Back
         </button>
       </div>
+      <RoleTabs user={user} />
 
       <div className="create-lecture-container">
         <h2>Create New Lecture</h2>

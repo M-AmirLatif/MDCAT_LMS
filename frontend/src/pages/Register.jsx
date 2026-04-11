@@ -23,11 +23,21 @@ export default function Register() {
     setLoading(true)
     setError('')
 
+    const email = formData.email.trim().toLowerCase()
+    const isGmail =
+      email.endsWith('@gmail.com') || email.endsWith('@googlemail.com')
+    if (!isGmail) {
+      setError('Student registration requires a Gmail address.')
+      setLoading(false)
+      return
+    }
+
     try {
       const res = await API.post('/auth/register', formData)
-      localStorage.setItem('token', res.data.token)
-      localStorage.setItem('user', JSON.stringify(res.data.user))
-      navigate('/dashboard')
+      const otpParam = res.data?.debugOtp
+        ? `&otp=${encodeURIComponent(res.data.debugOtp)}`
+        : ''
+      navigate(`/verify-email?email=${encodeURIComponent(formData.email)}${otpParam}`)
     } catch (err) {
       setError(err.response?.data?.error || 'Registration failed')
     } finally {
@@ -39,9 +49,27 @@ export default function Register() {
     <div className="auth-container">
       <div className="auth-box">
         <h2>Create Account</h2>
-        <p className="subtitle">Start your MDCAT journey in minutes.</p>
+        <p className="subtitle">Student registration only.</p>
+        <p className="helper-text">
+          Teachers/Admins are added by the super admin. Use a Gmail address to
+          receive OTP.
+        </p>
+        <div className="staff-login">
+          <p>Staff access</p>
+          <div className="staff-actions">
+            <Link to="/login?role=teacher" className="btn btn-secondary">
+              Teacher Login
+            </Link>
+            <Link to="/login?role=admin" className="btn btn-secondary">
+              Admin Login
+            </Link>
+            <Link to="/login?role=superadmin" className="btn btn-secondary">
+              Super Admin Login
+            </Link>
+          </div>
+        </div>
         {error && <p className="error-message">{error}</p>}
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} autoComplete="off">
           <input
             type="text"
             name="firstName"
@@ -49,6 +77,7 @@ export default function Register() {
             value={formData.firstName}
             onChange={handleChange}
             required
+            autoComplete="off"
           />
           <input
             type="text"
@@ -57,14 +86,16 @@ export default function Register() {
             value={formData.lastName}
             onChange={handleChange}
             required
+            autoComplete="off"
           />
           <input
             type="email"
             name="email"
-            placeholder="Email"
+            placeholder="student@gmail.com"
             value={formData.email}
             onChange={handleChange}
             required
+            autoComplete="off"
           />
           <input
             type="password"
@@ -73,6 +104,7 @@ export default function Register() {
             value={formData.password}
             onChange={handleChange}
             required
+            autoComplete="new-password"
           />
           <button type="submit" disabled={loading}>
             {loading ? 'Registering...' : 'Register'}

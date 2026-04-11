@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import API from '../services/api'
+import RoleTabs from '../components/RoleTabs'
 import './Assignments.css'
 
 export default function Assignments() {
@@ -13,7 +14,8 @@ export default function Assignments() {
   const [uploadingId, setUploadingId] = useState(null)
 
   const user = JSON.parse(localStorage.getItem('user') || 'null')
-  const isTeacher = user?.role === 'teacher' || user?.role === 'admin'
+  const isTeacher =
+    user?.role === 'teacher' || user?.role === 'admin' || user?.role === 'superadmin'
 
   useEffect(() => {
     const fetchAssignments = async () => {
@@ -88,6 +90,7 @@ export default function Assignments() {
         <h1>MDCAT LMS</h1>
         <button onClick={() => navigate(-1)}>Back</button>
       </div>
+      <RoleTabs user={user} />
 
       <div className="assignments-container">
         <div className="header-row">

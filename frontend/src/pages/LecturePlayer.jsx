@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import API from '../services/api'
+import RoleTabs from '../components/RoleTabs'
 import './LecturePlayer.css'
 
 export default function LecturePlayer() {
@@ -8,6 +9,7 @@ export default function LecturePlayer() {
   const [lecture, setLecture] = useState(null)
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
+  const user = JSON.parse(localStorage.getItem('user') || 'null')
 
   useEffect(() => {
     fetchLecture()
@@ -44,6 +46,7 @@ export default function LecturePlayer() {
         <h1>MDCAT LMS</h1>
         <button onClick={() => navigate(-1)}>Back</button>
       </div>
+      <RoleTabs user={user} showGuest />
 
       <div className="player-container">
         <div className="video-section">

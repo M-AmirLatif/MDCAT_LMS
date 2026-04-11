@@ -2,8 +2,12 @@ const express = require('express')
 const {
   register,
   login,
+  verifyEmail,
+  resendOtp,
   getProfile,
   updateProfile,
+  forgotPassword,
+  resetPassword,
 } = require('../controllers/authController')
 const { protect } = require('../middlewares/auth')
 const { createRateLimiter } = require('../middlewares/rateLimiter')
@@ -17,6 +21,10 @@ const authLimiter = createRateLimiter({
 // Public routes
 router.post('/register', authLimiter, register)
 router.post('/login', authLimiter, login)
+router.post('/verify-email', authLimiter, verifyEmail)
+router.post('/resend-otp', authLimiter, resendOtp)
+router.post('/forgot-password', authLimiter, forgotPassword)
+router.post('/reset-password', authLimiter, resetPassword)
 
 // Protected routes
 router.get('/profile', protect, getProfile)

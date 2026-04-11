@@ -34,9 +34,22 @@ exports.createCourse = async (req, res) => {
 // ==================== GET ALL COURSES ====================
 exports.getAllCourses = async (req, res) => {
   try {
-    const courses = await Course.find({ isPublished: true })
+    const filter = { isPublished: true }
+
+    // Category filter
+    if (req.query.category) {
+      filter.category = req.query.category
+    }
+
+    // Search by name
+    if (req.query.search) {
+      filter.name = { $regex: req.query.search, $options: 'i' }
+    }
+
+    const courses = await Course.find(filter)
       .populate('createdBy', 'firstName lastName email')
       .lean()
+      .sort({ createdAt: -1 })
 
     const coursesWithCounts = courses.map((course) => ({
       ...course,
@@ -55,6 +68,7 @@ exports.getAllCourses = async (req, res) => {
     res.status(500).json({ error: error.message })
   }
 }
+
 
 // ==================== GET SINGLE COURSE ====================
 exports.getCourseById = async (req, res) => {
@@ -90,7 +104,8 @@ exports.updateCourse = async (req, res) => {
     // Check if user is creator or admin
     if (
       course.createdBy.toString() !== req.user.id &&
-      req.user.role !== 'admin'
+      req.user.role !== 'admin' &&
+      req.user.role !== 'superadmin'
     ) {
       return res
         .status(403)
@@ -125,7 +140,8 @@ exports.deleteCourse = async (req, res) => {
     // Check if user is creator or admin
     if (
       course.createdBy.toString() !== req.user.id &&
-      req.user.role !== 'admin'
+      req.user.role !== 'admin' &&
+      req.user.role !== 'superadmin'
     ) {
       return res
         .status(403)

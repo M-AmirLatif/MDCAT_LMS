@@ -31,7 +31,8 @@ exports.createLecture = async (req, res) => {
     // Check if user is creator of course or admin
     if (
       course.createdBy.toString() !== req.user.id &&
-      req.user.role !== 'admin'
+      req.user.role !== 'admin' &&
+      req.user.role !== 'superadmin'
     ) {
       return res
         .status(403)
@@ -126,7 +127,8 @@ exports.updateLecture = async (req, res) => {
     // Check if user is uploader or admin
     if (
       lecture.uploadedBy.toString() !== req.user.id &&
-      req.user.role !== 'admin'
+      req.user.role !== 'admin' &&
+      req.user.role !== 'superadmin'
     ) {
       return res
         .status(403)
@@ -175,7 +177,8 @@ exports.deleteLecture = async (req, res) => {
     // Check if user is uploader or admin
     if (
       lecture.uploadedBy.toString() !== req.user.id &&
-      req.user.role !== 'admin'
+      req.user.role !== 'admin' &&
+      req.user.role !== 'superadmin'
     ) {
       return res
         .status(403)

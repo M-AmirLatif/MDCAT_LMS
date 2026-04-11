@@ -3,34 +3,37 @@
 }
 
 .navbar {
-  background: linear-gradient(120deg, var(--brand-dark), var(--brand));
-  color: #f8fafc;
-  padding: 20px 40px;
+  background: var(--glass);
+  border-bottom: 1px solid var(--card-border);
+  color: var(--ink);
+  padding: 18px 36px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: var(--shadow);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  /* backdrop-filter removed for performance */
 }
 
 .navbar h1 {
   margin: 0;
-  font-size: 22px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+  font-size: 20px;
+  text-transform: none;
+  letter-spacing: 0.6px;
 }
 
 .navbar button {
-  background: rgba(248, 250, 252, 0.9);
-  color: var(--brand-dark);
+  background: linear-gradient(135deg, var(--brand), var(--accent-3));
+  color: white;
   border: none;
   padding: 10px 20px;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
+  box-shadow: 0 12px 24px rgba(56, 189, 248, 0.28);
 }
 
 .navbar button:hover {
-  background: white;
+  transform: translateY(-1px);
 }
 
 .course-detail-container {
@@ -40,10 +43,15 @@
 }
 
 .course-header {
-  background: white;
+  background: linear-gradient(
+    135deg,
+    var(--card-strong),
+    rgba(12, 18, 36, 0.82)
+  );
   padding: 30px;
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 22px 46px rgba(15, 23, 42, 0.14);
+  border: 1px solid rgba(56, 189, 248, 0.18);
   margin-bottom: 30px;
 }
 
@@ -90,10 +98,15 @@
 }
 
 .topics-section {
-  background: white;
+  background: linear-gradient(
+    135deg,
+    var(--card-strong),
+    rgba(12, 18, 36, 0.82)
+  );
   padding: 30px;
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 22px 46px rgba(15, 23, 42, 0.14);
+  border: 1px solid rgba(56, 189, 248, 0.18);
   margin-bottom: 30px;
 }
 
@@ -111,7 +124,7 @@
   padding: 15px;
   border-left: 4px solid var(--brand);
   margin-bottom: 10px;
-  background: #f8fafc;
+  background: rgba(56, 189, 248, 0.1);
   border-radius: 10px;
 }
 
@@ -126,10 +139,15 @@
 }
 
 .lectures-section {
-  background: white;
+  background: linear-gradient(
+    135deg,
+    var(--card-strong),
+    rgba(12, 18, 36, 0.82)
+  );
   padding: 30px;
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 22px 46px rgba(15, 23, 42, 0.14);
+  border: 1px solid rgba(56, 189, 248, 0.18);
 }
 
 .lectures-header {
@@ -145,7 +163,7 @@
 }
 
 .create-lecture-btn {
-  background: var(--brand);
+  background: linear-gradient(135deg, var(--brand), var(--accent-3));
   color: white;
   border: none;
   padding: 10px 20px;
@@ -154,6 +172,7 @@
   font-weight: 600;
   transition: transform 0.3s ease;
   white-space: nowrap;
+  box-shadow: 0 12px 24px rgba(56, 189, 248, 0.25);
 }
 
 .create-lecture-btn:hover {
@@ -171,9 +190,14 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  border: 1px solid #eee;
+  border: 1px solid rgba(56, 189, 248, 0.15);
   border-radius: 12px;
   transition: transform 0.3s ease;
+  background: linear-gradient(
+    135deg,
+    var(--card),
+    rgba(232, 245, 255, 0.8)
+  );
 }
 
 .lecture-item:hover {
@@ -212,7 +236,7 @@
 }
 
 .watch-btn {
-  background: var(--brand);
+  background: linear-gradient(135deg, var(--brand), var(--accent-3));
   color: white;
   border: none;
   padding: 10px 20px;
@@ -222,6 +246,7 @@
   white-space: nowrap;
   margin-left: 20px;
   transition: transform 0.3s ease;
+  box-shadow: 0 12px 26px rgba(56, 189, 248, 0.3);
 }
 
 .watch-btn:hover {
@@ -229,18 +254,28 @@
 }
 
 .mcq-section {
-  background: white;
+  background: linear-gradient(
+    135deg,
+    var(--card-strong),
+    rgba(12, 18, 36, 0.82)
+  );
   padding: 30px;
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 22px 46px rgba(15, 23, 42, 0.14);
+  border: 1px solid rgba(56, 189, 248, 0.18);
   margin-bottom: 30px;
 }
 
 .assignment-section {
-  background: white;
+  background: linear-gradient(
+    135deg,
+    var(--card-strong),
+    rgba(12, 18, 36, 0.82)
+  );
   padding: 30px;
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 22px 46px rgba(15, 23, 42, 0.14);
+  border: 1px solid rgba(56, 189, 248, 0.18);
   margin-bottom: 30px;
 }
 
@@ -258,7 +293,7 @@
 }
 
 .assignment-actions button {
-  background: var(--brand);
+  background: linear-gradient(135deg, var(--brand), var(--accent-3));
   color: white;
   border: none;
   padding: 10px 16px;
@@ -266,6 +301,7 @@
   cursor: pointer;
   font-weight: 600;
   transition: transform 0.3s ease;
+  box-shadow: 0 12px 26px rgba(56, 189, 248, 0.3);
 }
 
 .assignment-actions button:hover {
@@ -273,7 +309,8 @@
 }
 
 .create-assignment-btn {
-  background: var(--brand-dark);
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--brand-dark);
 }
 
 .mcq-header {
@@ -290,7 +327,7 @@
 }
 
 .mcq-actions button {
-  background: var(--brand);
+  background: linear-gradient(135deg, var(--brand), var(--accent-3));
   color: white;
   border: none;
   padding: 10px 16px;
@@ -298,6 +335,7 @@
   cursor: pointer;
   font-weight: 600;
   transition: transform 0.3s ease;
+  box-shadow: 0 12px 26px rgba(56, 189, 248, 0.3);
 }
 
 .mcq-actions button:hover {
@@ -305,7 +343,8 @@
 }
 
 .create-mcq-btn {
-  background: var(--brand-dark);
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--brand-dark);
 }
 
 .create-mcq-btn:hover {
@@ -314,9 +353,9 @@
 
 @media (max-width: 860px) {
   .navbar {
-    padding: 16px 20px;
+    padding: 14px 18px;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
   }
 
   .lecture-item {
@@ -329,3 +368,8 @@
     margin-left: 0;
   }
 }
+
+
+
+
+

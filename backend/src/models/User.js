@@ -31,8 +31,22 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['student', 'teacher', 'admin'],
+      enum: ['student', 'teacher', 'admin', 'superadmin'],
       default: 'student',
+    },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    emailOtpHash: {
+      type: String,
+      select: false,
+      default: null,
+    },
+    emailOtpExpires: {
+      type: Date,
+      default: null,
+      select: false,
     },
     phone: {
       type: String,
@@ -69,5 +83,9 @@ userSchema.pre('save', async function (next) {
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password)
 }
+
+// ==================== INDEXES ====================
+userSchema.index({ email: 1 })
+userSchema.index({ role: 1, isActive: 1 })
 
 module.exports = mongoose.model('User', userSchema)

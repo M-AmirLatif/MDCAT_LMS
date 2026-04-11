@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
+import RoleTabs from '../components/RoleTabs'
 import './TeacherCourses.css'
 
 export default function TeacherCourses() {
@@ -8,6 +9,7 @@ export default function TeacherCourses() {
   const [courses, setCourses] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const user = JSON.parse(localStorage.getItem('user') || 'null')
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -43,6 +45,7 @@ export default function TeacherCourses() {
         <h1>MDCAT LMS</h1>
         <button onClick={() => navigate('/dashboard')}>Dashboard</button>
       </div>
+      <RoleTabs user={user} />
 
       <div className="teacher-courses-container">
         <div className="header-row">

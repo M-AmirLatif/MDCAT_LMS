@@ -1,16 +1,27 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import API from '../services/api'
 import './Auth.css'
 
 export default function Login() {
+  const [searchParams] = useSearchParams()
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [needsVerification, setNeedsVerification] = useState(false)
   const navigate = useNavigate()
+  const requestedRole = searchParams.get('role')
+  const nextPath = searchParams.get('next')
+
+  const roleLabels = {
+    student: 'Student',
+    teacher: 'Teacher',
+    admin: 'Admin',
+    superadmin: 'Super Admin',
+  }
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -25,9 +36,15 @@ export default function Login() {
       const res = await API.post('/auth/login', formData)
       localStorage.setItem('token', res.data.token)
       localStorage.setItem('user', JSON.stringify(res.data.user))
-      navigate('/dashboard')
+      if (nextPath) {
+        navigate(nextPath)
+      } else {
+        navigate('/dashboard')
+      }
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed')
+      const message = err.response?.data?.error || 'Login failed'
+      setError(message)
+      setNeedsVerification(message.toLowerCase().includes('not verified'))
     } finally {
       setLoading(false)
     }
@@ -38,7 +55,21 @@ export default function Login() {
       <div className="auth-box">
         <h2>Login</h2>
         <p className="subtitle">Welcome back. Continue your preparation.</p>
+        {requestedRole && (
+          <p className="info-message">
+            This area needs a {roleLabels[requestedRole] || 'staff'} account.
+            Login with the correct role.
+          </p>
+        )}
         {error && <p className="error-message">{error}</p>}
+        {needsVerification && (
+          <p className="subtitle">
+            Please verify your email.{' '}
+            <Link to={`/verify-email?email=${encodeURIComponent(formData.email)}`}>
+              Verify now
+            </Link>
+          </p>
+        )}
         <form onSubmit={handleSubmit}>
           <input
             type="email"
@@ -47,6 +78,7 @@ export default function Login() {
             value={formData.email}
             onChange={handleChange}
             required
+            autoComplete="off"
           />
           <input
             type="password"
@@ -55,14 +87,20 @@ export default function Login() {
             value={formData.password}
             onChange={handleChange}
             required
+            autoComplete="current-password"
           />
           <button type="submit" disabled={loading}>
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
-        <p>
-          Don't have an account? <Link to="/register">Register</Link>
-        </p>
+        <div className="auth-links">
+          <p>
+            Student signup only? <Link to="/register">Register</Link>
+          </p>
+          <p>
+            <Link to="/forgot-password">Forgot Password?</Link>
+          </p>
+        </div>
       </div>
     </div>
   )

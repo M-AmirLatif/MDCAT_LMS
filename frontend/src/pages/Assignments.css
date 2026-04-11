@@ -17,13 +17,14 @@
 }
 
 .header-row button {
-  background: var(--brand);
+  background: linear-gradient(135deg, var(--brand), var(--accent-3));
   color: white;
   border: none;
   padding: 10px 18px;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
+  box-shadow: 0 12px 24px rgba(56, 189, 248, 0.25);
 }
 
 .assignment-list {
@@ -32,10 +33,11 @@
 }
 
 .assignment-card {
-  background: white;
+  background: var(--card);
   padding: 20px;
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+  border: 1px solid var(--card-border);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -58,7 +60,7 @@
 }
 
 .marks {
-  background: rgba(15, 118, 110, 0.1);
+  background: rgba(56, 189, 248, 0.12);
   color: var(--brand-dark);
   padding: 6px 10px;
   border-radius: 999px;
@@ -73,7 +75,7 @@
 .instructions {
   color: var(--ink);
   font-size: 14px;
-  background: #f8fafc;
+  background: rgba(56, 189, 248, 0.06);
   padding: 12px;
   border-radius: 10px;
 }
@@ -85,7 +87,7 @@
 }
 
 .attachments a {
-  background: rgba(15, 118, 110, 0.1);
+  background: rgba(56, 189, 248, 0.12);
   color: var(--brand-dark);
   padding: 6px 10px;
   border-radius: 999px;
@@ -94,13 +96,14 @@
 }
 
 .teacher-actions button {
-  background: var(--brand);
+  background: linear-gradient(135deg, var(--brand), var(--accent-3));
   color: white;
   border: none;
   padding: 8px 14px;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
+  box-shadow: 0 10px 20px rgba(56, 189, 248, 0.25);
 }
 
 .student-submit {
@@ -112,18 +115,20 @@
 .student-submit textarea {
   padding: 10px;
   border-radius: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid rgba(15, 23, 42, 0.12);
   font-family: inherit;
+  background: var(--card-strong);
 }
 
 .student-submit button {
-  background: var(--brand);
+  background: linear-gradient(135deg, var(--brand), var(--accent-3));
   color: white;
   border: none;
   padding: 10px 14px;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
+  box-shadow: 0 10px 20px rgba(56, 189, 248, 0.22);
 }
 
 .upload-status {
@@ -151,3 +156,8 @@
     align-items: flex-start;
   }
 }
+
+
+
+
+

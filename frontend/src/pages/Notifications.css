@@ -11,10 +11,11 @@
 }
 
 .broadcast-box {
-  background: white;
+  background: var(--card);
   padding: 20px;
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+  border: 1px solid var(--card-border);
   display: grid;
   gap: 12px;
 }
@@ -24,8 +25,9 @@
 .broadcast-box select {
   padding: 10px;
   border-radius: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid rgba(15, 23, 42, 0.12);
   font-family: inherit;
+  background: var(--card-strong);
 }
 
 .broadcast-box input:focus,
@@ -48,13 +50,14 @@
 }
 
 .broadcast-actions button {
-  background: var(--brand);
+  background: linear-gradient(135deg, var(--brand), var(--accent-3));
   color: white;
   border: none;
   padding: 10px 14px;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
+  box-shadow: 0 10px 20px rgba(56, 189, 248, 0.22);
 }
 
 .notification-list {
@@ -63,10 +66,11 @@
 }
 
 .notification-card {
-  background: white;
+  background: var(--card);
   padding: 20px;
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+  border: 1px solid var(--card-border);
   display: flex;
   justify-content: space-between;
   gap: 12px;
@@ -91,7 +95,7 @@
 }
 
 .notification-card button {
-  background: var(--brand);
+  background: linear-gradient(135deg, var(--brand), var(--accent-3));
   color: white;
   border: none;
   padding: 8px 12px;
@@ -99,6 +103,7 @@
   cursor: pointer;
   font-weight: 600;
   height: fit-content;
+  box-shadow: 0 10px 20px rgba(56, 189, 248, 0.2);
 }
 
 .error-message {
@@ -120,3 +125,8 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+
+
+

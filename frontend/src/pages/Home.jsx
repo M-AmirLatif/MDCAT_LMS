@@ -1,7 +1,36 @@
 import { Link } from 'react-router-dom'
+import RoleTabs from '../components/RoleTabs'
 import './Home.css'
 
 export default function Home() {
+  const user = JSON.parse(localStorage.getItem('user') || 'null')
+  const sampleCourses = [
+    {
+      title: 'MDCAT Biology Foundations',
+      category: 'Biology',
+      description:
+        'Concept-first lessons with diagrams, flashcards, and daily recall tests.',
+      instructor: 'Dr. Ayesha Khan',
+      lessons: 32,
+    },
+    {
+      title: 'MDCAT Chemistry Numericals',
+      category: 'Chemistry',
+      description:
+        'Practice-heavy modules with guided problem solving and quick formulas.',
+      instructor: 'Sana Malik',
+      lessons: 28,
+    },
+    {
+      title: 'MDCAT Physics Sprint',
+      category: 'Physics',
+      description:
+        'High-yield revision plan focused on motion, waves, and quick tricks.',
+      instructor: 'Amir Latif',
+      lessons: 24,
+    },
+  ]
+
   return (
     <div className="home">
       <div className="navbar">
@@ -11,10 +40,11 @@ export default function Home() {
             Login
           </Link>
           <Link to="/register" className="btn btn-register">
-            Register
+            Student Register
           </Link>
         </div>
       </div>
+      <RoleTabs user={user} showGuest />
 
       <div className="hero">
         <div className="hero-content">
@@ -26,11 +56,25 @@ export default function Home() {
           </p>
           <div className="hero-buttons">
             <Link to="/register" className="btn btn-primary">
-              Get Started
+              Student Sign Up
             </Link>
             <Link to="/login" className="btn btn-secondary">
               Sign In
             </Link>
+          </div>
+          <div className="hero-stats">
+            <div>
+              <h4>120+</h4>
+              <p>Recorded lectures</p>
+            </div>
+            <div>
+              <h4>3,000+</h4>
+              <p>Topic-wise MCQs</p>
+            </div>
+            <div>
+              <h4>24/7</h4>
+              <p>Access on demand</p>
+            </div>
           </div>
         </div>
         <div className="hero-card">
@@ -68,6 +112,47 @@ export default function Home() {
             <h4>Live Classes</h4>
             <p>Join real-time sessions and ask questions live.</p>
           </div>
+        </div>
+      </div>
+
+      <div className="sample-section">
+        <div className="section-header">
+          <div>
+            <h3>Sample Course Preview</h3>
+            <p>
+              Explore the structure before you sign in. Full content unlocks
+              after login.
+            </p>
+          </div>
+          <div className="section-actions">
+            <Link to="/courses" className="btn btn-secondary">
+              View Samples
+            </Link>
+            <Link to="/login" className="btn btn-primary">
+              Login to Unlock
+            </Link>
+          </div>
+        </div>
+        <div className="sample-grid">
+          {sampleCourses.map((course) => (
+            <div className="sample-card" key={course.title}>
+              <div className="sample-header">
+                <h4>{course.title}</h4>
+                <span className="sample-tag">{course.category}</span>
+              </div>
+              <p>{course.description}</p>
+              <div className="sample-meta">
+                <span>Instructor: {course.instructor}</span>
+                <span>Lessons: {course.lessons}</span>
+              </div>
+              <div className="sample-footer">
+                <span className="sample-pill">Preview Only</span>
+                <Link to="/login" className="btn btn-ghost">
+                  Login to Enroll
+                </Link>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

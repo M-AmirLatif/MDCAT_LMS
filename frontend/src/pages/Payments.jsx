@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
+import RoleTabs from '../components/RoleTabs'
 import './Payments.css'
 
 export default function Payments() {
@@ -14,6 +15,7 @@ export default function Payments() {
   })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const user = JSON.parse(localStorage.getItem('user') || 'null')
 
   const fetchPayments = async () => {
     try {
@@ -72,6 +74,7 @@ export default function Payments() {
         <h1>MDCAT LMS</h1>
         <button onClick={() => navigate('/dashboard')}>Back</button>
       </div>
+      <RoleTabs user={user} />
 
       <div className="payments-container">
         <h2>Payments</h2>

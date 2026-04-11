@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
+import RoleTabs from '../components/RoleTabs'
 import './CreateCourse.css'
 
 export default function CreateCourse() {
@@ -17,6 +18,7 @@ export default function CreateCourse() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const user = JSON.parse(localStorage.getItem('user') || 'null')
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -66,6 +68,7 @@ export default function CreateCourse() {
         <h1>MDCAT LMS</h1>
         <button onClick={() => navigate(-1)}>Back</button>
       </div>
+      <RoleTabs user={user} />
 
       <div className="create-course-container">
         <h2>Create New Course</h2>

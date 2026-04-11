@@ -3,6 +3,7 @@ const {
   createMcq,
   getMcqsByCourse,
   getMcqsByCourseFull,
+  getTopicsByCourse,
   updateMcq,
   deleteMcq,
 } = require('../controllers/mcqController')
@@ -12,6 +13,7 @@ const router = express.Router()
 
 // Public routes
 router.get('/course/:courseId', getMcqsByCourse)
+router.get('/course/:courseId/topics', getTopicsByCourse)
 
 // Teacher/Admin routes (full answers)
 router.get(

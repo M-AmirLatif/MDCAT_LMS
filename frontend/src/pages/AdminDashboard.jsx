@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
+import RoleTabs from '../components/RoleTabs'
 import './AdminDashboard.css'
 
 export default function AdminDashboard() {
@@ -9,6 +10,16 @@ export default function AdminDashboard() {
   const [courses, setCourses] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+  const currentUser = JSON.parse(localStorage.getItem('user') || 'null')
+  const isSuperAdmin = currentUser?.role === 'superadmin'
+  const [createForm, setCreateForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    role: 'teacher',
+  })
 
   const fetchData = async () => {
     try {
@@ -45,6 +56,31 @@ export default function AdminDashboard() {
     }
   }
 
+  const handleCreateChange = (e) => {
+    setCreateForm({ ...createForm, [e.target.name]: e.target.value })
+  }
+
+  const handleCreateUser = async (e) => {
+    e.preventDefault()
+    setError('')
+    setSuccess('')
+
+    try {
+      await API.post('/admin/users', createForm)
+      setSuccess('Staff account created successfully.')
+      setCreateForm({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        role: isSuperAdmin ? 'teacher' : 'teacher',
+      })
+      await fetchData()
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to create user')
+    }
+  }
+
   const toggleUserStatus = (user) => {
     updateUser(user._id, { isActive: !user.isActive })
   }
@@ -77,10 +113,64 @@ export default function AdminDashboard() {
         <h1>MDCAT LMS</h1>
         <button onClick={() => navigate('/dashboard')}>Back</button>
       </div>
+      <RoleTabs user={currentUser} />
 
       <div className="admin-container">
         <h2>Admin Panel</h2>
         {error && <p className="error-message">{error}</p>}
+        {success && <p className="success-message">{success}</p>}
+
+        <div className="section">
+          <h3>Create Staff Account</h3>
+          <p className="helper-text">
+            Students sign up themselves with Gmail OTP. Staff accounts use
+            internal emails and are auto-verified.
+          </p>
+          <form className="create-user-form" onSubmit={handleCreateUser}>
+            <input
+              type="text"
+              name="firstName"
+              placeholder="First name"
+              value={createForm.firstName}
+              onChange={handleCreateChange}
+              required
+            />
+            <input
+              type="text"
+              name="lastName"
+              placeholder="Last name"
+              value={createForm.lastName}
+              onChange={handleCreateChange}
+              required
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="teacher1@mdcat.local"
+              value={createForm.email}
+              onChange={handleCreateChange}
+              required
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Temporary password"
+              value={createForm.password}
+              onChange={handleCreateChange}
+              required
+            />
+            <select
+              name="role"
+              value={createForm.role}
+              onChange={handleCreateChange}
+            >
+              <option value="teacher">teacher</option>
+              {isSuperAdmin && <option value="admin">admin</option>}
+              {isSuperAdmin && <option value="superadmin">superadmin</option>}
+            </select>
+            <button type="submit">Create User</button>
+          </form>
+        </div>
 
         <div className="section">
           <h3>Users</h3>
@@ -96,30 +186,45 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {users.map((user) => (
-                  <tr key={user._id}>
-                    <td>
-                      {user.firstName} {user.lastName}
-                    </td>
-                    <td>{user.email}</td>
-                    <td>
-                      <select
-                        value={user.role}
-                        onChange={(e) => changeRole(user._id, e.target.value)}
-                      >
-                        <option value="student">student</option>
-                        <option value="teacher">teacher</option>
-                        <option value="admin">admin</option>
-                      </select>
-                    </td>
-                    <td>{user.isActive ? 'Active' : 'Inactive'}</td>
-                    <td>
-                      <button onClick={() => toggleUserStatus(user)}>
-                        {user.isActive ? 'Deactivate' : 'Activate'}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {users.map((user) => {
+                  const isProtected =
+                    !isSuperAdmin &&
+                    (user.role === 'admin' || user.role === 'superadmin')
+                  return (
+                    <tr key={user._id}>
+                      <td>
+                        {user.firstName} {user.lastName}
+                      </td>
+                      <td>{user.email}</td>
+                      <td>
+                        {isProtected ? (
+                          <span className="role-pill">{user.role}</span>
+                        ) : (
+                          <select
+                            value={user.role}
+                            onChange={(e) => changeRole(user._id, e.target.value)}
+                          >
+                            <option value="student">student</option>
+                            <option value="teacher">teacher</option>
+                            {isSuperAdmin && <option value="admin">admin</option>}
+                            {isSuperAdmin && (
+                              <option value="superadmin">superadmin</option>
+                            )}
+                          </select>
+                        )}
+                      </td>
+                      <td>{user.isActive ? 'Active' : 'Inactive'}</td>
+                      <td>
+                        <button
+                          onClick={() => toggleUserStatus(user)}
+                          disabled={isProtected}
+                        >
+                          {user.isActive ? 'Deactivate' : 'Activate'}
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>

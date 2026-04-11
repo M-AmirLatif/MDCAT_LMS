@@ -8,18 +8,31 @@ const MCQ = require('./src/models/MCQ')
 const Assignment = require('./src/models/Assignment')
 const LiveSession = require('./src/models/LiveSession')
 const Notification = require('./src/models/Notification')
+const TestSession = require('./src/models/TestSession')
+const NotificationJob = require('./src/models/NotificationJob')
+const Payment = require('./src/models/Payment')
 
 const connect = async () => {
-  await mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  await mongoose.connect(process.env.MONGO_URI)
 }
 
 const ensureUser = async (data) => {
   let user = await User.findOne({ email: data.email })
   if (!user) {
     user = await User.create(data)
+  } else {
+    let updated = false
+    if (data.role && user.role !== data.role) {
+      user.role = data.role
+      updated = true
+    }
+    if (data.isEmailVerified && !user.isEmailVerified) {
+      user.isEmailVerified = true
+      updated = true
+    }
+    if (updated) {
+      await user.save()
+    }
   }
   return user
 }
@@ -93,29 +106,82 @@ const enrollStudent = async (course, studentId) => {
 }
 
 const seed = async () => {
+  // =====================================================
+  // STEP 1: Remove ALL previously registered students
+  // =====================================================
+  const deletedStudents = await User.deleteMany({ role: 'student' })
+  console.log(`🗑️  Removed ${deletedStudents.deletedCount} previous student(s)`)
+
+  // Also clean up student-related data
+  await TestSession.deleteMany({})
+  await Payment.deleteMany({})
+  await Notification.deleteMany({})
+  await NotificationJob.deleteMany({})
+  console.log('🗑️  Cleaned student test sessions, payments, and notifications')
+
+  // Remove student enrollments from all courses
+  await Course.updateMany({}, { $set: { enrolledStudents: [] } })
+  console.log('🗑️  Cleared all course enrollments')
+
+  // =====================================================
+  // STEP 2: Create hardcoded staff accounts
+  // =====================================================
+
+  // --- SUPER ADMIN ---
+  const superAdmin = await ensureUser({
+    firstName: 'Super',
+    lastName: 'Admin',
+    email: 'superadmin@mdcat.com',
+    password: 'SuperAdmin@123',
+    role: 'superadmin',
+    isEmailVerified: true,
+    isActive: true,
+  })
+  console.log('✅ Super Admin → superadmin@mdcat.com / SuperAdmin@123')
+
+  // --- ADMIN ---
+  const admin = await ensureUser({
+    firstName: 'Amir',
+    lastName: 'Latif',
+    email: 'admin@mdcat.com',
+    password: 'Admin@123',
+    role: 'admin',
+    isEmailVerified: true,
+    isActive: true,
+  })
+  console.log('✅ Admin       → admin@mdcat.com / Admin@123')
+
+  // --- TEACHER 1 ---
   const teacher = await ensureUser({
-    firstName: 'Ayesha',
+    firstName: 'Dr. Ayesha',
     lastName: 'Khan',
     email: 'teacher@mdcat.com',
-    password: 'Password123',
+    password: 'Teacher@123',
     role: 'teacher',
+    isEmailVerified: true,
+    isActive: true,
   })
+  console.log('✅ Teacher 1   → teacher@mdcat.com / Teacher@123')
 
+  // --- TEACHER 2 ---
   const teacherTwo = await ensureUser({
     firstName: 'Sana',
     lastName: 'Malik',
     email: 'teacher2@mdcat.com',
-    password: 'Password123',
+    password: 'Teacher2@123',
     role: 'teacher',
+    isEmailVerified: true,
+    isActive: true,
   })
+  console.log('✅ Teacher 2   → teacher2@mdcat.com / Teacher2@123')
 
-  const student = await ensureUser({
-    firstName: 'Ali',
-    lastName: 'Raza',
-    email: 'student@mdcat.com',
-    password: 'Password123',
-    role: 'student',
-  })
+  console.log('')
+  console.log('📋 Students must register themselves and verify email via OTP.')
+  console.log('')
+
+  // =====================================================
+  // STEP 3: Seed courses (Bio, Chem, Phys, English)
+  // =====================================================
 
   const bioCourse = await ensureCourse({
     name: 'MDCAT Biology Crash Course',
@@ -155,10 +221,22 @@ const seed = async () => {
     ],
   })
 
-  await enrollStudent(bioCourse, student._id)
-  await enrollStudent(chemCourse, student._id)
-  await enrollStudent(physicsCourse, student._id)
+  const englishCourse = await ensureCourse({
+    name: 'MDCAT English Essentials',
+    description: 'Grammar, vocabulary, and comprehension for MDCAT English section.',
+    category: 'English',
+    createdBy: teacher._id,
+    isPublished: true,
+    topics: [
+      { name: 'Grammar', description: 'Tenses, articles, prepositions' },
+      { name: 'Vocabulary', description: 'Synonyms, antonyms, analogies' },
+      { name: 'Comprehension', description: 'Reading passages and inference' },
+    ],
+  })
 
+  // =====================================================
+  // STEP 4: Seed lectures
+  // =====================================================
   const sampleVideo =
     'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4'
 
@@ -169,6 +247,7 @@ const seed = async () => {
     topic: 'Cell Biology',
     videoUrl: sampleVideo,
     videoDuration: 600,
+    order: 1,
     notes: 'Review nucleus, mitochondria, and ER for quick recall.',
     uploadedBy: teacher._id,
     isPublished: true,
@@ -181,6 +260,7 @@ const seed = async () => {
     topic: 'Genetics',
     videoUrl: sampleVideo,
     videoDuration: 540,
+    order: 2,
     notes: 'Focus on Punnett squares and genotype ratios.',
     uploadedBy: teacher._id,
     isPublished: true,
@@ -193,6 +273,7 @@ const seed = async () => {
     topic: 'Atomic Structure',
     videoUrl: sampleVideo,
     videoDuration: 480,
+    order: 1,
     notes: 'Memorize common isotopes and electronic configuration.',
     uploadedBy: teacherTwo._id,
     isPublished: true,
@@ -205,6 +286,7 @@ const seed = async () => {
     topic: 'Chemical Bonding',
     videoUrl: sampleVideo,
     videoDuration: 510,
+    order: 2,
     notes: 'Compare ionic and covalent bond formation.',
     uploadedBy: teacherTwo._id,
     isPublished: true,
@@ -217,6 +299,7 @@ const seed = async () => {
     topic: 'Kinematics',
     videoUrl: sampleVideo,
     videoDuration: 520,
+    order: 1,
     notes: 'Practice SUVAT equations with simple problems.',
     uploadedBy: teacher._id,
     isPublished: true,
@@ -229,10 +312,28 @@ const seed = async () => {
     topic: 'Dynamics',
     videoUrl: sampleVideo,
     videoDuration: 560,
+    order: 2,
     notes: 'Understand free body diagrams and net force.',
     uploadedBy: teacher._id,
     isPublished: true,
   })
+
+  await ensureLecture({
+    title: 'English Grammar Crash Course',
+    description: 'Tenses, articles, and common grammar rules for MDCAT.',
+    courseId: englishCourse._id,
+    topic: 'Grammar',
+    videoUrl: sampleVideo,
+    videoDuration: 450,
+    order: 1,
+    notes: 'Focus on tense identification and article usage.',
+    uploadedBy: teacher._id,
+    isPublished: true,
+  })
+
+  // =====================================================
+  // STEP 5: Seed MCQs
+  // =====================================================
 
   await ensureMcq({
     courseId: bioCourse._id,
@@ -245,6 +346,7 @@ const seed = async () => {
       { text: 'Ribosome', isCorrect: false },
     ],
     explanation: 'Mitochondria produce ATP, the energy currency of the cell.',
+    difficulty: 'easy',
     createdBy: teacher._id,
     isPublished: true,
   })
@@ -260,6 +362,7 @@ const seed = async () => {
       { text: 'M phase', isCorrect: false },
     ],
     explanation: 'S phase is the synthesis phase where DNA is replicated.',
+    difficulty: 'medium',
     createdBy: teacher._id,
     isPublished: true,
   })
@@ -275,6 +378,7 @@ const seed = async () => {
       { text: '12', isCorrect: false },
     ],
     explanation: 'Carbon has 6 protons, so its atomic number is 6.',
+    difficulty: 'easy',
     createdBy: teacherTwo._id,
     isPublished: true,
   })
@@ -290,6 +394,7 @@ const seed = async () => {
       { text: 'Hydrogen bond', isCorrect: false },
     ],
     explanation: 'Covalent bonds are formed by sharing electrons.',
+    difficulty: 'easy',
     createdBy: teacherTwo._id,
     isPublished: true,
   })
@@ -305,6 +410,7 @@ const seed = async () => {
       { text: 'Frictional force', isCorrect: false },
     ],
     explanation: 'Newtons first law states that an unbalanced force is needed.',
+    difficulty: 'medium',
     createdBy: teacher._id,
     isPublished: true,
   })
@@ -320,9 +426,46 @@ const seed = async () => {
       { text: 'E = mc^2', isCorrect: false },
     ],
     explanation: 'v = u + at is the first equation of motion.',
+    difficulty: 'medium',
     createdBy: teacher._id,
     isPublished: true,
   })
+
+  await ensureMcq({
+    courseId: englishCourse._id,
+    topic: 'Grammar',
+    question: 'Choose the correct sentence:',
+    options: [
+      { text: 'He go to school daily.', isCorrect: false },
+      { text: 'He goes to school daily.', isCorrect: true },
+      { text: 'He going to school daily.', isCorrect: false },
+      { text: 'He gone to school daily.', isCorrect: false },
+    ],
+    explanation: 'Third person singular present tense uses "goes".',
+    difficulty: 'easy',
+    createdBy: teacher._id,
+    isPublished: true,
+  })
+
+  await ensureMcq({
+    courseId: englishCourse._id,
+    topic: 'Vocabulary',
+    question: 'What is the synonym of "Arduous"?',
+    options: [
+      { text: 'Easy', isCorrect: false },
+      { text: 'Difficult', isCorrect: true },
+      { text: 'Simple', isCorrect: false },
+      { text: 'Comfortable', isCorrect: false },
+    ],
+    explanation: 'Arduous means difficult and requiring a lot of effort.',
+    difficulty: 'medium',
+    createdBy: teacher._id,
+    isPublished: true,
+  })
+
+  // =====================================================
+  // STEP 6: Seed assignments
+  // =====================================================
 
   await ensureAssignment({
     courseId: bioCourse._id,
@@ -354,6 +497,10 @@ const seed = async () => {
     createdBy: teacher._id,
   })
 
+  // =====================================================
+  // STEP 7: Seed live sessions
+  // =====================================================
+
   await ensureLiveSession({
     courseId: bioCourse._id,
     teacherId: teacher._id,
@@ -374,21 +521,24 @@ const seed = async () => {
     status: 'scheduled',
   })
 
-  await ensureNotification({
-    recipientId: student._id,
-    type: 'announcement',
-    title: 'Welcome to MDCAT LMS',
-    message: 'Your courses are ready. Start with Biology today.',
-  })
-
-  await ensureNotification({
-    recipientId: student._id,
-    type: 'lecture',
-    title: 'New lecture uploaded',
-    message: 'Genetics Quick Recap is now available in Biology.',
-  })
-
-  console.log('Seed completed.')
+  // =====================================================
+  // DONE
+  // =====================================================
+  console.log('')
+  console.log('═══════════════════════════════════════════════════')
+  console.log('  ✅ SEED COMPLETED SUCCESSFULLY')
+  console.log('═══════════════════════════════════════════════════')
+  console.log('')
+  console.log('  📌 STAFF LOGIN CREDENTIALS:')
+  console.log('  ─────────────────────────────────────────────────')
+  console.log('  Super Admin : superadmin@mdcat.com / SuperAdmin@123')
+  console.log('  Admin       : admin@mdcat.com      / Admin@123')
+  console.log('  Teacher 1   : teacher@mdcat.com     / Teacher@123')
+  console.log('  Teacher 2   : teacher2@mdcat.com    / Teacher2@123')
+  console.log('  ─────────────────────────────────────────────────')
+  console.log('  📌 Students must self-register & verify email via OTP')
+  console.log('═══════════════════════════════════════════════════')
+  console.log('')
 }
 
 connect()

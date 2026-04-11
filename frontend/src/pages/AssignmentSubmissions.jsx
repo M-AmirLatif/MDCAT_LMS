@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import API from '../services/api'
+import RoleTabs from '../components/RoleTabs'
 import './AssignmentSubmissions.css'
 
 export default function AssignmentSubmissions() {
@@ -10,6 +11,7 @@ export default function AssignmentSubmissions() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [grading, setGrading] = useState({})
+  const user = JSON.parse(localStorage.getItem('user') || 'null')
 
   useEffect(() => {
     const fetchSubmissions = async () => {
@@ -72,6 +74,7 @@ export default function AssignmentSubmissions() {
         <h1>MDCAT LMS</h1>
         <button onClick={() => navigate(-1)}>Back</button>
       </div>
+      <RoleTabs user={user} />
 
       <div className="assignment-submissions-container">
         <h2>{assignment.title}</h2>

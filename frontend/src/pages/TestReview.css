@@ -1,0 +1,236 @@
+.test-review {
+  min-height: 100vh;
+}
+
+.test-review-container {
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+.test-review-container h2 {
+  margin-bottom: 24px;
+  font-size: 26px;
+}
+
+/* Stats bar */
+.review-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.review-stat {
+  flex: 1;
+  min-width: 100px;
+  text-align: center;
+  padding: 18px 14px;
+  border-radius: var(--radius);
+  background: var(--glass);
+  border: 1px solid var(--card-border);
+  /* backdrop-filter removed for performance */
+}
+
+.review-stat .stat-num {
+  display: block;
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.review-stat .stat-label {
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.review-stat.correct .stat-num { color: var(--accent-3); }
+.review-stat.wrong .stat-num { color: #f87171; }
+.review-stat.total .stat-num { color: var(--brand); }
+.review-stat.time .stat-num { color: var(--accent-2); }
+
+/* Filters */
+.review-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.filter-btn {
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-btn:hover {
+  border-color: var(--brand);
+  color: var(--ink);
+}
+
+.filter-btn.active {
+  background: linear-gradient(135deg, var(--brand), var(--accent-3));
+  color: #fff;
+  border-color: transparent;
+}
+
+/* Question cards */
+.review-card {
+  background: var(--glass);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 16px;
+  animation: fadeUp 0.4s ease;
+  /* backdrop-filter removed for performance */
+}
+
+.review-card.is-wrong {
+  border-left: 4px solid #f87171;
+}
+
+.review-card.is-correct {
+  border-left: 4px solid var(--accent-3);
+}
+
+.review-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.q-number {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.q-badge {
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.q-badge.correct {
+  background: rgba(52, 211, 153, 0.18);
+  color: var(--accent-3);
+}
+
+.q-badge.wrong {
+  background: rgba(248, 113, 113, 0.18);
+  color: #f87171;
+}
+
+.q-difficulty {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.q-difficulty.easy { background: rgba(52, 211, 153, 0.12); color: var(--accent-3); }
+.q-difficulty.medium { background: rgba(249, 115, 22, 0.12); color: var(--accent-2); }
+.q-difficulty.hard { background: rgba(248, 113, 113, 0.12); color: #f87171; }
+
+.q-text {
+  font-size: 16px;
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+
+.q-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.q-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid transparent;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.option-letter {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(148, 163, 184, 0.15);
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.q-option.option-correct {
+  border-color: var(--accent-3);
+  background: rgba(52, 211, 153, 0.1);
+}
+
+.q-option.option-wrong {
+  border-color: #f87171;
+  background: rgba(248, 113, 113, 0.1);
+}
+
+.option-tag {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.correct-tag {
+  background: rgba(52, 211, 153, 0.2);
+  color: var(--accent-3);
+}
+
+.wrong-tag {
+  background: rgba(248, 113, 113, 0.2);
+  color: #f87171;
+}
+
+.q-explanation {
+  padding: 14px;
+  border-radius: 10px;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.15);
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.q-topic {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.no-results {
+  text-align: center;
+  color: var(--muted);
+  padding: 40px 0;
+}
+
+@media (max-width: 600px) {
+  .review-stats { flex-direction: column; }
+  .review-filters { flex-wrap: wrap; }
+}

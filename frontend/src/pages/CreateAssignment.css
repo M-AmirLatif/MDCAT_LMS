@@ -6,9 +6,10 @@
   max-width: 900px;
   margin: 40px auto;
   padding: 30px;
-  background: white;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.15);
+  border: 1px solid var(--card-border);
 }
 
 .assignment-form {
@@ -28,8 +29,9 @@
 .form-group select {
   padding: 12px;
   border-radius: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid rgba(15, 23, 42, 0.12);
   font-family: inherit;
+  background: var(--card-strong);
 }
 
 .form-group input:focus,
@@ -59,7 +61,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-  border: 1px solid #eee;
+  border: 1px solid rgba(15, 23, 42, 0.1);
   border-radius: 10px;
 }
 
@@ -73,13 +75,14 @@
 }
 
 .submit-btn {
-  background: var(--brand);
+  background: linear-gradient(135deg, var(--brand), var(--accent-3));
   color: white;
   border: none;
   padding: 12px;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
+  box-shadow: 0 12px 24px rgba(56, 189, 248, 0.25);
 }
 
 .error-message {
@@ -99,3 +102,8 @@
   border-radius: 10px;
   margin-bottom: 16px;
 }
+
+
+
+
+

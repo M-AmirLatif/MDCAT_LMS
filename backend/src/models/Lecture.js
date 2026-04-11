@@ -28,6 +28,10 @@ const lectureSchema = new mongoose.Schema(
       type: Number, // in seconds
       default: 0,
     },
+    order: {
+      type: Number,
+      default: 0,
+    },
     notes: {
       type: String,
       default: null,
@@ -64,5 +68,9 @@ const lectureSchema = new mongoose.Schema(
   },
   { timestamps: true },
 )
+
+// ==================== INDEXES ====================
+lectureSchema.index({ courseId: 1, order: 1 })
+lectureSchema.index({ uploadedBy: 1 })
 
 module.exports = mongoose.model('Lecture', lectureSchema)

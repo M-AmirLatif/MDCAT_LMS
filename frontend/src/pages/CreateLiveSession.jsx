@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
+import RoleTabs from '../components/RoleTabs'
 import './CreateLiveSession.css'
 
 export default function CreateLiveSession() {
@@ -22,7 +23,7 @@ export default function CreateLiveSession() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        if (user?.role === 'admin') {
+        if (user?.role === 'admin' || user?.role === 'superadmin') {
           const res = await API.get('/admin/courses')
           setCourses(res.data.courses || [])
         } else {
@@ -64,6 +65,7 @@ export default function CreateLiveSession() {
         <h1>MDCAT LMS</h1>
         <button onClick={() => navigate(-1)}>Back</button>
       </div>
+      <RoleTabs user={user} />
 
       <div className="create-live-session-container">
         <h2>Schedule Live Session</h2>

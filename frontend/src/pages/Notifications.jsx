@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
+import RoleTabs from '../components/RoleTabs'
 import './Notifications.css'
 
 export default function Notifications() {
@@ -18,7 +19,8 @@ export default function Notifications() {
   const [error, setError] = useState('')
 
   const user = JSON.parse(localStorage.getItem('user') || 'null')
-  const isTeacher = user?.role === 'teacher' || user?.role === 'admin'
+  const isTeacher =
+    user?.role === 'teacher' || user?.role === 'admin' || user?.role === 'superadmin'
 
   const fetchNotifications = async () => {
     try {
@@ -34,7 +36,7 @@ export default function Notifications() {
   const fetchCourses = async () => {
     if (!isTeacher) return
     try {
-      if (user?.role === 'admin') {
+      if (user?.role === 'admin' || user?.role === 'superadmin') {
         const res = await API.get('/admin/courses')
         setCourses(res.data.courses || [])
       } else {
@@ -107,6 +109,7 @@ export default function Notifications() {
         <h1>MDCAT LMS</h1>
         <button onClick={() => navigate('/dashboard')}>Back</button>
       </div>
+      <RoleTabs user={user} />
 
       <div className="notifications-container">
         <h2>Notifications</h2>

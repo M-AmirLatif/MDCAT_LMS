@@ -20,3 +20,5 @@ MERN-based LMS for MDCAT students with courses, lectures, and MCQ testing.
 
 ## Environment
 - Frontend expects `VITE_API_BASE_URL` in `frontend/.env`
+- Backend email verification requires SMTP settings in `backend/.env`
+- If SMTP is not configured and `NODE_ENV` is not `production`, the API will return a `debugOtp` field for local testing.

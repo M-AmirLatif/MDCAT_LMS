@@ -6,9 +6,10 @@
   max-width: 900px;
   margin: 40px auto;
   padding: 0 20px 40px;
-  background: white;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.15);
+  border: 1px solid var(--card-border);
 }
 
 .create-course-container h2 {
@@ -34,7 +35,8 @@
 .form-group select {
   padding: 10px;
   border-radius: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: var(--card-strong);
 }
 
 .form-group input:focus,
@@ -63,13 +65,14 @@
 }
 
 .topic-inputs button {
-  background: var(--brand);
+  background: linear-gradient(135deg, var(--brand), var(--accent-3));
   color: white;
   border: none;
   padding: 10px 14px;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
+  box-shadow: 0 10px 20px rgba(56, 189, 248, 0.2);
 }
 
 .topics-list {
@@ -82,10 +85,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid #eee;
+  border: 1px solid rgba(15, 23, 42, 0.1);
   padding: 10px;
-  border-radius: 6px;
+  border-radius: 10px;
   margin-bottom: 8px;
+  background: var(--card-strong);
 }
 
 .topics-list button {
@@ -98,13 +102,14 @@
 }
 
 .submit-btn {
-  background: var(--brand);
+  background: linear-gradient(135deg, var(--brand), var(--accent-3));
   color: white;
   border: none;
   padding: 12px;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
+  box-shadow: 0 12px 24px rgba(56, 189, 248, 0.25);
 }
 
 .error-message {
@@ -130,3 +135,8 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+
+
+

@@ -22,6 +22,9 @@ exports.protect = async (req, res, next) => {
 // ==================== AUTHORIZE ROLES ====================
 exports.authorize = (...roles) => {
   return (req, res, next) => {
+    if (req.user.role === 'superadmin') {
+      return next()
+    }
     if (!roles.includes(req.user.role)) {
       return res
         .status(403)

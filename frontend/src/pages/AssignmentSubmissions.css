@@ -14,10 +14,11 @@
 }
 
 .submission-card {
-  background: white;
+  background: var(--card);
   padding: 20px;
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+  border: 1px solid var(--card-border);
   display: grid;
   gap: 12px;
 }
@@ -42,17 +43,19 @@
 .grade-form input {
   padding: 10px;
   border-radius: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: var(--card-strong);
 }
 
 .grade-form button {
-  background: var(--brand);
+  background: linear-gradient(135deg, var(--brand), var(--accent-3));
   color: white;
   border: none;
   padding: 10px 12px;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
+  box-shadow: 0 10px 20px rgba(56, 189, 248, 0.22);
 }
 
 .graded {
@@ -74,3 +77,8 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+
+
+

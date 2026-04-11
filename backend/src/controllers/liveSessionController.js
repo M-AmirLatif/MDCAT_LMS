@@ -19,7 +19,8 @@ exports.createLiveSession = async (req, res) => {
 
     if (
       course.createdBy.toString() !== req.user.id &&
-      req.user.role !== 'admin'
+      req.user.role !== 'admin' &&
+      req.user.role !== 'superadmin'
     ) {
       return res
         .status(403)

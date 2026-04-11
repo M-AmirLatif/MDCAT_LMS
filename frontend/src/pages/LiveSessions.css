@@ -17,13 +17,14 @@
 }
 
 .header-row button {
-  background: var(--brand);
+  background: linear-gradient(135deg, var(--brand), var(--accent-3));
   color: white;
   border: none;
   padding: 10px 18px;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
+  box-shadow: 0 12px 24px rgba(56, 189, 248, 0.25);
 }
 
 .session-list {
@@ -32,10 +33,11 @@
 }
 
 .session-card {
-  background: white;
+  background: var(--card);
   padding: 20px;
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+  border: 1px solid var(--card-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -47,11 +49,12 @@
 }
 
 .session-card .actions a {
-  background: var(--brand);
+  background: linear-gradient(135deg, var(--brand), var(--accent-3));
   color: white;
   padding: 10px 16px;
   border-radius: 999px;
   font-weight: 600;
+  box-shadow: 0 10px 20px rgba(56, 189, 248, 0.22);
 }
 
 .error-message {
@@ -70,3 +73,8 @@
     gap: 12px;
   }
 }
+
+
+
+
+

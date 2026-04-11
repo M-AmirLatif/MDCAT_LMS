@@ -18,14 +18,7 @@ const courseSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: [
-        'Biology',
-        'Chemistry',
-        'Physics',
-        'English',
-        'Urdu',
-        'Islamic Studies',
-      ],
+      enum: ['Biology', 'Chemistry', 'Physics', 'English'],
       required: true,
     },
     createdBy: {
@@ -48,6 +41,18 @@ const courseSchema = new mongoose.Schema(
         description: String,
       },
     ],
+    price: {
+      type: Number,
+      default: 0, // 0 means free
+    },
+    isFree: {
+      type: Boolean,
+      default: true,
+    },
+    thumbnail: {
+      type: String,
+      default: null,
+    },
     isPublished: {
       type: Boolean,
       default: false,
@@ -63,5 +68,10 @@ courseSchema.pre('save', function (next) {
   }
   next()
 })
+
+// ==================== INDEXES ====================
+courseSchema.index({ category: 1, isPublished: 1 })
+courseSchema.index({ createdBy: 1 })
+courseSchema.index({ name: 'text', description: 'text' })
 
 module.exports = mongoose.model('Course', courseSchema)

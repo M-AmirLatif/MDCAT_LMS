@@ -1,46 +1,13 @@
 require('dotenv').config()
 const express = require('express')
-const mongoose = require('mongoose')
 const cors = require('cors')
 const path = require('path')
+const helmet = require('helmet')
+const morgan = require('morgan')
+const connectDB = require('./config/db')
 
 // ==================== ROUTES ====================
 const authRoutes = require('./routes/auth')
-
-const app = express()
-
-// ==================== MIDDLEWARES ====================
-app.use(express.json())
-app.use(express.urlencoded({ limit: '10mb', extended: true }))
-app.use(cors())
-
-// Serve uploaded files
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')))
-
-// ==================== DATABASE CONNECTION ====================
-mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log('✅ MongoDB Connected')
-  })
-  .catch((err) => {
-    console.log('❌ MongoDB Connection Error:', err)
-    process.exit(1)
-  })
-
-// ==================== BASIC ROUTES ====================
-app.get('/', (req, res) => {
-  res.json({ message: 'MDCAT LMS API is Running' })
-})
-
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date() })
-})
-
-// ==================== API ROUTES ====================
 const courseRoutes = require('./routes/courses')
 const lectureRoutes = require('./routes/lectures')
 const mcqRoutes = require('./routes/mcqs')
@@ -54,6 +21,52 @@ const uploadRoutes = require('./routes/uploads')
 const NotificationJob = require('./models/NotificationJob')
 const Notification = require('./models/Notification')
 
+const app = express()
+
+// ==================== SECURITY MIDDLEWARES ====================
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }))
+
+// ==================== CORS ====================
+const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173')
+  .split(',')
+  .map((o) => o.trim())
+
+app.use(
+  cors({
+    origin(origin, cb) {
+      // Allow requests with no origin (mobile apps, curl, Postman)
+      if (!origin || allowedOrigins.includes(origin)) return cb(null, true)
+      cb(new Error('Not allowed by CORS'))
+    },
+    credentials: true,
+  }),
+)
+
+// ==================== LOGGING ====================
+if (process.env.NODE_ENV !== 'test') {
+  app.use(morgan('dev'))
+}
+
+// ==================== BODY PARSERS ====================
+app.use(express.json({ limit: '10mb' }))
+app.use(express.urlencoded({ limit: '10mb', extended: true }))
+
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')))
+
+// ==================== DATABASE CONNECTION ====================
+connectDB()
+
+// ==================== BASIC ROUTES ====================
+app.get('/', (req, res) => {
+  res.json({ message: 'MDCAT LMS API is Running' })
+})
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date() })
+})
+
+// ==================== API ROUTES ====================
 app.use('/api/auth', authRoutes)
 app.use('/api/courses', courseRoutes)
 app.use('/api/lectures', lectureRoutes)
@@ -98,10 +111,19 @@ setInterval(async () => {
   }
 }, 30000)
 
+// ==================== 404 HANDLER ====================
+app.use((req, res) => {
+  res.status(404).json({ error: `Route ${req.originalUrl} not found` })
+})
+
 // ==================== ERROR HANDLING ====================
 app.use((err, req, res, next) => {
   console.error('Error:', err)
-  res.status(500).json({ error: err.message })
+  const statusCode = err.statusCode || 500
+  res.status(statusCode).json({
+    error: err.message || 'Server Error',
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+  })
 })
 
 // ==================== START SERVER ====================

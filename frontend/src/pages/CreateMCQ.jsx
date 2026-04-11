@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import API from '../services/api'
+import RoleTabs from '../components/RoleTabs'
 import './CreateMCQ.css'
 
 const defaultOptions = ['', '', '', '']
@@ -25,7 +26,7 @@ export default function CreateMCQ() {
       try {
         if (!user) return
         const res =
-          user.role === 'admin'
+          user.role === 'admin' || user.role === 'superadmin'
             ? await API.get('/admin/courses')
             : await API.get('/courses/teacher/my-courses')
         setCourses(res.data.courses || [])
@@ -93,6 +94,7 @@ export default function CreateMCQ() {
           Back
         </button>
       </div>
+      <RoleTabs user={user} />
 
       <div className="create-mcq-container">
         <h2>Create New MCQ</h2>

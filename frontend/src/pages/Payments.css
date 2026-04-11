@@ -19,33 +19,36 @@
 .payment-form select {
   padding: 10px;
   border-radius: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: var(--card-strong);
 }
 
 .payment-form button {
-  background: var(--brand);
+  background: linear-gradient(135deg, var(--brand), var(--accent-3));
   color: white;
   border: none;
   padding: 10px 14px;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
+  box-shadow: 0 10px 20px rgba(56, 189, 248, 0.22);
 }
 
 .payments-table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
+  background: var(--card);
   border-radius: var(--radius);
   overflow: hidden;
-  box-shadow: var(--shadow);
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+  border: 1px solid var(--card-border);
 }
 
 .payments-table th,
 .payments-table td {
   text-align: left;
   padding: 12px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.35);
 }
 
 .error-message {
@@ -62,3 +65,8 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+
+
+

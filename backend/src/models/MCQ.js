@@ -43,6 +43,19 @@ const mcqSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    difficulty: {
+      type: String,
+      enum: ['easy', 'medium', 'hard'],
+      default: 'medium',
+    },
+    year: {
+      type: Number,
+      default: null, // For past paper MCQs — e.g. 2023
+    },
+    isPastPaper: {
+      type: Boolean,
+      default: false,
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -55,5 +68,10 @@ const mcqSchema = new mongoose.Schema(
   },
   { timestamps: true },
 )
+
+// ==================== INDEXES ====================
+mcqSchema.index({ courseId: 1, topic: 1, isPublished: 1 })
+mcqSchema.index({ courseId: 1, difficulty: 1 })
+mcqSchema.index({ courseId: 1, isPastPaper: 1, year: 1 })
 
 module.exports = mongoose.model('MCQ', mcqSchema)

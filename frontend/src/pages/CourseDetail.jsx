@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import API from '../services/api'
+import RoleTabs from '../components/RoleTabs'
 import './CourseDetail.css'
 
 export default function CourseDetail() {
@@ -10,7 +11,8 @@ export default function CourseDetail() {
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
   const user = JSON.parse(localStorage.getItem('user') || 'null')
-  const isTeacher = user?.role === 'teacher' || user?.role === 'admin'
+  const isTeacher =
+    user?.role === 'teacher' || user?.role === 'admin' || user?.role === 'superadmin'
 
   useEffect(() => {
     fetchCourseAndLectures()
@@ -50,6 +52,7 @@ export default function CourseDetail() {
         <h1>MDCAT LMS</h1>
         <button onClick={() => navigate('/courses')}>Back to Courses</button>
       </div>
+      <RoleTabs user={user} showGuest />
 
       <div className="course-detail-container">
         <div className="course-header">
@@ -98,7 +101,9 @@ export default function CourseDetail() {
               )}
             </div>
           </div>
-        </div>\n<div className="mcq-section">
+        </div>
+
+        <div className="mcq-section">
           <div className="mcq-header">
             <h3>MCQ Tests</h3>
             <div className="mcq-actions">

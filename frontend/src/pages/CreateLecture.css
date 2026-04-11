@@ -3,39 +3,43 @@
 }
 
 .navbar {
-  background: linear-gradient(120deg, var(--brand-dark), var(--brand));
-  color: #f8fafc;
-  padding: 20px 40px;
+  background: var(--glass);
+  border-bottom: 1px solid var(--card-border);
+  color: var(--ink);
+  padding: 18px 36px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: var(--shadow);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  /* backdrop-filter removed for performance */
 }
 
 .navbar h1 {
   margin: 0;
-  font-size: 22px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+  font-size: 20px;
+  text-transform: none;
+  letter-spacing: 0.6px;
 }
 
 .navbar button {
-  background: rgba(248, 250, 252, 0.9);
-  color: var(--brand-dark);
+  background: linear-gradient(135deg, var(--brand), var(--accent-3));
+  color: white;
   border: none;
   padding: 10px 20px;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
+  box-shadow: 0 12px 24px rgba(56, 189, 248, 0.28);
 }
 
 .create-lecture-container {
   max-width: 720px;
   margin: 40px auto;
   padding: 30px;
-  background: white;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.15);
+  border: 1px solid var(--card-border);
 }
 
 .create-lecture-container h2 {
@@ -83,10 +87,11 @@
 .form-group textarea,
 .form-group select {
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid rgba(15, 23, 42, 0.12);
   border-radius: 10px;
   font-size: 14px;
   font-family: inherit;
+  background: var(--card-strong);
 }
 
 .attachment-list {
@@ -102,7 +107,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 10px;
-  border: 1px solid #eee;
+  border: 1px solid rgba(15, 23, 42, 0.1);
   border-radius: 10px;
 }
 
@@ -126,7 +131,7 @@
 
 .submit-btn {
   padding: 12px;
-  background: var(--brand);
+  background: linear-gradient(135deg, var(--brand), var(--accent-3));
   color: white;
   border: none;
   border-radius: 999px;
@@ -135,6 +140,7 @@
   font-weight: 600;
   transition: transform 0.3s ease;
   margin-top: 10px;
+  box-shadow: 0 12px 24px rgba(56, 189, 248, 0.25);
 }
 
 .submit-btn:hover {
@@ -148,8 +154,13 @@
 
 @media (max-width: 860px) {
   .navbar {
-    padding: 16px 20px;
+    padding: 14px 18px;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
   }
 }
+
+
+
+
+
