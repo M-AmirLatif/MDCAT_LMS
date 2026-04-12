@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
-import RoleTabs from '../components/RoleTabs'
 import './Dashboard.css'
 
 export default function Dashboard() {
@@ -51,16 +50,13 @@ export default function Dashboard() {
     fetchData()
   }, [navigate])
 
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    navigate('/login')
-  }
-
   if (loading)
     return (
-      <div className="dashboard">
-        <p>Loading...</p>
+      <div className="page-content">
+        <div className="loading-screen">
+          <div className="spinner" />
+          <p>Loading dashboard...</p>
+        </div>
       </div>
     )
 
@@ -70,140 +66,200 @@ export default function Dashboard() {
     user?.role === 'superadmin'
   const isAdmin = user?.role === 'admin' || user?.role === 'superadmin'
 
+  const subjectColor = (cat) => {
+    const map = {
+      Biology: 'var(--bio-color)',
+      Chemistry: 'var(--chem-color)',
+      Physics: 'var(--phys-color)',
+      English: 'var(--eng-color)',
+    }
+    return map[cat] || 'var(--brand)'
+  }
+
+  const subjectBg = (cat) => {
+    const map = {
+      Biology: 'var(--bio-bg)',
+      Chemistry: 'var(--chem-bg)',
+      Physics: 'var(--phys-bg)',
+      English: 'var(--eng-bg)',
+    }
+    return map[cat] || 'var(--brand-subtle)'
+  }
+
   return (
-    <div className="dashboard">
-      <div className="navbar">
-        <h1>MDCAT LMS</h1>
-        <button onClick={handleLogout}>Logout</button>
+    <div className="page-content">
+      {/* Welcome Banner */}
+      <div className="dash-welcome animate-fade-up">
+        <div className="dash-welcome-text">
+          <p className="dash-eyebrow">Welcome back</p>
+          <h2>
+            {user?.firstName} {user?.lastName} 👋
+          </h2>
+          <p className="dash-welcome-sub">
+            Ready to continue your MDCAT preparation? Let's keep the momentum going.
+          </p>
+        </div>
+        <div className="dash-welcome-actions">
+          <button className="btn btn-primary btn-lg" onClick={() => navigate('/courses')}>
+            Browse Courses
+          </button>
+          <button className="btn btn-secondary" onClick={() => navigate('/performance')}>
+            View Progress
+          </button>
+        </div>
       </div>
-      <RoleTabs user={user} />
 
-      <div className="dashboard-content">
-        <div className="welcome-card">
-          <p className="label">Dashboard</p>
-          <h2>Welcome, {user?.firstName} 👋</h2>
-          <p className="role">Role: {user?.role}</p>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="quick-stats">
-          <div className="quick-stat" onClick={() => navigate('/courses')}>
-            <span className="stat-icon">📚</span>
-            <span className="stat-value">{enrolledCourses.length}</span>
-            <span className="stat-label">Enrolled Courses</span>
+      {/* Quick Stats */}
+      <div className="dash-stats stagger">
+        <div className="dash-stat-card" onClick={() => navigate('/courses')}>
+          <div className="dash-stat-icon" style={{ background: 'var(--brand-subtle)', color: 'var(--brand-light)' }}>
+            📚
           </div>
-          <div className="quick-stat" onClick={() => navigate('/performance')}>
-            <span className="stat-icon">🎯</span>
-            <span className="stat-value">{testSummary?.totalTests || 0}</span>
-            <span className="stat-label">Tests Taken</span>
-          </div>
-          <div className="quick-stat" onClick={() => navigate('/performance')}>
-            <span className="stat-icon">📈</span>
-            <span className="stat-value">{testSummary?.avgPercentage || 0}%</span>
-            <span className="stat-label">Avg Score</span>
-          </div>
-          <div className="quick-stat" onClick={() => navigate('/notifications')}>
-            <span className="stat-icon">🔔</span>
-            <span className="stat-value">{unreadCount}</span>
-            <span className="stat-label">Unread Alerts</span>
+          <div className="dash-stat-info">
+            <span className="dash-stat-value">{enrolledCourses.length}</span>
+            <span className="dash-stat-label">Enrolled Courses</span>
           </div>
         </div>
 
-        {/* Enrolled Courses */}
-        {enrolledCourses.length > 0 && (
-          <div className="enrolled-section">
+        <div className="dash-stat-card" onClick={() => navigate('/performance')}>
+          <div className="dash-stat-icon" style={{ background: 'rgba(139, 92, 246, 0.1)', color: 'var(--accent-light)' }}>
+            🎯
+          </div>
+          <div className="dash-stat-info">
+            <span className="dash-stat-value">{testSummary?.totalTests || 0}</span>
+            <span className="dash-stat-label">Tests Taken</span>
+          </div>
+        </div>
+
+        <div className="dash-stat-card" onClick={() => navigate('/performance')}>
+          <div className="dash-stat-icon" style={{ background: 'var(--success-subtle)', color: 'var(--success)' }}>
+            📈
+          </div>
+          <div className="dash-stat-info">
+            <span className="dash-stat-value">{testSummary?.avgPercentage || 0}%</span>
+            <span className="dash-stat-label">Average Score</span>
+          </div>
+        </div>
+
+        <div className="dash-stat-card" onClick={() => navigate('/notifications')}>
+          <div className="dash-stat-icon" style={{ background: 'var(--warning-subtle)', color: 'var(--warning)' }}>
+            🔔
+          </div>
+          <div className="dash-stat-info">
+            <span className="dash-stat-value">{unreadCount}</span>
+            <span className="dash-stat-label">Unread Alerts</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Enrolled Courses */}
+      {enrolledCourses.length > 0 && (
+        <div className="dash-section animate-fade-up">
+          <div className="dash-section-header">
             <h3>Your Courses</h3>
-            <div className="enrolled-grid">
-              {enrolledCourses.slice(0, 4).map((course) => (
-                <div
-                  key={course._id}
-                  className="enrolled-card"
-                  onClick={() => navigate(`/course/${course._id}`)}
-                >
-                  <span className="enrolled-cat">{course.category}</span>
-                  <h4>{course.name}</h4>
-                  <p className="enrolled-teacher">
-                    {course.createdBy?.firstName} {course.createdBy?.lastName}
-                  </p>
-                </div>
-              ))}
-            </div>
             {enrolledCourses.length > 4 && (
-              <button
-                className="btn btn-ghost"
-                onClick={() => navigate('/courses')}
-                style={{ marginTop: '12px' }}
-              >
-                View all {enrolledCourses.length} courses
+              <button className="btn btn-ghost btn-sm" onClick={() => navigate('/courses')}>
+                View all {enrolledCourses.length}
               </button>
             )}
           </div>
-        )}
-
-        {/* Profile Info */}
-        <div className="user-info">
-          <div className="user-info-header">
-            <h3>Your Profile</h3>
-            <button
-              className="btn btn-secondary"
-              onClick={() => navigate('/profile/edit')}
-            >
-              Edit Profile
-            </button>
+          <div className="dash-courses-grid stagger">
+            {enrolledCourses.slice(0, 4).map((course) => (
+              <div
+                key={course._id}
+                className="dash-course-card card card-interactive"
+                onClick={() => navigate(`/course/${course._id}`)}
+              >
+                <div
+                  className="dash-course-accent"
+                  style={{ background: subjectColor(course.category) }}
+                />
+                <span
+                  className="badge"
+                  style={{
+                    background: subjectBg(course.category),
+                    color: subjectColor(course.category),
+                  }}
+                >
+                  {course.category}
+                </span>
+                <h4>{course.name}</h4>
+                <p className="dash-course-teacher">
+                  {course.createdBy?.firstName} {course.createdBy?.lastName}
+                </p>
+              </div>
+            ))}
           </div>
-          <div className="info-grid">
-            <div>
-              <span>Name</span>
+        </div>
+      )}
+
+      {/* Profile Info */}
+      <div className="dash-section animate-fade-up">
+        <div className="dash-section-header">
+          <h3>Your Profile</h3>
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => navigate('/profile/edit')}
+          >
+            Edit Profile
+          </button>
+        </div>
+        <div className="dash-profile card">
+          <div className="dash-profile-grid">
+            <div className="dash-profile-item">
+              <span className="dash-profile-label">Name</span>
               <p>
                 {user?.firstName} {user?.lastName}
               </p>
             </div>
-            <div>
-              <span>Email</span>
+            <div className="dash-profile-item">
+              <span className="dash-profile-label">Email</span>
               <p>{user?.email}</p>
             </div>
-            <div>
-              <span>Phone</span>
+            <div className="dash-profile-item">
+              <span className="dash-profile-label">Phone</span>
               <p>{user?.phone || 'Not provided'}</p>
             </div>
-            <div>
-              <span>Status</span>
-              <p>{user?.isActive ? 'Active' : 'Inactive'}</p>
+            <div className="dash-profile-item">
+              <span className="dash-profile-label">Status</span>
+              <p className="flex items-center gap-sm">
+                <span className={`status-dot ${user?.isActive ? 'active' : 'inactive'}`} />
+                {user?.isActive ? 'Active' : 'Inactive'}
+              </p>
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="features">
-          <h3>Quick Links</h3>
-          <ul>
-            <li>
-              <a href="/courses">Browse Courses</a>
-            </li>
-            <li>
-              <a href="/performance">View Performance</a>
-            </li>
-            <li>
-              <a href="/notifications">
-                Notifications{unreadCount > 0 ? ` (${unreadCount})` : ''}
-              </a>
-            </li>
-            <li>
-              <a href="/live-sessions">Live Classes</a>
-            </li>
-            <li>
-              <a href="/payments">Payments</a>
-            </li>
-            {isTeacher && (
-              <li>
-                <a href="/teacher/courses">Manage Courses</a>
-              </li>
-            )}
-            {isAdmin && (
-              <li>
-                <a href="/admin">Admin Panel</a>
-              </li>
-            )}
-          </ul>
+      {/* Quick Links */}
+      <div className="dash-section animate-fade-up">
+        <h3>Quick Links</h3>
+        <div className="dash-links stagger">
+          <button className="dash-link-card card card-interactive" onClick={() => navigate('/courses')}>
+            <span>📚</span> Browse Courses
+          </button>
+          <button className="dash-link-card card card-interactive" onClick={() => navigate('/performance')}>
+            <span>📈</span> View Performance
+          </button>
+          <button className="dash-link-card card card-interactive" onClick={() => navigate('/notifications')}>
+            <span>🔔</span> Notifications {unreadCount > 0 ? `(${unreadCount})` : ''}
+          </button>
+          <button className="dash-link-card card card-interactive" onClick={() => navigate('/live-sessions')}>
+            <span>🎥</span> Live Classes
+          </button>
+          <button className="dash-link-card card card-interactive" onClick={() => navigate('/payments')}>
+            <span>💳</span> Payments
+          </button>
+          {isTeacher && (
+            <button className="dash-link-card card card-interactive" onClick={() => navigate('/teacher/courses')}>
+              <span>📝</span> Manage Courses
+            </button>
+          )}
+          {isAdmin && (
+            <button className="dash-link-card card card-interactive" onClick={() => navigate('/admin')}>
+              <span>⚙️</span> Admin Panel
+            </button>
+          )}
         </div>
       </div>
     </div>

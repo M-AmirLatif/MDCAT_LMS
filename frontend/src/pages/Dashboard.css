@@ -1,224 +1,232 @@
-.dashboard {
-  min-height: 100vh;
-}
+/* ═══════════════════════════════════════════════
+   Dashboard — Student/Teacher Home
+   ═══════════════════════════════════════════════ */
 
-.dashboard-content {
-  max-width: 900px;
-  margin: 30px auto;
-  padding: 0 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.welcome-card {
-  background: var(--glass);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius-lg);
-  padding: 32px;
-  /* backdrop-filter removed for performance */
-}
-
-.welcome-card .label {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
-
-.welcome-card h2 {
-  font-size: 28px;
-  margin-bottom: 4px;
-}
-
-.welcome-card .role {
-  color: var(--muted);
-  font-size: 14px;
-  text-transform: capitalize;
-}
-
-/* Quick stats */
-.quick-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 14px;
-}
-
-.quick-stat {
-  background: var(--glass);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius);
-  padding: 20px 16px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.25s;
-  /* backdrop-filter removed for performance */
-}
-
-.quick-stat:hover {
-  border-color: var(--brand);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(56, 189, 248, 0.12);
-}
-
-.quick-stat .stat-icon {
-  display: block;
-  font-size: 28px;
-  margin-bottom: 8px;
-}
-
-.quick-stat .stat-value {
-  display: block;
-  font-family: 'Syne', sans-serif;
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--brand);
-}
-
-.quick-stat .stat-label {
-  display: block;
-  font-size: 12px;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-top: 4px;
-}
-
-/* Enrolled courses */
-.enrolled-section h3 {
-  font-size: 18px;
-  margin-bottom: 14px;
-}
-
-.enrolled-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 14px;
-}
-
-.enrolled-card {
-  background: var(--glass);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius);
-  padding: 20px;
-  cursor: pointer;
-  transition: all 0.25s;
-  /* backdrop-filter removed for performance */
-}
-
-.enrolled-card:hover {
-  border-color: var(--brand);
-  transform: translateY(-2px);
-}
-
-.enrolled-cat {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--brand-dark);
-  font-weight: 600;
-}
-
-.enrolled-card h4 {
-  font-size: 15px;
-  margin: 6px 0 4px;
-  font-family: 'Syne', sans-serif;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.enrolled-teacher {
-  font-size: 12px;
-  color: var(--muted);
-}
-
-/* Profile info */
-.user-info {
-  background: var(--glass);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius-lg);
-  padding: 28px;
-  /* backdrop-filter removed for performance */
-}
-
-.user-info-header {
+/* ── Welcome Banner ── */
+.dash-welcome {
+  background: var(--gradient-hero);
+  border: 1px solid rgba(6, 182, 212, 0.15);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 18px;
+  gap: var(--space-xl);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-xl);
 }
 
-.user-info-header h3 {
-  font-size: 18px;
-  margin: 0;
-}
-
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 18px;
-}
-
-.info-grid > div span {
-  font-size: 11px;
+.dash-eyebrow {
   text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: var(--muted);
+  letter-spacing: 0.15em;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--brand-light);
+  margin-bottom: var(--space-sm);
 }
 
-.info-grid > div p {
+.dash-welcome h2 {
+  font-size: 1.8rem;
+  margin-bottom: var(--space-sm);
+}
+
+.dash-welcome-sub {
+  color: var(--text-muted);
   font-size: 15px;
-  margin-top: 4px;
-  color: var(--ink);
+  max-width: 500px;
 }
 
-/* Quick links */
-.features {
-  background: var(--glass);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius-lg);
-  padding: 28px;
-  /* backdrop-filter removed for performance */
+.dash-welcome-actions {
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
 }
 
-.features h3 {
-  font-size: 18px;
-  margin-bottom: 14px;
-}
-
-.features ul {
-  list-style: none;
+/* ── Stats Grid ── */
+.dash-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
 }
 
-.features li a {
-  display: block;
-  padding: 12px 16px;
-  border-radius: 12px;
-  background: rgba(15, 23, 42, 0.5);
-  border: 1px solid var(--card-border);
-  font-size: 14px;
-  color: var(--ink);
-  transition: all 0.2s;
-  text-align: center;
+.dash-stat-card {
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  cursor: pointer;
+  transition: all var(--transition-base);
 }
 
-.features li a:hover {
-  border-color: var(--brand);
+.dash-stat-card:hover {
+  border-color: var(--surface-border-hover);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
-.features.muted {
-  opacity: 0.6;
+.dash-stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
 }
 
-@media (max-width: 600px) {
-  .quick-stats { grid-template-columns: repeat(2, 1fr); }
-  .enrolled-grid { grid-template-columns: 1fr; }
-  .info-grid { grid-template-columns: 1fr; }
+.dash-stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.dash-stat-value {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.dash-stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ── Section Layout ── */
+.dash-section {
+  margin-bottom: var(--space-xl);
+}
+
+.dash-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.dash-section-header h3 {
+  font-size: 1.1rem;
+}
+
+/* ── Course Cards ── */
+.dash-courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--space-md);
+}
+
+.dash-course-card {
+  position: relative;
+  overflow: hidden;
+  padding-top: calc(var(--space-lg) + 4px);
+}
+
+.dash-course-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+}
+
+.dash-course-card h4 {
+  font-size: 1rem;
+  margin: var(--space-sm) 0 var(--space-xs);
+}
+
+.dash-course-teacher {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ── Profile Card ── */
+.dash-profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+.dash-profile-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.dash-profile-item p {
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+/* ── Quick Links ── */
+.dash-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--space-md);
+}
+
+.dash-link-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  text-align: left;
+  border: none;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+}
+
+.dash-link-card span {
+  font-size: 18px;
+}
+
+.dash-link-card:hover {
+  color: var(--text-primary);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .dash-welcome {
+    padding: var(--space-lg);
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dash-welcome h2 {
+    font-size: 1.4rem;
+  }
+
+  .dash-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .dash-profile-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .dash-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .dash-courses-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dash-links {
+    grid-template-columns: 1fr;
+  }
 }
