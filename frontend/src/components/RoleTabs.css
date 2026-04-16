@@ -1,16 +1,32 @@
 .role-tabs {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 8px;
   padding: 12px;
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   border-bottom: 1px solid var(--surface-border);
+  overflow-x: auto;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+
+.role-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 601px) {
+  .role-tabs {
+    justify-content: center;
+  }
 }
 
 .role-tab {
   padding: 8px 16px;
   border-radius: var(--radius-full);
-  background: var(--bg-primary);
+  background: rgba(255, 255, 255, 0.8);
   color: var(--text-secondary);
   border: 1px solid var(--surface-border);
   font-size: 13px;
@@ -20,14 +36,15 @@
 }
 
 .role-tab:hover {
-  background: var(--surface-hover);
+  background: rgba(79, 70, 229, 0.06);
   color: var(--text-primary);
 }
 
 .role-tab.active {
-  background: var(--brand);
+  background: var(--gradient-brand);
   color: #ffffff;
   border-color: var(--brand);
+  box-shadow: 0 14px 30px rgba(79, 70, 229, 0.18);
 }
 
 .role-tab.locked {
@@ -36,8 +53,4 @@
   text-decoration: line-through;
 }
 
-@media (max-width: 600px) {
-  .role-tabs {
-    flex-wrap: wrap;
-  }
-}
+/* Use overflow approach for mobile, removed flex-wrap: wrap */

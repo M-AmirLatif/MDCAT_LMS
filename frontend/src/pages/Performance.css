@@ -22,13 +22,32 @@
 }
 
 .stat-card {
-  background: var(--surface);
+  background: var(--gradient-card);
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   padding: 24px 20px;
   text-align: center;
   box-shadow: var(--shadow-sm);
   animation: fadeUp 0.5s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 3px;
+  background: var(--gradient-brand);
+  opacity: 0.55;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(79, 70, 229, 0.18);
 }
 
 .stat-card h3 {
@@ -57,7 +76,7 @@
 }
 
 .chart-wrapper {
-  background: var(--surface);
+  background: var(--gradient-card);
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   padding: 24px 12px 12px;

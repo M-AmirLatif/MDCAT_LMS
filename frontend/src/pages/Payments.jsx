@@ -113,7 +113,7 @@ export default function Payments() {
         </form>
 
         {payments.length === 0 ? (
-          <p>No payments yet.</p>
+          <p className="payments-empty">No payments yet.</p>
         ) : (
           <table className="payments-table">
             <thead>

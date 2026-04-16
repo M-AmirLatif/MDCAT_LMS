@@ -170,6 +170,7 @@ export default function Sidebar({ isOpen, onClose, currentPath }) {
                     onClick={() => handleNav(item.path)}
                     type="button"
                   >
+                    <span className="sidebar-item-indicator" aria-hidden="true" />
                     <span className="sidebar-item-icon">{item.icon}</span>
                     <span className="sidebar-item-label">{item.label}</span>
                   </button>
@@ -186,6 +187,7 @@ export default function Sidebar({ isOpen, onClose, currentPath }) {
           onClick={() => handleNav('/profile/edit')}
           type="button"
         >
+          <span className="sidebar-item-indicator" aria-hidden="true" />
           <span className="sidebar-item-icon">{ICONS.profile}</span>
           <span className="sidebar-item-label">Edit Profile</span>
         </button>
@@ -194,6 +196,7 @@ export default function Sidebar({ isOpen, onClose, currentPath }) {
           onClick={handleLogout}
           type="button"
         >
+          <span className="sidebar-item-indicator" aria-hidden="true" />
           <span className="sidebar-item-icon">{ICONS.logout}</span>
           <span className="sidebar-item-label">Logout</span>
         </button>

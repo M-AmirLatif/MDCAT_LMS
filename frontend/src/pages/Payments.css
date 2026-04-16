@@ -8,6 +8,14 @@
   padding: 0 20px;
 }
 
+.payments-container h2 {
+  margin-bottom: 12px;
+}
+
+.payments-empty {
+  margin-top: 18px;
+}
+
 .payment-form {
   display: grid;
   grid-template-columns: 1fr 160px 120px auto;

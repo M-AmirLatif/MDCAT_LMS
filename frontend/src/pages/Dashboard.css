@@ -292,11 +292,30 @@
 
 .icon-btn {
   cursor: pointer;
-  color: var(--text-muted);
-  font-weight: bold;
+  color: var(--brand);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  background: rgba(79, 70, 229, 0.06);
+  border: 1px solid rgba(79, 70, 229, 0.22);
+  padding: 6px 10px;
+  border-radius: var(--radius-full);
+  transition: background var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
 }
 .icon-btn:hover {
-  color: var(--text-primary);
+  background: rgba(79, 70, 229, 0.1);
+  border-color: rgba(79, 70, 229, 0.32);
+  transform: translateY(-1px);
+  color: var(--brand-dark);
+}
+
+.icon-btn:active {
+  transform: translateY(0px);
+}
+
+.icon-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.14);
 }
 
 /* Todo / Actions */

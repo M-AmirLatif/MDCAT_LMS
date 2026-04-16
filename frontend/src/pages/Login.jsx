@@ -3,7 +3,10 @@ import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import API from '../services/api'
 import { useAuth } from '../context/AuthContext'
-import { getRememberedCredentials, setRememberedCredentials } from '../services/authStorage'
+import {
+  clearRememberedCredentials,
+  setRememberedCredentials,
+} from '../services/authStorage'
 import './Auth.css'
 
 export default function Login() {
@@ -12,7 +15,8 @@ export default function Login() {
     email: '',
     password: '',
   })
-  const [remember, setRemember] = useState(true)
+  const [remember, setRemember] = useState(false)
+  const [autofillGuard, setAutofillGuard] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [needsVerification, setNeedsVerification] = useState(false)
@@ -24,6 +28,7 @@ export default function Login() {
   const { login: storeLogin } = useAuth()
   const requestedRole = searchParams.get('role')
   const nextPath = searchParams.get('next')
+  const allowGoogle = !requestedRole || requestedRole === 'student'
   const googleBtnRef = useRef(null)
   const googleInitRef = useRef(false)
   const emailRef = useRef(null)
@@ -37,11 +42,17 @@ export default function Login() {
   }
 
   useEffect(() => {
-    const { email } = getRememberedCredentials()
-    if (email) {
-      setFormData((p) => ({ ...p, email }))
-      setRemember(!!localStorage.getItem('remember_email'))
-    }
+    setRemember(!!localStorage.getItem('remember_email'))
+  }, [])
+
+  useEffect(() => {
+    // Some browsers autofill even on controlled inputs; force-clear after mount.
+    const timer = setTimeout(() => {
+      setFormData({ email: '', password: '' })
+      if (emailRef.current) emailRef.current.value = ''
+      if (passwordRef.current) passwordRef.current.value = ''
+    }, 0)
+    return () => clearTimeout(timer)
   }, [])
 
   useEffect(() => {
@@ -71,15 +82,18 @@ export default function Login() {
             const res = await API.post('/auth/google', { credential })
             storeLogin(res.data.token, res.data.user, remember)
             if (remember) {
-              setRememberedCredentials({
-                email: res.data.user?.email || '',
-                remember,
-              })
+              setRememberedCredentials({ email: res.data.user?.email || '', remember })
+            } else {
+              clearRememberedCredentials()
             }
             navigate(nextPath || '/dashboard')
           } catch (e) {
             const msg = e.response?.data?.error || 'Google login failed'
-            toast.error(msg)
+            if (String(msg).toLowerCase().includes('not configured')) {
+              toast.error('Google login not configured on server (set GOOGLE_CLIENT_ID in backend/.env).')
+            } else {
+              toast.error(msg)
+            }
           }
         },
       })
@@ -100,8 +114,15 @@ export default function Login() {
     return () => script.removeEventListener('load', onReady)
   }, [navigate, nextPath, remember, storeLogin])
 
+  const unlockAutofill = (e) => {
+    if (!autofillGuard) return
+    setAutofillGuard(false)
+    if (e?.currentTarget) e.currentTarget.readOnly = false
+  }
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+    const key = e.target.name === 'username' ? 'email' : e.target.name
+    setFormData({ ...formData, [key]: e.target.value })
   }
 
   const handleSubmit = async (e) => {
@@ -114,12 +135,13 @@ export default function Login() {
     try {
       const email = emailRef.current?.value || formData.email
       const password = passwordRef.current?.value || formData.password
-      const res = await API.post('/auth/login', { email, password })
+              const res = await API.post('/auth/login', { email, password })
       storeLogin(res.data.token, res.data.user, remember)
-      setRememberedCredentials({
-        email,
-        remember,
-      })
+      if (remember) {
+        setRememberedCredentials({ email, remember })
+      } else {
+        clearRememberedCredentials()
+      }
       if (nextPath) {
         navigate(nextPath)
       } else {
@@ -206,23 +228,26 @@ export default function Login() {
                 <input
                   id="email"
                   type="email"
-                  name="email"
+                  name="username"
                   placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleChange}
                   onInput={handleChange}
                   ref={emailRef}
                   required
-                  autoComplete="email"
+                  autoComplete="username"
                   autoCapitalize="none"
                   autoCorrect="off"
                   inputMode="email"
+                  readOnly={autofillGuard}
+                  onPointerDown={unlockAutofill}
+                  onFocus={unlockAutofill}
                 />
               </div>
 
               <div className="field">
                 <label htmlFor="password">Password</label>
-                <div className="input-with-button">
+                <div className="input-with-icon">
                   <input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
@@ -234,14 +259,72 @@ export default function Login() {
                     ref={passwordRef}
                     required
                     autoComplete="current-password"
+                    readOnly={autofillGuard}
+                    onPointerDown={unlockAutofill}
+                    onFocus={unlockAutofill}
                   />
                   <button
                     type="button"
-                    className="input-action"
+                    className="input-icon-btn"
                     onClick={() => setShowPassword((v) => !v)}
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
-                    {showPassword ? 'Hide' : 'Show'}
+                    {showPassword ? (
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M3 3l18 18"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                        <path
+                          d="M10.6 10.6a3 3 0 004.24 4.24"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                        <path
+                          d="M9.88 5.08A10.46 10.46 0 0112 4.75c7.5 0 10.5 7.25 10.5 7.25a17.23 17.23 0 01-3.41 4.66"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                        <path
+                          d="M6.11 6.11C3.36 8.2 1.5 12 1.5 12S4.5 19.25 12 19.25c1.6 0 3.02-.33 4.27-.87"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                    ) : (
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M1.5 12S4.5 4.75 12 4.75 22.5 12 22.5 12 19.5 19.25 12 19.25 1.5 12 1.5 12Z"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M12 15.25a3.25 3.25 0 100-6.5 3.25 3.25 0 000 6.5Z"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        />
+                      </svg>
+                    )}
                   </button>
                 </div>
               </div>
@@ -305,24 +388,26 @@ export default function Login() {
                 {loading ? 'Signing in...' : 'Sign in'}
               </button>
 
-              <div className="google-wrap">
-                {import.meta.env.VITE_GOOGLE_CLIENT_ID ? (
-                  <div ref={googleBtnRef} />
-                ) : (
-                  <button
-                    className="auth-secondary"
-                    type="button"
-                    onClick={() =>
-                      toast.error(
-                        'Missing VITE_GOOGLE_CLIENT_ID (Google login not configured).',
-                      )
-                    }
-                  >
-                    <span className="google-dot" aria-hidden="true" />
-                    Sign in with Google
-                  </button>
-                )}
-              </div>
+              {allowGoogle && (
+                <div className="google-wrap">
+                  {import.meta.env.VITE_GOOGLE_CLIENT_ID ? (
+                    <div ref={googleBtnRef} />
+                  ) : (
+                    <button
+                      className="auth-secondary"
+                      type="button"
+                      onClick={() =>
+                        toast.error(
+                          'Missing VITE_GOOGLE_CLIENT_ID (Google login not configured).',
+                        )
+                      }
+                    >
+                      <span className="google-dot" aria-hidden="true" />
+                      Continue with Google
+                    </button>
+                  )}
+                </div>
+              )}
 
               <p className="auth-footer">
                 Don’t have an account? <Link to="/register">Sign up</Link>

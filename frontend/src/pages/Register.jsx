@@ -12,10 +12,12 @@ export default function Register() {
     email: '',
     password: '',
   })
+  const [autofillGuard, setAutofillGuard] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [otpSent, setOtpSent] = useState(false)
   const [otp, setOtp] = useState('')
+  const [debugOtp, setDebugOtp] = useState('')
   const [otpLoading, setOtpLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
@@ -24,6 +26,12 @@ export default function Register() {
   const googleInitRef = useRef(false)
   const emailRef = useRef(null)
   const passwordRef = useRef(null)
+
+  const unlockAutofill = (e) => {
+    if (!autofillGuard) return
+    setAutofillGuard(false)
+    if (e?.currentTarget) e.currentTarget.readOnly = false
+  }
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -58,7 +66,11 @@ export default function Register() {
             navigate('/dashboard')
           } catch (e) {
             const msg = e.response?.data?.error || 'Google sign-up failed'
-            toast.error(msg)
+            if (String(msg).toLowerCase().includes('not configured')) {
+              toast.error('Google login not configured on server (set GOOGLE_CLIENT_ID in backend/.env).')
+            } else {
+              toast.error(msg)
+            }
           }
         },
       })
@@ -85,6 +97,7 @@ export default function Register() {
     setError('')
     setOtpSent(false)
     setOtp('')
+    setDebugOtp('')
 
     const email = (emailRef.current?.value || formData.email).trim().toLowerCase()
     const isGmail =
@@ -96,17 +109,43 @@ export default function Register() {
     }
 
     try {
-      await API.post('/auth/register', {
+      const res = await API.post('/auth/register', {
         ...formData,
         email,
         password: passwordRef.current?.value || formData.password,
       })
       setOtpSent(true)
+      if (res.data?.debugOtp) {
+        setDebugOtp(String(res.data.debugOtp))
+        setOtp(String(res.data.debugOtp))
+      }
       toast.success('OTP sent to your email')
     } catch (err) {
       setError(err.response?.data?.error || 'Registration failed')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleResendOtp = async () => {
+    const email = (emailRef.current?.value || formData.email).trim().toLowerCase()
+    if (!email) {
+      toast.error('Enter your email first')
+      return
+    }
+
+    setOtpLoading(true)
+    try {
+      const res = await API.post('/auth/resend-otp', { email })
+      if (res.data?.debugOtp) {
+        setDebugOtp(String(res.data.debugOtp))
+        setOtp(String(res.data.debugOtp))
+      }
+      toast.success('OTP resent')
+    } catch (e) {
+      toast.error(e.response?.data?.error || 'Failed to resend OTP')
+    } finally {
+      setOtpLoading(false)
     }
   }
 
@@ -120,8 +159,15 @@ export default function Register() {
     setOtpLoading(true)
     try {
       await API.post('/auth/verify-email', { email, otp: otp.trim() })
-      toast.success('Email verified. You can log in now.')
-      navigate('/login')
+      toast.success('Email verified. Signing you in...')
+      try {
+        const password = passwordRef.current?.value || formData.password
+        const loginRes = await API.post('/auth/login', { email, password })
+        storeLogin(loginRes.data.token, loginRes.data.user, true)
+        navigate('/dashboard')
+      } catch {
+        navigate('/login')
+      }
     } catch (e) {
       toast.error(e.response?.data?.error || 'OTP verification failed')
     } finally {
@@ -141,20 +187,20 @@ export default function Register() {
           <div className="auth-card">
             <h1 className="auth-title">Sign up</h1>
             <p className="auth-subtitle">Create your student account to start learning.</p>
-            <p className="auth-hint">
-              Teachers/Admins are added by the super admin. Use a Gmail address to receive OTP.
-            </p>
 
-            <div className="staff-strip" aria-label="Staff access">
-              <Link to="/login?role=teacher" className="chip">
-                Teacher Login
-              </Link>
-              <Link to="/login?role=admin" className="chip">
-                Admin Login
-              </Link>
-              <Link to="/login?role=superadmin" className="chip">
-                Super Admin Login
-              </Link>
+            <div className="staff-cta" aria-label="Staff login shortcuts">
+              <div className="staff-cta-title">Staff login</div>
+              <div className="staff-cta-grid">
+                <Link to="/login?role=teacher" className="staff-cta-btn">
+                  Teacher Login
+                </Link>
+                <Link to="/login?role=admin" className="staff-cta-btn">
+                  Admin Login
+                </Link>
+                <Link to="/login?role=superadmin" className="staff-cta-btn">
+                  Super Admin Login
+                </Link>
+              </div>
             </div>
 
             {error && <p className="error-message">{error}</p>}
@@ -205,12 +251,15 @@ export default function Register() {
                   autoCapitalize="none"
                   autoCorrect="off"
                   inputMode="email"
+                  readOnly={autofillGuard}
+                  onPointerDown={unlockAutofill}
+                  onFocus={unlockAutofill}
                 />
               </div>
 
               <div className="field">
                 <label htmlFor="regPassword">Password</label>
-                <div className="input-with-button">
+                <div className="input-with-icon">
                   <input
                     id="regPassword"
                     type={showPassword ? 'text' : 'password'}
@@ -222,20 +271,93 @@ export default function Register() {
                     ref={passwordRef}
                     required
                     autoComplete="new-password"
+                    readOnly={autofillGuard}
+                    onPointerDown={unlockAutofill}
+                    onFocus={unlockAutofill}
                   />
                   <button
                     type="button"
-                    className="input-action"
+                    className="input-icon-btn"
                     onClick={() => setShowPassword((v) => !v)}
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
-                    {showPassword ? 'Hide' : 'Show'}
+                    {showPassword ? (
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M3 3l18 18"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                        <path
+                          d="M10.6 10.6a3 3 0 004.24 4.24"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                        <path
+                          d="M9.88 5.08A10.46 10.46 0 0112 4.75c7.5 0 10.5 7.25 10.5 7.25a17.23 17.23 0 01-3.41 4.66"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                        <path
+                          d="M6.11 6.11C3.36 8.2 1.5 12 1.5 12S4.5 19.25 12 19.25c1.6 0 3.02-.33 4.27-.87"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                    ) : (
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M1.5 12S4.5 4.75 12 4.75 22.5 12 22.5 12 19.5 19.25 12 19.25 1.5 12 1.5 12Z"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M12 15.25a3.25 3.25 0 100-6.5 3.25 3.25 0 000 6.5Z"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        />
+                      </svg>
+                    )}
                   </button>
                 </div>
               </div>
 
               {otpSent && (
                 <div className="otp-inline">
+                  {debugOtp && (
+                    <p className="debug-otp">
+                      Debug OTP (dev): <strong>{debugOtp}</strong>
+                    </p>
+                  )}
+                  <div className="otp-row">
+                    <button
+                      type="button"
+                      className="auth-secondary"
+                      onClick={handleResendOtp}
+                      disabled={otpLoading}
+                    >
+                      {otpLoading ? 'Resending...' : 'Resend OTP'}
+                    </button>
+                  </div>
                   <div className="field">
                     <label htmlFor="otp">OTP</label>
                     <div className="input-with-button">
@@ -259,26 +381,6 @@ export default function Register() {
                     </div>
                   </div>
 
-                  <button
-                    type="button"
-                    className="auth-secondary"
-                    onClick={async () => {
-                      const email = (emailRef.current?.value || formData.email).trim()
-                      if (!email) return toast.error('Enter your email first')
-                      setOtpLoading(true)
-                      try {
-                        await API.post('/auth/resend-otp', { email })
-                        toast.success('OTP resent')
-                      } catch (e) {
-                        toast.error(e.response?.data?.error || 'Failed to resend OTP')
-                      } finally {
-                        setOtpLoading(false)
-                      }
-                    }}
-                    disabled={otpLoading}
-                  >
-                    Resend OTP
-                  </button>
                 </div>
               )}
 
@@ -298,7 +400,7 @@ export default function Register() {
                     }
                   >
                     <span className="google-dot" aria-hidden="true" />
-                    Sign up with Google
+                    Continue with Google
                   </button>
                 )}
               </div>

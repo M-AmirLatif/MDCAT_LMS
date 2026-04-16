@@ -16,7 +16,7 @@
 }
 
 .header-row button {
-  background: linear-gradient(135deg, var(--brand), var(--accent-3));
+  background: var(--gradient-brand);
   color: white;
   border: none;
   padding: 10px 16px;
@@ -24,7 +24,7 @@
   cursor: pointer;
   font-weight: 600;
   transition: transform 0.3s ease;
-  box-shadow: 0 12px 24px rgba(56, 189, 248, 0.25);
+  box-shadow: var(--shadow-brand);
 }
 
 .header-row button:hover {
@@ -38,15 +38,21 @@
 }
 
 .course-card {
-  background: var(--card);
+  background: var(--gradient-card);
   padding: 18px;
   border-radius: var(--radius);
-  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
-  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--surface-border);
   display: flex;
   flex-direction: column;
   gap: 8px;
   min-height: 220px;
+}
+
+.course-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(79, 70, 229, 0.18);
 }
 
 .course-card h3 {
@@ -97,17 +103,17 @@
   padding: 8px 10px;
   border-radius: 999px;
   cursor: pointer;
-  background: linear-gradient(135deg, var(--brand), var(--accent-3));
+  background: var(--gradient-brand);
   color: white;
   font-weight: 600;
-  box-shadow: 0 10px 20px rgba(56, 189, 248, 0.2);
+  box-shadow: var(--shadow-brand);
 }
 
 .actions .edit-btn {
-  background: rgba(56, 189, 248, 0.12);
+  background: rgba(79, 70, 229, 0.08);
   color: var(--brand-dark);
   box-shadow: none;
-  border: 1px solid rgba(56, 189, 248, 0.25);
+  border: 1px solid rgba(79, 70, 229, 0.22);
 }
 
 .error-message {

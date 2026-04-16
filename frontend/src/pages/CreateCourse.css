@@ -8,7 +8,7 @@
   padding: 0 20px 40px;
   background: var(--card);
   border-radius: var(--radius-lg);
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.15);
+  box-shadow: var(--shadow-lg);
   border: 1px solid var(--card-border);
 }
 
@@ -44,7 +44,7 @@
 .form-group select:focus {
   outline: none;
   border-color: var(--brand);
-  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
 }
 
 .form-group.checkbox {
@@ -65,14 +65,14 @@
 }
 
 .topic-inputs button {
-  background: linear-gradient(135deg, var(--brand), var(--accent-3));
+  background: var(--gradient-brand);
   color: white;
   border: none;
   padding: 10px 14px;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
-  box-shadow: 0 10px 20px rgba(56, 189, 248, 0.2);
+  box-shadow: var(--shadow-brand);
 }
 
 .topics-list {
@@ -102,14 +102,14 @@
 }
 
 .submit-btn {
-  background: linear-gradient(135deg, var(--brand), var(--accent-3));
+  background: var(--gradient-brand);
   color: white;
   border: none;
   padding: 12px;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
-  box-shadow: 0 12px 24px rgba(56, 189, 248, 0.25);
+  box-shadow: var(--shadow-brand);
 }
 
 .error-message {

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
 import RoleTabs from '../components/RoleTabs'
 import { getAuthUser } from '../services/authStorage'
+import toast, { Toaster } from 'react-hot-toast'
 import './Notifications.css'
 
 export default function Notifications() {
@@ -67,33 +68,44 @@ export default function Notifications() {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const sendBroadcast = async () => {
+  const handleSend = async () => {
+    if (!formData.title.trim() || !formData.message.trim()) {
+      toast.error('Title and message are required')
+      return;
+    }
+    
     try {
-      await API.post('/notifications/broadcast', {
-        title: formData.title,
-        message: formData.message,
-        type: formData.type,
-        courseId: formData.courseId || undefined,
-      })
-      setFormData({ ...formData, title: '', message: '' })
+      if (formData.sendAt) {
+        // Schedule it
+        await API.post('/notifications/schedule', {
+          title: formData.title,
+          message: formData.message,
+          type: formData.type,
+          courseId: formData.courseId || undefined,
+          sendAt: formData.sendAt,
+        })
+        toast.success('Announcement scheduled successfully!')
+      } else {
+        // Send now
+        const res = await API.post('/notifications/broadcast', {
+          title: formData.title,
+          message: formData.message,
+          type: formData.type,
+          courseId: formData.courseId || undefined,
+        })
+        
+        if (res.data.count === 0) {
+           toast.success('Broadcast recorded, but 0 students currently enrolled')
+        } else {
+           toast.success(`Announcement sent to ${res.data.count} student(s)!`)
+        }
+      }
+      
+      setFormData({ ...formData, title: '', message: '', sendAt: '' })
       fetchNotifications()
     } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to send notification')
       setError(err.response?.data?.error || 'Failed to send notification')
-    }
-  }
-
-  const scheduleBroadcast = async () => {
-    try {
-      await API.post('/notifications/schedule', {
-        title: formData.title,
-        message: formData.message,
-        type: formData.type,
-        courseId: formData.courseId || undefined,
-        sendAt: formData.sendAt,
-      })
-      setFormData({ ...formData, title: '', message: '' })
-    } catch (err) {
-      setError(err.response?.data?.error || 'Failed to schedule notification')
     }
   }
 
@@ -105,7 +117,8 @@ export default function Notifications() {
     )
 
   return (
-    <div className="notifications">
+    <div className="notifications page-content">
+      <Toaster position="top-right" />
       <div className="navbar">
         <h1>MDCAT LMS</h1>
         <button onClick={() => navigate('/dashboard')}>Back</button>
@@ -155,8 +168,13 @@ export default function Notifications() {
               />
             </div>
             <div className="broadcast-actions">
-              <button onClick={sendBroadcast}>Send Now</button>
-              <button onClick={scheduleBroadcast}>Schedule</button>
+              <button 
+                onClick={handleSend} 
+                className="btn btn-primary"
+                style={{ width: '100%', padding: '12px' }}
+              >
+                {formData.sendAt ? 'Schedule Announcement' : 'Send Now'}
+              </button>
             </div>
           </div>
         )}

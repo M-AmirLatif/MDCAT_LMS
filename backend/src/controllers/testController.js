@@ -1,6 +1,19 @@
 const MCQ = require('../models/MCQ')
 const TestSession = require('../models/TestSession')
+const Course = require('../models/Course')
 const mongoose = require('mongoose')
+
+const buildTestFilter = async (req) => {
+  const role = req.user.role?.name || ''
+  if (role === 'teacher') {
+    const courses = await Course.find({ createdBy: req.user.id }).select('_id')
+    const courseIds = courses.map(c => c._id)
+    return { courseId: { $in: courseIds } }
+  } else if (role === 'admin' || role === 'superadmin') {
+    return {}
+  }
+  return { studentId: new mongoose.Types.ObjectId(req.user.id) }
+}
 
 const normalizeIndex = (value) => {
   const index = Number(value)
@@ -117,9 +130,14 @@ exports.submitTest = async (req, res) => {
 // ==================== GET MY TEST HISTORY ====================
 exports.getMyTestHistory = async (req, res) => {
   try {
-    const filter = { studentId: req.user.id }
+    const filter = await buildTestFilter(req)
     if (req.query.courseId && mongoose.Types.ObjectId.isValid(req.query.courseId)) {
-      filter.courseId = req.query.courseId
+      if (!filter.courseId) {
+        filter.courseId = req.query.courseId
+      } else {
+        // Intersect courseIds if teacher is filtering
+        filter.courseId = req.query.courseId
+      }
     }
 
     const page = Math.max(1, parseInt(req.query.page, 10) || 1)
@@ -129,7 +147,7 @@ exports.getMyTestHistory = async (req, res) => {
       TestSession.countDocuments(filter),
       TestSession.find(filter)
         .populate('courseId', 'name category')
-        .select('courseId score negativeScore finalScore totalQuestions percentage topic submittedAt timeSpentSeconds')
+        .select('courseId studentId score negativeScore finalScore totalQuestions percentage topic submittedAt timeSpentSeconds')
         .sort({ submittedAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit),
@@ -149,7 +167,7 @@ exports.getMyTestHistory = async (req, res) => {
 // ==================== GET MY TEST SUMMARY ====================
 exports.getMyTestSummary = async (req, res) => {
   try {
-    const match = { studentId: new mongoose.Types.ObjectId(req.user.id) }
+    const match = await buildTestFilter(req)
     if (req.query.courseId && mongoose.Types.ObjectId.isValid(req.query.courseId)) {
       match.courseId = new mongoose.Types.ObjectId(req.query.courseId)
     }
@@ -227,7 +245,7 @@ exports.getTestDetail = async (req, res) => {
 // ==================== GET SUBJECT-WISE PERFORMANCE ====================
 exports.getSubjectWisePerformance = async (req, res) => {
   try {
-    const match = { studentId: new mongoose.Types.ObjectId(req.user.id) }
+    const match = await buildTestFilter(req)
 
     const data = await TestSession.aggregate([
       { $match: match },

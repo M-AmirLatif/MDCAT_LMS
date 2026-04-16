@@ -97,8 +97,12 @@ exports.broadcastNotification = async (req, res) => {
 
     const recipients = await resolveRecipients({ courseId, role })
 
-    if (!recipients.length) {
-      return res.status(400).json({ error: 'No recipients found' })
+    if (recipients.length === 0) {
+      return res.status(201).json({
+        success: true,
+        message: 'Broadcast sent (0 recipients currently enrolled)',
+        count: 0,
+      })
     }
 
     const docs = recipients.map((recipientId) => ({
@@ -112,7 +116,7 @@ exports.broadcastNotification = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'Broadcast sent',
+      message: 'Broadcast sent successfully',
       count: docs.length,
     })
   } catch (error) {
@@ -132,10 +136,6 @@ exports.scheduleNotification = async (req, res) => {
     }
 
     const recipients = await resolveRecipients({ courseId, role })
-
-    if (!recipients.length) {
-      return res.status(400).json({ error: 'No recipients found' })
-    }
 
     const job = await NotificationJob.create({
       createdBy: req.user.id,

@@ -45,6 +45,14 @@ const isGmailAddress = (value) => {
   return value.endsWith('@gmail.com') || value.endsWith('@googlemail.com')
 }
 
+const shouldReturnDebugOtp = (error) => {
+  if (!isDev) return false
+  const message = String(error?.message || '').toLowerCase()
+  // If email isn't configured locally, let the flow proceed with a debug OTP.
+  if (message.includes('email service not configured')) return true
+  return allowDebugOtp
+}
+
 // ==================== REGISTER ====================
 exports.register = async (req, res) => {
   try {
@@ -98,7 +106,7 @@ exports.register = async (req, res) => {
             otp,
           })
         } catch (mailError) {
-          if (isDev) {
+          if (shouldReturnDebugOtp(mailError)) {
             return res.status(200).json({
               success: true,
               message:
@@ -155,7 +163,7 @@ exports.register = async (req, res) => {
         email: user.email,
       })
     } catch (mailError) {
-      if (allowDebugOtp) {
+      if (shouldReturnDebugOtp(mailError)) {
         return res.status(201).json({
           success: true,
           message:
@@ -399,7 +407,7 @@ exports.resendOtp = async (req, res) => {
         email: user.email,
       })
     } catch (mailError) {
-      if (allowDebugOtp) {
+      if (shouldReturnDebugOtp(mailError)) {
         return res.status(200).json({
           success: true,
           message:
@@ -454,7 +462,7 @@ exports.forgotPassword = async (req, res) => {
         email: user.email,
       })
     } catch (mailError) {
-      if (allowDebugOtp) {
+      if (shouldReturnDebugOtp(mailError)) {
         return res.status(200).json({
           success: true,
           message: 'OTP generated (email not configured). Use debug OTP.',

@@ -117,12 +117,19 @@ export default function AdminDashboard() {
       <RoleTabs user={currentUser} />
 
       <div className="admin-container">
-        <h2>Admin Panel</h2>
+        <div className="admin-header">
+          <div>
+            <h2>Admin Panel</h2>
+            <p className="admin-subtitle">Manage staff, users, and courses.</p>
+          </div>
+        </div>
         {error && <p className="error-message">{error}</p>}
         {success && <p className="success-message">{success}</p>}
 
-        <div className="section">
-          <h3>Create Staff Account</h3>
+        <div className="section section--create">
+          <div className="section-head">
+            <h3>Create Staff Account</h3>
+          </div>
           <p className="helper-text">
             Students sign up themselves with Gmail OTP. Staff accounts use
             internal emails and are auto-verified.
@@ -174,7 +181,9 @@ export default function AdminDashboard() {
         </div>
 
         <div className="section">
-          <h3>Users</h3>
+          <div className="section-head">
+            <h3>Users</h3>
+          </div>
           <div className="table-wrapper">
             <table className="admin-table">
               <thead>
@@ -214,7 +223,15 @@ export default function AdminDashboard() {
                           </select>
                         )}
                       </td>
-                      <td>{user.isActive ? 'Active' : 'Inactive'}</td>
+                      <td>
+                        <span
+                          className={
+                            user.isActive ? 'status status--active' : 'status status--inactive'
+                          }
+                        >
+                          {user.isActive ? 'Active' : 'Inactive'}
+                        </span>
+                      </td>
                       <td>
                         <button
                           onClick={() => toggleUserStatus(user)}
@@ -232,7 +249,9 @@ export default function AdminDashboard() {
         </div>
 
         <div className="section">
-          <h3>Courses</h3>
+          <div className="section-head">
+            <h3>Courses</h3>
+          </div>
           <div className="table-wrapper">
             <table className="admin-table">
               <thead>
@@ -254,7 +273,17 @@ export default function AdminDashboard() {
                       {course.createdBy?.firstName} {course.createdBy?.lastName}
                     </td>
                     <td>{course.enrolledCount || 0}</td>
-                    <td>{course.isPublished ? 'Published' : 'Draft'}</td>
+                    <td>
+                      <span
+                        className={
+                          course.isPublished
+                            ? 'status status--active'
+                            : 'status status--neutral'
+                        }
+                      >
+                        {course.isPublished ? 'Published' : 'Draft'}
+                      </span>
+                    </td>
                     <td>
                       <button onClick={() => toggleCoursePublish(course)}>
                         {course.isPublished ? 'Unpublish' : 'Publish'}

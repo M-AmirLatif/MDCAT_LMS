@@ -17,14 +17,14 @@
 }
 
 .header-row button {
-  background: linear-gradient(135deg, var(--brand), var(--accent-3));
+  background: var(--gradient-brand);
   color: white;
   border: none;
   padding: 10px 18px;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
-  box-shadow: 0 12px 24px rgba(56, 189, 248, 0.25);
+  box-shadow: var(--shadow-brand);
 }
 
 .session-list {
@@ -33,14 +33,20 @@
 }
 
 .session-card {
-  background: var(--card);
+  background: var(--gradient-card);
   padding: 20px;
   border-radius: var(--radius);
-  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
-  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--surface-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.session-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(79, 70, 229, 0.18);
 }
 
 .session-card .meta {
@@ -49,12 +55,12 @@
 }
 
 .session-card .actions a {
-  background: linear-gradient(135deg, var(--brand), var(--accent-3));
+  background: var(--gradient-brand);
   color: white;
   padding: 10px 16px;
   border-radius: 999px;
   font-weight: 600;
-  box-shadow: 0 10px 20px rgba(56, 189, 248, 0.22);
+  box-shadow: var(--shadow-brand);
 }
 
 .error-message {
