@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
 import RoleTabs from '../components/RoleTabs'
+import { getAuthUser } from '../services/authStorage'
 import './CreateCourse.css'
 
 export default function CreateCourse() {
@@ -18,7 +19,7 @@ export default function CreateCourse() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const user = JSON.parse(localStorage.getItem('user') || 'null')
+  const user = getAuthUser()
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target

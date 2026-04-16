@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import API from '../services/api'
 import RoleTabs from '../components/RoleTabs'
+import { getAuthUser } from '../services/authStorage'
 import './LecturePlayer.css'
 
 export default function LecturePlayer() {
@@ -9,7 +10,7 @@ export default function LecturePlayer() {
   const [lecture, setLecture] = useState(null)
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
-  const user = JSON.parse(localStorage.getItem('user') || 'null')
+  const user = getAuthUser()
 
   useEffect(() => {
     fetchLecture()

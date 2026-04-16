@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import API from '../services/api'
 import RoleTabs from '../components/RoleTabs'
+import { getAuthUser } from '../services/authStorage'
 import './CourseDetail.css'
 
 export default function CourseDetail() {
@@ -10,7 +11,7 @@ export default function CourseDetail() {
   const [lectures, setLectures] = useState([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
-  const user = JSON.parse(localStorage.getItem('user') || 'null')
+  const user = getAuthUser()
   const isTeacher =
     user?.role === 'teacher' || user?.role === 'admin' || user?.role === 'superadmin'
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import API from '../services/api'
 import RoleTabs from '../components/RoleTabs'
+import { getAuthUser } from '../services/authStorage'
 import './CreateMCQ.css'
 
 const defaultOptions = ['', '', '', '']
@@ -19,7 +20,7 @@ export default function CreateMCQ() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const user = JSON.parse(localStorage.getItem('user') || 'null')
+  const user = getAuthUser()
 
   useEffect(() => {
     const fetchCourses = async () => {

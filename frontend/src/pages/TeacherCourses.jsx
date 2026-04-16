@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
 import RoleTabs from '../components/RoleTabs'
+import { getAuthToken, getAuthUser } from '../services/authStorage'
 import './TeacherCourses.css'
 
 export default function TeacherCourses() {
@@ -9,12 +10,12 @@ export default function TeacherCourses() {
   const [courses, setCourses] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const user = JSON.parse(localStorage.getItem('user') || 'null')
+  const user = getAuthUser()
 
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const token = localStorage.getItem('token')
+        const token = getAuthToken()
         if (!token) {
           navigate('/login')
           return

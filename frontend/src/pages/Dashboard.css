@@ -1,232 +1,362 @@
 /* ═══════════════════════════════════════════════
-   Dashboard — Student/Teacher Home
+   Dashboard Layout and Refactor
    ═══════════════════════════════════════════════ */
 
-/* ── Welcome Banner ── */
-.dash-welcome {
-  background: var(--gradient-hero);
-  border: 1px solid rgba(6, 182, 212, 0.15);
-  border-radius: var(--radius-xl);
-  padding: var(--space-2xl);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--space-xl);
-  flex-wrap: wrap;
+.dash-container {
+  padding: var(--space-xl);
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+}
+
+.dash-header {
   margin-bottom: var(--space-xl);
 }
 
-.dash-eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--brand-light);
-  margin-bottom: var(--space-sm);
+.dash-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 4px;
 }
 
-.dash-welcome h2 {
-  font-size: 1.8rem;
-  margin-bottom: var(--space-sm);
-}
-
-.dash-welcome-sub {
+.dash-subtitle {
   color: var(--text-muted);
   font-size: 15px;
-  max-width: 500px;
 }
 
-.dash-welcome-actions {
-  display: flex;
-  gap: var(--space-md);
-  flex-wrap: wrap;
-}
-
-/* ── Stats Grid ── */
-.dash-stats {
+/* ── Grid Layout ── */
+.dash-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--space-md);
-  margin-bottom: var(--space-xl);
+  grid-template-columns: 1fr 340px;
+  gap: var(--space-xl);
+  align-items: start;
 }
 
-.dash-stat-card {
-  background: var(--surface);
-  border: 1px solid var(--surface-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg);
+/* ── Main Area ── */
+.dash-main {
   display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  cursor: pointer;
-  transition: all var(--transition-base);
+  flex-direction: column;
+  gap: var(--space-xl);
 }
 
-.dash-stat-card:hover {
-  border-color: var(--surface-border-hover);
-  transform: translateY(-2px);
+.dash-cards-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+
+.course-block {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 140px;
+  transition: all var(--transition-base);
+  cursor: pointer;
+  border: 1px solid var(--surface-border);
+}
+
+.course-block:hover {
+  transform: translateY(-4px);
   box-shadow: var(--shadow-md);
 }
 
-.dash-stat-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
-  display: flex;
+.placeholder-block {
+  background: var(--bg-secondary);
+  border: 1px dashed var(--surface-border-hover);
   align-items: center;
   justify-content: center;
-  font-size: 22px;
-  flex-shrink: 0;
+  text-align: center;
+  color: var(--text-secondary);
 }
 
-.dash-stat-info {
-  display: flex;
-  flex-direction: column;
+.placeholder-block h4 {
+  font-size: 16px;
+  margin-bottom: 4px;
 }
 
-.dash-stat-value {
-  font-family: var(--font-heading);
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--text-primary);
-  line-height: 1.2;
-}
-
-.dash-stat-label {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 2px;
-}
-
-/* ── Section Layout ── */
-.dash-section {
-  margin-bottom: var(--space-xl);
-}
-
-.dash-section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-md);
-}
-
-.dash-section-header h3 {
-  font-size: 1.1rem;
-}
-
-/* ── Course Cards ── */
-.dash-courses-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--space-md);
-}
-
-.dash-course-card {
-  position: relative;
-  overflow: hidden;
-  padding-top: calc(var(--space-lg) + 4px);
-}
-
-.dash-course-accent {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-}
-
-.dash-course-card h4 {
-  font-size: 1rem;
-  margin: var(--space-sm) 0 var(--space-xs);
-}
-
-.dash-course-teacher {
+.placeholder-block p {
   font-size: 13px;
   color: var(--text-muted);
 }
 
-/* ── Profile Card ── */
-.dash-profile-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-lg);
-}
-
-.dash-profile-label {
-  font-size: 12px;
-  font-weight: 600;
+.course-block-badge {
+  font-size: 10px;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-  display: block;
-  margin-bottom: 4px;
+  letter-spacing: 0.1em;
 }
 
-.dash-profile-item p {
+.course-block-title {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
   color: var(--text-primary);
-  font-size: 14px;
+  margin-bottom: auto;
 }
 
-/* ── Quick Links ── */
-.dash-links {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: var(--space-md);
+.course-block-progress {
+  margin-top: auto;
 }
 
-.dash-link-card {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  font-size: 14px;
-  font-weight: 600;
+.progress-bar-bg {
+  height: 6px;
+  background: rgba(0,0,0,0.05);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+}
+
+.progress-text {
+  font-size: 12px;
   color: var(--text-secondary);
-  font-family: var(--font-body);
-  text-align: left;
-  border: none;
+  font-weight: 600;
+}
+
+/* ── Activity Panel (Chart) ── */
+.dash-activity-panel {
   background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 24px;
   border: 1px solid var(--surface-border);
 }
 
-.dash-link-card span {
-  font-size: 18px;
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.dash-link-card:hover {
+.panel-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.minimal-select {
+  background: var(--bg-secondary);
+  border: none;
+  font-size: 13px;
+  padding: 6px 30px 6px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.chart-wrapper {
+  margin-top: 20px;
+}
+
+/* ── Right Side Area ── */
+.dash-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.dash-widget {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  border: 1px solid var(--surface-border);
+}
+
+/* Profile Widget */
+.side-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.side-avatar-container {
+  padding: 6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.4), rgba(139, 92, 246, 0.4));
+  margin-bottom: 16px;
+}
+
+.side-avatar {
+  width: 72px;
+  height: 72px;
+  background: #111827;
+  color: #fff;
+  border-radius: 50%;
+  border: 4px solid var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.side-name {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.side-role {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.side-stats {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-around;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--surface-border);
+}
+
+.stat-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 800;
   color: var(--text-primary);
 }
 
-/* ── Responsive ── */
-@media (max-width: 768px) {
-  .dash-welcome {
-    padding: var(--space-lg);
-    flex-direction: column;
-    align-items: flex-start;
-  }
+.stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
 
-  .dash-welcome h2 {
-    font-size: 1.4rem;
-  }
+.stat-separator {
+  width: 1px;
+  height: 30px;
+  background: var(--surface-border);
+}
 
-  .dash-stats {
-    grid-template-columns: 1fr 1fr;
-  }
+/* Activity List */
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 
-  .dash-profile-grid {
+.activity-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.activity-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--surface-border);
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.activity-dot.unread {
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.activity-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.activity-title {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.activity-time {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.icon-btn {
+  cursor: pointer;
+  color: var(--text-muted);
+  font-weight: bold;
+}
+.icon-btn:hover {
+  color: var(--text-primary);
+}
+
+/* Todo / Actions */
+.todo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--surface-border);
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.todo-item:hover {
+  background: var(--surface-hover);
+  border-color: var(--surface-border-hover);
+}
+
+.todo-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.bg-blue-light { background: #eff6ff; color: #3b82f6; }
+.bg-purple-light { background: #f3e8ff; color: #8b5cf6; }
+.bg-green-light { background: #d1fae5; color: #10b981; }
+
+.todo-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* Responsive Overrides */
+@media (max-width: 1024px) {
+  .dash-grid {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 480px) {
-  .dash-stats {
-    grid-template-columns: 1fr;
+@media (max-width: 768px) {
+  .dash-container {
+    padding: var(--space-md);
   }
-
-  .dash-courses-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .dash-links {
+  .dash-cards-row {
     grid-template-columns: 1fr;
   }
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
 import RoleTabs from '../components/RoleTabs'
+import { getAuthUser } from '../services/authStorage'
 import './LiveSessions.css'
 
 export default function LiveSessions() {
@@ -10,7 +11,7 @@ export default function LiveSessions() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const user = JSON.parse(localStorage.getItem('user') || 'null')
+  const user = getAuthUser()
   const isTeacher =
     user?.role === 'teacher' || user?.role === 'admin' || user?.role === 'superadmin'
 

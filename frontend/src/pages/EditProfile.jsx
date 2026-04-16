@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
 import RoleTabs from '../components/RoleTabs'
+import { getAuthToken } from '../services/authStorage'
 import './EditProfile.css'
 
 export default function EditProfile() {
@@ -20,7 +21,7 @@ export default function EditProfile() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const token = localStorage.getItem('token')
+        const token = getAuthToken()
         if (!token) {
           navigate('/login')
           return

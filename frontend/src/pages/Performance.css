@@ -1,53 +1,50 @@
-.performance {
-  min-height: 100vh;
+﻿.performance {
+  min-height: 100%;
 }
 
 .performance-container {
-  max-width: 900px;
-  margin: 30px auto;
-  padding: 0 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--space-xl);
 }
 
 .performance-container h2 {
   margin-bottom: 24px;
-  font-size: 26px;
+  font-size: 28px;
+  color: var(--text-primary);
 }
 
-/* Stats Grid */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
   margin-bottom: 32px;
 }
 
 .stat-card {
-  background: var(--glass);
+  background: var(--surface);
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   padding: 24px 20px;
   text-align: center;
-  /* backdrop-filter removed for performance */
+  box-shadow: var(--shadow-sm);
   animation: fadeUp 0.5s ease;
 }
 
 .stat-card h3 {
   font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.08em;
   color: var(--muted);
   margin-bottom: 8px;
-  font-family: 'Sora', sans-serif;
 }
 
 .stat-card p {
-  font-family: 'Syne', sans-serif;
-  font-size: 32px;
+  font-size: 30px;
   font-weight: 700;
   color: var(--brand);
 }
 
-/* Chart Sections */
 .chart-section {
   margin-bottom: 36px;
   animation: fadeUp 0.6s ease;
@@ -56,17 +53,16 @@
 .chart-section h3 {
   font-size: 18px;
   margin-bottom: 16px;
+  color: var(--text-primary);
 }
 
 .chart-wrapper {
-  background: var(--glass);
+  background: var(--surface);
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   padding: 24px 12px 12px;
-  /* backdrop-filter removed for performance */
 }
 
-/* History cards */
 .history-section {
   margin-bottom: 40px;
 }
@@ -74,6 +70,7 @@
 .history-section h3 {
   font-size: 18px;
   margin-bottom: 16px;
+  color: var(--text-primary);
 }
 
 .history-list {
@@ -86,25 +83,25 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--glass);
+  background: var(--surface);
   border: 1px solid var(--card-border);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   padding: 16px 20px;
   cursor: pointer;
   transition: all 0.25s;
-  /* backdrop-filter removed for performance */
 }
 
 .history-card:hover {
-  border-color: var(--brand);
+  border-color: var(--brand-light);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(56, 189, 248, 0.12);
+  box-shadow: var(--shadow-md);
 }
 
 .history-course {
   font-weight: 600;
   font-size: 15px;
   margin-bottom: 4px;
+  color: var(--text-primary);
 }
 
 .history-meta {
@@ -115,11 +112,11 @@
 }
 
 .history-topic {
-  background: rgba(56, 189, 248, 0.1);
+  background: var(--brand-subtle);
   color: var(--brand);
   padding: 2px 8px;
-  border-radius: 999px;
-  font-weight: 500;
+  border-radius: var(--radius-full);
+  font-weight: 600;
 }
 
 .history-card-right {
@@ -133,15 +130,32 @@
 }
 
 .history-pct {
-  font-family: 'Syne', sans-serif;
   font-size: 22px;
   font-weight: 700;
 }
 
-.history-pct.high { color: var(--accent-3); }
-.history-pct.mid { color: var(--accent-2); }
-.history-pct.low { color: #f87171; }
+.history-pct.high { color: var(--success); }
+.history-pct.mid { color: var(--warning); }
+.history-pct.low { color: var(--danger); }
+
+@media (max-width: 768px) {
+  .performance-container {
+    padding: var(--space-md);
+  }
+}
 
 @media (max-width: 600px) {
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .history-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .history-card-right {
+    text-align: left;
+  }
 }

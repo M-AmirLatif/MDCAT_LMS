@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import API from '../services/api'
 import RoleTabs from '../components/RoleTabs'
+import { getAuthToken, getAuthUser } from '../services/authStorage'
 import './TestReview.css'
 
 export default function TestReview() {
@@ -11,12 +12,12 @@ export default function TestReview() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [filter, setFilter] = useState('all') // 'all' | 'wrong' | 'correct'
-  const user = JSON.parse(localStorage.getItem('user') || 'null')
+  const user = getAuthUser()
 
   useEffect(() => {
     const fetchDetail = async () => {
       try {
-        const token = localStorage.getItem('token')
+        const token = getAuthToken()
         if (!token) {
           navigate('/login')
           return

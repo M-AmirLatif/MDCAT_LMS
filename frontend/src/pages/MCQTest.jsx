@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import API from '../services/api'
 import RoleTabs from '../components/RoleTabs'
+import { getAuthUser } from '../services/authStorage'
 import './MCQTest.css'
 
 export default function MCQTest() {
@@ -22,7 +23,7 @@ export default function MCQTest() {
   const [results, setResults] = useState({})
   const [error, setError] = useState('')
   const [testSessionId, setTestSessionId] = useState(null)
-  const user = JSON.parse(localStorage.getItem('user') || 'null')
+  const user = getAuthUser()
 
   // Timer state
   const [enableTimer, setEnableTimer] = useState(false)

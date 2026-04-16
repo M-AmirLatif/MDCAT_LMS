@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
 import RoleTabs from '../components/RoleTabs'
+import { getAuthUser } from '../services/authStorage'
 import './CreateLiveSession.css'
 
 export default function CreateLiveSession() {
@@ -18,7 +19,7 @@ export default function CreateLiveSession() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
-  const user = JSON.parse(localStorage.getItem('user') || 'null')
+  const user = getAuthUser()
 
   useEffect(() => {
     const fetchCourses = async () => {

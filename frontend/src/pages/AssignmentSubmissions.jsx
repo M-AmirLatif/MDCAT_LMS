@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import API from '../services/api'
 import RoleTabs from '../components/RoleTabs'
+import { getAuthUser } from '../services/authStorage'
 import './AssignmentSubmissions.css'
 
 export default function AssignmentSubmissions() {
@@ -11,7 +12,7 @@ export default function AssignmentSubmissions() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [grading, setGrading] = useState({})
-  const user = JSON.parse(localStorage.getItem('user') || 'null')
+  const user = getAuthUser()
 
   useEffect(() => {
     const fetchSubmissions = async () => {

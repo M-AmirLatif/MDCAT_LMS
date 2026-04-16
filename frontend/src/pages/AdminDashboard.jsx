@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
 import RoleTabs from '../components/RoleTabs'
+import { getAuthToken, getAuthUser } from '../services/authStorage'
 import './AdminDashboard.css'
 
 export default function AdminDashboard() {
@@ -11,7 +12,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const currentUser = JSON.parse(localStorage.getItem('user') || 'null')
+  const currentUser = getAuthUser()
   const isSuperAdmin = currentUser?.role === 'superadmin'
   const [createForm, setCreateForm] = useState({
     firstName: '',
@@ -23,7 +24,7 @@ export default function AdminDashboard() {
 
   const fetchData = async () => {
     try {
-      const token = localStorage.getItem('token')
+      const token = getAuthToken()
       if (!token) {
         navigate('/login')
         return

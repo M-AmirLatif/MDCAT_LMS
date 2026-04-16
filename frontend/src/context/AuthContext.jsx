@@ -1,17 +1,12 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import API from '../services/api'
+import { clearAuth, getAuthToken, getAuthUser, setAuth, setStoredUser } from '../services/authStorage'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('user')) || null
-    } catch {
-      return null
-    }
-  })
-  const [token, setToken] = useState(() => localStorage.getItem('token') || null)
+  const [user, setUser] = useState(() => getAuthUser())
+  const [token, setToken] = useState(() => getAuthToken())
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -23,7 +18,7 @@ export function AuthProvider({ children }) {
       try {
         const res = await API.get('/auth/profile')
         setUser(res.data.user)
-        localStorage.setItem('user', JSON.stringify(res.data.user))
+        setStoredUser(res.data.user)
       } catch {
         logout()
       } finally {
@@ -33,23 +28,21 @@ export function AuthProvider({ children }) {
     verifyAuth()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const login = (tokenValue, userData) => {
-    localStorage.setItem('token', tokenValue)
-    localStorage.setItem('user', JSON.stringify(userData))
+  const login = (tokenValue, userData, remember = true) => {
+    setAuth({ token: tokenValue, user: userData, remember })
     setToken(tokenValue)
     setUser(userData)
   }
 
   const logout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
+    clearAuth()
     setToken(null)
     setUser(null)
   }
 
   const updateUser = (updatedUser) => {
     setUser(updatedUser)
-    localStorage.setItem('user', JSON.stringify(updatedUser))
+    setStoredUser(updatedUser)
   }
 
   const isAuthenticated = !!token && !!user

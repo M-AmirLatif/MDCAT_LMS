@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
 import RoleTabs from '../components/RoleTabs'
+import { getAuthToken, getAuthUser } from '../services/authStorage'
 import './Courses.css'
 
 const CATEGORIES = [
@@ -18,7 +19,7 @@ export default function Courses() {
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('All')
   const navigate = useNavigate()
-  const user = JSON.parse(localStorage.getItem('user') || 'null')
+  const user = getAuthUser()
   const isGuest = !user?.role
   const sampleCourses = [
     {
@@ -88,7 +89,7 @@ export default function Courses() {
 
   const handleEnroll = async (courseId) => {
     try {
-      const token = localStorage.getItem('token')
+      const token = getAuthToken()
       if (!token) {
         navigate('/login')
         return

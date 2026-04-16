@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
 import RoleTabs from '../components/RoleTabs'
+import { getAuthUser } from '../services/authStorage'
 import './Payments.css'
 
 export default function Payments() {
@@ -15,7 +16,7 @@ export default function Payments() {
   })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const user = JSON.parse(localStorage.getItem('user') || 'null')
+  const user = getAuthUser()
 
   const fetchPayments = async () => {
     try {

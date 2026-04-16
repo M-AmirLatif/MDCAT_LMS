@@ -24,7 +24,7 @@ router.post('/:courseId/enroll', protect, enrollInCourse)
 router.get(
   '/teacher/my-courses',
   protect,
-  authorize('teacher', 'admin'),
+  authorize('manage_courses'),
   getMyCourses,
 )
 
@@ -32,12 +32,12 @@ router.get(
 router.get('/:courseId', getCourseById)
 
 // Protected routes
-router.post('/', protect, authorize('teacher', 'admin'), createCourse)
-router.put('/:courseId', protect, authorize('teacher', 'admin'), updateCourse)
+router.post('/', protect, authorize('manage_courses'), createCourse)
+router.put('/:courseId', protect, authorize('manage_courses'), updateCourse)
 router.delete(
   '/:courseId',
   protect,
-  authorize('teacher', 'admin'),
+  authorize('manage_courses'),
   deleteCourse,
 )
 

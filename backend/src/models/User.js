@@ -30,9 +30,9 @@ const userSchema = new mongoose.Schema(
       select: false, // Don't return password by default
     },
     role: {
-      type: String,
-      enum: ['student', 'teacher', 'admin', 'superadmin'],
-      default: 'student',
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Role',
+      required: true,
     },
     isEmailVerified: {
       type: Boolean,

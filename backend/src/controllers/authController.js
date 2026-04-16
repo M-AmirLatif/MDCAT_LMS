@@ -1,10 +1,20 @@
 const User = require('../models/User')
+const Role = require('../models/Role')
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
 const { sendOtpEmail, sendEmail } = require('../utils/email')
+const { OAuth2Client } = require('google-auth-library')
 
 const OTP_EXPIRY_MINUTES = 10
 const isDev = process.env.NODE_ENV !== 'production'
+const allowDebugOtp = isDev && process.env.ALLOW_DEBUG_OTP === 'true'
+
+const googleClientIds = (process.env.GOOGLE_CLIENT_ID || '')
+  .split(',')
+  .map((v) => v.trim())
+  .filter(Boolean)
+
+const googleClient = googleClientIds.length ? new OAuth2Client() : null
 
 const generateOtp = () => {
   return Math.floor(100000 + Math.random() * 900000).toString()
@@ -112,6 +122,12 @@ exports.register = async (req, res) => {
       return res.status(400).json({ error: 'Email already registered' })
     }
 
+    // Fetch 'student' role
+    const studentRole = await Role.findOne({ name: 'student' })
+    if (!studentRole) {
+      return res.status(500).json({ error: 'Student role not configured in the system.' })
+    }
+
     const otp = generateOtp()
 
     // Create user
@@ -120,7 +136,7 @@ exports.register = async (req, res) => {
       lastName,
       email,
       password,
-      role: 'student',
+      role: studentRole._id,
       isEmailVerified: false,
       emailOtpHash: hashOtp(otp),
       emailOtpExpires: getOtpExpiry(),
@@ -139,7 +155,7 @@ exports.register = async (req, res) => {
         email: user.email,
       })
     } catch (mailError) {
-      if (isDev) {
+      if (allowDebugOtp) {
         return res.status(201).json({
           success: true,
           message:
@@ -176,7 +192,7 @@ exports.login = async (req, res) => {
     }
 
     // Find user and include password
-    const user = await User.findOne({ email }).select('+password')
+    const user = await User.findOne({ email }).select('+password role isActive isEmailVerified firstName lastName email')
     if (!user) {
       return res.status(400).json({ error: 'Invalid credentials' })
     }
@@ -197,14 +213,18 @@ exports.login = async (req, res) => {
         .json({ error: 'Email not verified. Please verify your email.' })
     }
 
-    // Generate token
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: process.env.JWT_EXPIRE,
-      },
-    )
+    const roleDoc = await Role.findById(user.role)
+    if (!roleDoc) {
+      return res.status(500).json({
+        error:
+          'Your account role is not configured. Please contact the administrator.',
+      })
+    }
+
+    // Generate token (role is derived from DB on each request via `protect`)
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRE,
+    })
 
     res.status(200).json({
       success: true,
@@ -215,7 +235,10 @@ exports.login = async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
-        role: user.role,
+        role: roleDoc.name, // frontend expects role name string
+        roleId: roleDoc._id,
+        isEmailVerified: user.isEmailVerified,
+        isActive: user.isActive,
       },
     })
   } catch (error) {
@@ -226,10 +249,24 @@ exports.login = async (req, res) => {
 // ==================== GET PROFILE ====================
 exports.getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id)
+    const user = await User.findById(req.user.id).populate('role')
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' })
+    }
     res.status(200).json({
       success: true,
-      user,
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role?.name || null,
+        roleId: user.role?._id || null,
+        phone: user.phone,
+        profilePicture: user.profilePicture,
+        isEmailVerified: user.isEmailVerified,
+        isActive: user.isActive,
+      },
     })
   } catch (error) {
     res.status(500).json({ error: error.message })
@@ -245,12 +282,23 @@ exports.updateProfile = async (req, res) => {
       req.user.id,
       { firstName, lastName, phone, profilePicture },
       { new: true, runValidators: true },
-    )
+    ).populate('role')
 
     res.status(200).json({
       success: true,
       message: 'Profile updated successfully',
-      user,
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role?.name || null,
+        roleId: user.role?._id || null,
+        phone: user.phone,
+        profilePicture: user.profilePicture,
+        isEmailVerified: user.isEmailVerified,
+        isActive: user.isActive,
+      },
     })
   } catch (error) {
     res.status(500).json({ error: error.message })
@@ -351,7 +399,7 @@ exports.resendOtp = async (req, res) => {
         email: user.email,
       })
     } catch (mailError) {
-      if (isDev) {
+      if (allowDebugOtp) {
         return res.status(200).json({
           success: true,
           message:
@@ -406,7 +454,7 @@ exports.forgotPassword = async (req, res) => {
         email: user.email,
       })
     } catch (mailError) {
-      if (isDev) {
+      if (allowDebugOtp) {
         return res.status(200).json({
           success: true,
           message: 'OTP generated (email not configured). Use debug OTP.',
@@ -420,6 +468,98 @@ exports.forgotPassword = async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ error: error.message })
+  }
+}
+
+// ==================== GOOGLE LOGIN ====================
+exports.googleLogin = async (req, res) => {
+  try {
+    const credential = normalizeString(req.body.credential)
+
+    if (!credential) {
+      return res.status(400).json({ error: 'Missing Google credential' })
+    }
+
+    if (!googleClientIds.length || !googleClient) {
+      return res.status(500).json({ error: 'Google login is not configured' })
+    }
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: googleClientIds,
+    })
+
+    const payload = ticket.getPayload()
+    const email = normalizeEmail(payload?.email)
+
+    if (!email || !isValidEmail(email)) {
+      return res.status(400).json({ error: 'Google account email is invalid' })
+    }
+
+    const user = await User.findOne({ email }).select(
+      'role isActive isEmailVerified firstName lastName email',
+    )
+
+    let existingUser = user
+
+    if (!existingUser) {
+      const studentRole = await Role.findOne({ name: 'student' })
+      if (!studentRole) {
+        return res
+          .status(500)
+          .json({ error: 'Student role not configured in the system.' })
+      }
+
+      const firstName = normalizeString(payload?.given_name) || 'Student'
+      const lastName = normalizeString(payload?.family_name) || ''
+
+      // Random password (not used for Google login)
+      const randomPassword = crypto.randomBytes(16).toString('hex')
+
+      existingUser = await User.create({
+        firstName,
+        lastName,
+        email,
+        password: randomPassword,
+        role: studentRole._id,
+        isEmailVerified: true,
+        isActive: true,
+      })
+    }
+
+    if (existingUser.isActive === false) {
+      return res.status(403).json({ error: 'Account is deactivated' })
+    }
+
+    const roleDoc = await Role.findById(existingUser.role)
+    if (!roleDoc) {
+      return res.status(500).json({
+        error:
+          'Your account role is not configured. Please contact the administrator.',
+      })
+    }
+
+    const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRE,
+    })
+
+    res.status(200).json({
+      success: true,
+      message: 'Logged in successfully',
+      token,
+      user: {
+        id: existingUser._id,
+        firstName: existingUser.firstName,
+        lastName: existingUser.lastName,
+        email: existingUser.email,
+        role: roleDoc.name,
+        roleId: roleDoc._id,
+        isEmailVerified: existingUser.isEmailVerified,
+        isActive: existingUser.isActive,
+      },
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Google login failed' })
   }
 }
 

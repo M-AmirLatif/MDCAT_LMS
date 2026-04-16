@@ -8,6 +8,12 @@
   background: var(--gradient-page);
 }
 
+/* Many pages still render their own legacy `.navbar` header. Hide it when using AppLayout
+   to avoid double headers (Topbar + page navbar). */
+.app-layout .navbar {
+  display: none;
+}
+
 .app-main {
   flex: 1;
   min-width: 0;
@@ -21,6 +27,7 @@
   flex: 1;
   padding: 0;
   overflow-y: auto;
+  min-height: calc(100vh - var(--topbar-height));
 }
 
 /* Sidebar backdrop overlay for mobile */

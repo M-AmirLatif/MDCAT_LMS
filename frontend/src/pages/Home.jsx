@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
 import RoleTabs from '../components/RoleTabs'
+import { getAuthUser } from '../services/authStorage'
 import './Home.css'
 
 export default function Home() {
-  const user = JSON.parse(localStorage.getItem('user') || 'null')
+  const user = getAuthUser()
   const sampleCourses = [
     {
       title: 'MDCAT Biology Foundations',

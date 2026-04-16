@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import API from '../services/api'
 import RoleTabs from '../components/RoleTabs'
+import { getAuthUser } from '../services/authStorage'
 import './Assignments.css'
 
 export default function Assignments() {
@@ -13,7 +14,7 @@ export default function Assignments() {
   const [submissions, setSubmissions] = useState({})
   const [uploadingId, setUploadingId] = useState(null)
 
-  const user = JSON.parse(localStorage.getItem('user') || 'null')
+  const user = getAuthUser()
   const isTeacher =
     user?.role === 'teacher' || user?.role === 'admin' || user?.role === 'superadmin'
 

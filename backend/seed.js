@@ -11,6 +11,8 @@ const Notification = require('./src/models/Notification')
 const TestSession = require('./src/models/TestSession')
 const NotificationJob = require('./src/models/NotificationJob')
 const Payment = require('./src/models/Payment')
+const Role = require('./src/models/Role')
+const Permission = require('./src/models/Permission')
 
 const connect = async () => {
   await mongoose.connect(process.env.MONGO_URI)
@@ -22,7 +24,7 @@ const ensureUser = async (data) => {
     user = await User.create(data)
   } else {
     let updated = false
-    if (data.role && user.role !== data.role) {
+    if (data.role && String(user.role) !== String(data.role)) {
       user.role = data.role
       updated = true
     }
@@ -85,31 +87,47 @@ const ensureLiveSession = async (data) => {
   }
 }
 
-const ensureNotification = async (data) => {
-  const existing = await Notification.findOne({
-    recipientId: data.recipientId,
-    title: data.title,
-  })
-  if (!existing) {
-    await Notification.create(data)
+// Ensure roles and permissions
+const ensureRole = async (name, permissionDocs) => {
+  let role = await Role.findOne({ name })
+  if (!role) {
+    role = await Role.create({ name, permissions: permissionDocs.map(p => p._id) })
+  } else {
+    role.permissions = permissionDocs.map(p => p._id)
+    await role.save()
   }
+  return role
 }
 
-const enrollStudent = async (course, studentId) => {
-  const already = course.enrolledStudents.some(
-    (id) => id.toString() === studentId.toString(),
-  )
-  if (!already) {
-    course.enrolledStudents.push(studentId)
-    await course.save()
+const ensurePermission = async (name, category) => {
+  let perm = await Permission.findOne({ name })
+  if (!perm) {
+    perm = await Permission.create({ name, category })
   }
+  return perm
 }
 
 const seed = async () => {
+  console.log('🔄 Setting up Permissions and Roles...')
+  
+  // Set up Permissions
+  const permManageCourses = await ensurePermission('manage_courses', 'teacher')
+  const permTakeTests = await ensurePermission('take_tests', 'student')
+  const permManageUsers = await ensurePermission('manage_users', 'admin')
+  const permViewAnalytics = await ensurePermission('view_analytics', 'admin')
+  
+  // Set up Roles
+  const superadminRole = await ensureRole('superadmin', []) // superadmin bypasses checks
+  const adminRole = await ensureRole('admin', [permManageCourses, permTakeTests, permManageUsers, permViewAnalytics])
+  const teacherRole = await ensureRole('teacher', [permManageCourses])
+  const studentRole = await ensureRole('student', [permTakeTests])
+  
+  console.log('✅ Roles and Permissions configured.')
+
   // =====================================================
   // STEP 1: Remove ALL previously registered students
   // =====================================================
-  const deletedStudents = await User.deleteMany({ role: 'student' })
+  const deletedStudents = await User.deleteMany({ role: studentRole._id })
   console.log(`🗑️  Removed ${deletedStudents.deletedCount} previous student(s)`)
 
   // Also clean up student-related data
@@ -133,7 +151,7 @@ const seed = async () => {
     lastName: 'Admin',
     email: 'superadmin@mdcat.com',
     password: 'SuperAdmin@123',
-    role: 'superadmin',
+    role: superadminRole._id,
     isEmailVerified: true,
     isActive: true,
   })
@@ -145,7 +163,7 @@ const seed = async () => {
     lastName: 'Latif',
     email: 'admin@mdcat.com',
     password: 'Admin@123',
-    role: 'admin',
+    role: adminRole._id,
     isEmailVerified: true,
     isActive: true,
   })
@@ -157,7 +175,7 @@ const seed = async () => {
     lastName: 'Khan',
     email: 'teacher@mdcat.com',
     password: 'Teacher@123',
-    role: 'teacher',
+    role: teacherRole._id,
     isEmailVerified: true,
     isActive: true,
   })
@@ -169,7 +187,7 @@ const seed = async () => {
     lastName: 'Malik',
     email: 'teacher2@mdcat.com',
     password: 'Teacher2@123',
-    role: 'teacher',
+    role: teacherRole._id,
     isEmailVerified: true,
     isActive: true,
   })
