@@ -21,6 +21,25 @@ export default function CourseDetail() {
 
   const fetchCourseAndLectures = async () => {
     try {
+      if (courseId.startsWith('sample-')) {
+        setCourse({
+          _id: courseId,
+          name: courseId === 'sample-bio' ? 'MDCAT Biology Foundations' : courseId === 'sample-chem' ? 'MDCAT Chemistry Numericals' : 'MDCAT Physics Sprint',
+          category: courseId === 'sample-bio' ? 'Biology' : courseId === 'sample-chem' ? 'Chemistry' : 'Physics',
+          description: 'This is a limited sample preview. Please log in and enroll to access full video lectures, complete MCQs, and track your progress.',
+          topics: [{ name: 'Free Trial Scope', description: 'Observe the structure of our MDCAT courses' }],
+          createdBy: { firstName: 'Expert', lastName: 'Instructors' },
+          enrolledCount: 1205,
+          isSample: true
+        });
+        setLectures([
+          { _id: 'sample-lec-1', title: 'Sample Paper / Demo 1', topic: 'Preview', description: 'Preview snippet.', videoDuration: 300, views: 99 },
+          { _id: 'sample-lec-2', title: 'Sample Paper / Demo 2', topic: 'Preview', description: 'Preview snippet.', videoDuration: 250, views: 42 }
+        ]);
+        setLoading(false);
+        return;
+      }
+
       const courseRes = await API.get(`/courses/${courseId}`)
       setCourse(courseRes.data.course)
 
@@ -85,43 +104,53 @@ export default function CourseDetail() {
         </div>
 
         
-        <div className="assignment-section">
-          <div className="assignment-header">
-            <h3>Assignments</h3>
-            <div className="assignment-actions">
-              <button onClick={() => navigate(`/course/${courseId}/assignments`)}>
-                View Assignments
-              </button>
-              {isTeacher && (
-                <button
-                  className="create-assignment-btn"
-                  onClick={() => navigate(`/course/${courseId}/create-assignment`)}
-                >
-                  Add Assignment
+        {course.isSample ? (
+          <div className="assignment-section" style={{ padding: '20px', background: 'rgba(255, 255, 255, 0.4)', borderRadius: '12px' }}>
+            <h3 style={{ color: '#8b5cf6' }}>Unlock Full Access</h3>
+            <p style={{ marginTop: '8px' }}>Log in to access live assignments, real-time performance analytics, and dynamic tests.</p>
+            <button onClick={() => navigate('/login')} className="btn btn-primary" style={{ marginTop: '16px' }}>Sign In Now</button>
+          </div>
+        ) : (
+          <div className="assignment-section">
+            <div className="assignment-header">
+              <h3>Assignments</h3>
+              <div className="assignment-actions">
+                <button onClick={() => navigate(`/course/${courseId}/assignments`)}>
+                  View Assignments
                 </button>
-              )}
+                {isTeacher && (
+                  <button
+                    className="create-assignment-btn"
+                    onClick={() => navigate(`/course/${courseId}/create-assignment`)}
+                  >
+                    Add Assignment
+                  </button>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
-        <div className="mcq-section">
-          <div className="mcq-header">
-            <h3>MCQ Tests</h3>
-            <div className="mcq-actions">
-              <button onClick={() => navigate(`/course/${courseId}/mcqs`)}>
-                Start MCQ Test
-              </button>
-              {isTeacher && (
-                <button
-                  className="create-mcq-btn"
-                  onClick={() => navigate(`/course/${courseId}/create-mcq`)}
-                >
-                  Add MCQ
+        {!course.isSample && (
+          <div className="mcq-section">
+            <div className="mcq-header">
+              <h3>MCQ Tests</h3>
+              <div className="mcq-actions">
+                <button onClick={() => navigate(`/course/${courseId}/mcqs`)}>
+                  Start MCQ Test
                 </button>
-              )}
+                {isTeacher && (
+                  <button
+                    className="create-mcq-btn"
+                    onClick={() => navigate(`/course/${courseId}/create-mcq`)}
+                  >
+                    Add MCQ
+                  </button>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         <div className="lectures-section">
           <div className="lectures-header">
@@ -149,10 +178,10 @@ export default function CourseDetail() {
                     </div>
                   </div>
                   <button
-                    className="watch-btn"
-                    onClick={() => navigate(`/lecture/${lecture._id}`)}
+                    className={`watch-btn ${course.isSample ? 'locked' : ''}`}
+                    onClick={() => course.isSample ? navigate('/login') : navigate(`/lecture/${lecture._id}`)}
                   >
-                    Watch
+                    {course.isSample ? 'Login to Open' : 'Watch'}
                   </button>
                 </div>
               ))}

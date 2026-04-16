@@ -185,7 +185,6 @@ export default function Courses() {
                 key={course._id}
                 className={`course-card ${course.isSample ? 'sample' : ''}`}
                 onClick={() => {
-                  if (course.isSample) return
                   navigate(`/course/${course._id}`)
                 }}
                 style={{ cursor: course.isSample ? 'default' : 'pointer' }}
