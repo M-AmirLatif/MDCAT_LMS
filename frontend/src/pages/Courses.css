@@ -88,8 +88,8 @@
 .course-card.sample::after {
   content: 'Sample';
   position: absolute;
-  top: 16px;
-  right: 16px;
+  bottom: 80px;
+  right: 22px;
   background: rgba(79, 70, 229, 0.12);
   color: var(--brand-dark);
   padding: 4px 10px;

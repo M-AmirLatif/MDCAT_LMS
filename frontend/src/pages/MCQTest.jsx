@@ -37,6 +37,13 @@ export default function MCQTest() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        if (courseId.startsWith('sample-')) {
+          setCourse({ name: 'MDCAT Sample Entry Test (Free Trial)' })
+          setTopics([])
+          setLoading(false)
+          return
+        }
+
         const [courseRes, topicsRes] = await Promise.all([
           API.get(`/courses/${courseId}`),
           API.get(`/mcqs/course/${courseId}/topics`),
@@ -54,6 +61,27 @@ export default function MCQTest() {
 
   const loadMcqs = useCallback(async () => {
     try {
+      if (courseId.startsWith('sample-')) {
+        const dummyMCQs = Array.from({ length: 10 }).map((_, i) => ({
+          _id: `sample-q-${i}`,
+          question: `Sample Question ${i + 1} regarding fundamental ${courseId.split('-')[1]} concepts?`,
+          options: [
+            { text: `Sample A for Q${i+1} (Correct)` },
+            { text: `Sample B for Q${i+1}` },
+            { text: `Sample C for Q${i+1}` },
+            { text: `Sample D for Q${i+1}` },
+          ],
+          correctIndex: 0,
+          explanation: `Detailed explanation for Q${i+1}. Registering unlocks detailed concept breakdowns like this for all 3,000+ actual MCQs.`
+        }));
+        setMcqs(dummyMCQs)
+        setTotalQuestions(10)
+        setAnswers({})
+        setSubmitted(false)
+        setResults({})
+        return
+      }
+
       const params = {}
       if (selectedTopic !== 'All') params.topic = selectedTopic
       const res = await API.get(`/mcqs/course/${courseId}`, { params })
@@ -128,6 +156,41 @@ export default function MCQTest() {
           selectedIndex: answers[mcq._id],
         }))
         .filter((item) => item.selectedIndex !== undefined),
+    }
+
+    if (courseId.startsWith('sample-')) {
+      let correct = 0;
+      let wrong = 0;
+      const resMap = {};
+      
+      mcqs.forEach((mcq) => {
+        const selected = answers[mcq._id];
+        const isCorrect = selected === mcq.correctIndex;
+        if (selected !== undefined) {
+          if (isCorrect) correct++;
+          else wrong++;
+        }
+        resMap[mcq._id] = {
+          mcqId: mcq._id,
+          correctIndex: mcq.correctIndex,
+          isCorrect,
+          explanation: mcq.explanation,
+        };
+      });
+
+      const neg = enableNegativeMarking ? wrong : 0;
+      const fScore = correct - neg;
+      const perc = Math.max(0, Math.round((fScore / mcqs.length) * 100));
+
+      setResults(resMap);
+      setScore(correct);
+      setNegativeScore(neg);
+      setFinalScore(fScore);
+      setTotalQuestions(mcqs.length);
+      setPercentage(perc);
+      setTestSessionId(null);
+      setSubmitted(true);
+      return;
     }
 
     if (payload.answers.length === 0) {
@@ -328,6 +391,11 @@ export default function MCQTest() {
                     >
                       Review Answers
                     </button>
+                  )}
+                  {courseId.startsWith('sample-') && (
+                    <div style={{ marginTop: '24px', padding: '16px', background: 'var(--brand-light)', borderRadius: '8px', color: 'var(--brand-dark)' }}>
+                      <strong>Test Completed!</strong> This was just a free sample. To track your performance analytics and unlock all 3,000+ questions, please <a href="/login" style={{textDecoration: 'underline'}}>Log In</a> or <a href="/register" style={{textDecoration: 'underline'}}>Register</a>.
+                    </div>
                   )}
                 </div>
               )}

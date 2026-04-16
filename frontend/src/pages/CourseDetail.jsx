@@ -131,26 +131,24 @@ export default function CourseDetail() {
           </div>
         )}
 
-        {!course.isSample && (
-          <div className="mcq-section">
-            <div className="mcq-header">
-              <h3>MCQ Tests</h3>
-              <div className="mcq-actions">
-                <button onClick={() => navigate(`/course/${courseId}/mcqs`)}>
-                  Start MCQ Test
+        <div className="mcq-section">
+          <div className="mcq-header">
+            <h3>MCQ Tests {course.isSample ? '(Free Sample)' : ''}</h3>
+            <div className="mcq-actions">
+              <button onClick={() => navigate(`/course/${courseId}/mcqs${course.isSample ? '?sample=true' : ''}`)}>
+                {course.isSample ? 'Start Free Sample MCQ Test' : 'Start MCQ Test'}
+              </button>
+              {!course.isSample && isTeacher && (
+                <button
+                  className="create-mcq-btn"
+                  onClick={() => navigate(`/course/${courseId}/create-mcq`)}
+                >
+                  Add MCQ
                 </button>
-                {isTeacher && (
-                  <button
-                    className="create-mcq-btn"
-                    onClick={() => navigate(`/course/${courseId}/create-mcq`)}
-                  >
-                    Add MCQ
-                  </button>
-                )}
-              </div>
+              )}
             </div>
           </div>
-        )}
+        </div>
 
         <div className="lectures-section">
           <div className="lectures-header">
