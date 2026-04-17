@@ -27,15 +27,66 @@ const app = express()
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }))
 
 // ==================== CORS ====================
-const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173')
+const normalizeOrigin = (value) => {
+  if (!value) return ''
+  const trimmed = String(value).trim().replace(/\/+$/, '')
+  try {
+    const url = new URL(trimmed)
+    return `${url.protocol}//${url.hostname}${url.port ? `:${url.port}` : ''}`.toLowerCase()
+  } catch {
+    return trimmed.toLowerCase()
+  }
+}
+
+const rawCorsOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173')
   .split(',')
-  .map((o) => o.trim())
+  .map((o) => String(o).trim())
+  .filter(Boolean)
+
+const allowedOriginSet = new Set(
+  rawCorsOrigins
+    .filter((o) => o.includes('://'))
+    .map((o) => normalizeOrigin(o))
+    .filter(Boolean),
+)
+
+const allowedHostSet = new Set(
+  rawCorsOrigins
+    .filter((o) => !o.includes('://'))
+    .map((o) => normalizeOrigin(o).replace(/^\./, ''))
+    .filter(Boolean),
+)
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true
+  const normalized = normalizeOrigin(origin)
+  if (allowedOriginSet.has(normalized)) return true
+
+  try {
+    const { hostname } = new URL(normalized)
+    if (allowedHostSet.has(hostname.toLowerCase())) return true
+  } catch {
+    // ignore
+  }
+
+  // Convenience: allow Vercel preview deploys when the main production domain is allowed.
+  if (normalized.endsWith('.vercel.app')) {
+    for (const allowed of allowedOriginSet) {
+      if (allowed.endsWith('.vercel.app')) return true
+    }
+    for (const allowedHost of allowedHostSet) {
+      if (allowedHost.endsWith('vercel.app')) return true
+    }
+  }
+
+  return false
+}
 
 app.use(
   cors({
     origin(origin, cb) {
       // Allow requests with no origin (mobile apps, curl, Postman)
-      if (!origin || allowedOrigins.includes(origin)) return cb(null, true)
+      if (isAllowedOrigin(origin)) return cb(null, true)
       cb(new Error('Not allowed by CORS'))
     },
     credentials: true,
