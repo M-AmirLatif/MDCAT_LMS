@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import API from '../services/api'
 import RoleTabs from '../components/RoleTabs'
 import { getAuthUser } from '../services/authStorage'
+import { getSampleMcqs } from '../data/sampleMcqs'
 import './MCQTest.css'
 
 export default function MCQTest() {
@@ -62,20 +63,10 @@ export default function MCQTest() {
   const loadMcqs = useCallback(async () => {
     try {
       if (courseId.startsWith('sample-')) {
-        const dummyMCQs = Array.from({ length: 10 }).map((_, i) => ({
-          _id: `sample-q-${i}`,
-          question: `Sample Question ${i + 1} regarding fundamental ${courseId.split('-')[1]} concepts?`,
-          options: [
-            { text: `Sample A for Q${i+1} (Correct)` },
-            { text: `Sample B for Q${i+1}` },
-            { text: `Sample C for Q${i+1}` },
-            { text: `Sample D for Q${i+1}` },
-          ],
-          correctIndex: 0,
-          explanation: `Detailed explanation for Q${i+1}. Registering unlocks detailed concept breakdowns like this for all 3,000+ actual MCQs.`
-        }));
-        setMcqs(dummyMCQs)
-        setTotalQuestions(10)
+        const subject = courseId.replace('sample-', '')
+        const sample = getSampleMcqs({ subject, limit: 10 })
+        setMcqs(sample)
+        setTotalQuestions(sample.length)
         setAnswers({})
         setSubmitted(false)
         setResults({})
