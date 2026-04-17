@@ -1,5 +1,7 @@
 # MDCAT LMS — Client Demo Guide
 
+I’ve built the MDCAT LMS for you to review — it’s live and functional with the core student learning flow and full staff/admin features. Please review the current build; once you confirm the direction, we’ll continue together to polish the UI, add the remaining premium features, and prepare it for full launch.
+
 This guide helps you demo the current build clearly, and explains what’s already working vs what we’ll improve next.
 
 ## Live URLs
@@ -74,4 +76,3 @@ Operations
 ## Environment & Data
 - Database is hosted on MongoDB Atlas and used by both backend and frontend in production.
 - This ensures “real-time” shared data across all clients and devices.
-
