@@ -53,6 +53,17 @@ const shouldReturnDebugOtp = (error) => {
   return allowDebugOtp
 }
 
+const logOtpEmailError = (context, error) => {
+  // Avoid logging secrets; keep to high-level diagnostics.
+  const safe = {
+    message: error?.message,
+    code: error?.code,
+    responseCode: error?.responseCode,
+    command: error?.command,
+  }
+  console.error(`OTP email error (${context}):`, safe)
+}
+
 // ==================== REGISTER ====================
 exports.register = async (req, res) => {
   try {
@@ -106,6 +117,7 @@ exports.register = async (req, res) => {
             otp,
           })
         } catch (mailError) {
+          logOtpEmailError('resend', mailError)
           if (shouldReturnDebugOtp(mailError)) {
             return res.status(200).json({
               success: true,
@@ -163,6 +175,7 @@ exports.register = async (req, res) => {
         email: user.email,
       })
     } catch (mailError) {
+      logOtpEmailError('send', mailError)
       if (shouldReturnDebugOtp(mailError)) {
         return res.status(201).json({
           success: true,
