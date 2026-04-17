@@ -121,7 +121,16 @@ export default function Register() {
       }
       toast.success('OTP sent to your email')
     } catch (err) {
-      setError(err.response?.data?.error || 'Registration failed')
+      const isTimeout =
+        err?.code === 'ECONNABORTED' ||
+        String(err?.message || '').toLowerCase().includes('timeout')
+      if (isTimeout) {
+        setError(
+          'Request timed out while sending OTP. Please try again (or use Resend OTP).',
+        )
+      } else {
+        setError(err.response?.data?.error || 'Registration failed')
+      }
     } finally {
       setLoading(false)
     }

@@ -1,5 +1,12 @@
 const nodemailer = require('nodemailer')
 
+const SMTP_TIMEOUTS = {
+  // Keep API requests responsive even if SMTP is slow/unreachable.
+  connectionTimeout: Number(process.env.SMTP_CONNECTION_TIMEOUT_MS || 10000),
+  greetingTimeout: Number(process.env.SMTP_GREETING_TIMEOUT_MS || 10000),
+  socketTimeout: Number(process.env.SMTP_SOCKET_TIMEOUT_MS || 15000),
+}
+
 const createTransporter = () => {
   const {
     SMTP_SERVICE,
@@ -17,6 +24,7 @@ const createTransporter = () => {
   if (SMTP_SERVICE) {
     return nodemailer.createTransport({
       service: SMTP_SERVICE,
+      ...SMTP_TIMEOUTS,
       auth: {
         user: SMTP_USER,
         pass: SMTP_PASS,
@@ -28,6 +36,7 @@ const createTransporter = () => {
     host: SMTP_HOST,
     port: Number(SMTP_PORT || 587),
     secure: String(SMTP_SECURE).toLowerCase() === 'true',
+    ...SMTP_TIMEOUTS,
     auth: {
       user: SMTP_USER,
       pass: SMTP_PASS,

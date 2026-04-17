@@ -3,6 +3,7 @@ import { clearAuth, getAuthToken } from './authStorage'
 
 const API = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
+  timeout: Number(import.meta.env.VITE_API_TIMEOUT_MS || 20000),
 })
 
 // Add token to requests
