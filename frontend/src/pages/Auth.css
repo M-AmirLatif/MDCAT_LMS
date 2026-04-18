@@ -214,15 +214,15 @@
   padding: 44px 24px;
   background: radial-gradient(
       1000px 520px at -10% -10%,
-      rgba(37, 99, 235, 0.12),
+      rgba(11, 79, 209, 0.12),
       transparent 60%
     ),
     radial-gradient(
       800px 420px at 110% 0%,
-      rgba(79, 70, 229, 0.1),
+      rgba(255, 122, 0, 0.08),
       transparent 55%
     ),
-    linear-gradient(180deg, rgba(37, 99, 235, 0.03), transparent 38%);
+    linear-gradient(180deg, rgba(11, 79, 209, 0.04), transparent 38%);
 }
 
 .auth-left-inner {
@@ -468,8 +468,8 @@
   font-size: 15px;
   font-weight: 800;
   color: #ffffff;
-  background: #2563eb;
-  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.22);
+  background: var(--gradient-brand);
+  box-shadow: var(--shadow-brand);
   cursor: pointer;
   transition: transform var(--transition-fast), filter var(--transition-fast);
 }
@@ -515,7 +515,7 @@
 }
 
 .auth-footer a {
-  color: #2563eb;
+  color: var(--brand);
   font-weight: 800;
 }
 
@@ -576,7 +576,7 @@
 }
 
 .auth-right {
-  background: #0b4fd1;
+  background: var(--gradient-hero);
   color: #ffffff;
   position: relative;
   overflow: hidden;
