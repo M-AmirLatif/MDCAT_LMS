@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useMemo } from 'react'
 import { getAuthUser } from '../services/authStorage'
+import heroImg from '../assets/hero.png'
 import './Home.css'
 
 export default function Home() {
@@ -259,152 +260,6 @@ export default function Home() {
     }
   }
 
-  const WinnersVisual = () => (
-    <svg
-      className="lp-winners-svg"
-      viewBox="0 0 820 320"
-      xmlns="http://www.w3.org/2000/svg"
-      role="img"
-      aria-label="Top MDCAT achievers collage"
-      preserveAspectRatio="xMidYMid slice"
-    >
-      <defs>
-        <linearGradient id="wbg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#0b4fd1" stopOpacity="0.22" />
-          <stop offset="45%" stopColor="#063aa4" stopOpacity="0.10" />
-          <stop offset="100%" stopColor="#ff7a00" stopOpacity="0.10" />
-        </linearGradient>
-        <radialGradient id="wglow1" cx="20%" cy="30%" r="65%">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.22" />
-          <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-        </radialGradient>
-        <radialGradient id="wglow2" cx="85%" cy="60%" r="70%">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.16" />
-          <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-        </radialGradient>
-        <linearGradient id="wcard" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.16" />
-          <stop offset="100%" stopColor="#ffffff" stopOpacity="0.06" />
-        </linearGradient>
-        <linearGradient id="wring" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#2f6ee5" />
-          <stop offset="100%" stopColor="#ff7a00" />
-        </linearGradient>
-        <filter id="wsoftShadow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow
-            dx="0"
-            dy="14"
-            stdDeviation="14"
-            floodColor="#020617"
-            floodOpacity="0.35"
-          />
-        </filter>
-      </defs>
-
-      <rect x="0" y="0" width="820" height="320" rx="22" fill="url(#wbg)" />
-      <rect x="0" y="0" width="820" height="320" rx="22" fill="url(#wglow1)" />
-      <rect x="0" y="0" width="820" height="320" rx="22" fill="url(#wglow2)" />
-
-      <g opacity="0.18">
-        <text
-          x="64"
-          y="154"
-          fontFamily="Inter, system-ui, sans-serif"
-          fontWeight="900"
-          fontSize="120"
-          fill="#ffffff"
-        >
-          2024
-        </text>
-        <text
-          x="416"
-          y="154"
-          fontFamily="Inter, system-ui, sans-serif"
-          fontWeight="900"
-          fontSize="120"
-          fill="#ffffff"
-        >
-          2023
-        </text>
-      </g>
-
-      {[
-        { x: 92, label: 'AS', name: 'Ahsan', tone: '#2f6ee5' },
-        { x: 324, label: 'MW', name: 'Malaika', tone: '#10b981' },
-        { x: 556, label: 'AT', name: 'Abdullah', tone: '#ff7a00' },
-      ].map((p) => (
-        <g key={p.x} filter="url(#wsoftShadow)">
-          <rect
-            x={p.x}
-            y="98"
-            width="172"
-            height="188"
-            rx="22"
-            fill="url(#wcard)"
-            stroke="rgba(255,255,255,0.14)"
-          />
-          <circle
-            cx={p.x + 86}
-            cy="150"
-            r="44"
-            fill="rgba(255,255,255,0.10)"
-            stroke="url(#wring)"
-            strokeWidth="4"
-          />
-          <circle
-            cx={p.x + 86}
-            cy="150"
-            r="38"
-            fill="rgba(2,6,23,0.28)"
-            stroke="rgba(255,255,255,0.18)"
-          />
-          <text
-            x={p.x + 86}
-            y="160"
-            textAnchor="middle"
-            fontFamily="Plus Jakarta Sans, Inter, system-ui, sans-serif"
-            fontWeight="900"
-            fontSize="22"
-            fill="#ffffff"
-          >
-            {p.label}
-          </text>
-          <rect
-            x={p.x + 34}
-            y="208"
-            width="104"
-            height="28"
-            rx="14"
-            fill="rgba(255,255,255,0.10)"
-            stroke="rgba(255,255,255,0.14)"
-          />
-          <circle cx={p.x + 48} cy="222" r="5" fill={p.tone} />
-          <text
-            x={p.x + 62}
-            y="227"
-            fontFamily="Inter, system-ui, sans-serif"
-            fontWeight="800"
-            fontSize="12"
-            fill="rgba(255,255,255,0.88)"
-          >
-            Top Achiever
-          </text>
-          <text
-            x={p.x + 86}
-            y="266"
-            textAnchor="middle"
-            fontFamily="Inter, system-ui, sans-serif"
-            fontWeight="800"
-            fontSize="12"
-            fill="rgba(255,255,255,0.72)"
-          >
-            {p.name}
-          </text>
-        </g>
-      ))}
-    </svg>
-  )
-
   return (
     <div className="landing">
       <header className="lp-top">
@@ -451,7 +306,12 @@ export default function Home() {
               </div>
               <div className="lp-hero-card-sub">Behind Our Positions in MDCAT</div>
               <div className="lp-winners-media">
-                <WinnersVisual />
+                <img
+                  src={heroImg}
+                  alt="Top achievers"
+                  className="lp-winners-img"
+                  loading="eager"
+                />
               </div>
             </div>
 
@@ -546,8 +406,8 @@ export default function Home() {
             {scorecards.map((card) => (
               <div className={`lp-scorecard lp-tone-${card.tone}`} key={card.name}>
                 <div className="lp-scorecard-badge">{card.badge}</div>
-                <div className="lp-scorecard-photo" aria-hidden="true">
-                  <div className="lp-scorecard-initials">
+                <div className="lp-scorecard-avatarWrap" aria-hidden="true">
+                  <div className="lp-scorecard-avatarTile">
                     {card.name
                       .split(' ')
                       .slice(0, 2)
