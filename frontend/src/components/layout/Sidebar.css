@@ -325,6 +325,93 @@
   -webkit-backdrop-filter: blur(18px);
 }
 
+.sidebar-usercard {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(2, 6, 23, 0.08);
+  background:
+    radial-gradient(420px circle at 0% 0%, rgba(11, 79, 209, 0.14), transparent 60%),
+    radial-gradient(420px circle at 100% 30%, rgba(255, 122, 0, 0.08), transparent 60%),
+    rgba(255, 255, 255, 0.9);
+  padding: 12px 12px;
+  cursor: pointer;
+  box-shadow: 0 18px 44px rgba(2, 6, 23, 0.08);
+  margin-bottom: 12px;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+}
+
+.sidebar-usercard:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 24px 60px rgba(2, 6, 23, 0.1);
+  background:
+    radial-gradient(420px circle at 0% 0%, rgba(11, 79, 209, 0.18), transparent 60%),
+    radial-gradient(420px circle at 100% 30%, rgba(255, 122, 0, 0.1), transparent 60%),
+    rgba(255, 255, 255, 0.96);
+}
+
+.sidebar-usercard:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--brand-glow), 0 24px 60px rgba(2, 6, 23, 0.1);
+}
+
+.sidebar-usercard-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-brand);
+  color: #ffffff;
+  font-weight: 900;
+  box-shadow: var(--shadow-brand);
+  flex-shrink: 0;
+}
+
+.sidebar-usercard-meta {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.sidebar-usercard-name {
+  font-weight: 900;
+  color: var(--text-primary);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-usercard-role {
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 900;
+  color: rgba(15, 23, 42, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.sidebar-usercard-chevron {
+  color: rgba(15, 23, 42, 0.55);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar--collapsed .sidebar-usercard {
+  justify-content: center;
+  padding: 10px;
+}
+
+.sidebar--collapsed .sidebar-usercard-meta,
+.sidebar--collapsed .sidebar-usercard-chevron {
+  display: none;
+}
+
 .sidebar--collapsed .sidebar-bottom {
   padding: 12px 10px;
 }

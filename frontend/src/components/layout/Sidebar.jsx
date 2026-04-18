@@ -155,6 +155,8 @@ export default function Sidebar({
     navigate('/login')
   }
 
+  const initials = `${user?.firstName?.[0] || 'U'}${user?.lastName?.[0] || ''}`.toUpperCase()
+
   const visibleSections = useMemo(() => {
     return NAV_SECTIONS.map((section) => {
       const visibleItems = section.items.filter(
@@ -242,6 +244,28 @@ export default function Sidebar({
       </nav>
 
       <div className="sidebar-bottom">
+        <button
+          className="sidebar-usercard"
+          type="button"
+          onClick={() => handleNav('/profile/edit')}
+          title={collapsed ? 'Profile' : undefined}
+        >
+          <div className="sidebar-usercard-avatar" aria-hidden="true">
+            {initials}
+          </div>
+          <div className="sidebar-usercard-meta">
+            <div className="sidebar-usercard-name">
+              {user?.firstName ? `${user.firstName} ${user?.lastName || ''}`.trim() : 'User'}
+            </div>
+            <div className="sidebar-usercard-role">{user?.role || 'student'}</div>
+          </div>
+          <span className="sidebar-usercard-chevron" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="m9 18 6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </span>
+        </button>
+
         <button
           className="sidebar-item sidebar-item--profile"
           onClick={() => handleNav('/profile/edit')}
