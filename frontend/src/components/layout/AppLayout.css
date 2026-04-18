@@ -25,6 +25,19 @@
   flex-direction: column;
   margin-left: var(--sidebar-width);
   transition: margin-left var(--transition-base);
+  position: relative;
+}
+
+.app-main::before {
+  content: '';
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 320px;
+  background: var(--gradient-hero);
+  z-index: 0;
+  pointer-events: none;
 }
 
 .app-content {
@@ -32,6 +45,8 @@
   padding: var(--space-xl);
   overflow-y: auto;
   min-height: calc(100vh - var(--topbar-height));
+  position: relative;
+  z-index: 1;
 }
 
 /* Sidebar backdrop overlay for mobile */

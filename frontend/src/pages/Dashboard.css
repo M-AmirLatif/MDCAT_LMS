@@ -10,17 +10,18 @@
 
 .dash-header {
   margin-bottom: var(--space-xl);
+  padding: 10px 0 6px;
 }
 
 .dash-title {
   font-size: 28px;
   font-weight: 800;
-  color: var(--text-primary);
+  color: rgba(255, 255, 255, 0.96);
   margin-bottom: 4px;
 }
 
 .dash-subtitle {
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.78);
   font-size: 15px;
 }
 
@@ -30,6 +31,7 @@
   grid-template-columns: 1fr 340px;
   gap: var(--space-xl);
   align-items: start;
+  margin-top: 10px;
 }
 
 /* ── Main Area ── */
