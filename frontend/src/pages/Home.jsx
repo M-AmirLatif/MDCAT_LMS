@@ -448,6 +448,7 @@ export default function Home() {
         </div>
       </section>
 
+      {false && (
       <section className="lp-section lp-section--score">
         <div className="lp-container">
           <div className="lp-section-head">
@@ -494,6 +495,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      )}
 
       <section className="lp-section lp-section--reviews">
         <div className="lp-container">
