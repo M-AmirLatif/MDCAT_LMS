@@ -4,14 +4,14 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--space-xl);
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.86);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border-bottom: 1px solid var(--surface-border);
   position: sticky;
   top: 0;
   z-index: 50;
-  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.02);
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.06);
 }
 
 .topbar-left {
@@ -68,7 +68,7 @@
   width: 100%;
   padding: 12px 18px 12px 42px;
   border-radius: var(--radius-full);
-  background: var(--bg-primary);
+  background: rgba(15, 23, 42, 0.04);
   border: 1px solid var(--surface-border);
   font-size: 14px;
   transition: all var(--transition-fast);
@@ -76,7 +76,7 @@
 }
 
 .topbar-search input:focus {
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.92);
   box-shadow: 0 0 0 4px var(--brand-glow), inset 0 2px 4px rgba(15, 23, 42, 0.01);
   border-color: var(--brand);
 }
@@ -101,7 +101,7 @@
 }
 
 .topbar-action-btn {
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.9);
   border: 1px solid var(--surface-border);
   border-radius: 50%;
   width: 44px;
@@ -132,7 +132,7 @@
   padding: 6px 12px 6px 6px;
   border-radius: var(--radius-full);
   transition: all var(--transition-fast);
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.9);
   border: 1px solid var(--surface-border);
 }
 

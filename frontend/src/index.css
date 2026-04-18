@@ -720,7 +720,7 @@ tr:hover td {
 
 /* ── Page Content ── */
 .page-content {
-  padding: var(--space-xl);
+  padding: 0;
   max-width: var(--content-max-width);
   margin: 0 auto;
   animation: fadeUp 0.5s ease;

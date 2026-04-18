@@ -3,7 +3,7 @@
    ═══════════════════════════════════════════════ */
 
 .dash-container {
-  padding: var(--space-xl);
+  padding: 0;
   max-width: var(--content-max-width);
   margin: 0 auto;
 }
@@ -179,7 +179,7 @@
 .side-avatar-container {
   padding: 6px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(6, 182, 212, 0.4), rgba(139, 92, 246, 0.4));
+  background: linear-gradient(135deg, rgba(11, 79, 209, 0.35), rgba(255, 122, 0, 0.25));
   margin-bottom: 16px;
 }
 
@@ -296,15 +296,15 @@
   font-weight: 700;
   font-size: 12px;
   letter-spacing: 0.02em;
-  background: rgba(79, 70, 229, 0.06);
-  border: 1px solid rgba(79, 70, 229, 0.22);
+  background: rgba(11, 79, 209, 0.06);
+  border: 1px solid rgba(11, 79, 209, 0.22);
   padding: 6px 10px;
   border-radius: var(--radius-full);
   transition: background var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
 }
 .icon-btn:hover {
-  background: rgba(79, 70, 229, 0.1);
-  border-color: rgba(79, 70, 229, 0.32);
+  background: rgba(11, 79, 209, 0.1);
+  border-color: rgba(11, 79, 209, 0.32);
   transform: translateY(-1px);
   color: var(--brand-dark);
 }
@@ -315,7 +315,7 @@
 
 .icon-btn:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.14);
+  box-shadow: 0 0 0 4px var(--brand-glow);
 }
 
 /* Todo / Actions */

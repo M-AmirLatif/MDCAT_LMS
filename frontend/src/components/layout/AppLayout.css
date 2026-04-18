@@ -14,6 +14,10 @@
   display: none;
 }
 
+.app-layout .role-tabs {
+  display: none;
+}
+
 .app-main {
   flex: 1;
   min-width: 0;
@@ -25,7 +29,7 @@
 
 .app-content {
   flex: 1;
-  padding: 0;
+  padding: var(--space-xl);
   overflow-y: auto;
   min-height: calc(100vh - var(--topbar-height));
 }

@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { getAuthUser } from '../services/authStorage'
 import heroImg from '../assets/hero.png'
 import './Home.css'
@@ -7,7 +7,6 @@ import './Home.css'
 export default function Home() {
   const user = getAuthUser()
   const navigate = useNavigate()
-  const [whatsapp, setWhatsapp] = useState('')
 
   const trustStats = useMemo(
     () => [
@@ -70,11 +69,6 @@ export default function Home() {
     [],
   )
 
-  const handleJoin = (e) => {
-    e.preventDefault()
-    navigate('/register')
-  }
-
   return (
     <div className="landing">
       <header className="lp-top">
@@ -132,25 +126,22 @@ export default function Home() {
 
             <div className="lp-hero-card lp-hero-card--join">
               <h3>Join New Session Today</h3>
-              <form className="lp-join-form" onSubmit={handleJoin}>
-                <input
-                  value={whatsapp}
-                  onChange={(e) => setWhatsapp(e.target.value)}
-                  placeholder="Enter Your Whatsapp No"
-                  inputMode="tel"
-                  aria-label="WhatsApp number"
-                />
-                <button className="btn btn-primary lp-join-btn" type="submit">
+              <div className="lp-join-actions">
+                <button
+                  className="btn btn-primary lp-join-btn"
+                  type="button"
+                  onClick={() => navigate('/register')}
+                >
                   Start Your Preparation Now
                 </button>
-              </form>
+                <Link className="btn btn-secondary lp-join-btn-secondary" to="/login">
+                  I already have an account
+                </Link>
+              </div>
               <div className="lp-join-meta">
                 <div className="lp-join-count">
                   <strong className="lp-accent">400.6k+</strong>{' '}
                   <span>Online Registered Students</span>
-                </div>
-                <div className="lp-join-login">
-                  Already have an account? <Link to="/login">Login</Link>
                 </div>
               </div>
             </div>
