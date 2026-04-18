@@ -83,6 +83,17 @@
   margin-bottom: 20px;
 }
 
+.lp-hero-logo {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0 18px;
+}
+
+.lp-batch-logo {
+  width: min(760px, 100%);
+  height: auto;
+}
+
 .lp-hero-head h1 {
   font-family: var(--font-heading);
   font-weight: 900;
@@ -101,9 +112,10 @@
 
 .lp-hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 420px;
+  grid-template-columns: 1fr;
   gap: 22px;
   align-items: stretch;
+  justify-items: center;
 }
 
 .lp-hero-card {
@@ -169,6 +181,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  width: min(520px, 100%);
 }
 
 .lp-hero-card--join h3 {

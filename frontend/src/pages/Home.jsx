@@ -1,7 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useMemo } from 'react'
 import { getAuthUser } from '../services/authStorage'
-import heroImg from '../assets/hero.png'
 import './Home.css'
 
 export default function Home() {
@@ -260,6 +259,76 @@ export default function Home() {
     }
   }
 
+  const MdcatBatchLogo = () => (
+    <svg
+      className="lp-batch-logo"
+      viewBox="0 0 940 360"
+      xmlns="http://www.w3.org/2000/svg"
+      role="img"
+      aria-label="MDCAT Batch 2026"
+    >
+      <defs>
+        <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#FFD06A" />
+          <stop offset="55%" stopColor="#F2B544" />
+          <stop offset="100%" stopColor="#D8901A" />
+        </linearGradient>
+        <linearGradient id="navy" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#0b4fd1" />
+          <stop offset="55%" stopColor="#063aa4" />
+          <stop offset="100%" stopColor="#041f63" />
+        </linearGradient>
+        <filter id="logoShadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="16" stdDeviation="14" floodColor="#020617" floodOpacity="0.35" />
+        </filter>
+      </defs>
+
+      <g filter="url(#logoShadow)">
+        <rect x="30" y="36" width="880" height="288" rx="44" fill="url(#navy)" />
+        <rect x="30" y="36" width="880" height="288" rx="44" fill="rgba(255,255,255,0.05)" />
+        <rect x="30" y="36" width="880" height="288" rx="44" stroke="rgba(255,255,255,0.18)" />
+      </g>
+
+      {/* plus badge */}
+      <g transform="translate(78 76)">
+        <circle r="44" cx="0" cy="0" fill="#ff5a5f" />
+        <circle r="44" cx="0" cy="0" fill="rgba(255,255,255,0.08)" />
+        <path
+          d="M-14 0h28M0-14v28"
+          stroke="#ffffff"
+          strokeWidth="12"
+          strokeLinecap="round"
+        />
+      </g>
+
+      {/* MDCAT */}
+      <text
+        x="110"
+        y="188"
+        fontFamily="Plus Jakarta Sans, Inter, system-ui, sans-serif"
+        fontWeight="900"
+        fontSize="160"
+        letterSpacing="2"
+        fill="url(#gold)"
+      >
+        MDCAT
+      </text>
+
+      {/* BATCH 2026 */}
+      <text
+        x="110"
+        y="290"
+        fontFamily="Plus Jakarta Sans, Inter, system-ui, sans-serif"
+        fontWeight="900"
+        fontSize="108"
+        letterSpacing="3"
+        fill="#ffffff"
+      >
+        BATCH 2026
+      </text>
+    </svg>
+  )
+
   return (
     <div className="landing">
       <header className="lp-top">
@@ -299,22 +368,11 @@ export default function Home() {
             <p>Best preparation from the comfort of your home</p>
           </div>
 
-          <div className="lp-hero-grid">
-            <div className="lp-hero-card lp-hero-card--winners">
-              <div className="lp-hero-card-title">
-                <span aria-hidden="true">🏆</span> The Winning Strategy
-              </div>
-              <div className="lp-hero-card-sub">Behind Our Positions in MDCAT</div>
-              <div className="lp-winners-media">
-                <img
-                  src={heroImg}
-                  alt="Top achievers"
-                  className="lp-winners-img"
-                  loading="eager"
-                />
-              </div>
-            </div>
+          <div className="lp-hero-logo" aria-hidden="false">
+            <MdcatBatchLogo />
+          </div>
 
+          <div className="lp-hero-grid">
             <div className="lp-hero-card lp-hero-card--join">
               <h3>Join New Session Today</h3>
               <div className="lp-join-actions">
