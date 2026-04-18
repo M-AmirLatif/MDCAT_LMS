@@ -41,15 +41,6 @@
   z-index: 1;
 }
 
-/* Landing-style soft backdrop behind app pages */
-.app-content::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: var(--gradient-page);
-  z-index: -1;
-}
-
 /* Sidebar backdrop overlay for mobile */
 .sidebar-overlay {
   display: none;

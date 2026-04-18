@@ -51,18 +51,21 @@
 
 .dash-cards-row {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* Auto-fit collapses empty tracks so a single enrolled course can expand to fill the full row */
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: var(--space-md);
+  align-items: stretch;
 }
 
 .course-block {
   background: var(--surface);
   border-radius: var(--radius-lg);
-  padding: 20px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  min-height: 140px;
+  min-height: 220px;
+  height: 100%;
   transition: all var(--transition-base);
   cursor: pointer;
   border: 1px solid var(--surface-border);
