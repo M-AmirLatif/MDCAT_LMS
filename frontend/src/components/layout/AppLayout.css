@@ -5,7 +5,9 @@
 .app-layout {
   display: flex;
   min-height: 100vh;
-  background: var(--gradient-page);
+  /* Keep the deep-blue app background across all authenticated pages (per references). */
+  background: var(--gradient-hero);
+  background-attachment: fixed;
 }
 
 .app-layout--collapsed {
