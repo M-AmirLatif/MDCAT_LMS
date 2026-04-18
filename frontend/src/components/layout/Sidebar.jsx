@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './Sidebar.css'
 import { clearAuth, getAuthUser } from '../../services/authStorage'
@@ -123,10 +124,26 @@ const NAV_SECTIONS = [
   },
 ]
 
-export default function Sidebar({ isOpen, onClose, currentPath }) {
+export default function Sidebar({
+  isOpen,
+  onClose,
+  currentPath,
+  collapsed = false,
+  onToggleCollapse,
+}) {
   const navigate = useNavigate()
   const user = getAuthUser()
   const role = user?.role || 'student'
+  const [isDesktop, setIsDesktop] = useState(() => {
+    if (typeof window === 'undefined') return true
+    return window.innerWidth > 1024
+  })
+
+  useEffect(() => {
+    const onResize = () => setIsDesktop(window.innerWidth > 1024)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   const handleNav = (path) => {
     navigate(path)
@@ -138,47 +155,90 @@ export default function Sidebar({ isOpen, onClose, currentPath }) {
     navigate('/login')
   }
 
+  const visibleSections = useMemo(() => {
+    return NAV_SECTIONS.map((section) => {
+      const visibleItems = section.items.filter(
+        (item) => item.roles.includes(role) || role === 'superadmin',
+      )
+      return { ...section, visibleItems }
+    }).filter((s) => s.visibleItems.length > 0)
+  }, [role])
+
+  const sidebarClass = useMemo(() => {
+    const classes = ['sidebar']
+    if (isOpen) classes.push('sidebar--open')
+    if (collapsed) classes.push('sidebar--collapsed')
+    return classes.join(' ')
+  }, [collapsed, isOpen])
+
   return (
-    <aside className={`sidebar ${isOpen ? 'sidebar--open' : ''}`}>
-      <div className="sidebar-brand" onClick={() => handleNav('/dashboard')}>
-        <div className="sidebar-logo">
-          <span className="sidebar-logo-icon">M</span>
-        </div>
-        <div className="sidebar-brand-text">
-          <h1>MDCAT LMS</h1>
-          <span className="sidebar-tagline">Learning Platform</span>
-        </div>
+    <aside className={sidebarClass}>
+      <div className="sidebar-brand">
+        <button
+          className="sidebar-brand-btn"
+          type="button"
+          onClick={() => handleNav('/dashboard')}
+          title="Go to Dashboard"
+        >
+          <div className="sidebar-logo">
+            <span className="sidebar-logo-icon" aria-hidden="true">
+              M
+            </span>
+          </div>
+          <div className="sidebar-brand-text">
+            <h1>MDCAT LMS</h1>
+            <span className="sidebar-tagline">Learning Platform</span>
+          </div>
+        </button>
+
+        {isDesktop && (
+          <button
+            className="sidebar-collapse"
+            type="button"
+            onClick={onToggleCollapse}
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            title={collapsed ? 'Expand' : 'Collapse'}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M14 7 9 12l5 5"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        )}
       </div>
 
       <nav className="sidebar-nav">
-        {NAV_SECTIONS.map((section) => {
-          const visibleItems = section.items.filter((item) => item.roles.includes(role) || role === 'superadmin')
-          if (visibleItems.length === 0) return null
+        {visibleSections.map((section) => (
+          <div key={section.label} className="sidebar-section">
+            <span className="sidebar-section-label">{section.label}</span>
+            {section.visibleItems.map((item) => {
+              const isActive =
+                currentPath === item.path ||
+                (item.path !== '/dashboard' && currentPath.startsWith(item.path))
 
-          return (
-            <div key={section.label} className="sidebar-section">
-              <span className="sidebar-section-label">{section.label}</span>
-              {visibleItems.map((item) => {
-                const isActive =
-                  currentPath === item.path ||
-                  (item.path !== '/dashboard' && currentPath.startsWith(item.path))
-
-                return (
-                  <button
-                    key={item.key}
-                    className={`sidebar-item ${isActive ? 'sidebar-item--active' : ''}`}
-                    onClick={() => handleNav(item.path)}
-                    type="button"
-                  >
-                    <span className="sidebar-item-indicator" aria-hidden="true" />
-                    <span className="sidebar-item-icon">{item.icon}</span>
-                    <span className="sidebar-item-label">{item.label}</span>
-                  </button>
-                )
-              })}
-            </div>
-          )
-        })}
+              return (
+                <button
+                  key={item.key}
+                  className={`sidebar-item ${isActive ? 'sidebar-item--active' : ''}`}
+                  onClick={() => handleNav(item.path)}
+                  type="button"
+                  title={collapsed ? item.label : undefined}
+                >
+                  <span className="sidebar-item-indicator" aria-hidden="true" />
+                  <span className="sidebar-item-icon" aria-hidden="true">
+                    {item.icon}
+                  </span>
+                  <span className="sidebar-item-label">{item.label}</span>
+                </button>
+              )
+            })}
+          </div>
+        ))}
       </nav>
 
       <div className="sidebar-bottom">
@@ -186,6 +246,7 @@ export default function Sidebar({ isOpen, onClose, currentPath }) {
           className="sidebar-item sidebar-item--profile"
           onClick={() => handleNav('/profile/edit')}
           type="button"
+          title={collapsed ? 'Edit Profile' : undefined}
         >
           <span className="sidebar-item-indicator" aria-hidden="true" />
           <span className="sidebar-item-icon">{ICONS.profile}</span>
@@ -195,6 +256,7 @@ export default function Sidebar({ isOpen, onClose, currentPath }) {
           className="sidebar-item sidebar-item--logout"
           onClick={handleLogout}
           type="button"
+          title={collapsed ? 'Logout' : undefined}
         >
           <span className="sidebar-item-indicator" aria-hidden="true" />
           <span className="sidebar-item-icon">{ICONS.logout}</span>

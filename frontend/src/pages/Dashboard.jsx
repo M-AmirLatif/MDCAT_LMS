@@ -95,7 +95,7 @@ export default function Dashboard() {
 
   return (
     <div className="dash-container animate-fade-up">
-      <div className="dash-header flex justify-between items-center">
+      <div className="dash-header">
         <div>
           <h2 className="dash-title">Overview</h2>
           <p className="dash-subtitle">Welcome back, {user?.firstName}. Keep your progress steady.</p>
@@ -108,7 +108,7 @@ export default function Dashboard() {
       </div>
 
       <div className="dash-grid">
-        <div className="dash-main">
+        <div className="dash-area dash-area--courses">
           <div className="dash-cards-row">
             {enrolledCourses.slice(0, 3).map((course) => (
               <div
@@ -125,7 +125,10 @@ export default function Dashboard() {
                   <div className="progress-bar-bg">
                     <div
                       className="progress-bar-fill"
-                      style={{ width: `${Math.floor(Math.random() * 60) + 20}%`, background: subjectColor(course.category) }}
+                      style={{
+                        width: `${Math.floor(Math.random() * 60) + 20}%`,
+                        background: subjectColor(course.category),
+                      }}
                     />
                   </div>
                   <span className="progress-text">{course.topics?.length || 0} Modules</span>
@@ -133,43 +136,25 @@ export default function Dashboard() {
               </div>
             ))}
             {enrolledCourses.length === 0 && (
-              <div className="course-block card-interactive placeholder-block" onClick={() => navigate('/courses')}>
+              <div
+                className="course-block card-interactive placeholder-block"
+                onClick={() => navigate('/courses')}
+              >
                 <h4>Browse Subscriptions</h4>
                 <p>Discover MDCAT courses</p>
-                <button className="btn btn-sm btn-primary" style={{ marginTop: 'auto' }} type="button">View All</button>
+                <button
+                  className="btn btn-sm btn-primary"
+                  style={{ marginTop: 'auto' }}
+                  type="button"
+                >
+                  View All
+                </button>
               </div>
             )}
           </div>
-
-          <div className="dash-activity-panel">
-            <div className="panel-header">
-              <h3>Training Progress</h3>
-              <select className="minimal-select">
-                <option>Last 6 months</option>
-                <option>Last 30 days</option>
-              </select>
-            </div>
-            <div className="chart-wrapper">
-              <ResponsiveContainer width="100%" height={250}>
-                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--surface-border)" />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--text-muted)' }} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--text-muted)' }} />
-                  <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: 'var(--shadow-md)' }} />
-                  <Area type="monotone" dataKey="score" stroke="var(--accent)" fillOpacity={1} fill="url(#colorScore)" strokeWidth={3} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
         </div>
 
-        <div className="dash-side">
+        <div className="dash-area dash-area--profile">
           <div className="dash-widget side-profile">
             <div className="side-avatar-container">
               <div className="side-avatar">{user?.firstName?.charAt(0) || 'U'}</div>
@@ -189,7 +174,44 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+        </div>
 
+        <div className="dash-area dash-area--chart">
+          <div className="dash-activity-panel">
+            <div className="panel-header">
+              <h3>Training Progress</h3>
+              <select className="minimal-select">
+                <option>Last 6 months</option>
+                <option>Last 30 days</option>
+              </select>
+            </div>
+            <div className="chart-wrapper">
+              <ResponsiveContainer width="100%" height={250}>
+                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--surface-border)" />
+                  <XAxis
+                    dataKey="name"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 12, fill: 'var(--text-muted)' }}
+                    dy={10}
+                  />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--text-muted)' }} />
+                  <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: 'var(--shadow-md)' }} />
+                  <Area type="monotone" dataKey="score" stroke="var(--accent)" fillOpacity={1} fill="url(#colorScore)" strokeWidth={3} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+
+        <div className="dash-area dash-area--activity">
           <div className="dash-widget">
             <div className="panel-header mb-3">
               <h3>Recent Activity</h3>
@@ -211,7 +233,9 @@ export default function Dashboard() {
               )}
             </div>
           </div>
+        </div>
 
+        <div className="dash-area dash-area--actions">
           <div className="dash-widget">
             <div className="panel-header mb-3">
               <h3>Quick Actions</h3>

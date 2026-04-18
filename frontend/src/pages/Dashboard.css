@@ -11,6 +11,10 @@
 .dash-header {
   margin-bottom: var(--space-xl);
   padding: 10px 0 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-lg);
 }
 
 .dash-title {
@@ -28,22 +32,26 @@
 /* ── Grid Layout ── */
 .dash-grid {
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  grid-template-areas:
+    "courses profile"
+    "chart activity"
+    "chart actions";
   gap: var(--space-xl);
   align-items: start;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 /* ── Main Area ── */
-.dash-main {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xl);
-}
+.dash-area--courses { grid-area: courses; }
+.dash-area--profile { grid-area: profile; }
+.dash-area--chart { grid-area: chart; }
+.dash-area--activity { grid-area: activity; }
+.dash-area--actions { grid-area: actions; }
 
 .dash-cards-row {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-md);
 }
 
@@ -370,6 +378,12 @@
 @media (max-width: 1024px) {
   .dash-grid {
     grid-template-columns: 1fr;
+    grid-template-areas:
+      "courses"
+      "profile"
+      "chart"
+      "activity"
+      "actions";
   }
 }
 

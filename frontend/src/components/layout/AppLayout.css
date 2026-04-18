@@ -8,6 +8,10 @@
   background: var(--gradient-hero);
 }
 
+.app-layout--collapsed {
+  --sidebar-width: var(--sidebar-collapsed);
+}
+
 /* Many pages still render their own legacy `.navbar` header. Hide it when using AppLayout
    to avoid double headers (Topbar + page navbar). */
 .app-layout .navbar {
@@ -35,6 +39,15 @@
   min-height: calc(100vh - var(--topbar-height));
   position: relative;
   z-index: 1;
+}
+
+/* Landing-style soft backdrop behind app pages */
+.app-content::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: var(--gradient-page);
+  z-index: -1;
 }
 
 /* Sidebar backdrop overlay for mobile */
