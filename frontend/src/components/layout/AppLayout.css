@@ -5,7 +5,7 @@
 .app-layout {
   display: flex;
   min-height: 100vh;
-  background: var(--gradient-page);
+  background: var(--gradient-hero);
 }
 
 /* Many pages still render their own legacy `.navbar` header. Hide it when using AppLayout
@@ -26,18 +26,6 @@
   margin-left: var(--sidebar-width);
   transition: margin-left var(--transition-base);
   position: relative;
-}
-
-.app-main::before {
-  content: '';
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 320px;
-  background: var(--gradient-hero);
-  z-index: 0;
-  pointer-events: none;
 }
 
 .app-content {
