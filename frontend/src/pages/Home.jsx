@@ -10,25 +10,105 @@ export default function Home() {
 
   const trustStats = useMemo(
     () => [
-      { value: '400.6k+', label: 'Registered Students' },
-      { value: '4.71', label: 'Rating (4.2k+ reviews)' },
-      { value: '30.2M+', label: 'Questions Attempted' },
-      { value: '6k+', label: 'Qualified Doctors' },
-      { value: '10k+', label: 'Engineers & IT Professionals' },
-      { value: '500+', label: 'Cities Worldwide' },
-      { value: '9+ Years', label: 'Academic Excellence' },
-      { value: '96%', label: 'Parent Satisfaction' },
+      {
+        key: 'students',
+        value: '400.6k+',
+        label: 'Registered Students',
+        tone: 'blue',
+      },
+      {
+        key: 'rating',
+        value: '4.71',
+        label: 'Rating (4.2k+ reviews)',
+        tone: 'orange',
+      },
+      {
+        key: 'questions',
+        value: '30.2M+',
+        label: 'Questions Attempted',
+        tone: 'violet',
+      },
+      {
+        key: 'doctors',
+        value: '6k+',
+        label: 'Qualified Doctors',
+        tone: 'green',
+      },
+      {
+        key: 'engineers',
+        value: '10k+',
+        label: 'Engineers & IT Professionals',
+        tone: 'blue',
+      },
+      {
+        key: 'cities',
+        value: '500+',
+        label: 'Cities Worldwide',
+        tone: 'orange',
+      },
+      {
+        key: 'years',
+        value: '9+ Years',
+        label: 'Academic Excellence',
+        tone: 'violet',
+      },
+      {
+        key: 'satisfaction',
+        value: '96%',
+        label: 'Parent Satisfaction',
+        tone: 'green',
+      },
     ],
     [],
   )
 
   const scorecards = useMemo(
     () => [
-      { name: 'Saad Shabbir', city: 'Multan', score: 197, badge: '3rd' },
-      { name: 'Malaika Tul Eman', city: 'Sialkot', score: 196, badge: '3rd' },
-      { name: 'Abdullah Tariq', city: 'Sahiwal', score: 196, badge: '4th' },
-      { name: 'Raamiz Salman', city: 'Islamabad', score: 196, badge: '2nd' },
-      { name: 'Ghadiya Waheed', city: 'Jhelum', score: 194, badge: '4th' },
+      {
+        name: 'Saad Shabbir',
+        city: 'Multan',
+        score: 197,
+        badge: '3rd',
+        uni: 'KEMU',
+        year: 'MDCAT 2024',
+        tone: 'blue',
+      },
+      {
+        name: 'Malaika Tul Eman',
+        city: 'Sialkot',
+        score: 196,
+        badge: '3rd',
+        uni: 'KEMU',
+        year: 'MDCAT 2024',
+        tone: 'green',
+      },
+      {
+        name: 'Abdullah Tariq',
+        city: 'Sahiwal',
+        score: 196,
+        badge: '4th',
+        uni: 'KEMU',
+        year: 'MDCAT 2024',
+        tone: 'violet',
+      },
+      {
+        name: 'Raamiz Salman',
+        city: 'Islamabad',
+        score: 196,
+        badge: '2nd',
+        uni: 'AKU',
+        year: 'MDCAT 2022',
+        tone: 'orange',
+      },
+      {
+        name: 'Ghadiya Waheed',
+        city: 'Jhelum',
+        score: 194,
+        badge: '4th',
+        uni: 'KEMU',
+        year: 'MDCAT 2024',
+        tone: 'blue',
+      },
     ],
     [],
   )
@@ -68,6 +148,117 @@ export default function Home() {
     ],
     [],
   )
+
+  const StatIcon = ({ name }) => {
+    const common = {
+      width: 22,
+      height: 22,
+      viewBox: '0 0 24 24',
+      fill: 'none',
+      xmlns: 'http://www.w3.org/2000/svg',
+      'aria-hidden': true,
+      focusable: 'false',
+    }
+
+    switch (name) {
+      case 'students':
+        return (
+          <svg {...common}>
+            <path
+              d="M16 11a4 4 0 1 0-8 0 4 4 0 0 0 8 0Z"
+              stroke="currentColor"
+              strokeWidth="2"
+            />
+            <path
+              d="M4 21a8 8 0 0 1 16 0"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+          </svg>
+        )
+      case 'rating':
+        return (
+          <svg {...common}>
+            <path
+              d="M12 3.6 14.5 9l5.9.6-4.4 3.8 1.3 5.8L12 16.9 6.7 19.2 8 13.4 3.6 9.6 9.5 9 12 3.6Z"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinejoin="round"
+            />
+          </svg>
+        )
+      case 'questions':
+        return (
+          <svg {...common}>
+            <path
+              d="M4.5 5.5h15v10h-5l-3 3-3-3h-4v-10Z"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M9 9a3 3 0 0 1 6 0c0 2-2 2-2 3"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            <path
+              d="M12 14.5h.01"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+          </svg>
+        )
+      case 'doctors':
+        return (
+          <svg {...common}>
+            <path d="M10 3h4v3a2 2 0 0 1-4 0V3Z" stroke="currentColor" strokeWidth="2" />
+            <path d="M7 7h10v5a5 5 0 0 1-10 0V7Z" stroke="currentColor" strokeWidth="2" />
+            <path d="M12 11v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M10 13h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+        )
+      case 'engineers':
+        return (
+          <svg {...common}>
+            <path d="M4 20h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M7 20v-8l5-5 5 5v8" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+            <path d="M10 20v-4h4v4" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+          </svg>
+        )
+      case 'cities':
+        return (
+          <svg {...common}>
+            <path d="M4 20V9l6-3v14" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+            <path d="M10 20V4l10 5v11" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+            <path d="M14 10h2M14 14h2M6 12h2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+        )
+      case 'years':
+        return (
+          <svg {...common}>
+            <path d="M7 3v3M17 3v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M4 8h16v13H4V8Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+            <path d="M7 12h4M7 16h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+        )
+      case 'satisfaction':
+        return (
+          <svg {...common}>
+            <path
+              d="M12 21s8-4.5 8-11a5 5 0 0 0-9-3 5 5 0 0 0-9 3c0 6.5 8 11 8 11Z"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinejoin="round"
+            />
+          </svg>
+        )
+      default:
+        return null
+    }
+  }
 
   return (
     <div className="landing">
@@ -187,8 +378,10 @@ export default function Home() {
 
           <div className="lp-stats-grid">
             {trustStats.map((s) => (
-              <div className="lp-stat" key={s.label}>
-                <div className="lp-stat-icon" aria-hidden="true" />
+              <div className={`lp-stat lp-tone-${s.tone}`} key={s.label}>
+                <div className="lp-stat-icon" aria-hidden="true">
+                  <StatIcon name={s.key} />
+                </div>
                 <div className="lp-stat-value">{s.value}</div>
                 <div className="lp-stat-label">{s.label}</div>
               </div>
@@ -211,14 +404,20 @@ export default function Home() {
 
           <div className="lp-score-grid">
             {scorecards.map((card) => (
-              <div className="lp-scorecard" key={card.name}>
+              <div className={`lp-scorecard lp-tone-${card.tone}`} key={card.name}>
                 <div className="lp-scorecard-badge">{card.badge}</div>
-                <div className="lp-scorecard-avatar" aria-hidden="true">
-                  {card.name
-                    .split(' ')
-                    .slice(0, 2)
-                    .map((p) => p[0])
-                    .join('')}
+                <div className="lp-scorecard-photo" aria-hidden="true">
+                  <div className="lp-scorecard-initials">
+                    {card.name
+                      .split(' ')
+                      .slice(0, 2)
+                      .map((p) => p[0])
+                      .join('')}
+                  </div>
+                </div>
+                <div className="lp-scorecard-tags">
+                  <span className="lp-tag lp-tag--uni">{card.uni}</span>
+                  <span className="lp-tag">{card.year}</span>
                 </div>
                 <div className="lp-scorecard-score">
                   <strong>{card.score}</strong>
