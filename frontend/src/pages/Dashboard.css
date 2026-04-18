@@ -20,12 +20,12 @@
 .dash-title {
   font-size: 28px;
   font-weight: 800;
-  color: rgba(255, 255, 255, 0.96);
+  color: var(--text-primary);
   margin-bottom: 4px;
 }
 
 .dash-subtitle {
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--text-muted);
   font-size: 15px;
 }
 
