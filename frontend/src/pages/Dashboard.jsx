@@ -92,6 +92,7 @@ export default function Dashboard() {
   }
 
   const isTeacher = ['teacher', 'admin', 'superadmin'].includes(user?.role)
+  const shownCourses = enrolledCourses.slice(0, 3)
 
   return (
     <div className="dash-container animate-fade-up">
@@ -109,8 +110,8 @@ export default function Dashboard() {
 
       <div className="dash-grid">
         <div className="dash-area dash-area--courses">
-          <div className="dash-cards-row">
-            {enrolledCourses.slice(0, 3).map((course) => (
+          <div className={`dash-cards-row dash-cards-row--count-${Math.min(shownCourses.length || 1, 3)}`}>
+            {shownCourses.map((course) => (
               <div
                 key={course._id}
                 className="course-block card-interactive"
@@ -135,22 +136,6 @@ export default function Dashboard() {
                 </div>
               </div>
             ))}
-            {enrolledCourses.length === 0 && (
-              <div
-                className="course-block card-interactive placeholder-block"
-                onClick={() => navigate('/courses')}
-              >
-                <h4>Browse Subscriptions</h4>
-                <p>Discover MDCAT courses</p>
-                <button
-                  className="btn btn-sm btn-primary"
-                  style={{ marginTop: 'auto' }}
-                  type="button"
-                >
-                  View All
-                </button>
-              </div>
-            )}
           </div>
         </div>
 

@@ -49,12 +49,27 @@
 .dash-area--activity { grid-area: activity; }
 .dash-area--actions { grid-area: actions; }
 
+.dash-area--courses {
+  height: 100%;
+  display: flex;
+}
+
 .dash-cards-row {
   display: grid;
-  /* Auto-fit collapses empty tracks so a single enrolled course can expand to fill the full row */
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  /* Fill the available space cleanly for 1/2/3 cards */
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: var(--space-md);
   align-items: stretch;
+  width: 100%;
+  height: 100%;
+}
+
+.dash-cards-row--count-1 {
+  grid-template-columns: 1fr;
+}
+
+.dash-cards-row--count-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .course-block {
@@ -90,6 +105,116 @@
   margin-bottom: 4px;
 }
 
+.course-block--filler {
+  cursor: default;
+  background:
+    radial-gradient(900px circle at 0% 0%, rgba(255, 255, 255, 0.14), transparent 60%),
+    radial-gradient(900px circle at 100% 100%, rgba(255, 122, 0, 0.12), transparent 58%),
+    linear-gradient(135deg, rgba(11, 79, 209, 0.96), rgba(6, 19, 56, 0.96));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 30px 80px rgba(2, 6, 23, 0.35);
+  color: rgba(255, 255, 255, 0.92);
+  overflow: hidden;
+  position: relative;
+  min-height: 220px;
+}
+
+.course-block--filler::before {
+  content: '';
+  position: absolute;
+  inset: -40% -20% auto -20%;
+  height: 70%;
+  background: radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.22), transparent 55%);
+  pointer-events: none;
+}
+
+.course-block--filler .filler-top {
+  position: relative;
+  z-index: 1;
+}
+
+.course-block--filler .filler-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+.course-block--filler .filler-badge .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 12px rgba(255, 122, 0, 0.28);
+}
+
+.course-block--filler .filler-title {
+  margin-top: 14px;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.course-block--filler .filler-subtitle {
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.78);
+  max-width: 48ch;
+}
+
+.course-block--filler .filler-actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.course-block--filler .filler-actions .btn-secondary {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: rgba(2, 6, 23, 0.92);
+}
+
+.course-block--filler .filler-stats {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+  padding-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.course-block--filler .mini {
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.course-block--filler .mini-k {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.course-block--filler .mini-v {
+  margin-top: 4px;
+  font-weight: 900;
+}
+
 .placeholder-block p {
   font-size: 13px;
   color: var(--text-muted);
@@ -107,11 +232,12 @@
   font-weight: 700;
   line-height: 1.2;
   color: var(--text-primary);
-  margin-bottom: auto;
+  margin: 0;
 }
 
 .course-block-progress {
   margin-top: auto;
+  width: 100%;
 }
 
 .progress-bar-bg {
@@ -131,6 +257,7 @@
   font-size: 12px;
   color: var(--text-secondary);
   font-weight: 600;
+  display: block;
 }
 
 /* ── Activity Panel (Chart) ── */
@@ -396,5 +523,9 @@
   }
   .dash-cards-row {
     grid-template-columns: 1fr;
+  }
+
+  .course-block--filler {
+    grid-column: auto !important;
   }
 }
