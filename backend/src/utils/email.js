@@ -22,6 +22,17 @@ const stripWrappingQuotes = (value) => {
   return trimmed
 }
 
+const normalizeFrom = (value) => {
+  const stripped = stripWrappingQuotes(value)
+  if (!stripped) return stripped
+  // Tolerate accidental whitespace around angle-bracket address in env vars.
+  return String(stripped)
+    .trim()
+    .replace(/\s+</g, ' <')
+    .replace(/<\s+/g, '<')
+    .replace(/\s+>/g, '>')
+}
+
 const createTransporter = () => {
   const {
     SMTP_SERVICE,
@@ -63,7 +74,7 @@ const transporter = createTransporter()
 
 const getEmailStatus = () => {
   const from =
-    stripWrappingQuotes(process.env.SMTP_FROM) ||
+    normalizeFrom(process.env.SMTP_FROM) ||
     (resendApiKey ? 'MDCAT LMS <onboarding@resend.dev>' : 'MDCAT LMS <no-reply@mdcat-lms.com>')
 
   const smtpConfigured = Boolean(transporter)
@@ -87,7 +98,7 @@ const sendEmailViaResend = async ({ to, subject, text, html }) => {
     throw new Error('Email service not configured')
   }
 
-  const from = stripWrappingQuotes(process.env.SMTP_FROM) || 'MDCAT LMS <onboarding@resend.dev>'
+  const from = normalizeFrom(process.env.SMTP_FROM) || 'MDCAT LMS <onboarding@resend.dev>'
   const payload = {
     from,
     to: Array.isArray(to) ? to : [to],
@@ -154,7 +165,7 @@ const sendEmail = async ({ to, subject, text, html }) => {
 
   if (!transporter) throw new Error('Email service not configured')
 
-  const from = stripWrappingQuotes(process.env.SMTP_FROM) || 'MDCAT LMS <no-reply@mdcat-lms.com>'
+  const from = normalizeFrom(process.env.SMTP_FROM) || 'MDCAT LMS <no-reply@mdcat-lms.com>'
 
   return transporter.sendMail({
     from,
