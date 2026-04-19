@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer')
+const https = require('https')
 
 const SMTP_TIMEOUTS = {
   // Keep API requests responsive even if SMTP is slow/unreachable.
@@ -8,6 +9,18 @@ const SMTP_TIMEOUTS = {
 }
 
 const resendApiKey = process.env.RESEND_API_KEY
+
+const stripWrappingQuotes = (value) => {
+  if (!value) return value
+  const trimmed = String(value).trim()
+  if (
+    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    return trimmed.slice(1, -1)
+  }
+  return trimmed
+}
 
 const createTransporter = () => {
   const {
@@ -53,7 +66,7 @@ const sendEmailViaResend = async ({ to, subject, text, html }) => {
     throw new Error('Email service not configured')
   }
 
-  const from = process.env.SMTP_FROM || 'MDCAT LMS <onboarding@resend.dev>'
+  const from = stripWrappingQuotes(process.env.SMTP_FROM) || 'MDCAT LMS <onboarding@resend.dev>'
   const payload = {
     from,
     to: Array.isArray(to) ? to : [to],
@@ -62,36 +75,54 @@ const sendEmailViaResend = async ({ to, subject, text, html }) => {
     ...(text ? { text } : {}),
   }
 
-  const controller = new AbortController()
   const timeoutMs = Number(process.env.RESEND_TIMEOUT_MS || 10000)
-  const timeout = setTimeout(() => controller.abort(), timeoutMs)
+  const body = JSON.stringify(payload)
 
-  try {
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${resendApiKey}`,
-        'Content-Type': 'application/json',
+  return new Promise((resolve, reject) => {
+    const req = https.request(
+      {
+        hostname: 'api.resend.com',
+        path: '/emails',
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${resendApiKey}`,
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(body),
+        },
       },
-      body: JSON.stringify(payload),
-      signal: controller.signal,
+      (res) => {
+        let raw = ''
+        res.setEncoding('utf8')
+        res.on('data', (chunk) => {
+          raw += chunk
+        })
+        res.on('end', () => {
+          const status = res.statusCode || 0
+          const data = raw ? JSON.parse(raw) : {}
+
+          if (status < 200 || status >= 300) {
+            const message =
+              data?.message || data?.error || `Resend error (${status})`
+            const err = new Error(message)
+            err.code = 'RESEND_ERROR'
+            err.responseCode = status
+            err.details = data
+            return reject(err)
+          }
+
+          return resolve(data)
+        })
+      },
+    )
+
+    req.on('error', (err) => reject(err))
+    req.setTimeout(timeoutMs, () => {
+      req.destroy(new Error(`Resend timeout after ${timeoutMs}ms`))
     })
 
-    const data = await response.json().catch(() => ({}))
-    if (!response.ok) {
-      const message =
-        data?.message || data?.error || `Resend error (${response.status})`
-      const err = new Error(message)
-      err.code = 'RESEND_ERROR'
-      err.responseCode = response.status
-      err.details = data
-      throw err
-    }
-
-    return data
-  } finally {
-    clearTimeout(timeout)
-  }
+    req.write(body)
+    req.end()
+  })
 }
 
 const sendEmail = async ({ to, subject, text, html }) => {
@@ -102,7 +133,7 @@ const sendEmail = async ({ to, subject, text, html }) => {
 
   if (!transporter) throw new Error('Email service not configured')
 
-  const from = process.env.SMTP_FROM || 'MDCAT LMS <no-reply@mdcat-lms.com>'
+  const from = stripWrappingQuotes(process.env.SMTP_FROM) || 'MDCAT LMS <no-reply@mdcat-lms.com>'
 
   return transporter.sendMail({
     from,
