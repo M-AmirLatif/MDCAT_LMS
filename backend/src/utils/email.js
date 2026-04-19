@@ -9,6 +9,7 @@ const SMTP_TIMEOUTS = {
 }
 
 const resendApiKey = process.env.RESEND_API_KEY
+const brevoApiKey = process.env.BREVO_API_KEY
 
 const stripWrappingQuotes = (value) => {
   if (!value) return value
@@ -31,6 +32,21 @@ const normalizeFrom = (value) => {
     .replace(/\s+</g, ' <')
     .replace(/<\s+/g, '<')
     .replace(/\s+>/g, '>')
+}
+
+const parseFrom = (value) => {
+  const normalized = normalizeFrom(value)
+  if (!normalized) return { name: null, email: null, raw: null }
+
+  const match = normalized.match(/^(.*)<([^>]+)>$/)
+  if (match) {
+    const name = match[1].trim().replace(/^"|"$/g, '') || null
+    const email = match[2].trim().toLowerCase() || null
+    return { name, email, raw: normalized }
+  }
+
+  const email = normalized.trim().toLowerCase()
+  return { name: null, email, raw: normalized }
 }
 
 const createTransporter = () => {
@@ -75,16 +91,22 @@ const transporter = createTransporter()
 const getEmailStatus = () => {
   const from =
     normalizeFrom(process.env.SMTP_FROM) ||
-    (resendApiKey ? 'MDCAT LMS <onboarding@resend.dev>' : 'MDCAT LMS <no-reply@mdcat-lms.com>')
+    (resendApiKey
+      ? 'MDCAT LMS <onboarding@resend.dev>'
+      : brevoApiKey
+        ? 'MDCAT LMS <no-reply@mdcat-lms.com>'
+        : 'MDCAT LMS <no-reply@mdcat-lms.com>')
 
   const smtpConfigured = Boolean(transporter)
   const resendConfigured = Boolean(resendApiKey)
-  const provider = resendConfigured ? 'resend' : smtpConfigured ? 'smtp' : 'none'
+  const brevoConfigured = Boolean(brevoApiKey)
+  const provider = resendConfigured ? 'resend' : brevoConfigured ? 'brevo' : smtpConfigured ? 'smtp' : 'none'
 
   return {
     provider,
     from,
     resendConfigured,
+    brevoConfigured,
     smtpConfigured,
     smtpService: process.env.SMTP_SERVICE || null,
     smtpHost: process.env.SMTP_HOST || null,
@@ -157,10 +179,85 @@ const sendEmailViaResend = async ({ to, subject, text, html }) => {
   })
 }
 
+const sendEmailViaBrevo = async ({ to, subject, text, html }) => {
+  if (!brevoApiKey) {
+    throw new Error('Email service not configured')
+  }
+
+  const from = parseFrom(process.env.SMTP_FROM)
+  if (!from.email) {
+    throw new Error('SMTP_FROM must be set for Brevo (e.g. "MDCAT LMS <you@gmail.com>")')
+  }
+
+  const payload = {
+    sender: {
+      email: from.email,
+      ...(from.name ? { name: from.name } : {}),
+    },
+    to: (Array.isArray(to) ? to : [to]).filter(Boolean).map((email) => ({ email })),
+    subject,
+    ...(html ? { htmlContent: html } : {}),
+    ...(text ? { textContent: text } : {}),
+  }
+
+  const timeoutMs = Number(process.env.BREVO_TIMEOUT_MS || 10000)
+  const body = JSON.stringify(payload)
+
+  return new Promise((resolve, reject) => {
+    const req = https.request(
+      {
+        hostname: 'api.brevo.com',
+        path: '/v3/smtp/email',
+        method: 'POST',
+        headers: {
+          'api-key': brevoApiKey,
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(body),
+        },
+      },
+      (res) => {
+        let raw = ''
+        res.setEncoding('utf8')
+        res.on('data', (chunk) => {
+          raw += chunk
+        })
+        res.on('end', () => {
+          const status = res.statusCode || 0
+          const data = raw ? JSON.parse(raw) : {}
+
+          if (status < 200 || status >= 300) {
+            const message =
+              data?.message || data?.error || `Brevo error (${status})`
+            const err = new Error(message)
+            err.code = 'BREVO_ERROR'
+            err.responseCode = status
+            err.details = data
+            return reject(err)
+          }
+
+          return resolve(data)
+        })
+      },
+    )
+
+    req.on('error', (err) => reject(err))
+    req.setTimeout(timeoutMs, () => {
+      req.destroy(new Error(`Brevo timeout after ${timeoutMs}ms`))
+    })
+
+    req.write(body)
+    req.end()
+  })
+}
+
 const sendEmail = async ({ to, subject, text, html }) => {
-  // Prefer HTTPS email API when configured (works on hosts that block SMTP egress).
+  // Prefer HTTPS email APIs when configured (works on hosts that block SMTP egress).
   if (resendApiKey) {
     return sendEmailViaResend({ to, subject, text, html })
+  }
+
+  if (brevoApiKey) {
+    return sendEmailViaBrevo({ to, subject, text, html })
   }
 
   if (!transporter) throw new Error('Email service not configured')
