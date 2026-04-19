@@ -6,6 +6,7 @@ import Register from './pages/Register'
 import VerifyEmail from './pages/VerifyEmail'
 import ForgotPassword from './pages/ForgotPassword'
 import Dashboard from './pages/Dashboard'
+import SetPassword from './pages/SetPassword'
 import EditProfile from './pages/EditProfile'
 import Courses from './pages/Courses'
 import CourseDetail from './pages/CourseDetail'
@@ -44,6 +45,7 @@ function App() {
         {/* ── Authenticated Routes (with sidebar layout) ── */}
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/set-password" element={<SetPassword />} />
           <Route path="/profile/edit" element={<EditProfile />} />
           <Route path="/courses" element={<Courses />} />
           <Route path="/course/:courseId" element={<CourseDetail />} />

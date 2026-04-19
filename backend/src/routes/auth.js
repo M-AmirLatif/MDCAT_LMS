@@ -9,6 +9,7 @@ const {
   forgotPassword,
   resetPassword,
   googleLogin,
+  setPassword,
 } = require('../controllers/authController')
 const { protect } = require('../middlewares/auth')
 const { createRateLimiter } = require('../middlewares/rateLimiter')
@@ -31,5 +32,6 @@ router.post('/google', authLimiter, googleLogin)
 // Protected routes
 router.get('/profile', protect, getProfile)
 router.put('/profile', protect, updateProfile)
+router.post('/set-password', protect, setPassword)
 
 module.exports = router

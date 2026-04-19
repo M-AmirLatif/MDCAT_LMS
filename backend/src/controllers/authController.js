@@ -8,6 +8,7 @@ const { OAuth2Client } = require('google-auth-library')
 const OTP_EXPIRY_MINUTES = 10
 const isDev = process.env.NODE_ENV !== 'production'
 const allowDebugOtp = isDev && process.env.ALLOW_DEBUG_OTP === 'true'
+const otpDisabledMessage = 'Email OTP is disabled. Please use Google sign-in.'
 
 const googleClientIds = (process.env.GOOGLE_CLIENT_ID || '')
   .split(',')
@@ -67,6 +68,11 @@ const logOtpEmailError = (context, error) => {
 // ==================== REGISTER ====================
 exports.register = async (req, res) => {
   try {
+    return res.status(403).json({
+      error:
+        'Student self-registration is disabled. Please continue with Google, then set a password.',
+    })
+
     const firstName = normalizeString(req.body.firstName)
     const lastName = normalizeString(req.body.lastName)
     const email = normalizeEmail(req.body.email)
@@ -213,9 +219,18 @@ exports.login = async (req, res) => {
     }
 
     // Find user and include password
-    const user = await User.findOne({ email }).select('+password role isActive isEmailVerified firstName lastName email')
+    const user = await User.findOne({ email }).select(
+      '+password role isActive isEmailVerified firstName lastName email hasLocalPassword',
+    )
     if (!user) {
       return res.status(400).json({ error: 'Invalid credentials' })
+    }
+
+    if (user.hasLocalPassword === false) {
+      return res.status(403).json({
+        error:
+          'Password not set. Please continue with Google to set a password first.',
+      })
     }
 
     // Check password
@@ -228,11 +243,7 @@ exports.login = async (req, res) => {
       return res.status(403).json({ error: 'Account is deactivated' })
     }
 
-    if (!user.isEmailVerified) {
-      return res
-        .status(403)
-        .json({ error: 'Email not verified. Please verify your email.' })
-    }
+    // OTP/email verification is no longer required.
 
     const roleDoc = await Role.findById(user.role)
     if (!roleDoc) {
@@ -329,6 +340,7 @@ exports.updateProfile = async (req, res) => {
 // ==================== VERIFY EMAIL OTP ====================
 exports.verifyEmail = async (req, res) => {
   try {
+    return res.status(410).json({ error: otpDisabledMessage })
     const email = normalizeEmail(req.body.email)
     const otp = normalizeString(req.body.otp)
 
@@ -384,6 +396,7 @@ exports.verifyEmail = async (req, res) => {
 // ==================== RESEND OTP ====================
 exports.resendOtp = async (req, res) => {
   try {
+    return res.status(410).json({ error: otpDisabledMessage })
     const email = normalizeEmail(req.body.email)
 
     if (!email) {
@@ -441,6 +454,10 @@ exports.resendOtp = async (req, res) => {
 // ==================== FORGOT PASSWORD ====================
 exports.forgotPassword = async (req, res) => {
   try {
+    return res.status(410).json({
+      error:
+        'Password reset via email OTP is disabled. Please use Google sign-in and set a new password from your profile.',
+    })
     const email = normalizeEmail(req.body.email)
 
     if (!email || !isValidEmail(email)) {
@@ -518,7 +535,7 @@ exports.googleLogin = async (req, res) => {
     }
 
     const user = await User.findOne({ email }).select(
-      'role isActive isEmailVerified firstName lastName email',
+      'role isActive isEmailVerified firstName lastName email hasLocalPassword',
     )
 
     let existingUser = user
@@ -542,6 +559,7 @@ exports.googleLogin = async (req, res) => {
         lastName,
         email,
         password: randomPassword,
+        hasLocalPassword: false,
         role: studentRole._id,
         isEmailVerified: true,
         isActive: true,
@@ -577,6 +595,8 @@ exports.googleLogin = async (req, res) => {
         roleId: roleDoc._id,
         isEmailVerified: existingUser.isEmailVerified,
         isActive: existingUser.isActive,
+        hasLocalPassword: existingUser.hasLocalPassword !== false,
+        needsPasswordSetup: existingUser.hasLocalPassword === false,
       },
     })
   } catch (error) {
@@ -587,6 +607,10 @@ exports.googleLogin = async (req, res) => {
 // ==================== RESET PASSWORD ====================
 exports.resetPassword = async (req, res) => {
   try {
+    return res.status(410).json({
+      error:
+        'Password reset via email OTP is disabled. Please use Google sign-in and set a new password from your profile.',
+    })
     const email = normalizeEmail(req.body.email)
     const otp = normalizeString(req.body.otp)
     const newPassword = req.body.newPassword
@@ -643,5 +667,60 @@ exports.resetPassword = async (req, res) => {
     })
   } catch (error) {
     res.status(500).json({ error: error.message })
+  }
+}
+
+// ==================== SET PASSWORD (AFTER GOOGLE SIGN-IN) ====================
+exports.setPassword = async (req, res) => {
+  try {
+    const newPassword = req.body.password
+    if (!newPassword || typeof newPassword !== 'string' || newPassword.length < 6) {
+      return res
+        .status(400)
+        .json({ error: 'Password must be at least 6 characters' })
+    }
+
+    const user = await User.findById(req.user.id).select(
+      '+password role isActive isEmailVerified firstName lastName email hasLocalPassword',
+    )
+    if (!user) return res.status(404).json({ error: 'User not found' })
+    if (user.isActive === false) return res.status(403).json({ error: 'Account is deactivated' })
+
+    user.password = newPassword
+    user.hasLocalPassword = true
+    user.isEmailVerified = true
+    await user.save()
+
+    const roleDoc = await Role.findById(user.role)
+    if (!roleDoc) {
+      return res.status(500).json({
+        error:
+          'Your account role is not configured. Please contact the administrator.',
+      })
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRE,
+    })
+
+    res.status(200).json({
+      success: true,
+      message: 'Password set successfully.',
+      token,
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: roleDoc.name,
+        roleId: roleDoc._id,
+        isEmailVerified: user.isEmailVerified,
+        isActive: user.isActive,
+        hasLocalPassword: true,
+        needsPasswordSetup: false,
+      },
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Failed to set password' })
   }
 }

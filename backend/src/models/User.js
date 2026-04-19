@@ -29,6 +29,12 @@ const userSchema = new mongoose.Schema(
       minlength: 6,
       select: false, // Don't return password by default
     },
+    // If false, the user was created via Google and still needs to set a local password
+    // to use email+password login.
+    hasLocalPassword: {
+      type: Boolean,
+      default: true,
+    },
     role: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Role',
