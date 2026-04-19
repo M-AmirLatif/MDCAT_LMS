@@ -61,6 +61,27 @@ const createTransporter = () => {
 
 const transporter = createTransporter()
 
+const getEmailStatus = () => {
+  const from =
+    stripWrappingQuotes(process.env.SMTP_FROM) ||
+    (resendApiKey ? 'MDCAT LMS <onboarding@resend.dev>' : 'MDCAT LMS <no-reply@mdcat-lms.com>')
+
+  const smtpConfigured = Boolean(transporter)
+  const resendConfigured = Boolean(resendApiKey)
+  const provider = resendConfigured ? 'resend' : smtpConfigured ? 'smtp' : 'none'
+
+  return {
+    provider,
+    from,
+    resendConfigured,
+    smtpConfigured,
+    smtpService: process.env.SMTP_SERVICE || null,
+    smtpHost: process.env.SMTP_HOST || null,
+    smtpPort: process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : null,
+    smtpSecure: process.env.SMTP_SECURE ? String(process.env.SMTP_SECURE).toLowerCase() === 'true' : null,
+  }
+}
+
 const sendEmailViaResend = async ({ to, subject, text, html }) => {
   if (!resendApiKey) {
     throw new Error('Email service not configured')
@@ -151,4 +172,4 @@ const sendOtpEmail = async ({ to, name, otp }) => {
   return sendEmail({ to, subject, text, html })
 }
 
-module.exports = { sendOtpEmail, sendEmail }
+module.exports = { sendOtpEmail, sendEmail, getEmailStatus }

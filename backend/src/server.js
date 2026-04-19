@@ -20,6 +20,7 @@ const paymentRoutes = require('./routes/payments')
 const uploadRoutes = require('./routes/uploads')
 const NotificationJob = require('./models/NotificationJob')
 const Notification = require('./models/Notification')
+const { getEmailStatus } = require('./utils/email')
 
 const app = express()
 
@@ -114,7 +115,17 @@ app.get('/', (req, res) => {
 })
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date() })
+  res.json({
+    status: 'OK',
+    timestamp: new Date(),
+    node: process.version,
+    email: getEmailStatus(),
+  })
+})
+
+// Lightweight endpoint to confirm which email provider is active (no secrets).
+app.get('/api/health/email', (req, res) => {
+  res.json({ email: getEmailStatus(), node: process.version })
 })
 
 // ==================== API ROUTES ====================
