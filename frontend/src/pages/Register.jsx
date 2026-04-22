@@ -12,7 +12,7 @@ export default function Register() {
   const googleInitRef = useRef(false)
 
   useEffect(() => {
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+    const clientId = (import.meta.env.VITE_GOOGLE_CLIENT_ID || '').trim()
     if (!clientId || !googleBtnRef.current || googleInitRef.current) return
 
     const existing = document.querySelector('script[data-google-identity]')
@@ -82,7 +82,7 @@ export default function Register() {
             </p>
 
             <div className="google-wrap">
-              {import.meta.env.VITE_GOOGLE_CLIENT_ID ? (
+              {(import.meta.env.VITE_GOOGLE_CLIENT_ID || '').trim() ? (
                 <div ref={googleBtnRef} />
               ) : (
                 <button
@@ -120,4 +120,3 @@ export default function Register() {
     </div>
   )
 }
-
