@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useMemo } from 'react'
 import { getAuthUser } from '../services/authStorage'
+import { getSampleMcqs } from '../data/sampleMcqs'
 import './Home.css'
 
 export default function Home() {
@@ -144,6 +145,26 @@ export default function Home() {
           'Each and everything is absolutely fantastic. Their lectures, bank and tests are best. Thanks.',
         stars: 5,
       },
+    ],
+      [],
+    )
+
+  const samplePreview = useMemo(() => {
+    const picked = getSampleMcqs({ subject: 'all', limit: 3 })
+    return picked.map((q) => ({
+      id: q._id,
+      topic: q.topic,
+      question: q.question,
+      options: q.options?.slice(0, 3) || [],
+    }))
+  }, [])
+
+  const sampleSubjects = useMemo(
+    () => [
+      { key: 'biology', label: 'Biology', tone: 'green' },
+      { key: 'chemistry', label: 'Chemistry', tone: 'orange' },
+      { key: 'physics', label: 'Physics', tone: 'blue' },
+      { key: 'english', label: 'English', tone: 'violet' },
     ],
     [],
   )
@@ -375,18 +396,21 @@ export default function Home() {
           <div className="lp-hero-grid">
             <div className="lp-hero-card lp-hero-card--join">
               <h3>Join New Session Today</h3>
-              <div className="lp-join-actions">
-                <button
-                  className="btn btn-primary lp-join-btn"
-                  type="button"
-                  onClick={() => navigate('/register')}
-                >
-                  Start Your Preparation Now
-                </button>
-                <Link className="btn btn-secondary lp-join-btn-secondary" to="/login">
-                  I already have an account
-                </Link>
-              </div>
+                <div className="lp-join-actions">
+                  <button
+                    className="btn btn-primary lp-join-btn"
+                    type="button"
+                    onClick={() => navigate('/register')}
+                  >
+                    Start Your Preparation Now
+                  </button>
+                  <Link className="btn btn-secondary lp-join-btn-secondary" to="/login">
+                    I already have an account
+                  </Link>
+                  <Link className="btn btn-secondary lp-join-btn-secondary lp-join-btn-sample" to="/sample-test">
+                    Try Free Sample Test
+                  </Link>
+                </div>
               <div className="lp-join-meta">
                 <div className="lp-join-count">
                   <strong className="lp-accent">400.6k+</strong>{' '}
@@ -445,13 +469,65 @@ export default function Home() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
+          </div>
+        </section>
 
-      {false && (
-      <section className="lp-section lp-section--score">
-        <div className="lp-container">
-          <div className="lp-section-head">
+        <section className="lp-section lp-section--sample">
+          <div className="lp-container">
+            <div className="lp-section-head">
+              <h2>Try a Free Sample Test (No Login)</h2>
+              <p>Practice 10 real-style MCQs — get explanations and your score instantly.</p>
+            </div>
+
+            <div className="lp-sample-grid">
+              <div className="lp-sample-left">
+                <div className="lp-sample-subjects" role="list" aria-label="Sample test subjects">
+                  {sampleSubjects.map((s) => (
+                    <Link
+                      key={s.key}
+                      className={`lp-sample-subject lp-tone-${s.tone}`}
+                      to={`/sample-test/${s.key}`}
+                      role="listitem"
+                    >
+                      <div className="lp-sample-subject-title">{s.label}</div>
+                      <div className="lp-sample-subject-meta">10 MCQs • Explanations</div>
+                    </Link>
+                  ))}
+                </div>
+
+                <div className="lp-center lp-sample-cta">
+                  <Link className="btn btn-primary" to="/sample-test">
+                    Start Free Sample Test
+                  </Link>
+                  <span className="lp-sample-note">
+                    No account needed — join later to unlock full tests and courses.
+                  </span>
+                </div>
+              </div>
+
+              <div className="lp-sample-right" aria-label="Sample MCQ previews">
+                {samplePreview.map((q) => (
+                  <article className="lp-sample-q" key={q.id}>
+                    <div className="lp-sample-q-topic">{q.topic}</div>
+                    <div className="lp-sample-q-title">{q.question}</div>
+                    <div className="lp-sample-q-options">
+                      {q.options.map((o) => (
+                        <div className="lp-sample-q-opt" key={o.text}>
+                          {o.text}
+                        </div>
+                      ))}
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+  
+        {false && (
+        <section className="lp-section lp-section--score">
+          <div className="lp-container">
+            <div className="lp-section-head">
             <h2>Published Scorecards</h2>
             <p>We committed — we delivered</p>
           </div>

@@ -7,6 +7,7 @@ import VerifyEmail from './pages/VerifyEmail'
 import ForgotPassword from './pages/ForgotPassword'
 import Dashboard from './pages/Dashboard'
 import SetPassword from './pages/SetPassword'
+import SampleTest from './pages/SampleTest'
 import EditProfile from './pages/EditProfile'
 import Courses from './pages/Courses'
 import CourseDetail from './pages/CourseDetail'
@@ -37,6 +38,8 @@ function App() {
       <Routes>
         {/* ── Public Routes (no sidebar) ── */}
         <Route path="/" element={<Home />} />
+        <Route path="/sample-test" element={<SampleTest />} />
+        <Route path="/sample-test/:subject" element={<SampleTest />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
