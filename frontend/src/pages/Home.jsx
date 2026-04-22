@@ -1,7 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useMemo } from 'react'
 import { getAuthUser } from '../services/authStorage'
-import { getSampleMcqs } from '../data/sampleMcqs'
 import './Home.css'
 
 export default function Home() {
@@ -148,16 +147,6 @@ export default function Home() {
     ],
       [],
     )
-
-  const samplePreview = useMemo(() => {
-    const picked = getSampleMcqs({ subject: 'all', limit: 3 })
-    return picked.map((q) => ({
-      id: q._id,
-      topic: q.topic,
-      question: q.question,
-      options: q.options?.slice(0, 3) || [],
-    }))
-  }, [])
 
   const sampleSubjects = useMemo(
     () => [
@@ -505,21 +494,6 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="lp-sample-right" aria-label="Sample MCQ previews">
-                {samplePreview.map((q) => (
-                  <article className="lp-sample-q" key={q.id}>
-                    <div className="lp-sample-q-topic">{q.topic}</div>
-                    <div className="lp-sample-q-title">{q.question}</div>
-                    <div className="lp-sample-q-options">
-                      {q.options.map((o) => (
-                        <div className="lp-sample-q-opt" key={o.text}>
-                          {o.text}
-                        </div>
-                      ))}
-                    </div>
-                  </article>
-                ))}
-              </div>
             </div>
           </div>
         </section>
