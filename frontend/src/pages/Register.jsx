@@ -60,7 +60,6 @@ export default function Register() {
         theme: 'outline',
         size: 'large',
         shape: 'rectangular',
-        width: 420,
         text: 'signup_with',
       })
     }

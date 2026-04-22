@@ -476,7 +476,8 @@
 }
 
 .input-with-button {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
 }
@@ -521,6 +522,13 @@
   margin-top: 14px;
   display: grid;
   place-items: center;
+  width: 100%;
+}
+
+.google-wrap > div {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .auth-row {
@@ -529,6 +537,7 @@
   justify-content: space-between;
   gap: 12px;
   margin-top: -2px;
+  flex-wrap: wrap;
 }
 
 .checkbox {
@@ -823,6 +832,7 @@
     max-width: none;
     min-height: 100vh;
     border-radius: 0;
+    box-shadow: none;
   }
 
   .auth-right {
@@ -833,6 +843,7 @@
     padding: 0;
     align-items: stretch;
     justify-content: stretch;
+    background: #ffffff;
   }
 }
 
@@ -847,5 +858,20 @@
 
   .field-row {
     grid-template-columns: 1fr;
+  }
+
+  .auth-row {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 6px;
+  }
+
+  .auth-link {
+    align-self: flex-end;
+  }
+
+  .input-action {
+    padding: 10px 10px;
+    font-size: 12px;
   }
 }
