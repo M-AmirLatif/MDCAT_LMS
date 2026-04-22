@@ -167,109 +167,150 @@ export default function Login() {
             </div>
 
             <div className="auth-card">
-            {requestedRole && (
-              <div className="auth-meta">{roleLabels[requestedRole] || 'Login'}</div>
-            )}
+              {requestedRole && (
+                <div className="auth-meta">{roleLabels[requestedRole] || 'Login'}</div>
+              )}
 
-            <h1 className="auth-title">Login</h1>
-            <p className="auth-subtitle">Welcome back! Please enter your details.</p>
+              <h1 className="auth-title">Login</h1>
+              <p className="auth-subtitle">Welcome back! Please enter your details.</p>
 
-            {error && <div className="auth-alert auth-alert--error">{error}</div>}
+              {error && <div className="auth-alert auth-alert--error">{error}</div>}
 
-            <form className="auth-form" onSubmit={handleSubmit}>
-              <div className="field">
-                <label htmlFor="email">Email</label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="you@gmail.com"
-                  value={formData.email}
-                  onChange={handleChange}
-                  autoComplete="email"
-                  required
-                  readOnly={autofillGuard}
-                  onFocus={unlockAutofill}
-                  ref={emailRef}
-                />
-              </div>
-
-              <div className="field">
-                <label htmlFor="password">Password</label>
-                <div className="input-with-button">
+              <form className="auth-form" onSubmit={handleSubmit}>
+                <div className="field">
+                  <label htmlFor="email">Email</label>
                   <input
-                    id="password"
-                    name="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Enter your password"
-                    value={formData.password}
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="you@gmail.com"
+                    value={formData.email}
                     onChange={handleChange}
-                    autoComplete="current-password"
+                    autoComplete="email"
                     required
                     readOnly={autofillGuard}
                     onFocus={unlockAutofill}
-                    ref={passwordRef}
+                    ref={emailRef}
                   />
-                  <button
-                    type="button"
-                    className="input-action"
-                    onClick={() => setShowPassword((v) => !v)}
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  >
-                    {showPassword ? 'Hide' : 'Show'}
-                  </button>
                 </div>
-              </div>
 
-              <div className="auth-row">
-                <label className="checkbox">
-                  <input
-                    type="checkbox"
-                    checked={remember}
-                    onChange={(e) => setRemember(e.target.checked)}
-                  />
-                  <span>Remember for 30 days</span>
-                </label>
-
-                <Link className="auth-link" to="/forgot-password">
-                  Forgot password
-                </Link>
-              </div>
-
-              <button className="auth-primary" type="submit" disabled={loading}>
-                {loading ? 'Signing in...' : 'Sign in'}
-              </button>
-
-              {allowGoogle && (
-                <div className="google-wrap">
-                  {(import.meta.env.VITE_GOOGLE_CLIENT_ID || '').trim() ? (
-                    <div ref={googleBtnRef} />
-                  ) : (
+                <div className="field">
+                  <label htmlFor="password">Password</label>
+                  <div className="input-with-button">
+                    <input
+                      id="password"
+                      name="password"
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="Enter your password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      autoComplete="current-password"
+                      required
+                      readOnly={autofillGuard}
+                      onFocus={unlockAutofill}
+                      ref={passwordRef}
+                    />
                     <button
-                      className="auth-secondary"
                       type="button"
-                      onClick={() =>
-                        toast.error(
-                          'Missing VITE_GOOGLE_CLIENT_ID (Google login not configured).',
-                        )
-                      }
+                      className="input-action"
+                      onClick={() => setShowPassword((v) => !v)}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
                     >
-                      <span className="google-dot" aria-hidden="true" />
-                      Continue with Google
+                      {showPassword ? 'Hide' : 'Show'}
                     </button>
-                  )}
+                  </div>
                 </div>
-              )}
+
+                <div className="auth-row">
+                  <label className="checkbox">
+                    <input
+                      type="checkbox"
+                      checked={remember}
+                      onChange={(e) => setRemember(e.target.checked)}
+                    />
+                    <span>Remember for 30 days</span>
+                  </label>
+
+                  <Link className="auth-link" to="/forgot-password">
+                    Forgot password
+                  </Link>
+                </div>
+
+                <button className="auth-primary" type="submit" disabled={loading}>
+                  {loading ? 'Signing in...' : 'Sign in'}
+                </button>
+
+                {allowGoogle && (
+                  <div className="google-wrap">
+                    {(import.meta.env.VITE_GOOGLE_CLIENT_ID || '').trim() ? (
+                      <div ref={googleBtnRef} />
+                    ) : (
+                      <button
+                        className="auth-secondary"
+                        type="button"
+                        onClick={() =>
+                          toast.error(
+                            'Missing VITE_GOOGLE_CLIENT_ID (Google login not configured).',
+                          )
+                        }
+                      >
+                        <span className="google-dot" aria-hidden="true" />
+                        Continue with Google
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                <p className="auth-footer">
+                  Don&apos;t have an account? <Link to="/register">Sign up</Link>
+                </p>
+              </form>
 
               <p className="auth-footer">
-                Don’t have an account? <Link to="/register">Sign up</Link>
+                Just exploring? <Link to="/sample-test">Try free sample test</Link>
               </p>
-            </form>
+            </div>
           </div>
         </div>
 
         <aside className="auth-right" aria-hidden="true">
           <div className="auth-right-inner">
+            <div className="mock-canvas">
+              <div className="mock-card mock-card--left">
+                <div className="mock-card-title">Daily MDCAT Plan</div>
+                <div className="mock-pill">Consistency wins</div>
+                <div className="mock-search" />
+                <div className="mock-user">
+                  <div className="mock-avatar" />
+                  <div className="mock-lines">
+                    <div className="mock-line" />
+                    <div className="mock-line short" />
+                  </div>
+                </div>
+                <div className="mock-user">
+                  <div className="mock-avatar accent" />
+                  <div className="mock-lines">
+                    <div className="mock-line" />
+                    <div className="mock-line short" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="mock-card mock-card--right">
+                <div className="mock-badge">On Track</div>
+                <div className="mock-card-title">High‑Yield Practice</div>
+                <div className="mock-pill">Strong basics, higher score</div>
+                <div className="mock-search" />
+                <div className="mock-user">
+                  <div className="mock-avatar" />
+                  <div className="mock-lines">
+                    <div className="mock-line" />
+                    <div className="mock-line short" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="auth-right-copy">
               <h2>Your MDCAT journey starts here</h2>
               <p>Sign in to practice daily, track progress, and stay consistent.</p>
@@ -280,3 +321,4 @@ export default function Login() {
     </div>
   )
 }
+
