@@ -160,7 +160,13 @@ export default function Login() {
     <div className="auth-page">
       <div className="auth-shell">
         <div className="auth-left">
-          <div className="auth-card">
+          <div className="auth-left-inner">
+            <div className="auth-brand" aria-label="MDCAT LMS">
+              <span className="auth-mark" aria-hidden="true" />
+              <span className="auth-brand-name">MDCAT LMS</span>
+            </div>
+
+            <div className="auth-card">
             {requestedRole && (
               <div className="auth-meta">{roleLabels[requestedRole] || 'Login'}</div>
             )}
