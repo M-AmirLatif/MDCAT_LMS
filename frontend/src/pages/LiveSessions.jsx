@@ -32,8 +32,11 @@ export default function LiveSessions() {
 
   if (loading)
     return (
-      <div className="live-sessions">
-        <p>Loading sessions...</p>
+      <div className="page-content">
+        <div className="loading-screen">
+          <div className="spinner" />
+          <p>Loading sessions...</p>
+        </div>
       </div>
     )
 

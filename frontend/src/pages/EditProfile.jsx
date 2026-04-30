@@ -65,7 +65,15 @@ export default function EditProfile() {
     }
   }
 
-  if (loading) return <div className="edit-profile"><p>Loading...</p></div>
+  if (loading)
+    return (
+      <div className="page-content">
+        <div className="loading-screen">
+          <div className="spinner" />
+          <p>Loading profile...</p>
+        </div>
+      </div>
+    )
 
   return (
     <div className="edit-profile">

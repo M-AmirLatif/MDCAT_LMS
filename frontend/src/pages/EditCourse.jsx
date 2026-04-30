@@ -87,8 +87,11 @@ export default function EditCourse() {
 
   if (loading)
     return (
-      <div className="edit-course">
-        <p>Loading course...</p>
+      <div className="page-content">
+        <div className="loading-screen">
+          <div className="spinner" />
+          <p>Loading course...</p>
+        </div>
       </div>
     )
 

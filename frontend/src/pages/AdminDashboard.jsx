@@ -103,8 +103,11 @@ export default function AdminDashboard() {
 
   if (loading)
     return (
-      <div className="admin-dashboard">
-        <p>Loading admin dashboard...</p>
+      <div className="page-content">
+        <div className="loading-screen">
+          <div className="spinner" />
+          <p>Loading admin dashboard...</p>
+        </div>
       </div>
     )
 

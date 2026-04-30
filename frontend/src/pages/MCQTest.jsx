@@ -214,7 +214,15 @@ export default function MCQTest() {
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
   }
 
-  if (loading) return <div className="mcq-test"><p>Loading...</p></div>
+  if (loading)
+    return (
+      <div className="page-content">
+        <div className="loading-screen">
+          <div className="spinner" />
+          <p>Loading questions...</p>
+        </div>
+      </div>
+    )
 
   // Test config screen
   if (!testStarted) {

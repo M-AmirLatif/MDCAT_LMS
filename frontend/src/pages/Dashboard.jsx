@@ -94,6 +94,15 @@ export default function Dashboard() {
   const isTeacher = ['teacher', 'admin', 'superadmin'].includes(user?.role)
   const shownCourses = enrolledCourses.slice(0, 3)
 
+  const courseCards = (() => {
+    const cards = [...shownCourses]
+    if (cards.length < 3) {
+      cards.push({ _id: '__filler__', __filler: true })
+    }
+    return cards
+  })()
+  const cardsCount = Math.min(courseCards.length || 1, 3)
+
   return (
     <div className="dash-container animate-fade-up">
       <div className="dash-header">
@@ -110,32 +119,75 @@ export default function Dashboard() {
 
       <div className="dash-grid">
         <div className="dash-area dash-area--courses">
-          <div className={`dash-cards-row dash-cards-row--count-${Math.min(shownCourses.length || 1, 3)}`}>
-            {shownCourses.map((course) => (
-              <div
-                key={course._id}
-                className="course-block card-interactive"
-                style={{ background: subjectBg(course.category) }}
-                onClick={() => navigate(`/course/${course._id}`)}
-              >
-                <div className="course-block-badge" style={{ color: subjectColor(course.category) }}>
-                  {course.category}
-                </div>
-                <h4 className="course-block-title">{course.name}</h4>
-                <div className="course-block-progress">
-                  <div className="progress-bar-bg">
-                    <div
-                      className="progress-bar-fill"
-                      style={{
-                        width: `${Math.floor(Math.random() * 60) + 20}%`,
-                        background: subjectColor(course.category),
-                      }}
-                    />
+          <div className={`dash-cards-row dash-cards-row--count-${cardsCount}`}>
+            {courseCards.map((course) => {
+              if (course.__filler) {
+                return (
+                  <div key={course._id} className="course-block course-block--filler">
+                    <div className="filler-top">
+                      <div className="filler-badge">
+                        <span className="dot" />
+                        Start learning
+                      </div>
+                      <div className="filler-title">Begin your MDCAT journey today</div>
+                      <div className="filler-subtitle">
+                        Explore courses, attempt a free sample test, and keep track of your progress — all in one place.
+                      </div>
+                    </div>
+
+                    <div className="filler-actions">
+                      <button className="btn-primary" type="button" onClick={() => navigate('/courses')}>
+                        Browse Courses
+                      </button>
+                      <button className="btn-secondary" type="button" onClick={() => navigate('/sample-test')}>
+                        Try Sample Test
+                      </button>
+                    </div>
+
+                    <div className="filler-stats" aria-hidden="true">
+                      <div className="mini">
+                        <div className="mini-k">Questions</div>
+                        <div className="mini-v">30.2M+</div>
+                      </div>
+                      <div className="mini">
+                        <div className="mini-k">Rating</div>
+                        <div className="mini-v">4.71</div>
+                      </div>
+                      <div className="mini">
+                        <div className="mini-k">Students</div>
+                        <div className="mini-v">400K+</div>
+                      </div>
+                    </div>
                   </div>
-                  <span className="progress-text">{course.topics?.length || 0} Modules</span>
+                )
+              }
+
+              return (
+                <div
+                  key={course._id}
+                  className="course-block card-interactive"
+                  style={{ background: subjectBg(course.category) }}
+                  onClick={() => navigate(`/course/${course._id}`)}
+                >
+                  <div className="course-block-badge" style={{ color: subjectColor(course.category) }}>
+                    {course.category}
+                  </div>
+                  <h4 className="course-block-title">{course.name}</h4>
+                  <div className="course-block-progress">
+                    <div className="progress-bar-bg">
+                      <div
+                        className="progress-bar-fill"
+                        style={{
+                          width: `${Math.floor(Math.random() * 60) + 20}%`,
+                          background: subjectColor(course.category),
+                        }}
+                      />
+                    </div>
+                    <span className="progress-text">{course.topics?.length || 0} Modules</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
 

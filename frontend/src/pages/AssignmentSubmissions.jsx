@@ -56,8 +56,11 @@ export default function AssignmentSubmissions() {
 
   if (loading)
     return (
-      <div className="assignment-submissions">
-        <p>Loading submissions...</p>
+      <div className="page-content">
+        <div className="loading-screen">
+          <div className="spinner" />
+          <p>Loading submissions...</p>
+        </div>
       </div>
     )
 

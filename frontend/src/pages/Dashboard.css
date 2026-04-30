@@ -4,6 +4,7 @@
 
 .dash-container {
   padding: 0;
+  width: 100%;
   max-width: var(--content-max-width);
   margin: 0 auto;
 }
@@ -20,13 +21,15 @@
 .dash-title {
   font-size: 28px;
   font-weight: 800;
-  color: var(--text-primary);
+  color: rgba(255, 255, 255, 0.96);
   margin-bottom: 4px;
+  text-shadow: 0 18px 44px rgba(2, 6, 23, 0.35);
 }
 
 .dash-subtitle {
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.74);
   font-size: 15px;
+  text-shadow: 0 18px 44px rgba(2, 6, 23, 0.25);
 }
 
 /* ── Grid Layout ── */
@@ -109,7 +112,7 @@
   cursor: default;
   background:
     radial-gradient(900px circle at 0% 0%, rgba(255, 255, 255, 0.14), transparent 60%),
-    radial-gradient(900px circle at 100% 100%, rgba(255, 122, 0, 0.12), transparent 58%),
+    radial-gradient(900px circle at 100% 100%, rgba(35, 140, 122, 0.16), transparent 58%),
     linear-gradient(135deg, rgba(11, 79, 209, 0.96), rgba(6, 19, 56, 0.96));
   border: 1px solid rgba(255, 255, 255, 0.14);
   box-shadow: 0 30px 80px rgba(2, 6, 23, 0.35);
@@ -152,7 +155,7 @@
   height: 10px;
   border-radius: 999px;
   background: var(--accent);
-  box-shadow: 0 0 12px rgba(255, 122, 0, 0.28);
+  box-shadow: 0 0 16px var(--accent-glow);
 }
 
 .course-block--filler .filler-title {

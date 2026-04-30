@@ -35,8 +35,11 @@ export default function TeacherCourses() {
 
   if (loading)
     return (
-      <div className="teacher-courses">
-        <p>Loading courses...</p>
+      <div className="page-content">
+        <div className="loading-screen">
+          <div className="spinner" />
+          <p>Loading courses...</p>
+        </div>
       </div>
     )
 

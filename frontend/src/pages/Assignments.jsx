@@ -80,8 +80,11 @@ export default function Assignments() {
 
   if (loading)
     return (
-      <div className="assignments">
-        <p>Loading assignments...</p>
+      <div className="page-content">
+        <div className="loading-screen">
+          <div className="spinner" />
+          <p>Loading assignments...</p>
+        </div>
       </div>
     )
 

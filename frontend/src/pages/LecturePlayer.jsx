@@ -29,8 +29,11 @@ export default function LecturePlayer() {
 
   if (loading)
     return (
-      <div className="lecture-player">
-        <p>Loading...</p>
+      <div className="page-content">
+        <div className="loading-screen">
+          <div className="spinner" />
+          <p>Loading lecture...</p>
+        </div>
       </div>
     )
 

@@ -33,7 +33,15 @@ export default function TestReview() {
     fetchDetail()
   }, [sessionId, navigate])
 
-  if (loading) return <div className="test-review"><p>Loading...</p></div>
+  if (loading)
+    return (
+      <div className="page-content">
+        <div className="loading-screen">
+          <div className="spinner" />
+          <p>Loading review...</p>
+        </div>
+      </div>
+    )
 
   const answers = session?.answers || []
   const filtered = answers.filter((a) => {

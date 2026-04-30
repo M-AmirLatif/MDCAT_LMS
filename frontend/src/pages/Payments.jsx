@@ -64,8 +64,11 @@ export default function Payments() {
 
   if (loading)
     return (
-      <div className="payments">
-        <p>Loading payments...</p>
+      <div className="page-content">
+        <div className="loading-screen">
+          <div className="spinner" />
+          <p>Loading payments...</p>
+        </div>
       </div>
     )
 
