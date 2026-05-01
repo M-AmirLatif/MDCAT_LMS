@@ -1,8 +1,11 @@
 import axios from 'axios'
 import { clearAuth, getAuthToken } from './authStorage'
 
+const FALLBACK_API_BASE_URL = 'https://mdcatlms-production-4d20.up.railway.app/api'
+const configuredApiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').trim()
+
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: configuredApiBaseUrl || FALLBACK_API_BASE_URL,
   timeout: Number(import.meta.env.VITE_API_TIMEOUT_MS || 20000),
 })
 
@@ -19,6 +22,22 @@ API.interceptors.request.use((config) => {
 API.interceptors.response.use(
   (response) => response,
   (error) => {
+    const originalRequest = error.config
+    const shouldRetryWithFallback =
+      originalRequest &&
+      !originalRequest.__retriedWithFallback &&
+      FALLBACK_API_BASE_URL &&
+      originalRequest.baseURL !== FALLBACK_API_BASE_URL &&
+      (error.message === 'Network Error' ||
+        error.code === 'ECONNABORTED' ||
+        [404, 502, 503, 504].includes(error.response?.status))
+
+    if (shouldRetryWithFallback) {
+      originalRequest.__retriedWithFallback = true
+      originalRequest.baseURL = FALLBACK_API_BASE_URL
+      return API.request(originalRequest)
+    }
+
     if (error.response?.status === 401) {
       clearAuth()
       // Only redirect if not already on login/register pages
