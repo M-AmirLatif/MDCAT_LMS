@@ -24,6 +24,9 @@ const { getEmailStatus } = require('./utils/email')
 
 const app = express()
 
+// Railway terminates HTTPS before forwarding requests to the Node process.
+app.set('trust proxy', 1)
+
 // ==================== SECURITY MIDDLEWARES ====================
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }))
 
