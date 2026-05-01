@@ -11,6 +11,9 @@ exports.createMcq = async (req, res) => {
     const {
       courseId,
       topic,
+      subject,
+      chapterId,
+      chapterName,
       question,
       options,
       explanation,
@@ -53,11 +56,16 @@ exports.createMcq = async (req, res) => {
       question,
       options,
       explanation: explanation || null,
+      subject: subject || course.category,
+      chapterId: chapterId || null,
+      chapterName: chapterName || topic,
       difficulty: difficulty || 'medium',
       year: year || null,
       isPastPaper: isPastPaper || false,
       createdBy: req.user.id,
       isPublished: typeof isPublished === 'boolean' ? isPublished : false,
+      correctAnswer:
+        ['A', 'B', 'C', 'D'][options.findIndex((option) => option.isCorrect)] || null,
     })
 
     res.status(201).json({
@@ -178,6 +186,9 @@ exports.updateMcq = async (req, res) => {
   try {
     const {
       topic,
+      subject,
+      chapterId,
+      chapterName,
       question,
       options,
       explanation,
@@ -211,7 +222,20 @@ exports.updateMcq = async (req, res) => {
 
     mcq = await MCQ.findByIdAndUpdate(
       req.params.mcqId,
-      { topic, question, options, explanation, difficulty, year, isPastPaper, isPublished },
+      {
+        topic,
+        subject,
+        chapterId,
+        chapterName,
+        question,
+        options,
+        explanation,
+        difficulty,
+        year,
+        isPastPaper,
+        isPublished,
+        correctAnswer: options ? ['A', 'B', 'C', 'D'][options.findIndex((option) => option.isCorrect)] || null : mcq.correctAnswer,
+      },
       { new: true, runValidators: true },
     )
 

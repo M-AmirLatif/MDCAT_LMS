@@ -4,7 +4,7 @@ const User = require('../models/User')
 // ==================== CREATE COURSE (Teacher/Admin) ====================
 exports.createCourse = async (req, res) => {
   try {
-    const { name, description, category, topics, isPublished } = req.body
+    const { name, description, category, subject, topics, chapters, isPublished } = req.body
 
     if (!name || !description || !category) {
       return res
@@ -16,7 +16,9 @@ exports.createCourse = async (req, res) => {
       name,
       description,
       category,
+      subject: subject || category,
       topics: topics || [],
+      chapters: chapters || [],
       createdBy: req.user.id,
       isPublished: typeof isPublished === 'boolean' ? isPublished : false,
     })
@@ -93,7 +95,7 @@ exports.getCourseById = async (req, res) => {
 // ==================== UPDATE COURSE ====================
 exports.updateCourse = async (req, res) => {
   try {
-    const { name, description, category, topics, isPublished } = req.body
+    const { name, description, category, subject, topics, chapters, isPublished } = req.body
 
     let course = await Course.findById(req.params.courseId)
 
@@ -114,7 +116,7 @@ exports.updateCourse = async (req, res) => {
 
     course = await Course.findByIdAndUpdate(
       req.params.courseId,
-      { name, description, category, topics, isPublished },
+      { name, description, category, subject: subject || category, topics, chapters, isPublished },
       { new: true, runValidators: true },
     )
 

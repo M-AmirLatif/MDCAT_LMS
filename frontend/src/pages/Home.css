@@ -119,10 +119,10 @@
 }
 
 .lp-hero-card {
-  background: rgba(10, 22, 62, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(30, 27, 75, 0.65);
+  border: 1px solid rgba(139, 92, 246, 0.18);
   border-radius: 18px;
-  box-shadow: 0 24px 70px rgba(2, 6, 23, 0.42);
+  box-shadow: 0 24px 70px rgba(30, 27, 75, 0.42);
   padding: 18px;
   overflow: hidden;
 }
@@ -175,7 +175,7 @@
 }
 
 .lp-hero-card--join {
-  background: rgba(10, 22, 62, 0.7);
+  background: rgba(30, 27, 75, 0.72);
   color: rgba(255, 255, 255, 0.92);
   min-height: 260px;
   display: flex;
@@ -388,10 +388,10 @@
   gap: 16px;
 }
 
-.lp-tone-blue { --tone: rgba(11, 79, 209, 1); --tone-soft: rgba(11, 79, 209, 0.14); }
-.lp-tone-orange { --tone: rgba(255, 122, 0, 1); --tone-soft: rgba(255, 122, 0, 0.16); }
-.lp-tone-green { --tone: rgba(16, 185, 129, 1); --tone-soft: rgba(16, 185, 129, 0.14); }
-.lp-tone-violet { --tone: rgba(124, 58, 237, 1); --tone-soft: rgba(124, 58, 237, 0.14); }
+.lp-tone-blue { --tone: rgba(99, 102, 241, 1); --tone-soft: rgba(99, 102, 241, 0.12); }
+.lp-tone-orange { --tone: rgba(245, 158, 11, 1); --tone-soft: rgba(245, 158, 11, 0.12); }
+.lp-tone-green { --tone: rgba(16, 185, 129, 1); --tone-soft: rgba(16, 185, 129, 0.12); }
+.lp-tone-violet { --tone: rgba(139, 92, 246, 1); --tone-soft: rgba(139, 92, 246, 0.12); }
 
 .lp-stat {
   background: rgba(255, 255, 255, 0.82);
@@ -779,7 +779,7 @@
 
 /* Footer */
 .lp-footer {
-  background: #0b1b4a;
+  background: #1e1b4b;
   color: rgba(255, 255, 255, 0.92);
   padding: 22px 0;
 }

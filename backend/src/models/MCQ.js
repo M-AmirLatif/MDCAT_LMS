@@ -27,6 +27,21 @@ const mcqSchema = new mongoose.Schema(
       required: [true, 'Please provide topic'],
       trim: true,
     },
+    subject: {
+      type: String,
+      enum: ['Biology', 'Chemistry', 'Physics', 'English'],
+      default: null,
+    },
+    chapterId: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+    chapterName: {
+      type: String,
+      default: null,
+      trim: true,
+    },
     question: {
       type: String,
       required: [true, 'Please provide question'],
@@ -64,6 +79,11 @@ const mcqSchema = new mongoose.Schema(
     isPublished: {
       type: Boolean,
       default: false,
+    },
+    correctAnswer: {
+      type: String,
+      enum: ['A', 'B', 'C', 'D'],
+      default: null,
     },
   },
   { timestamps: true },

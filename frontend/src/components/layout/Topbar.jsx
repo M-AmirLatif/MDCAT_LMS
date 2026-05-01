@@ -1,94 +1,93 @@
+import { useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useAuth } from '../../context/AuthContext'
+import { getPageTitle, getRoleLabel, ROLE_BADGE_CLASSES } from '../../lib/platform'
 import './Topbar.css'
-import { getAuthUser } from '../../services/authStorage'
 
-const PAGE_TITLES = {
-  '/dashboard': 'Dashboard',
-  '/courses': 'Browse Courses',
-  '/performance': 'Performance',
-  '/notifications': 'Notifications',
-  '/live-sessions': 'Live Classes',
-  '/payments': 'Payments',
-  '/profile/edit': 'Edit Profile',
-  '/teacher/courses': 'My Courses',
-  '/teacher/courses/create': 'Create Course',
-  '/live-sessions/create': 'Schedule Live Class',
-  '/admin': 'Admin Panel',
+function SearchIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
+      <circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="2" />
+      <path d="m16 16 4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function BellIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
+      <path d="M6 10a6 6 0 1 1 12 0v4.2l1.6 2.1a1 1 0 0 1-.8 1.6H5.2a1 1 0 0 1-.8-1.6L6 14.2V10Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      <path d="M10 20a2 2 0 0 0 4 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function MenuIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
+      <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  )
 }
 
 export default function Topbar({ onMenuClick }) {
   const location = useLocation()
   const navigate = useNavigate()
-  const [user, setUser] = useState(null)
+  const { user } = useAuth()
 
-  useEffect(() => {
-    setUser(getAuthUser())
-  }, [])
+  const title = useMemo(
+    () => getPageTitle(location.pathname, user?.role),
+    [location.pathname, user?.role],
+  )
 
-  const getPageTitle = () => {
-    if (PAGE_TITLES[location.pathname]) return PAGE_TITLES[location.pathname]
-
-    if (location.pathname.startsWith('/course/') && location.pathname.includes('/mcqs')) return 'MCQ Test'
-    if (location.pathname.startsWith('/course/') && location.pathname.includes('/create-mcq')) return 'Create MCQs'
-    if (location.pathname.startsWith('/course/') && location.pathname.includes('/create-lecture')) return 'Create Lecture'
-    if (location.pathname.startsWith('/course/') && location.pathname.includes('/assignments')) return 'Assignments'
-    if (location.pathname.startsWith('/course/') && location.pathname.includes('/create-assignment')) return 'Create Assignment'
-    if (location.pathname.startsWith('/course/')) return 'Course Detail'
-    if (location.pathname.startsWith('/lecture/')) return 'Lecture Player'
-    if (location.pathname.startsWith('/test-review/')) return 'Test Review'
-    if (location.pathname.startsWith('/teacher/courses/') && location.pathname.includes('/edit')) return 'Edit Course'
-    if (location.pathname.startsWith('/assignments/')) return 'Assignment Submissions'
-
-    return 'MDCAT LMS'
-  }
+  const initials = `${user?.firstName?.[0] || 'U'}${user?.lastName?.[0] || ''}`.toUpperCase()
+  const badgeClass = ROLE_BADGE_CLASSES[user?.role] || ROLE_BADGE_CLASSES.student
 
   return (
     <header className="topbar">
       <div className="topbar-left">
         <button
-          className="topbar-menu-btn"
+          className="topbar-toggle"
           onClick={onMenuClick}
           type="button"
-          aria-label="Toggle menu"
+          aria-label="Open navigation"
         >
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
+          <MenuIcon />
         </button>
-        <h2 className="topbar-title">{getPageTitle()}</h2>
+
+        <div className="topbar-heading">
+          <div className="label-xs">MDCAT LMS</div>
+          <h2 className="topbar-page-title">{title}</h2>
+        </div>
       </div>
 
       <div className="topbar-center">
         <div className="topbar-search">
-          <span className="search-icon" aria-hidden="true">S</span>
-          <input type="text" placeholder="Search..." aria-label="Search" />
+          <span className="topbar-search-icon">
+            <SearchIcon />
+          </span>
+          <input type="text" placeholder="Search courses, students, classes..." aria-label="Search" />
         </div>
       </div>
 
       <div className="topbar-right">
-        <div className="topbar-brand-mobile">
-          <span className="topbar-brand-icon" aria-hidden="true">M</span>
-          <span>MDCAT LMS</span>
-        </div>
-
         <button
-          className="topbar-action-btn"
+          className="topbar-action"
           onClick={() => navigate('/notifications')}
           type="button"
           aria-label="Notifications"
         >
-          N
+          <BellIcon />
+          <span className="topbar-action-dot" />
         </button>
 
         <button className="topbar-user" onClick={() => navigate('/profile/edit')} type="button">
-          <div className="topbar-avatar">
-            {user?.firstName?.charAt(0) || 'U'}
-            {user?.lastName?.charAt(0) || ''}
-          </div>
+          <div className="topbar-avatar">{initials}</div>
           <div className="topbar-user-info">
-            <span className="topbar-user-name">{user?.firstName || 'User'}</span>
-            <span className="topbar-user-role">{user?.role || 'student'}</span>
+            <span className="topbar-user-name">
+              {user?.firstName ? `${user.firstName} ${user?.lastName || ''}`.trim() : 'Guest User'}
+            </span>
+            <span className={`badge ${badgeClass}`}>{getRoleLabel(user?.role)}</span>
           </div>
         </button>
       </div>

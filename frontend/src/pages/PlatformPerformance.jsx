@@ -1,0 +1,131 @@
+import {
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
+import './PlatformPages.css'
+import {
+  getPerformanceSummary,
+  mdcatSubjects,
+  performanceTrend,
+  practiceAttempts,
+} from './platformContent'
+
+function StatIcon({ tone }) {
+  return (
+    <span className="stat-tile-icon" style={{ background: `rgba(${tone === 'purple' ? '108,71,255' : tone === 'teal' ? '29,184,132' : tone === 'amber' ? '245,158,11' : '255,107,107'},0.12)` }}>
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+        <path d="M5 18V8m5 10V5m5 13v-7m4 7V9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    </span>
+  )
+}
+
+export default function PlatformPerformance() {
+  const summary = getPerformanceSummary()
+
+  return (
+    <div className="workspace-page animate-fade-up">
+      <div className="workspace-columns-4">
+        <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Attempted MCQs</span><StatIcon tone="purple" /></div><strong>{summary.totalAttempted}</strong><small>{summary.totalMcqs - summary.totalAttempted} still unattempted</small></div>
+        <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Overall Accuracy</span><StatIcon tone="teal" /></div><strong>{summary.overallAccuracy}%</strong><small>Live average across all attempts</small></div>
+        <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Best Subject</span><StatIcon tone="amber" /></div><strong>{summary.bestSubject}</strong><small>Highest current subject accuracy</small></div>
+        <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>Weakest Subject</span><StatIcon tone="coral" /></div><strong>{summary.weakestSubject}</strong><small>Main recovery target for this week</small></div>
+      </div>
+
+      <div className="workspace-section-grid">
+        <div className="workspace-card">
+          <div className="workspace-card-head">
+            <div>
+              <div className="label-xs">Subject Trend</div>
+              <h2 className="workspace-card-title">Performance by subject over time</h2>
+            </div>
+          </div>
+          <div className="workspace-card-body chart-panel">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={performanceTrend}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(108,71,255,0.08)" />
+                <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#7d7da6' }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#7d7da6' }} domain={[40, 100]} />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="Biology" stroke="#1db884" strokeWidth={3} dot={false} />
+                <Line type="monotone" dataKey="Chemistry" stroke="#6c47ff" strokeWidth={3} dot={false} />
+                <Line type="monotone" dataKey="Physics" stroke="#4a90e2" strokeWidth={3} dot={false} />
+                <Line type="monotone" dataKey="English" stroke="#f59e0b" strokeWidth={3} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="insight-card">
+          <div className="insight-card-top">
+            <div>
+              <div className="label-xs">AI Recommendation</div>
+              <h3 className="workspace-card-title">Shift your next two practice blocks toward Physics and Chemistry</h3>
+            </div>
+            <div className="insight-badge">Priority Focus</div>
+          </div>
+          <p className="insight-copy">
+            Biology and English are stable. The cleanest uplift now will come from repeated chapter attempts in Physics dynamics and Chemistry states of matter.
+          </p>
+          <div className="insight-highlights">
+            <div className="insight-highlight"><span>Best recovery block</span><strong>7:00 PM - 8:15 PM</strong></div>
+            <div className="insight-highlight"><span>Suggested test set</span><strong>Physics Dynamics + Chemistry States</strong></div>
+            <div className="insight-highlight insight-highlight--accent"><span>Target uplift</span><strong>+8%</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div className="workspace-section-grid">
+        <div className="workspace-card">
+          <div className="workspace-card-head">
+            <div>
+              <div className="label-xs">Subject Accuracy</div>
+              <h2 className="workspace-card-title">Current standing by subject</h2>
+            </div>
+          </div>
+          <div className="workspace-card-body list-stack">
+            {mdcatSubjects.map((subject) => (
+              <div key={subject.id} className="progress-inline">
+                <div className="progress-inline-row">
+                  <span>{subject.name}</span>
+                  <strong>{subject.accuracy}%</strong>
+                </div>
+                <div className="progress-bar-bg">
+                  <div className="progress-bar-fill" style={{ '--fill': `${subject.accuracy}%`, width: `${subject.accuracy}%`, background: subject.name === 'Biology' ? 'var(--grad-teal)' : subject.name === 'Chemistry' ? 'linear-gradient(135deg, #6C47FF 0%, #1DB884 100%)' : subject.name === 'Physics' ? 'linear-gradient(135deg, #4A90E2 0%, #73B1FF 100%)' : 'linear-gradient(135deg, #F59E0B 0%, #FFB648 100%)' }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="workspace-card">
+          <div className="workspace-card-head">
+            <div>
+              <div className="label-xs">Recent Attempts</div>
+              <h2 className="workspace-card-title">Latest chapter practice</h2>
+            </div>
+          </div>
+          <div className="workspace-card-body list-stack">
+            {practiceAttempts.map((attempt) => (
+              <div key={`${attempt.subject}-${attempt.chapter}`} className="timeline-item">
+                <div className="timeline-dot" style={{ background: attempt.score >= 80 ? 'var(--teal)' : attempt.score >= 65 ? 'var(--amber)' : 'var(--coral)' }} />
+                <div>
+                  <strong>{attempt.subject} • {attempt.chapter}</strong>
+                  <p>{attempt.correct}/{attempt.total} correct • Score {attempt.score}%</p>
+                  <small>{attempt.date}</small>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

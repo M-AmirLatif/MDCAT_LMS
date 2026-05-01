@@ -21,6 +21,13 @@ const courseSchema = new mongoose.Schema(
       enum: ['Biology', 'Chemistry', 'Physics', 'English'],
       required: true,
     },
+    subject: {
+      type: String,
+      enum: ['Biology', 'Chemistry', 'Physics', 'English'],
+      default: function subjectDefault() {
+        return this.category
+      },
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -34,6 +41,16 @@ const courseSchema = new mongoose.Schema(
     ],
     topics: [
       {
+        name: {
+          type: String,
+          required: true,
+        },
+        description: String,
+      },
+    ],
+    chapters: [
+      {
+        id: String,
         name: {
           type: String,
           required: true,

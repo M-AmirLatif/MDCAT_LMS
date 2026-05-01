@@ -1,407 +1,146 @@
-import { useEffect, useState, useRef, useCallback } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import API from '../services/api'
-import RoleTabs from '../components/RoleTabs'
-import { getAuthUser } from '../services/authStorage'
-import { getSampleMcqs } from '../data/sampleMcqs'
+import { useMemo, useState } from 'react'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import './MCQTest.css'
+import { getChapterById, getMcqsByChapter, getSubjectById, SUBJECT_STYLES } from './platformContent'
+
+function getCorrectIndex(mcq) {
+  return ['A', 'B', 'C', 'D'].indexOf(mcq.correctAnswer)
+}
 
 export default function MCQTest() {
   const { courseId } = useParams()
+  const [searchParams] = useSearchParams()
+  const chapterId = searchParams.get('chapter')
   const navigate = useNavigate()
-  const [course, setCourse] = useState(null)
-  const [mcqs, setMcqs] = useState([])
-  const [topics, setTopics] = useState([])
-  const [selectedTopic, setSelectedTopic] = useState('All')
+  const subject = getSubjectById(courseId)
+  const chapter = getChapterById(courseId, chapterId)
+  const mcqs = useMemo(() => getMcqsByChapter(courseId, chapterId), [chapterId, courseId])
+  const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState({})
-  const [loading, setLoading] = useState(true)
   const [submitted, setSubmitted] = useState(false)
-  const [score, setScore] = useState(0)
-  const [negativeScore, setNegativeScore] = useState(0)
-  const [finalScore, setFinalScore] = useState(0)
-  const [totalQuestions, setTotalQuestions] = useState(0)
-  const [percentage, setPercentage] = useState(0)
-  const [results, setResults] = useState({})
-  const [error, setError] = useState('')
-  const [testSessionId, setTestSessionId] = useState(null)
-  const user = getAuthUser()
 
-  // Timer state
-  const [enableTimer, setEnableTimer] = useState(false)
-  const [timerMinutes, setTimerMinutes] = useState(30)
-  const [timeRemaining, setTimeRemaining] = useState(null) // seconds
-  const [testStarted, setTestStarted] = useState(false)
-  const [enableNegativeMarking, setEnableNegativeMarking] = useState(false)
-  const startTimeRef = useRef(null)
-  const timerRef = useRef(null)
+  const currentMcq = mcqs[currentIndex]
+  const answeredCount = Object.keys(answers).length
+  const progress = mcqs.length ? Math.round(((currentIndex + 1) / mcqs.length) * 100) : 0
+  const style = subject ? SUBJECT_STYLES[subject.name] : SUBJECT_STYLES.Biology
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (courseId.startsWith('sample-')) {
-          setCourse({ name: 'MDCAT Sample Entry Test (Free Trial)' })
-          setTopics([])
-          setLoading(false)
-          return
-        }
+  const result = useMemo(() => {
+    const detailed = mcqs.map((mcq) => {
+      const selectedIndex = answers[mcq.id]
+      const correctIndex = getCorrectIndex(mcq)
+      const isCorrect = selectedIndex === correctIndex
+      return { ...mcq, selectedIndex, correctIndex, isCorrect }
+    })
+    const correct = detailed.filter((item) => item.isCorrect).length
+    const wrong = detailed.filter((item) => item.selectedIndex !== undefined && !item.isCorrect).length
+    const percentage = mcqs.length ? Math.round((correct / mcqs.length) * 100) : 0
+    return { detailed, correct, wrong, percentage }
+  }, [answers, mcqs])
 
-        const [courseRes, topicsRes] = await Promise.all([
-          API.get(`/courses/${courseId}`),
-          API.get(`/mcqs/course/${courseId}/topics`),
-        ])
-        setCourse(courseRes.data.course)
-        setTopics(topicsRes.data.topics || [])
-      } catch {
-        setError('Failed to load course data')
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchData()
-  }, [courseId])
-
-  const loadMcqs = useCallback(async () => {
-    try {
-      if (courseId.startsWith('sample-')) {
-        const subject = courseId.replace('sample-', '')
-        const sample = getSampleMcqs({ subject, limit: 10 })
-        setMcqs(sample)
-        setTotalQuestions(sample.length)
-        setAnswers({})
-        setSubmitted(false)
-        setResults({})
-        return
-      }
-
-      const params = {}
-      if (selectedTopic !== 'All') params.topic = selectedTopic
-      const res = await API.get(`/mcqs/course/${courseId}`, { params })
-      const mcqList = res.data.mcqs || []
-      setMcqs(mcqList)
-      setTotalQuestions(mcqList.length)
-      setAnswers({})
-      setSubmitted(false)
-      setResults({})
-    } catch {
-      setError('Failed to load MCQs')
-    }
-  }, [courseId, selectedTopic])
-
-  const handleStartTest = async () => {
-    await loadMcqs()
-    setTestStarted(true)
-    startTimeRef.current = Date.now()
-    if (enableTimer) {
-      setTimeRemaining(timerMinutes * 60)
-    }
+  if (!subject || !chapter) {
+    return (
+      <div className="workspace-page">
+        <div className="empty-state">
+          <div className="empty-orb" />
+          <h3>Practice set not found</h3>
+          <p>Select a valid MDCAT subject and chapter before starting a test.</p>
+          <Link className="btn btn-primary" to="/courses">Back to Subjects</Link>
+        </div>
+      </div>
+    )
   }
 
-  // Timer countdown
-  useEffect(() => {
-    if (!testStarted || !enableTimer || timeRemaining === null || submitted) return
-
-    timerRef.current = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev <= 1) {
-          clearInterval(timerRef.current)
-          // Auto-submit on timeout
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
-
-    return () => clearInterval(timerRef.current)
-  }, [testStarted, enableTimer, submitted]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Auto-submit when timer hits 0
-  useEffect(() => {
-    if (timeRemaining === 0 && !submitted && testStarted) {
-      handleSubmit()
-    }
-  }, [timeRemaining]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const handleSelect = (mcqId, optionIndex) => {
+  const handleSelect = (optionIndex) => {
     if (submitted) return
-    setAnswers((prev) => ({ ...prev, [mcqId]: optionIndex }))
+    setAnswers((current) => ({ ...current, [currentMcq.id]: optionIndex }))
   }
 
-  const handleSubmit = async () => {
-    setError('')
-    if (mcqs.length === 0) return
-    if (timerRef.current) clearInterval(timerRef.current)
-
-    const timeSpent = startTimeRef.current
-      ? Math.round((Date.now() - startTimeRef.current) / 1000)
-      : null
-
-    const payload = {
-      courseId,
-      topic: selectedTopic === 'All' ? null : selectedTopic,
-      enableNegativeMarking,
-      timeLimitSeconds: enableTimer ? timerMinutes * 60 : null,
-      timeSpentSeconds: timeSpent,
-      answers: mcqs
-        .map((mcq) => ({
-          mcqId: mcq._id,
-          selectedIndex: answers[mcq._id],
-        }))
-        .filter((item) => item.selectedIndex !== undefined),
-    }
-
-    if (courseId.startsWith('sample-')) {
-      let correct = 0;
-      let wrong = 0;
-      const resMap = {};
-      
-      mcqs.forEach((mcq) => {
-        const selected = answers[mcq._id];
-        const isCorrect = selected === mcq.correctIndex;
-        if (selected !== undefined) {
-          if (isCorrect) correct++;
-          else wrong++;
-        }
-        resMap[mcq._id] = {
-          mcqId: mcq._id,
-          correctIndex: mcq.correctIndex,
-          isCorrect,
-          explanation: mcq.explanation,
-        };
-      });
-
-      const neg = enableNegativeMarking ? wrong : 0;
-      const fScore = correct - neg;
-      const perc = Math.max(0, Math.round((fScore / mcqs.length) * 100));
-
-      setResults(resMap);
-      setScore(correct);
-      setNegativeScore(neg);
-      setFinalScore(fScore);
-      setTotalQuestions(mcqs.length);
-      setPercentage(perc);
-      setTestSessionId(null);
-      setSubmitted(true);
-      return;
-    }
-
-    if (payload.answers.length === 0) {
-      setError('Please answer at least one question before submitting.')
-      return
-    }
-
-    try {
-      const res = await API.post('/tests/submit', payload)
-      const map = {}
-      res.data.results?.forEach((item) => {
-        map[item.mcqId] = item
-      })
-      setResults(map)
-      setScore(res.data.score || 0)
-      setNegativeScore(res.data.negativeScore || 0)
-      setFinalScore(res.data.finalScore || 0)
-      setTotalQuestions(res.data.totalQuestions || mcqs.length)
-      setPercentage(res.data.percentage || 0)
-      setTestSessionId(res.data.testSessionId)
-      setSubmitted(true)
-    } catch (err) {
-      setError(err.response?.data?.error || 'Failed to submit test')
-    }
+  const submit = () => {
+    setSubmitted(true)
   }
 
-  const formatTime = (seconds) => {
-    const m = Math.floor(seconds / 60)
-    const s = seconds % 60
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
-  }
-
-  if (loading)
-    return (
-      <div className="page-content">
-        <div className="loading-screen">
-          <div className="spinner" />
-          <p>Loading questions...</p>
-        </div>
-      </div>
-    )
-
-  // Test config screen
-  if (!testStarted) {
-    return (
-      <div className="mcq-test">
-        <div className="navbar">
-          <h1>MDCAT LMS</h1>
-          <button onClick={() => navigate(-1)}>Back</button>
-        </div>
-        <RoleTabs user={user} />
-
-        <div className="mcq-container">
-          <h2>{course?.name || 'MCQ Test'}</h2>
-          <p className="subtitle">Configure your test settings</p>
-
-          <div className="test-config">
-            <div className="config-group">
-              <label>Select Topic</label>
-              <select
-                value={selectedTopic}
-                onChange={(e) => setSelectedTopic(e.target.value)}
-              >
-                <option value="All">All Topics</option>
-                {topics.map((t) => (
-                  <option key={t} value={t}>{t}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="config-group">
-              <label className="toggle-label">
-                <input
-                  type="checkbox"
-                  checked={enableTimer}
-                  onChange={(e) => setEnableTimer(e.target.checked)}
-                />
-                <span>Enable Timer</span>
-              </label>
-              {enableTimer && (
-                <div className="timer-input">
-                  <input
-                    type="number"
-                    value={timerMinutes}
-                    onChange={(e) => setTimerMinutes(Math.max(1, parseInt(e.target.value) || 1))}
-                    min={1}
-                    max={300}
-                  />
-                  <span>minutes</span>
-                </div>
-              )}
-            </div>
-
-            <div className="config-group">
-              <label className="toggle-label">
-                <input
-                  type="checkbox"
-                  checked={enableNegativeMarking}
-                  onChange={(e) => setEnableNegativeMarking(e.target.checked)}
-                />
-                <span>Enable Negative Marking (-1 per wrong answer)</span>
-              </label>
-            </div>
-
-            <button className="start-btn" onClick={handleStartTest}>
-              Start Test
-            </button>
-          </div>
-        </div>
-      </div>
-    )
+  const openReview = () => {
+    navigate(`/test-review/${subject.id}-${chapter.id}`, {
+      state: {
+        subject,
+        chapter,
+        result,
+      },
+    })
   }
 
   return (
-    <div className="mcq-test">
-      <div className="navbar">
-        <h1>MDCAT LMS</h1>
-        <div className="navbar-right">
-          {enableTimer && timeRemaining !== null && !submitted && (
-            <span className={`timer ${timeRemaining <= 60 ? 'timer-warning' : ''}`}>
-              ⏱ {formatTime(timeRemaining)}
-            </span>
-          )}
-          <button onClick={() => navigate(-1)}>Back</button>
+    <div className="mcq-practice-page animate-fade-up">
+      <section className="mcq-practice-shell">
+        <div className="mcq-practice-top">
+          <div>
+            <div className="label-xs" style={{ color: style.accent }}>{subject.name}</div>
+            <h1>{chapter.name}</h1>
+            <p>{chapter.description}</p>
+          </div>
+          <Link className="btn btn-secondary" to={`/course/${subject.id}`}>Back to Chapters</Link>
         </div>
-      </div>
-      <RoleTabs user={user} />
 
-      <div className="mcq-container">
-        <h2>{course?.name || 'MCQ Test'}</h2>
-        <p className="subtitle">
-          {selectedTopic !== 'All' && <span className="topic-badge">{selectedTopic}</span>}
-          {enableNegativeMarking && <span className="neg-badge">−1 Negative Marking</span>}
-          {mcqs.length} question{mcqs.length !== 1 ? 's' : ''}
-        </p>
-        {error && <p className="error-message">{error}</p>}
+        <div className="mcq-progress-card">
+          <div className="mcq-progress-row">
+            <span>Question {currentIndex + 1} of {mcqs.length}</span>
+            <strong>{answeredCount}/{mcqs.length} answered</strong>
+          </div>
+          <div className="progress-bar-bg">
+            <div className="progress-bar-fill" style={{ '--fill': `${progress}%`, width: `${progress}%`, background: style.progress }} />
+          </div>
+        </div>
 
-        {mcqs.length === 0 ? (
-          <p>No MCQs available for this selection.</p>
-        ) : (
-          <>
-            <div className="mcq-list">
-              {mcqs.map((mcq, index) => (
-                <div key={mcq._id} className="mcq-card">
-                  <h3>
-                    {index + 1}. {mcq.question}
-                  </h3>
-                  <div className="options">
-                    {mcq.options?.map((opt, idx) => {
-                      const selected = answers[mcq._id] === idx
-                      const result = results[mcq._id]
-                      const isCorrect =
-                        submitted && result && result.correctIndex === idx
-                      const isWrong =
-                        submitted &&
-                        result &&
-                        selected &&
-                        result.isCorrect === false
-
-                      return (
-                        <button
-                          key={`${mcq._id}-${idx}`}
-                          className={`option ${selected ? 'selected' : ''} ${
-                            isCorrect ? 'correct' : ''
-                          } ${isWrong ? 'wrong' : ''}`}
-                          onClick={() => handleSelect(mcq._id, idx)}
-                        >
-                          <span className="option-letter">{String.fromCharCode(65 + idx)}</span>
-                          {opt.text}
-                        </button>
-                      )
-                    })}
-                  </div>
-                  {submitted && results[mcq._id]?.explanation && (
-                    <div className="explanation">
-                      <strong>Explanation:</strong>{' '}
-                      {results[mcq._id]?.explanation}
-                    </div>
-                  )}
-                </div>
-              ))}
+        {!submitted ? (
+          <div className="mcq-question-card">
+            <div className="mcq-question-meta">
+              <span className="state-chip state-chip--neutral">{subject.name}</span>
+              <span className="state-chip state-chip--warning">{chapter.name}</span>
+            </div>
+            <h2>{currentMcq.question}</h2>
+            <div className="mcq-options-grid">
+              {currentMcq.options.map((option, index) => {
+                const selected = answers[currentMcq.id] === index
+                return (
+                  <button
+                    key={`${currentMcq.id}-${option}`}
+                    className={`mcq-option-card ${selected ? 'mcq-option-card--selected' : ''}`}
+                    type="button"
+                    onClick={() => handleSelect(index)}
+                  >
+                    <span className="mcq-option-letter">{String.fromCharCode(65 + index)}</span>
+                    <span>{option}</span>
+                  </button>
+                )
+              })}
             </div>
 
-            <div className="actions">
-              {!submitted ? (
-                <button className="submit-btn" onClick={handleSubmit}>
-                  Submit Test ({Object.keys(answers).length}/{mcqs.length} answered)
-                </button>
+            <div className="mcq-nav-actions">
+              <button className="btn btn-secondary" type="button" disabled={currentIndex === 0} onClick={() => setCurrentIndex((current) => current - 1)}>Previous</button>
+              {currentIndex < mcqs.length - 1 ? (
+                <button className="btn btn-primary" type="button" onClick={() => setCurrentIndex((current) => current + 1)}>Next</button>
               ) : (
-                <div className="result-box">
-                  <div className="result-main">
-                    <span className="result-percentage">{percentage}%</span>
-                    <span className="result-label">
-                      {finalScore}/{totalQuestions}
-                    </span>
-                  </div>
-                  {enableNegativeMarking && negativeScore > 0 && (
-                    <p className="neg-info">
-                      Correct: {score} | Wrong: -{negativeScore} | Final: {finalScore}
-                    </p>
-                  )}
-                  {testSessionId && (
-                    <button
-                      className="btn btn-secondary"
-                      onClick={() => navigate(`/test-review/${testSessionId}`)}
-                    >
-                      Review Answers
-                    </button>
-                  )}
-                  {courseId.startsWith('sample-') && (
-                    <div style={{ marginTop: '24px', padding: '16px', background: 'var(--brand-light)', borderRadius: '8px', color: 'var(--brand-dark)' }}>
-                      <strong>Test Completed!</strong> This was just a free sample. To track your performance analytics and unlock all 3,000+ questions, please <a href="/login" style={{textDecoration: 'underline'}}>Log In</a> or <a href="/register" style={{textDecoration: 'underline'}}>Register</a>.
-                    </div>
-                  )}
-                </div>
+                <button className="btn btn-primary" type="button" onClick={submit}>Submit</button>
               )}
             </div>
-          </>
+          </div>
+        ) : (
+          <div className="mcq-result-card">
+            <div className="mcq-result-score">{result.percentage}%</div>
+            <h2>{subject.name} • {chapter.name}</h2>
+            <p>{result.correct} correct • {result.wrong} wrong • {mcqs.length - result.correct - result.wrong} unattempted</p>
+            <div className="workspace-columns-3">
+              <div className="stat-tile stat-tile--teal"><span>Correct</span><strong>{result.correct}</strong></div>
+              <div className="stat-tile stat-tile--coral"><span>Wrong</span><strong>{result.wrong}</strong></div>
+              <div className="stat-tile stat-tile--purple"><span>Total</span><strong>{mcqs.length}</strong></div>
+            </div>
+            <div className="inline-actions" style={{ marginTop: '20px', justifyContent: 'center' }}>
+              <button className="btn btn-primary" type="button" onClick={openReview}>Open Detailed Review</button>
+              <Link className="btn btn-secondary" to={`/course/${subject.id}`}>Practice Another Chapter</Link>
+            </div>
+          </div>
         )}
-      </div>
+      </section>
     </div>
   )
 }

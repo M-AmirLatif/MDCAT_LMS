@@ -32,14 +32,14 @@
 }
 
 .payment-form button {
-  background: linear-gradient(135deg, var(--brand), var(--accent-3));
+  background: var(--gradient-brand);
   color: white;
   border: none;
   padding: 10px 14px;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
-  box-shadow: 0 10px 20px rgba(56, 189, 248, 0.22);
+  box-shadow: 0 10px 20px rgba(99, 102, 241, 0.22);
 }
 
 .payments-table {

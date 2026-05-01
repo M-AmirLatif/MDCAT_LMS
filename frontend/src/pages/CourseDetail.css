@@ -172,15 +172,11 @@
 }
 
 .lectures-section {
-  background: linear-gradient(
-    135deg,
-    var(--card-strong),
-    rgba(12, 18, 36, 0.82)
-  );
+  background: var(--surface);
   padding: 30px;
   border-radius: var(--radius);
-  box-shadow: 0 22px 46px rgba(15, 23, 42, 0.14);
-  border: 1px solid rgba(56, 189, 248, 0.18);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--surface-border);
 }
 
 .lectures-header {
@@ -196,7 +192,7 @@
 }
 
 .create-lecture-btn {
-  background: linear-gradient(135deg, var(--brand), var(--accent-3));
+  background: var(--gradient-brand);
   color: white;
   border: none;
   padding: 10px 20px;
@@ -205,7 +201,7 @@
   font-weight: 600;
   transition: transform 0.3s ease;
   white-space: nowrap;
-  box-shadow: 0 12px 24px rgba(56, 189, 248, 0.25);
+  box-shadow: var(--shadow-brand);
 }
 
 .create-lecture-btn:hover {
@@ -223,14 +219,10 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  border: 1px solid rgba(56, 189, 248, 0.15);
+  border: 1px solid var(--surface-border);
   border-radius: 12px;
   transition: transform 0.3s ease;
-  background: linear-gradient(
-    135deg,
-    var(--card),
-    rgba(232, 245, 255, 0.8)
-  );
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .lecture-item:hover {
@@ -269,7 +261,7 @@
 }
 
 .watch-btn {
-  background: linear-gradient(135deg, var(--brand), var(--accent-3));
+  background: var(--gradient-brand);
   color: white;
   border: none;
   padding: 10px 20px;
@@ -279,7 +271,7 @@
   white-space: nowrap;
   margin-left: 20px;
   transition: transform 0.3s ease;
-  box-shadow: 0 12px 26px rgba(56, 189, 248, 0.3);
+  box-shadow: var(--shadow-brand);
 }
 
 .watch-btn:hover {
@@ -287,28 +279,20 @@
 }
 
 .mcq-section {
-  background: linear-gradient(
-    135deg,
-    var(--card-strong),
-    rgba(12, 18, 36, 0.82)
-  );
+  background: var(--surface);
   padding: 30px;
   border-radius: var(--radius);
-  box-shadow: 0 22px 46px rgba(15, 23, 42, 0.14);
-  border: 1px solid rgba(56, 189, 248, 0.18);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--surface-border);
   margin-bottom: 30px;
 }
 
 .assignment-section {
-  background: linear-gradient(
-    135deg,
-    var(--card-strong),
-    rgba(12, 18, 36, 0.82)
-  );
+  background: var(--surface);
   padding: 30px;
   border-radius: var(--radius);
-  box-shadow: 0 22px 46px rgba(15, 23, 42, 0.14);
-  border: 1px solid rgba(56, 189, 248, 0.18);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--surface-border);
   margin-bottom: 30px;
 }
 
@@ -326,7 +310,7 @@
 }
 
 .assignment-actions button {
-  background: linear-gradient(135deg, var(--brand), var(--accent-3));
+  background: var(--gradient-brand);
   color: white;
   border: none;
   padding: 10px 16px;
@@ -334,7 +318,7 @@
   cursor: pointer;
   font-weight: 600;
   transition: transform 0.3s ease;
-  box-shadow: 0 12px 26px rgba(56, 189, 248, 0.3);
+  box-shadow: 0 12px 26px rgba(99, 102, 241, 0.3);
 }
 
 .assignment-actions button:hover {
@@ -342,7 +326,7 @@
 }
 
 .create-assignment-btn {
-  background: rgba(56, 189, 248, 0.12);
+  background: rgba(99, 102, 241, 0.12);
   color: var(--brand-dark);
 }
 
@@ -360,7 +344,7 @@
 }
 
 .mcq-actions button {
-  background: linear-gradient(135deg, var(--brand), var(--accent-3));
+  background: var(--gradient-brand);
   color: white;
   border: none;
   padding: 10px 16px;
@@ -368,7 +352,7 @@
   cursor: pointer;
   font-weight: 600;
   transition: transform 0.3s ease;
-  box-shadow: 0 12px 26px rgba(56, 189, 248, 0.3);
+  box-shadow: 0 12px 26px rgba(99, 102, 241, 0.3);
 }
 
 .mcq-actions button:hover {
@@ -376,7 +360,7 @@
 }
 
 .create-mcq-btn {
-  background: rgba(56, 189, 248, 0.12);
+  background: rgba(99, 102, 241, 0.12);
   color: var(--brand-dark);
 }
 

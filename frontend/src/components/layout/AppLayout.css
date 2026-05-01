@@ -1,27 +1,13 @@
-/* ═══════════════════════════════════════════════
-   App Layout — Sidebar + Main Content Area
-   ═══════════════════════════════════════════════ */
-
 .app-layout {
   display: flex;
   min-height: 100vh;
-  /* Keep the deep-blue app background across all authenticated pages (per references). */
-  background: var(--gradient-hero);
-  background-attachment: fixed;
+  background:
+    radial-gradient(circle at top right, rgba(108, 71, 255, 0.12), transparent 24%),
+    linear-gradient(180deg, #f8f6ff 0%, #f4f2ff 100%);
 }
 
 .app-layout--collapsed {
   --sidebar-width: var(--sidebar-collapsed);
-}
-
-/* Many pages still render their own legacy `.navbar` header. Hide it when using AppLayout
-   to avoid double headers (Topbar + page navbar). */
-.app-layout .navbar {
-  display: none;
-}
-
-.app-layout .role-tabs {
-  display: none;
 }
 
 .app-main {
@@ -30,25 +16,26 @@
   display: flex;
   flex-direction: column;
   margin-left: var(--sidebar-width);
-  transition: margin-left var(--transition-base);
-  position: relative;
+  transition: margin-left var(--ease);
+}
+
+.app-layout .navbar,
+.app-layout .role-tabs {
+  display: none;
 }
 
 .app-content {
   flex: 1;
-  padding: var(--space-xl);
-  overflow-y: auto;
   min-height: calc(100vh - var(--topbar-height));
-  position: relative;
-  z-index: 1;
+  padding: 28px;
+  overflow-y: auto;
 }
 
-/* Sidebar backdrop overlay for mobile */
 .sidebar-overlay {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(15, 15, 26, 0.58);
   backdrop-filter: blur(4px);
   z-index: 89;
 }
@@ -60,5 +47,11 @@
 
   .sidebar-overlay {
     display: block;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-content {
+    padding: 18px 16px 92px;
   }
 }

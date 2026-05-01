@@ -17,14 +17,14 @@
 }
 
 .header-row button {
-  background: linear-gradient(135deg, var(--brand), var(--accent-3));
+  background: var(--gradient-brand);
   color: white;
   border: none;
   padding: 10px 18px;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
-  box-shadow: 0 12px 24px rgba(56, 189, 248, 0.25);
+  box-shadow: 0 12px 24px rgba(99, 102, 241, 0.25);
 }
 
 .assignment-list {
@@ -60,7 +60,7 @@
 }
 
 .marks {
-  background: rgba(56, 189, 248, 0.12);
+  background: rgba(99, 102, 241, 0.12);
   color: var(--brand-dark);
   padding: 6px 10px;
   border-radius: 999px;
@@ -75,7 +75,7 @@
 .instructions {
   color: var(--ink);
   font-size: 14px;
-  background: rgba(56, 189, 248, 0.06);
+  background: rgba(99, 102, 241, 0.06);
   padding: 12px;
   border-radius: 10px;
 }
@@ -87,7 +87,7 @@
 }
 
 .attachments a {
-  background: rgba(56, 189, 248, 0.12);
+  background: rgba(99, 102, 241, 0.12);
   color: var(--brand-dark);
   padding: 6px 10px;
   border-radius: 999px;
@@ -96,14 +96,14 @@
 }
 
 .teacher-actions button {
-  background: linear-gradient(135deg, var(--brand), var(--accent-3));
+  background: var(--gradient-brand);
   color: white;
   border: none;
   padding: 8px 14px;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
-  box-shadow: 0 10px 20px rgba(56, 189, 248, 0.25);
+  box-shadow: 0 10px 20px rgba(99, 102, 241, 0.25);
 }
 
 .student-submit {
@@ -121,14 +121,14 @@
 }
 
 .student-submit button {
-  background: linear-gradient(135deg, var(--brand), var(--accent-3));
+  background: var(--gradient-brand);
   color: white;
   border: none;
   padding: 10px 14px;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
-  box-shadow: 0 10px 20px rgba(56, 189, 248, 0.22);
+  box-shadow: 0 10px 20px rgba(99, 102, 241, 0.22);
 }
 
 .upload-status {

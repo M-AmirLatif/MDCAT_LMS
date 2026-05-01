@@ -1,42 +1,48 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import AppLayout from './components/layout/AppLayout'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import VerifyEmail from './pages/VerifyEmail'
 import ForgotPassword from './pages/ForgotPassword'
-import Dashboard from './pages/Dashboard'
-import SetPassword from './pages/SetPassword'
+import ProtectedRoute from './components/ProtectedRoute'
+import PlatformDashboard from './pages/PlatformDashboard'
+import PlatformCourses from './pages/PlatformCourses'
+import PlatformPerformance from './pages/PlatformPerformance'
+import PlatformLiveClasses from './pages/PlatformLiveClasses'
+import PlatformPayments from './pages/PlatformPayments'
+import PlatformNotifications from './pages/PlatformNotifications'
+import PlatformProfile from './pages/PlatformProfile'
+import {
+  AdminAnnouncementsPage,
+  AdminCoursesPage,
+  AdminReportsPage,
+  AdminSettingsPage,
+  AdminStudentsPage,
+  AdminTeachersPage,
+  SuperAdminAdminsPage,
+  SuperAdminAnnouncementsPage,
+  SuperAdminDangerZonePage,
+  SuperAdminLogsPage,
+  SuperAdminPaymentsPage,
+  SuperAdminSettingsPage,
+  TeacherAnalyticsPage,
+  TeacherAssignmentsPage,
+  TeacherStudentsPage,
+} from './pages/PlatformRolePages'
 import SampleTest from './pages/SampleTest'
-import EditProfile from './pages/EditProfile'
-import Courses from './pages/Courses'
 import CourseDetail from './pages/CourseDetail'
 import LecturePlayer from './pages/LecturePlayer'
-import CreateLecture from './pages/CreateLecture'
 import MCQTest from './pages/MCQTest'
-import CreateMCQ from './pages/CreateMCQ'
-import Performance from './pages/Performance'
 import TestReview from './pages/TestReview'
-import TeacherCourses from './pages/TeacherCourses'
-import CreateCourse from './pages/CreateCourse'
-import EditCourse from './pages/EditCourse'
-import AdminDashboard from './pages/AdminDashboard'
-import Assignments from './pages/Assignments'
-import CreateAssignment from './pages/CreateAssignment'
-import AssignmentSubmissions from './pages/AssignmentSubmissions'
-import Notifications from './pages/Notifications'
-import LiveSessions from './pages/LiveSessions'
-import CreateLiveSession from './pages/CreateLiveSession'
-import Payments from './pages/Payments'
 import NotFound from './pages/NotFound'
-import ProtectedRoute from './components/ProtectedRoute'
 import './App.css'
+import './pages/PlatformPages.css'
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* ── Public Routes (no sidebar) ── */}
         <Route path="/" element={<Home />} />
         <Route path="/sample-test" element={<SampleTest />} />
         <Route path="/sample-test/:subject" element={<SampleTest />} />
@@ -45,96 +51,184 @@ function App() {
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
-        {/* ── Authenticated Routes (with sidebar layout) ── */}
         <Route element={<AppLayout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/set-password" element={<SetPassword />} />
-          <Route path="/profile/edit" element={<EditProfile />} />
-          <Route path="/courses" element={<Courses />} />
+          <Route path="/dashboard" element={<PlatformDashboard />} />
+          <Route path="/courses" element={<PlatformCourses />} />
+          <Route path="/performance" element={<PlatformPerformance />} />
+          <Route path="/live-sessions" element={<PlatformLiveClasses />} />
+          <Route path="/payments" element={<PlatformPayments />} />
+          <Route path="/notifications" element={<PlatformNotifications />} />
+          <Route path="/profile/edit" element={<PlatformProfile />} />
+
           <Route path="/course/:courseId" element={<CourseDetail />} />
           <Route path="/lecture/:lectureId" element={<LecturePlayer />} />
-          <Route
-            path="/course/:courseId/create-lecture"
-            element={
-              <ProtectedRoute roles={['teacher', 'admin']}>
-                <CreateLecture />
-              </ProtectedRoute>
-            }
-          />
           <Route path="/course/:courseId/mcqs" element={<MCQTest />} />
-          <Route
-            path="/course/:courseId/create-mcq"
-            element={
-              <ProtectedRoute roles={['teacher', 'admin']}>
-                <CreateMCQ />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/performance" element={<Performance />} />
           <Route path="/test-review/:sessionId" element={<TestReview />} />
+
           <Route
             path="/teacher/courses"
             element={
-              <ProtectedRoute roles={['teacher', 'admin']}>
-                <TeacherCourses />
+              <ProtectedRoute roles={['teacher', 'admin', 'superadmin']}>
+                <PlatformCourses />
               </ProtectedRoute>
             }
           />
           <Route
             path="/teacher/courses/create"
             element={
-              <ProtectedRoute roles={['teacher', 'admin']}>
-                <CreateCourse />
+              <ProtectedRoute roles={['teacher', 'admin', 'superadmin']}>
+                <AdminCoursesPage />
               </ProtectedRoute>
             }
           />
           <Route
             path="/teacher/courses/:courseId/edit"
             element={
-              <ProtectedRoute roles={['teacher', 'admin']}>
-                <EditCourse />
+              <ProtectedRoute roles={['teacher', 'admin', 'superadmin']}>
+                <AdminCoursesPage />
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/teacher/students"
+            element={
+              <ProtectedRoute roles={['teacher', 'admin', 'superadmin']}>
+                <TeacherStudentsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/teacher/assignments"
+            element={
+              <ProtectedRoute roles={['teacher', 'admin', 'superadmin']}>
+                <TeacherAssignmentsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/teacher/analytics"
+            element={
+              <ProtectedRoute roles={['teacher', 'admin', 'superadmin']}>
+                <TeacherAnalyticsPage />
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/admin"
             element={
               <ProtectedRoute roles={['admin', 'superadmin']}>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/course/:courseId/assignments" element={<Assignments />} />
-          <Route
-            path="/course/:courseId/create-assignment"
-            element={
-              <ProtectedRoute roles={['teacher', 'admin']}>
-                <CreateAssignment />
+                <PlatformDashboard />
               </ProtectedRoute>
             }
           />
           <Route
-            path="/assignments/:assignmentId/submissions"
+            path="/admin/students"
             element={
-              <ProtectedRoute roles={['teacher', 'admin']}>
-                <AssignmentSubmissions />
+              <ProtectedRoute roles={['admin', 'superadmin']}>
+                <AdminStudentsPage />
               </ProtectedRoute>
             }
           />
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path="/live-sessions" element={<LiveSessions />} />
           <Route
-            path="/live-sessions/create"
+            path="/admin/teachers"
             element={
-              <ProtectedRoute roles={['teacher', 'admin']}>
-                <CreateLiveSession />
+              <ProtectedRoute roles={['admin', 'superadmin']}>
+                <AdminTeachersPage />
               </ProtectedRoute>
             }
           />
-          <Route path="/payments" element={<Payments />} />
+          <Route
+            path="/admin/courses"
+            element={
+              <ProtectedRoute roles={['admin', 'superadmin']}>
+                <AdminCoursesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/payments"
+            element={
+              <ProtectedRoute roles={['admin', 'superadmin']}>
+                <PlatformPayments />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/announcements"
+            element={
+              <ProtectedRoute roles={['admin', 'superadmin']}>
+                <AdminAnnouncementsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/reports"
+            element={
+              <ProtectedRoute roles={['admin', 'superadmin']}>
+                <AdminReportsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/settings"
+            element={
+              <ProtectedRoute roles={['admin', 'superadmin']}>
+                <AdminSettingsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/super-admin/admins"
+            element={
+              <ProtectedRoute roles={['superadmin']}>
+                <SuperAdminAdminsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/super-admin/platform-settings"
+            element={
+              <ProtectedRoute roles={['superadmin']}>
+                <SuperAdminSettingsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/super-admin/logs"
+            element={
+              <ProtectedRoute roles={['superadmin']}>
+                <SuperAdminLogsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/super-admin/danger-zone"
+            element={
+              <ProtectedRoute roles={['superadmin']}>
+                <SuperAdminDangerZonePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/super-admin/payments"
+            element={
+              <ProtectedRoute roles={['superadmin']}>
+                <SuperAdminPaymentsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/super-admin/announcements"
+            element={
+              <ProtectedRoute roles={['superadmin']}>
+                <SuperAdminAnnouncementsPage />
+              </ProtectedRoute>
+            }
+          />
         </Route>
 
-        {/* Catch-all 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
