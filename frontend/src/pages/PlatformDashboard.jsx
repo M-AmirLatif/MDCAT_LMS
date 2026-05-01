@@ -202,6 +202,41 @@ function TeacherDashboard() {
         <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>Average Score</span><span className="badge badge-coral">Class</span></div><strong>76%</strong><small>Target improvement: Chemistry numericals</small></div>
       </div>
 
+      <section className="workspace-card">
+        <div className="workspace-card-head">
+          <div>
+            <div className="label-xs">All MDCAT Subject Banks</div>
+            <h3 className="workspace-card-title">Teacher access covers Biology, Chemistry, Physics, and English</h3>
+            <p>Each subject is organized into chapter-wise MCQ banks with explanations and difficulty labels.</p>
+          </div>
+        </div>
+        <div className="workspace-card-body">
+          <div className="workspace-columns-4">
+            {mdcatSubjects.map((subject) => {
+              const style = SUBJECT_STYLES[subject.name]
+              return (
+                <article key={subject.id} className={`teacher-subject-bank ${style.className}`}>
+                  <div className="subject-focus-head">
+                    <span className={`subject-focus-icon subject-focus-icon--${subject.id}`}>
+                      <SubjectGlyph subject={subject.name} />
+                    </span>
+                    <div>
+                      <div className="label-xs" style={{ color: style.accent }}>{subject.name}</div>
+                      <h4>{subject.totalChapters} Chapters</h4>
+                    </div>
+                  </div>
+                  <div className="metric-row">
+                    <span>Total MCQs</span>
+                    <strong>{subject.totalMcqs}</strong>
+                  </div>
+                  <Link className="btn btn-secondary btn-sm" to="/teacher/courses">Manage Bank</Link>
+                </article>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
       <div className="workspace-section-grid">
         <div className="workspace-card">
           <div className="workspace-card-head"><div><div className="label-xs">MCQ Coverage</div><h3 className="workspace-card-title">MCQs by subject</h3></div></div>

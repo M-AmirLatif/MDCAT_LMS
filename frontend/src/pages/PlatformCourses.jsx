@@ -100,6 +100,7 @@ function TeacherMcqManagement() {
           <div>
             <div className="label-xs">MCQ Management</div>
             <h2 className="workspace-card-title">Manage subject banks, chapters, and explanations</h2>
+            <p>All four MDCAT subjects are available here. Unrelated course categories are intentionally removed.</p>
           </div>
           <div className="inline-actions">
             <button className={`btn ${activePanel === 'mcq' ? 'btn-primary' : 'btn-secondary'}`} type="button" onClick={() => openPanel('mcq')}>Add MCQ</button>
@@ -107,6 +108,32 @@ function TeacherMcqManagement() {
           </div>
         </div>
       </section>
+
+      <div className="workspace-columns-4">
+        {mdcatSubjects.map((subject) => {
+          const style = SUBJECT_STYLES[subject.name]
+          return (
+            <article key={subject.id} className={`teacher-subject-bank ${style.className}`}>
+              <div className="subject-focus-head">
+                <span className={`subject-focus-icon subject-focus-icon--${subject.id}`}>
+                  <SubjectIcon subject={subject.name} />
+                </span>
+                <div>
+                  <div className="label-xs" style={{ color: style.accent }}>{subject.name}</div>
+                  <h4>{subject.totalChapters} Chapters</h4>
+                </div>
+              </div>
+              <div className="metric-row">
+                <span>Total MCQs</span>
+                <strong>{subject.totalMcqs}</strong>
+              </div>
+              <div className="progress-bar-bg">
+                <div className="progress-bar-fill" style={{ '--fill': '100%', width: '100%', background: style.progress }} />
+              </div>
+            </article>
+          )
+        })}
+      </div>
 
       <div className="split-layout">
         <div className="list-stack">
