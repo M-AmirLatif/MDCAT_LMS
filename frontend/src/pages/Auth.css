@@ -237,12 +237,58 @@
   margin-top: -4px;
 }
 
+.auth-role-switcher {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 4px 0 14px;
+}
+
+.auth-role-option {
+  min-height: 58px;
+  padding: 10px 12px;
+  border: 1px solid rgba(108, 71, 255, 0.16);
+  border-radius: 16px;
+  background: #f8f7ff;
+  color: #1a1a2e;
+  text-align: left;
+  box-shadow: 0 12px 28px rgba(108, 71, 255, 0.06);
+}
+
+.auth-role-option strong,
+.auth-role-option span {
+  display: block;
+}
+
+.auth-role-option strong {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.auth-role-option span {
+  margin-top: 3px;
+  font-size: 11px;
+  color: #6f68a5;
+}
+
+.auth-role-option--active {
+  border-color: rgba(108, 71, 255, 0.48);
+  background: linear-gradient(135deg, rgba(108, 71, 255, 0.16), rgba(74, 144, 226, 0.12));
+  color: var(--purple);
+}
+
 .auth-google-block {
   width: 100%;
   min-height: 50px;
   display: grid;
   place-items: center;
   border-radius: 24px;
+}
+
+@media (max-width: 760px) {
+  .auth-role-switcher {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .auth-google-block--register {

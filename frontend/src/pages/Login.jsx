@@ -10,6 +10,12 @@ import './Auth.css'
 import './PlatformPages.css'
 
 const otpTemplate = ['', '', '', '', '', '']
+const loginRoles = [
+  { key: 'student', label: 'Student', hint: 'Practice MCQs' },
+  { key: 'teacher', label: 'Teacher', hint: 'Manage MCQs' },
+  { key: 'admin', label: 'Admin', hint: 'Operations' },
+  { key: 'superadmin', label: 'Super Admin', hint: 'Control' },
+]
 
 function MailIcon() {
   return (
@@ -63,6 +69,17 @@ export default function Login() {
     setFormData((current) => ({ ...current, [name]: value }))
   }
 
+  const switchRole = (role) => {
+    const params = new URLSearchParams(searchParams)
+    if (role === 'student') {
+      params.delete('role')
+    } else {
+      params.set('role', role)
+    }
+    const query = params.toString()
+    navigate(`/login${query ? `?${query}` : ''}`, { replace: true })
+  }
+
   const onOtpChange = (index, value) => {
     const cleaned = value.replace(/\D/g, '').slice(-1)
     setOtp((current) => current.map((digit, digitIndex) => (digitIndex === index ? cleaned : digit)))
@@ -81,6 +98,11 @@ export default function Login() {
 
       const response = await API.post('/auth/login', formData)
       const user = response.data.user
+      if (requestedRole !== 'student' && user?.role !== requestedRole && user?.role !== 'superadmin') {
+        toast.error(`This account is a ${getRoleLabel(user?.role)} account, not ${roleLabel}.`)
+        setLoading(false)
+        return
+      }
       login(response.data.token, user, remember)
       if (remember) {
         setRememberedCredentials({ email: formData.email, remember })
@@ -90,7 +112,14 @@ export default function Login() {
 
       navigate(nextPath || getDefaultRouteForRole(user?.role || requestedRole))
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Login failed')
+      const message =
+        error.response?.data?.error ||
+        (error.code === 'ECONNABORTED'
+          ? 'Backend request timed out. Check Railway deployment.'
+          : error.message === 'Network Error'
+            ? 'Cannot reach backend API. Check Vercel API URL and Railway CORS.'
+            : 'Login failed')
+      toast.error(message)
     } finally {
       setLoading(false)
     }
@@ -111,6 +140,20 @@ export default function Login() {
                 <span className={`badge ${requestedRole === 'teacher' ? 'badge-teal' : requestedRole === 'admin' ? 'badge-amber' : requestedRole === 'superadmin' ? 'badge-coral' : 'badge-purple'}`}>
                   {roleLabel}
                 </span>
+              </div>
+
+              <div className="auth-role-switcher" aria-label="Choose login role">
+                {loginRoles.map((role) => (
+                  <button
+                    key={role.key}
+                    className={`auth-role-option ${requestedRole === role.key ? 'auth-role-option--active' : ''}`}
+                    type="button"
+                    onClick={() => switchRole(role.key)}
+                  >
+                    <strong>{role.label}</strong>
+                    <span>{role.hint}</span>
+                  </button>
+                ))}
               </div>
 
               <h1 className="auth-title">Sign in to continue</h1>
