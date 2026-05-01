@@ -224,6 +224,57 @@
   margin-top: auto;
 }
 
+.teacher-subject-bank--button {
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.teacher-subject-bank--button:hover,
+.teacher-subject-bank--button:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(108, 71, 255, 0.38);
+  box-shadow: 0 22px 52px rgba(108, 71, 255, 0.14);
+}
+
+.teacher-subject-bank--active,
+.course-manage-card--active {
+  border-color: rgba(108, 71, 255, 0.42);
+  box-shadow: 0 22px 52px rgba(108, 71, 255, 0.13);
+}
+
+.chapter-item--button {
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+}
+
+.chapter-item--active {
+  border-color: rgba(108, 71, 255, 0.38);
+  background: linear-gradient(135deg, rgba(108, 71, 255, 0.12), rgba(29, 184, 132, 0.08));
+}
+
+.teacher-form-context {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border-left: 4px solid var(--purple);
+  border-radius: 14px;
+  background: linear-gradient(135deg, #fff, #f8f7ff);
+  box-shadow: 0 14px 34px rgba(108, 71, 255, 0.08);
+}
+
+.teacher-form-context strong {
+  color: var(--heading);
+}
+
+.teacher-form-context span {
+  color: var(--muted);
+  font-size: 14px;
+}
+
 .subject-focus-head {
   display: flex;
   align-items: center;

@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
 import './PlatformPages.css'
 import {
@@ -30,9 +31,9 @@ function StudentSubjects() {
       <section className="workspace-card subject-browser-hero">
         <div className="workspace-card-head">
           <div>
-            <div className="label-xs">MDCAT Practice</div>
-            <h2 className="workspace-card-title">Choose a subject and continue chapter-wise MCQ practice</h2>
-            <p>Only Biology, Chemistry, Physics, and English are available, with clear chapter separation and subject-wise tracking.</p>
+            <div className="label-xs">MDCAT MCQ Bank</div>
+            <h2 className="workspace-card-title">Choose a subject, open chapters, then attempt MCQs</h2>
+            <p>Biology, Chemistry, Physics, and English are separated into chapter-wise practice banks with scoring and explanations.</p>
           </div>
         </div>
       </section>
@@ -70,7 +71,7 @@ function StudentSubjects() {
                   </div>
                 </div>
                 <div className="inline-actions" style={{ marginTop: '16px' }}>
-                  <Link className="btn btn-primary btn-sm" style={{ height: '42px', borderRadius: '12px' }} to={`/course/${subject.id}`}>Continue Practice</Link>
+                  <Link className="btn btn-primary btn-sm" style={{ height: '42px', borderRadius: '12px' }} to={`/course/${subject.id}`}>Open Chapters</Link>
                 </div>
               </div>
             </article>
@@ -83,14 +84,40 @@ function StudentSubjects() {
 
 function TeacherMcqManagement() {
   const [activePanel, setActivePanel] = useState('mcq')
+  const [selectedSubjectId, setSelectedSubjectId] = useState('biology')
+  const [selectedChapterId, setSelectedChapterId] = useState('bio-cell')
   const formRef = useRef(null)
-  const chapterOptions = useMemo(() => getChaptersBySubject('biology'), [])
 
-  const openPanel = (panel) => {
-    setActivePanel(panel)
+  const selectedSubject = mdcatSubjects.find((subject) => subject.id === selectedSubjectId) || mdcatSubjects[0]
+  const selectedStyle = SUBJECT_STYLES[selectedSubject.name]
+  const chapterOptions = useMemo(() => getChaptersBySubject(selectedSubjectId), [selectedSubjectId])
+  const selectedChapter = chapterOptions.find((chapter) => chapter.id === selectedChapterId) || chapterOptions[0]
+
+  const scrollToForm = () => {
     requestAnimationFrame(() => {
       formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     })
+  }
+
+  const openPanel = (panel) => {
+    setActivePanel(panel)
+    scrollToForm()
+  }
+
+  const chooseSubject = (subjectId) => {
+    const chapters = getChaptersBySubject(subjectId)
+    setSelectedSubjectId(subjectId)
+    setSelectedChapterId(chapters[0]?.id || '')
+  }
+
+  const chooseChapter = (chapterId) => {
+    setSelectedChapterId(chapterId)
+    setActivePanel('mcq')
+    scrollToForm()
+  }
+
+  const handleSave = (type) => {
+    toast.success(type === 'chapter' ? 'Chapter fields are ready for backend save.' : 'MCQ fields are ready for backend save.')
   }
 
   return (
@@ -98,9 +125,9 @@ function TeacherMcqManagement() {
       <section className="workspace-card">
         <div className="workspace-card-head">
           <div>
-            <div className="label-xs">MCQ Management</div>
-            <h2 className="workspace-card-title">Manage subject banks, chapters, and explanations</h2>
-            <p>All four MDCAT subjects are available here. Unrelated course categories are intentionally removed.</p>
+            <div className="label-xs">Teacher MCQ Bank</div>
+            <h2 className="workspace-card-title">Manage subjects, chapters, MCQs, correct answers, and explanations</h2>
+            <p>Click a subject, click a chapter, then use the empty form fields to add MCQs or create new chapters.</p>
           </div>
           <div className="inline-actions">
             <button className={`btn ${activePanel === 'mcq' ? 'btn-primary' : 'btn-secondary'}`} type="button" onClick={() => openPanel('mcq')}>Add MCQ</button>
@@ -112,8 +139,14 @@ function TeacherMcqManagement() {
       <div className="workspace-columns-4">
         {mdcatSubjects.map((subject) => {
           const style = SUBJECT_STYLES[subject.name]
+          const active = selectedSubjectId === subject.id
           return (
-            <article key={subject.id} className={`teacher-subject-bank ${style.className}`}>
+            <button
+              key={subject.id}
+              className={`teacher-subject-bank teacher-subject-bank--button ${style.className} ${active ? 'teacher-subject-bank--active' : ''}`}
+              type="button"
+              onClick={() => chooseSubject(subject.id)}
+            >
               <div className="subject-focus-head">
                 <span className={`subject-focus-icon subject-focus-icon--${subject.id}`}>
                   <SubjectIcon subject={subject.name} />
@@ -130,75 +163,91 @@ function TeacherMcqManagement() {
               <div className="progress-bar-bg">
                 <div className="progress-bar-fill" style={{ '--fill': '100%', width: '100%', background: style.progress }} />
               </div>
-            </article>
+            </button>
           )
         })}
       </div>
 
       <div className="split-layout">
         <div className="list-stack">
-          {teacherMcqSummary.map((subject) => (
-            <div key={subject.subject} className="course-manage-card">
-              <div className="workspace-card-head">
-                <div>
-                  <div className="label-xs">{subject.subject}</div>
-                  <h3 className="workspace-card-title">{subject.mcqs} MCQs across {subject.chapters} chapters</h3>
-                  <p>Uploaded and reviewed by {subject.uploadedBy}</p>
+          {teacherMcqSummary.map((subject) => {
+            const subjectMeta = mdcatSubjects.find((item) => item.name === subject.subject)
+            const activeSubject = subjectMeta?.id === selectedSubjectId
+            return (
+              <div key={subject.subject} className={`course-manage-card ${activeSubject ? 'course-manage-card--active' : ''}`}>
+                <div className="workspace-card-head">
+                  <div>
+                    <div className="label-xs">{subject.subject}</div>
+                    <h3 className="workspace-card-title">{subject.mcqs} MCQs across {subject.chapters} chapters</h3>
+                    <p>Uploaded and reviewed by {subject.uploadedBy}</p>
+                  </div>
+                  <span className="state-chip state-chip--neutral">Managed</span>
                 </div>
-                <span className="state-chip state-chip--neutral">Managed</span>
-              </div>
-              <div className="workspace-card-body">
-                <div className="chapter-list">
-                  {getChaptersBySubject(subject.subject.toLowerCase()).map((chapter) => (
-                    <div key={chapter.id} className="chapter-item">
-                      <div>
-                        <strong>{chapter.name}</strong>
-                        <p>{chapter.totalMcqs} MCQs • Best student score {chapter.bestScore}%</p>
-                      </div>
-                      <div className="inline-actions">
-                        <button className="btn btn-secondary btn-sm" type="button">Edit</button>
-                        <button className="btn btn-ghost btn-sm" type="button">Delete</button>
-                      </div>
-                    </div>
-                  ))}
+                <div className="workspace-card-body">
+                  <div className="chapter-list">
+                    {getChaptersBySubject(subject.subject.toLowerCase()).map((chapter) => (
+                      <button
+                        key={chapter.id}
+                        className={`chapter-item chapter-item--button ${selectedChapterId === chapter.id ? 'chapter-item--active' : ''}`}
+                        type="button"
+                        onClick={() => chooseChapter(chapter.id)}
+                      >
+                        <div>
+                          <strong>{chapter.name}</strong>
+                          <p>{chapter.totalMcqs} MCQs - Best student score {chapter.bestScore}%</p>
+                        </div>
+                        <span className="btn btn-secondary btn-sm">Open</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
 
         <aside ref={formRef} className="workspace-card drawer-card">
           <div className="workspace-card-head">
             <div>
               <div className="label-xs">{activePanel === 'mcq' ? 'Add MCQ' : 'Add Chapter'}</div>
-              <h3 className="workspace-card-title">{activePanel === 'mcq' ? 'Teacher entry form' : 'Chapter setup form'}</h3>
+              <h3 className="workspace-card-title">
+                {activePanel === 'mcq' ? `${selectedSubject.name} - ${selectedChapter?.name || 'Select chapter'}` : `${selectedSubject.name} chapter setup`}
+              </h3>
             </div>
           </div>
           {activePanel === 'mcq' ? (
             <div className="workspace-card-body form-shell">
-              <div className="floating-field"><label htmlFor="mcq-subject">Subject</label><select id="mcq-subject" defaultValue="Biology"><option>Biology</option><option>Chemistry</option><option>Physics</option><option>English</option></select></div>
-              <div className="floating-field"><label htmlFor="mcq-chapter">Chapter</label><select id="mcq-chapter" defaultValue="Cell Biology">{chapterOptions.map((chapter) => <option key={chapter.id}>{chapter.name}</option>)}</select></div>
-              <div className="floating-field"><label htmlFor="mcq-question">Question</label><textarea id="mcq-question" rows="4" defaultValue="Which organelle is primarily responsible for ATP production in eukaryotic cells?" /></div>
+              <div className="teacher-form-context" style={{ borderColor: selectedStyle.accent }}>
+                <strong>{selectedSubject.name} MCQ Bank</strong>
+                <span>{selectedChapter?.name || 'Choose a chapter'} - add a clean MDCAT-style question with explanation.</span>
+              </div>
+              <div className="floating-field"><label htmlFor="mcq-subject">Subject</label><select id="mcq-subject" value={selectedSubjectId} onChange={(event) => chooseSubject(event.target.value)}>{mdcatSubjects.map((subject) => <option key={subject.id} value={subject.id}>{subject.name}</option>)}</select></div>
+              <div className="floating-field"><label htmlFor="mcq-chapter">Chapter</label><select id="mcq-chapter" value={selectedChapter?.id || ''} onChange={(event) => setSelectedChapterId(event.target.value)}>{chapterOptions.map((chapter) => <option key={chapter.id} value={chapter.id}>{chapter.name}</option>)}</select></div>
+              <div className="floating-field"><label htmlFor="mcq-question">Question</label><textarea id="mcq-question" rows="4" placeholder="Type the MCQ question here..." /></div>
               <div className="floating-grid">
-                <div className="floating-field"><label htmlFor="mcq-a">Option A</label><input id="mcq-a" type="text" defaultValue="Golgi apparatus" /></div>
-                <div className="floating-field"><label htmlFor="mcq-b">Option B</label><input id="mcq-b" type="text" defaultValue="Mitochondrion" /></div>
-                <div className="floating-field"><label htmlFor="mcq-c">Option C</label><input id="mcq-c" type="text" defaultValue="Ribosome" /></div>
-                <div className="floating-field"><label htmlFor="mcq-d">Option D</label><input id="mcq-d" type="text" defaultValue="Lysosome" /></div>
+                <div className="floating-field"><label htmlFor="mcq-a">Option A</label><input id="mcq-a" type="text" placeholder="Enter option A" /></div>
+                <div className="floating-field"><label htmlFor="mcq-b">Option B</label><input id="mcq-b" type="text" placeholder="Enter option B" /></div>
+                <div className="floating-field"><label htmlFor="mcq-c">Option C</label><input id="mcq-c" type="text" placeholder="Enter option C" /></div>
+                <div className="floating-field"><label htmlFor="mcq-d">Option D</label><input id="mcq-d" type="text" placeholder="Enter option D" /></div>
               </div>
               <div className="floating-grid">
-                <div className="floating-field"><label htmlFor="mcq-correct">Correct Answer</label><select id="mcq-correct" defaultValue="B"><option>A</option><option>B</option><option>C</option><option>D</option></select></div>
+                <div className="floating-field"><label htmlFor="mcq-correct">Correct Answer</label><select id="mcq-correct" defaultValue="A"><option>A</option><option>B</option><option>C</option><option>D</option></select></div>
                 <div className="floating-field"><label htmlFor="mcq-difficulty">Difficulty</label><select id="mcq-difficulty" defaultValue="Easy"><option>Easy</option><option>Medium</option><option>Hard</option></select></div>
               </div>
-              <div className="floating-field"><label htmlFor="mcq-explanation">Explanation</label><textarea id="mcq-explanation" rows="5" defaultValue="Mitochondria generate ATP through aerobic respiration, so they are known as the powerhouse of the cell." /></div>
-              <button className="btn btn-primary" type="button">Save MCQ</button>
+              <div className="floating-field"><label htmlFor="mcq-explanation">Explanation</label><textarea id="mcq-explanation" rows="5" placeholder="Write a short explanation students will see after submission..." /></div>
+              <button className="btn btn-primary" type="button" onClick={() => handleSave('mcq')}>Save MCQ</button>
             </div>
           ) : (
             <div className="workspace-card-body form-shell">
-              <div className="floating-field"><label htmlFor="chapter-subject">Subject</label><select id="chapter-subject" defaultValue="Biology"><option>Biology</option><option>Chemistry</option><option>Physics</option><option>English</option></select></div>
-              <div className="floating-field"><label htmlFor="chapter-name">Chapter Name</label><input id="chapter-name" type="text" defaultValue="New Biology Chapter" /></div>
-              <div className="floating-field"><label htmlFor="chapter-description">Description</label><textarea id="chapter-description" rows="5" defaultValue="Add a short chapter summary so teachers and students can understand the focus of this MCQ section instantly." /></div>
-              <div className="floating-field"><label htmlFor="chapter-warning">Delete Rule</label><input id="chapter-warning" type="text" defaultValue="Delete only when no MCQs exist, otherwise show a warning." readOnly /></div>
-              <button className="btn btn-primary" type="button">Save Chapter</button>
+              <div className="teacher-form-context" style={{ borderColor: selectedStyle.accent }}>
+                <strong>{selectedSubject.name} Chapter Bank</strong>
+                <span>Create a new chapter section before adding MCQs.</span>
+              </div>
+              <div className="floating-field"><label htmlFor="chapter-subject">Subject</label><select id="chapter-subject" value={selectedSubjectId} onChange={(event) => chooseSubject(event.target.value)}>{mdcatSubjects.map((subject) => <option key={subject.id} value={subject.id}>{subject.name}</option>)}</select></div>
+              <div className="floating-field"><label htmlFor="chapter-name">Chapter Name</label><input id="chapter-name" type="text" placeholder="Enter chapter name" /></div>
+              <div className="floating-field"><label htmlFor="chapter-description">Description</label><textarea id="chapter-description" rows="5" placeholder="Add a short chapter summary for students and teachers..." /></div>
+              <div className="floating-field"><label htmlFor="chapter-warning">Delete Rule</label><input id="chapter-warning" type="text" value="Delete only when no MCQs exist, otherwise show a warning." readOnly /></div>
+              <button className="btn btn-primary" type="button" onClick={() => handleSave('chapter')}>Save Chapter</button>
             </div>
           )}
         </aside>
