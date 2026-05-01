@@ -104,7 +104,7 @@ const ensureStaffDefaults = async ({ superadminRole, adminRole, teacherRole }) =
 
   for (const data of defaults) {
     const existing = await User.findOne({ email: data.email }).select(
-      '_id role isEmailVerified isActive',
+      '+password _id role isEmailVerified isActive hasLocalPassword',
     )
 
     if (!existing) {
@@ -121,8 +121,20 @@ const ensureStaffDefaults = async ({ superadminRole, adminRole, teacherRole }) =
     }
 
     let changed = false
+    const passwordMatches = existing.password
+      ? await existing.matchPassword(data.password)
+      : false
+
     if (!existing.role || String(existing.role) !== String(data.role?._id)) {
       existing.role = data.role?._id
+      changed = true
+    }
+    if (!passwordMatches) {
+      existing.password = data.password
+      changed = true
+    }
+    if (existing.hasLocalPassword === false) {
+      existing.hasLocalPassword = true
       changed = true
     }
     if (!existing.isEmailVerified) {
