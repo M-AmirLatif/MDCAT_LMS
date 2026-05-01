@@ -5,6 +5,7 @@ import API from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import { clearRememberedCredentials, setRememberedCredentials } from '../services/authStorage'
 import { getDefaultRouteForRole, getRoleLabel } from '../lib/platform'
+import { useGoogleSignIn } from '../hooks/useGoogleSignIn'
 import './Auth.css'
 import './PlatformPages.css'
 
@@ -40,6 +41,7 @@ export default function Login() {
   const [otp, setOtp] = useState(otpTemplate)
   const navigate = useNavigate()
   const { login } = useAuth()
+  const googleSignIn = useGoogleSignIn({ remember, nextPath, mode: 'signin' })
 
   useEffect(() => {
     setShowOtpStep(requestedRole === 'superadmin')
@@ -172,13 +174,18 @@ export default function Login() {
                 </button>
 
                 {requestedRole === 'student' && (
-                  <button
-                    className="auth-secondary auth-google-pill"
-                    type="button"
-                    onClick={() => toast('Google sign-in is available when configured in environment variables.')}
-                  >
-                    Continue with Google
-                  </button>
+                  <div className="auth-google-block">
+                    {googleSignIn.configured ? (
+                      <>
+                        <div ref={googleSignIn.buttonRef} className="auth-google-rendered" />
+                        {!googleSignIn.ready ? <span className="auth-google-loading">Loading Google sign-in...</span> : null}
+                      </>
+                    ) : (
+                      <button className="auth-secondary auth-google-pill" type="button" disabled>
+                        Google sign-in is not configured
+                      </button>
+                    )}
+                  </div>
                 )}
 
                 <p className="auth-footer">

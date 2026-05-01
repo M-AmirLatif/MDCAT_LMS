@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import VerifyEmail from './pages/VerifyEmail'
 import ForgotPassword from './pages/ForgotPassword'
+import SetPassword from './pages/SetPassword'
 import ProtectedRoute from './components/ProtectedRoute'
 import PlatformDashboard from './pages/PlatformDashboard'
 import PlatformCourses from './pages/PlatformCourses'
@@ -50,6 +51,14 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route
+          path="/set-password"
+          element={
+            <ProtectedRoute>
+              <SetPassword />
+            </ProtectedRoute>
+          }
+        />
 
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<PlatformDashboard />} />

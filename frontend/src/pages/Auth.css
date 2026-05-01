@@ -237,6 +237,36 @@
   margin-top: -4px;
 }
 
+.auth-google-block {
+  width: 100%;
+  min-height: 50px;
+  display: grid;
+  place-items: center;
+  border-radius: 24px;
+}
+
+.auth-google-block--register {
+  margin-bottom: 2px;
+}
+
+.auth-google-rendered {
+  width: 100%;
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+}
+
+.auth-google-rendered > div {
+  width: 100% !important;
+}
+
+.auth-google-loading {
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6f68a5;
+}
+
 .auth-google-cta {
   justify-content: flex-start;
   padding: 0 18px;
