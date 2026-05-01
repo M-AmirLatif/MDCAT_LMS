@@ -198,9 +198,6 @@
 .subject-focus-card {
   position: relative;
   overflow: hidden;
-  min-height: 510px;
-  display: flex;
-  flex-direction: column;
 }
 
 .teacher-subject-bank {
@@ -232,7 +229,6 @@
   align-items: center;
   gap: 12px;
   min-width: 0;
-  flex: 1;
 }
 
 .subject-focus-icon {
@@ -253,26 +249,21 @@
 .subject-focus-body {
   display: grid;
   gap: 16px;
-  margin-top: auto;
 }
 
 .subject-focus-card .workspace-card-head {
-  align-items: flex-start;
-  display: flex;
-  justify-content: space-between;
-  gap: 18px;
-  min-height: 126px;
+  align-items: center;
+  display: block;
+  min-height: auto;
 }
 
 .subject-focus-card .state-chip {
-  min-width: 132px;
-  height: 50px;
-  padding: 0 16px;
-  align-self: start;
+  min-width: 0;
+  height: auto;
+  padding: 8px 14px;
   justify-content: center;
   text-align: center;
   white-space: nowrap;
-  flex-shrink: 0;
   transform: none;
   position: static;
   font-size: 12px;
@@ -288,6 +279,13 @@
 .subject-focus-card .workspace-card-title {
   margin-top: 10px;
   line-height: 1.08;
+}
+
+.subject-accuracy-chip {
+  width: 100%;
+  justify-self: stretch;
+  background: rgba(108, 71, 255, 0.12);
+  color: var(--purple);
 }
 
 .subject-focus-metrics,
