@@ -6,8 +6,8 @@ import './PlatformPages.css'
 import {
   SUBJECT_STYLES,
   getChaptersBySubject,
+  getMcqsByChapter,
   mdcatSubjects,
-  teacherMcqSummary,
 } from './platformContent'
 
 function SubjectIcon({ subject }) {
@@ -92,6 +92,10 @@ function TeacherMcqManagement() {
   const selectedStyle = SUBJECT_STYLES[selectedSubject.name]
   const chapterOptions = useMemo(() => getChaptersBySubject(selectedSubjectId), [selectedSubjectId])
   const selectedChapter = chapterOptions.find((chapter) => chapter.id === selectedChapterId) || chapterOptions[0]
+  const selectedMcqs = useMemo(
+    () => getMcqsByChapter(selectedSubjectId, selectedChapter?.id),
+    [selectedChapter?.id, selectedSubjectId],
+  )
 
   const scrollToForm = () => {
     requestAnimationFrame(() => {
@@ -169,41 +173,71 @@ function TeacherMcqManagement() {
       </div>
 
       <div className="split-layout">
-        <div className="list-stack">
-          {teacherMcqSummary.map((subject) => {
-            const subjectMeta = mdcatSubjects.find((item) => item.name === subject.subject)
-            const activeSubject = subjectMeta?.id === selectedSubjectId
-            return (
-              <div key={subject.subject} className={`course-manage-card ${activeSubject ? 'course-manage-card--active' : ''}`}>
-                <div className="workspace-card-head">
-                  <div>
-                    <div className="label-xs">{subject.subject}</div>
-                    <h3 className="workspace-card-title">{subject.mcqs} MCQs across {subject.chapters} chapters</h3>
-                    <p>Uploaded and reviewed by {subject.uploadedBy}</p>
-                  </div>
-                  <span className="state-chip state-chip--neutral">Managed</span>
-                </div>
-                <div className="workspace-card-body">
-                  <div className="chapter-list">
-                    {getChaptersBySubject(subject.subject.toLowerCase()).map((chapter) => (
-                      <button
-                        key={chapter.id}
-                        className={`chapter-item chapter-item--button ${selectedChapterId === chapter.id ? 'chapter-item--active' : ''}`}
-                        type="button"
-                        onClick={() => chooseChapter(chapter.id)}
-                      >
-                        <div>
-                          <strong>{chapter.name}</strong>
-                          <p>{chapter.totalMcqs} MCQs - Best student score {chapter.bestScore}%</p>
-                        </div>
-                        <span className="btn btn-secondary btn-sm">Open</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
+        <div className="teacher-hierarchy">
+          <section className="workspace-card">
+            <div className="workspace-card-head">
+              <div>
+                <div className="label-xs" style={{ color: selectedStyle.accent }}>{selectedSubject.name} Chapters</div>
+                <h3 className="workspace-card-title">Select a chapter to manage MCQs</h3>
+                <p>{chapterOptions.length} chapters available in this course.</p>
               </div>
-            )
-          })}
+              <button className="btn btn-secondary btn-sm" type="button" onClick={() => openPanel('chapter')}>Add Chapter</button>
+            </div>
+            <div className="workspace-card-body">
+              <div className="chapter-list">
+                {chapterOptions.map((chapter) => (
+                  <button
+                    key={chapter.id}
+                    className={`chapter-item chapter-item--button ${selectedChapterId === chapter.id ? 'chapter-item--active' : ''}`}
+                    type="button"
+                    onClick={() => chooseChapter(chapter.id)}
+                  >
+                    <div>
+                      <strong>{chapter.name}</strong>
+                      <p>{chapter.totalMcqs} MCQs - Best score {chapter.bestScore}%</p>
+                    </div>
+                    <span className="btn btn-secondary btn-sm">Open</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <section className="workspace-card">
+            <div className="workspace-card-head">
+              <div>
+                <div className="label-xs" style={{ color: selectedStyle.accent }}>{selectedChapter?.name || 'Chapter'}</div>
+                <h3 className="workspace-card-title">Chapter MCQs</h3>
+                <p>Click Add MCQ for empty fields, or Edit on a seeded MCQ to review content.</p>
+              </div>
+              <div className="inline-actions">
+                <button className="btn btn-primary btn-sm" type="button" onClick={() => openPanel('mcq')}>Add MCQ</button>
+                <button className="btn btn-secondary btn-sm" type="button" onClick={() => openPanel('mcq')}>Edit MCQs</button>
+              </div>
+            </div>
+            <div className="workspace-card-body">
+              <div className="teacher-mcq-list">
+                {selectedMcqs.map((mcq, index) => (
+                  <article key={mcq.id} className="teacher-mcq-row">
+                    <div>
+                      <span className="state-chip state-chip--neutral">Q{index + 1}</span>
+                      <h4>{mcq.question}</h4>
+                      <p>Correct answer: {mcq.correctAnswer} - {mcq.difficulty}</p>
+                    </div>
+                    <button className="btn btn-ghost btn-sm" type="button" onClick={() => openPanel('mcq')}>Edit</button>
+                  </article>
+                ))}
+                {selectedMcqs.length === 0 ? (
+                  <div className="empty-state empty-state--compact">
+                    <div className="empty-orb" />
+                    <h3>No MCQs yet</h3>
+                    <p>Add the first MCQ for this chapter.</p>
+                    <button className="btn btn-primary btn-sm" type="button" onClick={() => openPanel('mcq')}>Add MCQ</button>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          </section>
         </div>
 
         <aside ref={formRef} className="workspace-card drawer-card">

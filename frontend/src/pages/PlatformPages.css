@@ -275,6 +275,45 @@
   font-size: 14px;
 }
 
+.teacher-hierarchy {
+  display: grid;
+  gap: 20px;
+}
+
+.teacher-mcq-list {
+  display: grid;
+  gap: 12px;
+}
+
+.teacher-mcq-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid rgba(108, 71, 255, 0.12);
+  border-radius: 16px;
+  background: linear-gradient(135deg, #fff, #faf8ff);
+  box-shadow: 0 12px 30px rgba(108, 71, 255, 0.06);
+}
+
+.teacher-mcq-row h4 {
+  margin: 10px 0 6px;
+  color: var(--heading);
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.teacher-mcq-row p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.empty-state--compact {
+  min-height: 260px;
+  padding: 28px;
+}
+
 .subject-focus-head {
   display: flex;
   align-items: center;
