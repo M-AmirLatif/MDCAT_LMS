@@ -1377,3 +1377,68 @@ html[data-theme="dark"] .sidebar .sidebar-usercard .sidebar-usercard-role {
   color: rgba(240,238,255,0.62) !important;
   -webkit-text-fill-color: rgba(240,238,255,0.62) !important;
 }
+
+/* Home page CTA/nav visibility: keep button text bright over gradients. */
+html[data-theme="dark"] .landing .lp-nav,
+html[data-theme="dark"] .landing .lp-nav * {
+  -webkit-text-fill-color: unset !important;
+}
+
+html[data-theme="dark"] .landing .lp-brand,
+html[data-theme="dark"] .landing .lp-brand span:not(.lp-mark),
+html[data-theme="dark"] .landing .lp-links a {
+  color: rgba(255,255,255,0.88) !important;
+  -webkit-text-fill-color: rgba(255,255,255,0.88) !important;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.24);
+}
+
+html[data-theme="dark"] .landing .lp-links a:hover {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+html[data-theme="dark"] .landing .lp-btn,
+html[data-theme="dark"] .landing .lp-btn *,
+html[data-theme="dark"] .landing a.lp-btn {
+  opacity: 1 !important;
+  -webkit-text-fill-color: currentColor !important;
+  text-shadow: none !important;
+}
+
+html[data-theme="dark"] .landing .lp-btn-primary,
+html[data-theme="dark"] .landing .lp-btn-primary:visited,
+html[data-theme="dark"] .landing .lp-btn-primary:hover,
+html[data-theme="dark"] .landing .lp-final-cta .lp-btn-ghost {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.16) !important;
+}
+
+html[data-theme="dark"] .landing .lp-btn-ghost {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  border-color: rgba(255,255,255,0.42) !important;
+}
+
+html[data-theme="dark"] .landing .lp-btn-teal {
+  color: #63F0BD !important;
+  -webkit-text-fill-color: #63F0BD !important;
+}
+
+html[data-theme="dark"] .landing .lp-btn-white {
+  color: #6C47FF !important;
+  -webkit-text-fill-color: #6C47FF !important;
+  background: #FFFFFF !important;
+}
+
+html[data-theme="dark"] .landing .lp-green-pill,
+html[data-theme="dark"] .landing .lp-green-pill span {
+  color: #D9FFF0 !important;
+  -webkit-text-fill-color: #D9FFF0 !important;
+}
+
+html[data-theme="dark"] .landing .lp-micro-copy,
+html[data-theme="dark"] .landing .lp-student-line {
+  color: rgba(255,255,255,0.72) !important;
+  -webkit-text-fill-color: rgba(255,255,255,0.72) !important;
+}
