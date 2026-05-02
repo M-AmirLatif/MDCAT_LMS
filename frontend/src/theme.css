@@ -253,6 +253,14 @@ html[data-theme="dark"] .topbar-toggle {
     top: auto;
     z-index: 999;
   }
+
+  .landing .theme-toggle--public {
+    position: static !important;
+    right: auto !important;
+    bottom: auto !important;
+    top: auto !important;
+    z-index: 5;
+  }
 }
 
 /* Dark mode visibility hardening layer. Keep this at the end. */
