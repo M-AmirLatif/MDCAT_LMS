@@ -343,8 +343,8 @@
 
   .mobile-bottom-nav-inner {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 4px;
     max-width: 480px;
     margin: 0 auto;
     padding: 0;
@@ -359,9 +359,9 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    padding: 8px 4px;
-    border-radius: 16px;
+    gap: 3px;
+    padding: 7px 2px;
+    border-radius: 14px;
     background: transparent;
     color: #9494b8;
     transition: background var(--ease), color var(--ease);
@@ -381,8 +381,30 @@
   }
 
   .mobile-nav-item-label {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 600;
     line-height: 1;
+  }
+
+  .theme-toggle--mobile-nav {
+    position: static !important;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border-radius: 14px;
+    justify-self: center;
+    align-self: center;
+    background: rgba(108, 71, 255, 0.1);
+    color: var(--purple);
+    box-shadow: none;
+  }
+
+  .theme-toggle--mobile-nav svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .mobile-nav-item--logout {
+    color: #ff6b6b;
   }
 }

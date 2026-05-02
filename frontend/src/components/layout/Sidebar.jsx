@@ -7,6 +7,7 @@ import {
   getRoleLabel,
   ROLE_BADGE_CLASSES,
 } from '../../lib/platform'
+import ThemeToggle from '../ThemeToggle'
 import './Sidebar.css'
 
 const ICONS = {
@@ -256,6 +257,15 @@ export default function Sidebar({
               </button>
             )
           })}
+          <ThemeToggle className="theme-toggle--mobile-nav" />
+          <button
+            className="mobile-nav-item mobile-nav-item--logout"
+            type="button"
+            onClick={handleLogout}
+          >
+            <span className="mobile-nav-item-icon">{getIcon('logout')}</span>
+            <span className="mobile-nav-item-label">Logout</span>
+          </button>
         </div>
       </nav>
     </>
