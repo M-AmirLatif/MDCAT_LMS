@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { useGoogleSignIn } from '../hooks/useGoogleSignIn'
+import ThemeToggle from '../components/ThemeToggle'
 import './Auth.css'
 
 function MailIcon() {
@@ -94,6 +95,7 @@ export default function Register() {
         </section>
 
         <section className="auth-form-panel">
+          <ThemeToggle className="theme-toggle--auth" />
           <div className="auth-left-inner">
             <div className="auth-card auth-card--platform">
               <h1 className="auth-title">Create your student account</h1>

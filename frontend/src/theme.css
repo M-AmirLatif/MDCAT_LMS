@@ -1,0 +1,256 @@
+/* Final site-wide theme overrides. Imported last by App.jsx. */
+.theme-toggle--auth {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 5;
+}
+
+html[data-theme="dark"] body,
+html[data-theme="dark"] .app-layout,
+html[data-theme="dark"] .app-main,
+html[data-theme="dark"] .workspace-page,
+html[data-theme="dark"] .page-content,
+html[data-theme="dark"] main {
+  background: var(--bg-page) !important;
+  color: var(--text-primary) !important;
+}
+
+html[data-theme="dark"] .navbar,
+html[data-theme="dark"] .topbar,
+html[data-theme="dark"] .lp-nav {
+  background: var(--bg-navbar) !important;
+  backdrop-filter: var(--navbar-blur) !important;
+  border-color: var(--border-subtle) !important;
+  box-shadow: var(--shadow-navbar) !important;
+}
+
+html[data-theme="dark"] .sidebar {
+  background: var(--bg-sidebar) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+html[data-theme="dark"] .card,
+html[data-theme="dark"] [class*="card"],
+html[data-theme="dark"] .workspace-card,
+html[data-theme="dark"] .summary-card,
+html[data-theme="dark"] .stat-card,
+html[data-theme="dark"] .course-card,
+html[data-theme="dark"] .subject-card,
+html[data-theme="dark"] .chapter-card,
+html[data-theme="dark"] .notification-item,
+html[data-theme="dark"] .notification-card,
+html[data-theme="dark"] .modal,
+html[data-theme="dark"] .drawer,
+html[data-theme="dark"] .dialog,
+html[data-theme="dark"] .dropdown,
+html[data-theme="dark"] .menu,
+html[data-theme="dark"] .popover {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--border-default) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+html[data-theme="dark"] input,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select,
+html[data-theme="dark"] .field-wrapper,
+html[data-theme="dark"] .input-field,
+html[data-theme="dark"] .floating-field,
+html[data-theme="dark"] .topbar-search input {
+  background-color: var(--bg-input) !important;
+  border-color: var(--border-input) !important;
+  color: var(--text-primary) !important;
+}
+
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+html[data-theme="dark"] h1,
+html[data-theme="dark"] h2,
+html[data-theme="dark"] h3,
+html[data-theme="dark"] h4,
+html[data-theme="dark"] h5,
+html[data-theme="dark"] h6,
+html[data-theme="dark"] .topbar-page-title,
+html[data-theme="dark"] .workspace-card-title,
+html[data-theme="dark"] .topbar-user-name {
+  color: var(--text-primary) !important;
+}
+
+html[data-theme="dark"] p,
+html[data-theme="dark"] li,
+html[data-theme="dark"] .subtitle,
+html[data-theme="dark"] .text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+html[data-theme="dark"] .text-muted,
+html[data-theme="dark"] .muted,
+html[data-theme="dark"] small {
+  color: var(--text-muted) !important;
+}
+
+html[data-theme="dark"] .label-xs,
+html[data-theme="dark"] .field-label,
+html[data-theme="dark"] .section-label {
+  color: var(--text-label) !important;
+}
+
+html[data-theme="dark"] table {
+  background: var(--bg-surface) !important;
+}
+
+html[data-theme="dark"] table thead,
+html[data-theme="dark"] th {
+  background: var(--bg-surface-3) !important;
+}
+
+html[data-theme="dark"] table td,
+html[data-theme="dark"] table th {
+  border-color: var(--border-subtle) !important;
+  color: var(--text-primary) !important;
+}
+
+html[data-theme="dark"] table tr:hover,
+html[data-theme="dark"] .dropdown-item:hover,
+html[data-theme="dark"] .menu-item:hover {
+  background: var(--bg-surface-2) !important;
+}
+
+html[data-theme="dark"] .badge,
+html[data-theme="dark"] .pill {
+  background-color: var(--bg-surface-3) !important;
+  color: var(--text-primary) !important;
+}
+
+html[data-theme="dark"] .hero-section,
+html[data-theme="dark"] .lp-hero {
+  background: linear-gradient(135deg, #050510 0%, #0A0820 60%, #0F0A28 100%) !important;
+}
+
+html[data-theme="dark"] .stats-section,
+html[data-theme="dark"] .lp-section-dark {
+  background: #07060F !important;
+}
+
+html[data-theme="dark"] .glass-card,
+html[data-theme="dark"] .glass,
+html[data-theme="dark"] .lp-float-card,
+html[data-theme="dark"] .lp-review,
+html[data-theme="dark"] .lp-stat {
+  background: rgba(255,255,255,0.06) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+  backdrop-filter: blur(12px);
+}
+
+html[data-theme="dark"] .auth-brand-panel {
+  background: linear-gradient(160deg, #050510, #0A0820, #0F0828) !important;
+}
+
+html[data-theme="dark"] .auth-form-panel,
+html[data-theme="dark"] .auth-shell,
+html[data-theme="dark"] .auth-page {
+  background: #0F0D28 !important;
+}
+
+html[data-theme="dark"] .auth-title,
+html[data-theme="dark"] .auth-form-panel h1,
+html[data-theme="dark"] .auth-form-panel h2 {
+  color: #F0EEFF !important;
+}
+
+html[data-theme="dark"] .auth-subtitle,
+html[data-theme="dark"] .auth-footer,
+html[data-theme="dark"] .auth-terms span,
+html[data-theme="dark"] .auth-checkbox {
+  color: #9B8FCC !important;
+}
+
+html[data-theme="dark"] .chart-container,
+html[data-theme="dark"] .notification-item,
+html[data-theme="dark"] .notification-card,
+html[data-theme="dark"] .workspace-card,
+html[data-theme="dark"] .summary-card {
+  background: #12102A !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+html[data-theme="dark"] .notification-item:hover,
+html[data-theme="dark"] .notification-card:hover,
+html[data-theme="dark"] table tr:hover {
+  background: #1A1640 !important;
+}
+
+html[data-theme="dark"] table tr:nth-child(even) {
+  background: rgba(255,255,255,0.02) !important;
+}
+
+html[data-theme="dark"] .role-pill,
+html[data-theme="dark"] .badge-purple {
+  background: rgba(139,111,255,0.20) !important;
+  color: #A590FF !important;
+  border-color: rgba(139,111,255,0.30) !important;
+}
+
+html[data-theme="dark"] .progress-track,
+html[data-theme="dark"] .progress-bar-bg {
+  background: rgba(255,255,255,0.08) !important;
+}
+
+html[data-theme="dark"] .sidebar-item {
+  color: rgba(255,255,255,0.50) !important;
+}
+
+html[data-theme="dark"] .sidebar-item:hover {
+  background: rgba(255,255,255,0.06) !important;
+  color: rgba(255,255,255,0.85) !important;
+}
+
+html[data-theme="dark"] .sidebar-item--active,
+html[data-theme="dark"] .sidebar-item.active {
+  background: linear-gradient(135deg, #6C47FF, #4A90E2) !important;
+  color: #fff !important;
+}
+
+html[data-theme="dark"] .lp-section-light,
+html[data-theme="dark"] .landing {
+  background:
+    radial-gradient(circle at 88% 10%, rgba(108, 71, 255, 0.12), transparent 28%),
+    var(--bg-page) !important;
+}
+
+html[data-theme="dark"] .lp-video-card,
+html[data-theme="dark"] .lp-subject {
+  background: var(--bg-surface) !important;
+  border-color: var(--border-default) !important;
+}
+
+html[data-theme="dark"] .lp-final-cta,
+html[data-theme="dark"] .workspace-hero,
+html[data-theme="dark"] .hero-banner {
+  opacity: 1;
+}
+
+html[data-theme="dark"] .topbar-action,
+html[data-theme="dark"] .topbar-user,
+html[data-theme="dark"] .topbar-toggle {
+  background: var(--bg-surface-2) !important;
+  border-color: var(--border-default) !important;
+  color: var(--text-primary) !important;
+}
+
+@media (max-width: 768px) {
+  .theme-toggle--auth,
+  .theme-toggle--public,
+  .theme-toggle--topbar {
+    position: fixed;
+    right: 20px;
+    bottom: 80px;
+    top: auto;
+    z-index: 999;
+  }
+}

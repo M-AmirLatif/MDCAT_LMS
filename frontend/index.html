@@ -35,6 +35,16 @@
     <meta name="twitter:image" content="https://mdcat-lms.vercel.app/og.png?v=1" />
 
     <link rel="canonical" href="https://mdcat-lms.vercel.app/" />
+    <script>
+      ;(() => {
+        try {
+          const saved = localStorage.getItem('mdcat-theme') || 'light'
+          document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light')
+        } catch {
+          document.documentElement.setAttribute('data-theme', 'light')
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

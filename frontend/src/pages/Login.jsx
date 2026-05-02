@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext'
 import { clearRememberedCredentials, setRememberedCredentials } from '../services/authStorage'
 import { getDefaultRouteForRole, getRoleLabel } from '../lib/platform'
 import { useGoogleSignIn } from '../hooks/useGoogleSignIn'
+import ThemeToggle from '../components/ThemeToggle'
 import './Auth.css'
 
 const loginRoles = [
@@ -144,6 +145,7 @@ export default function Login() {
         </section>
 
         <section className="auth-form-panel">
+          <ThemeToggle className="theme-toggle--auth" />
           <div className="auth-left-inner">
             <div className="auth-card auth-card--platform">
               <div className="auth-role-row">

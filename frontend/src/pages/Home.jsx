@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import ThemeToggle from '../components/ThemeToggle'
 import { getAuthUser } from '../services/authStorage'
 import './Home.css'
 
@@ -60,6 +61,7 @@ export default function Home() {
           <a href="#reviews">About</a>
         </nav>
         <div className="lp-actions">
+          <ThemeToggle className="theme-toggle--public" />
           {user ? (
             <Link className="lp-btn lp-btn-primary lp-btn-sm" to="/dashboard">Go to Dashboard</Link>
           ) : (

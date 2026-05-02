@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { getPageTitle, getRoleLabel, ROLE_BADGE_CLASSES } from '../../lib/platform'
+import ThemeToggle from '../ThemeToggle'
 import './Topbar.css'
 
 function SearchIcon() {
@@ -80,6 +81,8 @@ export default function Topbar({ onMenuClick }) {
           <BellIcon />
           <span className="topbar-action-dot" />
         </button>
+
+        <ThemeToggle className="theme-toggle--topbar" />
 
         <button className="topbar-user" onClick={() => navigate('/profile/edit')} type="button">
           <div className="topbar-avatar">{initials}</div>

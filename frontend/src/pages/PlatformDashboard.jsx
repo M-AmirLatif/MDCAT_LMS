@@ -12,6 +12,7 @@ import {
   YAxis,
 } from 'recharts'
 import { useAuth } from '../context/AuthContext'
+import useThemeMode from '../hooks/useThemeMode'
 import './PlatformPages.css'
 import {
   adminTeachers,
@@ -40,6 +41,7 @@ function SubjectGlyph({ subject }) {
 }
 
 function StudentDashboard({ firstName }) {
+  const chartTheme = useThemeMode()
   const summary = useMemo(() => {
     const totalAttempted = mdcatSubjects.reduce((sum, subject) => sum + subject.attemptedMcqs, 0)
     const totalMcqs = mdcatSubjects.reduce((sum, subject) => sum + subject.totalMcqs, 0)
@@ -129,10 +131,10 @@ function StudentDashboard({ firstName }) {
                     <stop offset="100%" stopColor="#1db884" stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(108,71,255,0.08)" />
-                <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: '#7d7da6', fontSize: 12 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#7d7da6', fontSize: 12 }} domain={[40, 100]} />
-                <Tooltip />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.gridColor} />
+                <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} domain={[40, 100]} />
+                <Tooltip contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 12 }} labelStyle={{ color: chartTheme.tooltipText }} />
                 <Area type="monotone" dataKey="Biology" stroke="#1db884" fill="url(#studentAreaBio)" strokeWidth={3} />
               </AreaChart>
             </ResponsiveContainer>
@@ -274,6 +276,7 @@ function TeacherDashboard() {
 }
 
 function AdminDashboard() {
+  const chartTheme = useThemeMode()
   const subjectMix = mdcatSubjects.map((subject) => ({
     name: subject.name,
     value: subject.totalMcqs,
@@ -310,7 +313,7 @@ function AdminDashboard() {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie data={subjectMix} dataKey="value" nameKey="name" outerRadius={96} innerRadius={54} paddingAngle={4} />
-                <Tooltip />
+                <Tooltip contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 12 }} labelStyle={{ color: chartTheme.tooltipText }} />
               </PieChart>
             </ResponsiveContainer>
           </div>

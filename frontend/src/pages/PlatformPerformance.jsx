@@ -8,6 +8,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import useThemeMode from '../hooks/useThemeMode'
 import './PlatformPages.css'
 import {
   getPerformanceSummary,
@@ -28,6 +29,7 @@ function StatIcon({ tone }) {
 
 export default function PlatformPerformance() {
   const summary = getPerformanceSummary()
+  const chartTheme = useThemeMode()
 
   return (
     <div className="workspace-page animate-fade-up">
@@ -49,11 +51,11 @@ export default function PlatformPerformance() {
           <div className="workspace-card-body chart-panel">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={performanceTrend}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(108,71,255,0.08)" />
-                <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#7d7da6' }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#7d7da6' }} domain={[40, 100]} />
-                <Tooltip />
-                <Legend />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.gridColor} />
+                <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor }} domain={[40, 100]} />
+                <Tooltip contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 12 }} labelStyle={{ color: chartTheme.tooltipText }} />
+                <Legend wrapperStyle={{ color: chartTheme.legendColor }} />
                 <Line type="monotone" dataKey="Biology" stroke="#1db884" strokeWidth={3} dot={false} />
                 <Line type="monotone" dataKey="Chemistry" stroke="#6c47ff" strokeWidth={3} dot={false} />
                 <Line type="monotone" dataKey="Physics" stroke="#4a90e2" strokeWidth={3} dot={false} />

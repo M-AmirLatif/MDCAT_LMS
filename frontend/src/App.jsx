@@ -39,6 +39,7 @@ import TestReview from './pages/TestReview'
 import NotFound from './pages/NotFound'
 import './App.css'
 import './pages/PlatformPages.css'
+import './theme.css'
 
 function App() {
   return (
