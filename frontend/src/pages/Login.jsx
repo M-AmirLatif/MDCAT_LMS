@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import API from '../services/api'
@@ -8,7 +8,6 @@ import { getDefaultRouteForRole, getRoleLabel } from '../lib/platform'
 import { useGoogleSignIn } from '../hooks/useGoogleSignIn'
 import './Auth.css'
 
-const otpTemplate = ['', '', '', '', '', '']
 const loginRoles = [
   { key: 'student', label: 'Student', hint: 'Practice MCQs' },
   { key: 'teacher', label: 'Teacher', hint: 'Manage MCQs' },
@@ -42,15 +41,9 @@ export default function Login() {
   const [remember, setRemember] = useState(false)
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const [showOtpStep, setShowOtpStep] = useState(requestedRole === 'superadmin')
-  const [otp, setOtp] = useState(otpTemplate)
   const navigate = useNavigate()
   const { login } = useAuth()
   const googleSignIn = useGoogleSignIn({ remember, nextPath, mode: 'signin' })
-
-  useEffect(() => {
-    setShowOtpStep(requestedRole === 'superadmin')
-  }, [requestedRole])
 
   const accentClass = useMemo(() => {
     if (requestedRole === 'teacher') return 'auth-shell--teal'
@@ -79,22 +72,11 @@ export default function Login() {
     navigate(`/login${query ? `?${query}` : ''}`, { replace: true })
   }
 
-  const onOtpChange = (index, value) => {
-    const cleaned = value.replace(/\D/g, '').slice(-1)
-    setOtp((current) => current.map((digit, digitIndex) => (digitIndex === index ? cleaned : digit)))
-  }
-
   const handleSubmit = async (event) => {
     event.preventDefault()
     setLoading(true)
 
     try {
-      if (requestedRole === 'superadmin' && otp.join('').length !== 6) {
-        toast.error('Enter the 6-digit OTP to continue.')
-        setLoading(false)
-        return
-      }
-
       const response = await API.post('/auth/login', formData)
       const user = response.data.user
       if (requestedRole !== 'student' && user?.role !== requestedRole && user?.role !== 'superadmin') {
@@ -172,13 +154,6 @@ export default function Login() {
               <h1 className="auth-title">Sign in to continue</h1>
               <p className="auth-subtitle">Access your prep workspace, progress metrics, and role-specific tools.</p>
 
-              {requestedRole === 'superadmin' && (
-                <div className="security-banner">
-                  <strong>Security check:</strong>
-                  <span>Super Admin login requires a 6-digit OTP after password verification.</span>
-                </div>
-              )}
-
               <form className="auth-form" onSubmit={handleSubmit}>
                 <div className={`floating-field auth-input-shell ${formData.email ? 'auth-input-shell--filled' : ''} ${emailValid ? 'auth-input-shell--valid' : ''}`}>
                   <span className="auth-input-icon" aria-hidden="true"><MailIcon /></span>
@@ -197,24 +172,6 @@ export default function Login() {
                   {passwordValid ? <span className="auth-valid-dot auth-valid-dot--password" aria-hidden="true" /> : null}
                 </div>
 
-                {showOtpStep && (
-                  <div>
-                    <label>OTP Verification</label>
-                    <div className="otp-row">
-                      {otp.map((digit, index) => (
-                        <input
-                          key={`otp-${index}`}
-                          className="otp-box"
-                          inputMode="numeric"
-                          maxLength={1}
-                          value={digit}
-                          onChange={(event) => onOtpChange(index, event.target.value)}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 <div className="auth-row">
                   <label className="checkbox auth-checkbox">
                     <input type="checkbox" checked={remember} onChange={(event) => setRemember(event.target.checked)} />
@@ -224,7 +181,7 @@ export default function Login() {
                 </div>
 
                 <button className="auth-primary" type="submit" disabled={loading}>
-                  {loading ? 'Signing in...' : requestedRole === 'superadmin' ? 'Verify and Sign In' : 'Sign In'}
+                  {loading ? 'Signing in...' : 'Sign In'}
                 </button>
 
                 {requestedRole === 'student' && (

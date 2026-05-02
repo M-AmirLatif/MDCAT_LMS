@@ -581,26 +581,6 @@
   font-size: 13px;
 }
 
-.otp-row {
-  display: flex;
-  gap: 8px;
-}
-
-.otp-box {
-  width: 44px;
-  height: 48px;
-  border-radius: 12px;
-  border: 1.5px solid #ddd9f7;
-  text-align: center;
-  font-weight: 900;
-  outline: none;
-}
-
-.otp-box:focus {
-  border-color: #6c47ff;
-  box-shadow: 0 0 0 4px rgba(108, 71, 255, 0.12);
-}
-
 .auth-register-steps {
   display: grid;
   gap: 12px;
