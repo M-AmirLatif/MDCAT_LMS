@@ -82,12 +82,13 @@ export function useGoogleSignIn({ remember = true, nextPath = '', mode = 'signin
         })
 
         buttonRef.current.innerHTML = ''
+        const buttonWidth = buttonRef.current.getBoundingClientRect().width || buttonRef.current.parentElement?.getBoundingClientRect().width || 360
         window.google.accounts.id.renderButton(buttonRef.current, {
           theme: 'outline',
           size: 'large',
           shape: 'pill',
           text: mode === 'signup' ? 'signup_with' : 'continue_with',
-          width: Math.min(buttonRef.current.offsetWidth || 360, 420),
+          width: Math.min(Math.round(buttonWidth), 620),
         })
         setReady(true)
       })

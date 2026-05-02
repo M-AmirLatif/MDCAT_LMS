@@ -298,12 +298,23 @@
 .auth-google-rendered {
   width: 100%;
   min-height: 44px;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .auth-google-rendered > div {
-  width: 100% !important;
+  width: auto !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  justify-content: center !important;
+}
+
+.auth-google-rendered iframe {
+  display: block !important;
+  margin: 0 auto !important;
+  max-width: 100% !important;
 }
 
 .auth-google-loading {
