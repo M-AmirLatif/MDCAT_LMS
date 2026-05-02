@@ -261,6 +261,14 @@ html[data-theme="dark"] .topbar-toggle {
     top: auto !important;
     z-index: 5;
   }
+
+  .auth-page .theme-toggle--auth {
+    position: absolute !important;
+    top: 14px !important;
+    right: 18px !important;
+    bottom: auto !important;
+    z-index: 20;
+  }
 }
 
 /* Dark mode visibility hardening layer. Keep this at the end. */
@@ -1248,6 +1256,11 @@ html[data-theme="dark"] .auth-left-inner {
 
 html[data-theme="dark"] .auth-card--platform {
   gap: 12px;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 
 html[data-theme="dark"] .auth-title {
@@ -1280,6 +1293,18 @@ html[data-theme="dark"] .auth-input-icon {
 html[data-theme="dark"] .auth-form .floating-field input {
   color: #FFFFFF !important;
   -webkit-text-fill-color: #FFFFFF !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] .auth-form .floating-field input:-webkit-autofill,
+html[data-theme="dark"] .auth-form .floating-field input:-webkit-autofill:hover,
+html[data-theme="dark"] .auth-form .floating-field input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #FFFFFF !important;
+  caret-color: #FFFFFF !important;
+  -webkit-box-shadow: 0 0 0 1000px #24224E inset !important;
+  box-shadow: 0 0 0 1000px #24224E inset !important;
 }
 
 html[data-theme="dark"] .auth-inline-toggle {
@@ -1318,9 +1343,55 @@ html[data-theme="dark"] .theme-toggle--auth svg {
   filter: drop-shadow(0 1px 0 rgba(255,255,255,0.45));
 }
 
+html[data-theme="dark"] .auth-primary,
+html[data-theme="dark"] .auth-primary *,
+html[data-theme="dark"] .auth-google-pill,
+html[data-theme="dark"] .auth-google-cta,
+html[data-theme="dark"] .auth-google-pill *,
+html[data-theme="dark"] .auth-google-cta * {
+  opacity: 1 !important;
+}
+
+html[data-theme="dark"] .auth-primary {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+html[data-theme="dark"] .auth-google-pill,
+html[data-theme="dark"] .auth-google-cta {
+  background: #FFFFFF !important;
+  color: #1A1A2E !important;
+  -webkit-text-fill-color: #1A1A2E !important;
+  border-color: rgba(108,71,255,0.18) !important;
+}
+
+html[data-theme="light"] .auth-card--platform {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .auth-form .floating-field input {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  color: #101025 !important;
+  -webkit-text-fill-color: #101025 !important;
+}
+
+html[data-theme="light"] .auth-form .floating-field input:-webkit-autofill,
+html[data-theme="light"] .auth-form .floating-field input:-webkit-autofill:hover,
+html[data-theme="light"] .auth-form .floating-field input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #101025 !important;
+  caret-color: #101025 !important;
+  -webkit-box-shadow: 0 0 0 1000px #FFFFFF inset !important;
+  box-shadow: 0 0 0 1000px #FFFFFF inset !important;
+}
+
 @media (max-width: 768px) {
   html[data-theme="dark"] .auth-left-inner {
-    padding: 26px 22px 38px !important;
+    padding: 66px 22px 38px !important;
   }
 
   html[data-theme="dark"] .auth-title {

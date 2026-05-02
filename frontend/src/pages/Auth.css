@@ -133,6 +133,9 @@
 .auth-card--platform {
   display: grid;
   gap: 18px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 .auth-role-row {
@@ -306,6 +309,14 @@
   font-weight: 700;
   outline: none;
   transition: border-color 200ms ease, box-shadow 200ms ease, background 200ms ease;
+}
+
+.auth-form .floating-field input:-webkit-autofill,
+.auth-form .floating-field input:-webkit-autofill:hover,
+.auth-form .floating-field input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  box-shadow: 0 0 0 1000px transparent inset !important;
+  transition: background-color 9999s ease-out 0s;
 }
 
 .auth-password-field input {
@@ -786,9 +797,20 @@ input:focus-visible {
     display: flex;
     flex-direction: column;
     padding: 0;
+    position: relative;
     background:
       radial-gradient(ellipse at 50% 0%, rgba(108, 71, 255, 0.06) 0%, transparent 60%),
       #f8f7ff;
+  }
+
+  .auth-form-panel .theme-toggle--auth {
+    position: absolute !important;
+    top: 14px !important;
+    right: 18px !important;
+    bottom: auto !important;
+    width: 42px;
+    height: 42px;
+    z-index: 20;
   }
 
   .auth-left-inner {
@@ -796,7 +818,7 @@ input:focus-visible {
     max-width: none;
     min-height: auto;
     flex: 1;
-    padding: 28px 22px 40px;
+    padding: 66px 22px 40px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -806,6 +828,9 @@ input:focus-visible {
   .auth-card--platform {
     width: 100%;
     gap: 0;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
   }
 
   .auth-role-row {
@@ -958,6 +983,16 @@ input:focus-visible {
     font-size: 14px;
     font-weight: 600;
     margin-bottom: 16px;
+  }
+
+  .auth-google-block {
+    display: grid;
+    justify-items: center;
+  }
+
+  .auth-google-rendered {
+    display: flex;
+    justify-content: center;
   }
 
   .auth-page input[type="checkbox"],
