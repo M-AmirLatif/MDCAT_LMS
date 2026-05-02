@@ -11,6 +11,7 @@ export function useGoogleSignIn({ remember = true, nextPath = '', mode = 'signin
   const buttonRef = useRef(null)
   const initializedRef = useRef(false)
   const [ready, setReady] = useState(false)
+  const [themeVersion, setThemeVersion] = useState(0)
   const navigate = useNavigate()
   const { login } = useAuth()
   const clientId = (import.meta.env.VITE_GOOGLE_CLIENT_ID || '').trim()
@@ -42,7 +43,13 @@ export function useGoogleSignIn({ remember = true, nextPath = '', mode = 'signin
   )
 
   useEffect(() => {
-    if (!clientId || !buttonRef.current || initializedRef.current) return
+    const onThemeChange = () => setThemeVersion((version) => version + 1)
+    window.addEventListener('mdcat-theme-change', onThemeChange)
+    return () => window.removeEventListener('mdcat-theme-change', onThemeChange)
+  }, [])
+
+  useEffect(() => {
+    if (!clientId || !buttonRef.current) return
 
     const loadGoogle = () =>
       new Promise((resolve, reject) => {
@@ -72,19 +79,22 @@ export function useGoogleSignIn({ remember = true, nextPath = '', mode = 'signin
 
     loadGoogle()
       .then(() => {
-        if (cancelled || initializedRef.current || !buttonRef.current) return
+        if (cancelled || !buttonRef.current) return
         if (!window.google?.accounts?.id) return
 
-        initializedRef.current = true
-        window.google.accounts.id.initialize({
-          client_id: clientId,
-          callback: handleCredential,
-        })
+        if (!initializedRef.current) {
+          initializedRef.current = true
+          window.google.accounts.id.initialize({
+            client_id: clientId,
+            callback: handleCredential,
+          })
+        }
 
         buttonRef.current.innerHTML = ''
         const buttonWidth = buttonRef.current.getBoundingClientRect().width || buttonRef.current.parentElement?.getBoundingClientRect().width || 360
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
         window.google.accounts.id.renderButton(buttonRef.current, {
-          theme: 'outline',
+          theme: isDark ? 'filled_black' : 'outline',
           size: 'large',
           shape: 'pill',
           text: mode === 'signup' ? 'signup_with' : 'continue_with',
@@ -99,7 +109,7 @@ export function useGoogleSignIn({ remember = true, nextPath = '', mode = 'signin
     return () => {
       cancelled = true
     }
-  }, [clientId, handleCredential, mode])
+  }, [clientId, handleCredential, mode, themeVersion])
 
   return {
     buttonRef,
