@@ -162,11 +162,6 @@ export default function Login() {
 
         <section className="auth-form-panel">
           <div className="auth-left-inner">
-            <div className="auth-brand">
-              <span className="auth-mark">M</span>
-              <span className="auth-brand-name">MDCAT LMS</span>
-            </div>
-
             <div className="auth-card auth-card--platform">
               <div className="auth-role-row">
                 <span className={`badge ${requestedRole === 'teacher' ? 'badge-teal' : requestedRole === 'admin' ? 'badge-amber' : requestedRole === 'superadmin' ? 'badge-coral' : 'badge-purple'}`}>
@@ -185,7 +180,6 @@ export default function Login() {
               )}
 
               <form className="auth-form" onSubmit={handleSubmit}>
-                <div className="auth-fields-panel">
                 <div className={`floating-field auth-input-shell ${formData.email ? 'auth-input-shell--filled' : ''} ${emailValid ? 'auth-input-shell--valid' : ''}`}>
                   <span className="auth-input-icon" aria-hidden="true"><MailIcon /></span>
                   <label htmlFor="email">Email</label>
@@ -201,7 +195,6 @@ export default function Login() {
                     {showPassword ? 'Hide' : 'Show'}
                   </button>
                   {passwordValid ? <span className="auth-valid-dot auth-valid-dot--password" aria-hidden="true" /> : null}
-                </div>
                 </div>
 
                 {showOtpStep && (

@@ -94,11 +94,6 @@ export default function Register() {
 
         <section className="auth-form-panel">
           <div className="auth-left-inner">
-            <div className="auth-brand">
-              <span className="auth-mark">M</span>
-              <span className="auth-brand-name">MDCAT LMS</span>
-            </div>
-
             <div className="auth-card auth-card--platform">
               <h1 className="auth-title">Create your student account</h1>
               <p className="auth-subtitle">Join with Google-first onboarding or fill details below.</p>
@@ -119,30 +114,28 @@ export default function Register() {
 
                 <div className="auth-divider"><span>or</span></div>
 
-                <div className="auth-fields-panel auth-fields-panel--compact">
-                  <div className={`floating-field auth-input-shell ${email ? 'auth-input-shell--filled' : ''} ${emailValid ? 'auth-input-shell--valid' : ''}`}>
-                    <span className="auth-input-icon" aria-hidden="true"><MailIcon /></span>
-                    <label htmlFor="register-email">Email</label>
-                    <input id="register-email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="student@mdcat.pk" />
-                  </div>
+                <div className={`floating-field auth-input-shell ${email ? 'auth-input-shell--filled' : ''} ${emailValid ? 'auth-input-shell--valid' : ''}`}>
+                  <span className="auth-input-icon" aria-hidden="true"><MailIcon /></span>
+                  <label htmlFor="register-email">Email</label>
+                  <input id="register-email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="student@mdcat.pk" />
+                </div>
 
-                  <div className={`floating-field auth-input-shell auth-password-field ${password ? 'auth-input-shell--filled' : ''} ${passwordValid ? 'auth-input-shell--valid' : ''}`}>
-                    <span className="auth-input-icon" aria-hidden="true"><LockIcon /></span>
-                    <label htmlFor="register-password">Password</label>
-                    <input id="register-password" type={showPassword ? 'text' : 'password'} value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Create a password" />
-                    <button className="auth-inline-toggle" type="button" onClick={() => setShowPassword((current) => !current)}>
-                      {showPassword ? 'Hide' : 'Show'}
-                    </button>
-                  </div>
+                <div className={`floating-field auth-input-shell auth-password-field ${password ? 'auth-input-shell--filled' : ''} ${passwordValid ? 'auth-input-shell--valid' : ''}`}>
+                  <span className="auth-input-icon" aria-hidden="true"><LockIcon /></span>
+                  <label htmlFor="register-password">Password</label>
+                  <input id="register-password" type={showPassword ? 'text' : 'password'} value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Create a password" />
+                  <button className="auth-inline-toggle" type="button" onClick={() => setShowPassword((current) => !current)}>
+                    {showPassword ? 'Hide' : 'Show'}
+                  </button>
+                </div>
 
-                  <div className={`floating-field auth-input-shell auth-password-field ${confirmPassword ? 'auth-input-shell--filled' : ''} ${confirmPasswordValid ? 'auth-input-shell--valid' : ''}`}>
-                    <span className="auth-input-icon" aria-hidden="true"><LockIcon /></span>
-                    <label htmlFor="register-confirm-password">Confirm Password</label>
-                    <input id="register-confirm-password" type={showConfirmPassword ? 'text' : 'password'} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="Confirm your password" />
-                    <button className="auth-inline-toggle" type="button" onClick={() => setShowConfirmPassword((current) => !current)}>
-                      {showConfirmPassword ? 'Hide' : 'Show'}
-                    </button>
-                  </div>
+                <div className={`floating-field auth-input-shell auth-password-field ${confirmPassword ? 'auth-input-shell--filled' : ''} ${confirmPasswordValid ? 'auth-input-shell--valid' : ''}`}>
+                  <span className="auth-input-icon" aria-hidden="true"><LockIcon /></span>
+                  <label htmlFor="register-confirm-password">Confirm Password</label>
+                  <input id="register-confirm-password" type={showConfirmPassword ? 'text' : 'password'} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="Confirm your password" />
+                  <button className="auth-inline-toggle" type="button" onClick={() => setShowConfirmPassword((current) => !current)}>
+                    {showConfirmPassword ? 'Hide' : 'Show'}
+                  </button>
                 </div>
 
                 <label className="checkbox auth-terms auth-checkbox">
