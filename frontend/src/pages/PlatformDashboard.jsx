@@ -88,7 +88,7 @@ function StudentDashboard({ firstName }) {
       <div className="workspace-columns-4">
         {mdcatSubjects.map((subject) => (
           <article key={subject.id} className={`workspace-card subject-focus-card ${SUBJECT_STYLES[subject.name].className}`}>
-            <div className="workspace-card-head">
+            <div className="workspace-card-head subject-focus-topline">
               <div className="subject-focus-head">
                 <span className={`subject-focus-icon subject-focus-icon--${subject.id}`}>
                   <SubjectGlyph subject={subject.name} />
@@ -98,9 +98,9 @@ function StudentDashboard({ firstName }) {
                   <h3 className="workspace-card-title">{subject.totalChapters} Chapters</h3>
                 </div>
               </div>
+              <span className="state-chip state-chip--neutral subject-accuracy-chip">{subject.accuracy}% accuracy</span>
             </div>
             <div className="workspace-card-body subject-focus-body">
-              <span className="state-chip state-chip--neutral subject-accuracy-chip">{subject.accuracy}% accuracy</span>
               <div className="subject-focus-metrics">
                 <div><span>Total MCQs</span><strong>{subject.totalMcqs}</strong></div>
                 <div><span>Attempted</span><strong>{subject.attemptedMcqs}</strong></div>
