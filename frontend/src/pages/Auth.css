@@ -247,7 +247,7 @@
 
 .auth-form {
   display: grid;
-  gap: 18px;
+  gap: 16px;
 }
 
 .auth-fields-panel {
@@ -264,12 +264,18 @@
   gap: 0;
   padding: 0;
   overflow: hidden;
+  border: 1.5px solid #d9d2ff;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 18px 44px rgba(108, 71, 255, 0.08);
 }
 
 .auth-fields-panel--compact .floating-field input {
   border-radius: 0;
   border-width: 0;
-  border-bottom: 1px solid #eee8ff;
+  border-bottom: 1px solid #e9e4ff;
+  height: 70px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfaff 100%);
 }
 
 .auth-fields-panel--compact .floating-field:first-child input {
@@ -289,13 +295,13 @@
 
 .auth-form .floating-field input {
   width: 100%;
-  height: 66px;
-  padding: 25px 58px 11px 50px;
+  height: 64px;
+  padding: 24px 58px 10px 50px;
   border-radius: 14px;
   border: 1.5px solid #ddd9f7;
   background: #fff;
   color: #1a1a2e;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   outline: none;
   transition: border-color 200ms ease, box-shadow 200ms ease, background 200ms ease;
@@ -306,7 +312,7 @@
 }
 
 .auth-form .floating-field input::placeholder {
-  color: #b0aacc;
+  color: #8d86ba;
   opacity: 1;
   font-weight: 600;
 }
@@ -322,13 +328,13 @@
 
 .auth-form .floating-field label {
   position: absolute;
-  top: 12px;
+  top: 11px;
   left: 50px;
   z-index: 1;
-  color: #afa9ec;
+  color: #7e70e8;
   font-size: 10px;
   font-weight: 900;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.095em;
   text-transform: uppercase;
   pointer-events: none;
 }
@@ -345,7 +351,7 @@
   top: 50%;
   width: 20px;
   height: 20px;
-  color: #afa9ec;
+  color: #8c82dc;
   transform: translateY(-50%);
   pointer-events: none;
 }
@@ -365,8 +371,8 @@
   z-index: 3;
   right: 14px;
   top: 50%;
-  min-width: 76px;
-  height: 34px;
+  min-width: 74px;
+  height: 32px;
   padding: 4px 14px;
   border: 0;
   border-radius: 999px;
@@ -410,21 +416,21 @@
 .checkbox {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  color: #4d4a73;
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.08em;
+  gap: 12px;
+  color: #4f4a82;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.035em;
   text-transform: uppercase;
 }
 
 .checkbox input {
   appearance: none;
   -webkit-appearance: none;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   margin: 0;
-  flex: 0 0 20px;
+  flex: 0 0 22px;
   display: grid;
   place-items: center;
   border-radius: 6px;
@@ -465,7 +471,7 @@
 .auth-primary,
 .auth-secondary {
   width: 100%;
-  min-height: 52px;
+  min-height: 54px;
   border-radius: 26px;
   display: inline-flex;
   align-items: center;
@@ -541,11 +547,14 @@
 .auth-terms {
   align-items: flex-start;
   line-height: 1.5;
+  margin-top: 2px;
 }
 
 .auth-terms span {
-  color: #534ab7;
+  color: #4f4a82;
   font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.035em;
 }
 
 .auth-checkbox a {
