@@ -410,8 +410,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  margin: 16px 0;
+  gap: 18px;
+  margin: 12px 0 14px;
 }
 
 .checkbox {
@@ -424,6 +424,20 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   line-height: 1.4;
+}
+
+.auth-row .checkbox {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.auth-row .checkbox span {
+  min-width: 0;
+}
+
+.auth-row .auth-link {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .checkbox input,
@@ -782,7 +796,7 @@ input:focus-visible {
     max-width: none;
     min-height: auto;
     flex: 1;
-    padding: 32px 24px 40px;
+    padding: 28px 22px 40px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -829,7 +843,7 @@ input:focus-visible {
     font-size: 14px;
     color: #6b6b8a;
     line-height: 1.6;
-    margin-bottom: 28px;
+    margin-bottom: 20px;
   }
 
   .auth-form {
@@ -840,11 +854,11 @@ input:focus-visible {
   .auth-form .floating-field {
     width: 100%;
     box-sizing: border-box;
-    min-height: 66px;
+    min-height: 64px;
     background: #fff;
     border: 1.5px solid #ddd9f7;
     border-radius: 14px;
-    padding: 14px 16px 14px 46px;
+    padding: 12px 16px 12px 46px;
     position: relative;
     margin-bottom: 12px;
     overflow: hidden;
@@ -980,8 +994,8 @@ input:focus-visible {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
-    margin: 16px 0;
+    gap: 14px;
+    margin: 12px 0 14px;
   }
 
   .checkbox,
@@ -997,12 +1011,23 @@ input:focus-visible {
     letter-spacing: 0.03em;
   }
 
+  .auth-row .auth-checkbox {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .auth-row .auth-checkbox span {
+    display: inline-block;
+    max-width: 160px;
+  }
+
   .auth-link {
     color: #6c47ff;
     font-size: 13px;
     font-weight: 600;
     text-decoration: none;
     white-space: nowrap;
+    flex: 0 0 auto;
   }
 
   .auth-terms {
