@@ -1232,3 +1232,39 @@ html[data-theme="dark"] .profile-upload-btn {
   -webkit-text-fill-color: #8B6FFF !important;
   border-color: #8B6FFF !important;
 }
+
+/* Sidebar user text is not a nested card; exclude it from broad [class*="card"] rules. */
+html[data-theme="dark"] .sidebar .sidebar-usercard .sidebar-usercard-meta,
+html[data-theme="dark"] .sidebar .sidebar-usercard .sidebar-usercard-name,
+html[data-theme="dark"] .sidebar .sidebar-usercard .sidebar-usercard-role {
+  display: block;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+}
+
+html[data-theme="dark"] .sidebar .sidebar-usercard .sidebar-usercard-meta *,
+html[data-theme="dark"] .sidebar .sidebar-usercard .sidebar-usercard-name *,
+html[data-theme="dark"] .sidebar .sidebar-usercard .sidebar-usercard-role * {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+}
+
+html[data-theme="dark"] .sidebar .sidebar-usercard .sidebar-usercard-name {
+  color: #F0EEFF !important;
+  -webkit-text-fill-color: #F0EEFF !important;
+}
+
+html[data-theme="dark"] .sidebar .sidebar-usercard .sidebar-usercard-role {
+  color: rgba(240,238,255,0.62) !important;
+  -webkit-text-fill-color: rgba(240,238,255,0.62) !important;
+}
