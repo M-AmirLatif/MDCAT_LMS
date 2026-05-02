@@ -7,7 +7,6 @@ import { clearRememberedCredentials, setRememberedCredentials } from '../service
 import { getDefaultRouteForRole, getRoleLabel } from '../lib/platform'
 import { useGoogleSignIn } from '../hooks/useGoogleSignIn'
 import './Auth.css'
-import './PlatformPages.css'
 
 const otpTemplate = ['', '', '', '', '', '']
 const loginRoles = [
@@ -128,7 +127,40 @@ export default function Login() {
   return (
     <div className="auth-page">
       <div className={`auth-shell ${accentClass}`}>
-        <section className="auth-left">
+        <section className="auth-brand-panel">
+          <div className="auth-dark-grid" />
+          <div className="auth-brand auth-brand--dark">
+            <span className="auth-mark">M</span>
+            <span className="auth-brand-name">MDCAT LMS</span>
+          </div>
+          <div className="auth-brand-content">
+            <div className="label-xs auth-kicker">Pakistan&apos;s #1 MDCAT Platform</div>
+            <h1>Sign in to continue</h1>
+            <p>Access your prep workspace, progress metrics, and role-specific tools.</p>
+
+            <div className="auth-role-switcher" aria-label="Choose login role">
+              {loginRoles.map((role) => (
+                <button
+                  key={role.key}
+                  className={`auth-role-option ${requestedRole === role.key ? 'auth-role-option--active' : ''}`}
+                  type="button"
+                  onClick={() => switchRole(role.key)}
+                >
+                  <strong>{role.label}</strong>
+                  <span>{role.hint}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="auth-stat-row">
+              <div><strong>84%</strong><span>Avg Mock Score</span></div>
+              <div><strong>8 PM</strong><span>Next Class</span></div>
+              <div><strong>400k+</strong><span>Students</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section className="auth-form-panel">
           <div className="auth-left-inner">
             <div className="auth-brand">
               <span className="auth-mark">M</span>
@@ -140,20 +172,6 @@ export default function Login() {
                 <span className={`badge ${requestedRole === 'teacher' ? 'badge-teal' : requestedRole === 'admin' ? 'badge-amber' : requestedRole === 'superadmin' ? 'badge-coral' : 'badge-purple'}`}>
                   {roleLabel}
                 </span>
-              </div>
-
-              <div className="auth-role-switcher" aria-label="Choose login role">
-                {loginRoles.map((role) => (
-                  <button
-                    key={role.key}
-                    className={`auth-role-option ${requestedRole === role.key ? 'auth-role-option--active' : ''}`}
-                    type="button"
-                    onClick={() => switchRole(role.key)}
-                  >
-                    <strong>{role.label}</strong>
-                    <span>{role.hint}</span>
-                  </button>
-                ))}
               </div>
 
               <h1 className="auth-title">Sign in to continue</h1>
@@ -238,30 +256,6 @@ export default function Login() {
             </div>
           </div>
         </section>
-
-        <aside className="auth-right">
-          <div className="auth-right-inner auth-preview">
-            <div className="auth-preview-card auth-preview-card--floating">
-              <div className="label-xs">Today&apos;s Snapshot</div>
-              <h3>{roleLabel} workspace</h3>
-              <p>Live classes, alerts, payments, and exam prep updates in one place.</p>
-            </div>
-            <div className="auth-preview-grid">
-              <div className="auth-preview-mini">
-                <strong>84%</strong>
-                <span>Avg mock score</span>
-              </div>
-              <div className="auth-preview-mini">
-                <strong>8 PM</strong>
-                <span>Next revision class</span>
-              </div>
-              <div className="auth-preview-mini">
-                <strong>28k+</strong>
-                <span>Active learners</span>
-              </div>
-            </div>
-          </div>
-        </aside>
       </div>
     </div>
   )
