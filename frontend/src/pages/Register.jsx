@@ -60,6 +60,7 @@ export default function Register() {
             <span className="auth-mark">M</span>
             <span className="auth-brand-name">MDCAT LMS</span>
           </div>
+          <div className="auth-mobile-stat"><i />400k+ Students</div>
           <div className="auth-brand-content">
             <div className="label-xs auth-kicker">New to MDCAT LMS?</div>
             <h1>Create Your Account</h1>

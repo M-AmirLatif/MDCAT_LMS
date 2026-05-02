@@ -115,6 +115,7 @@ export default function Login() {
             <span className="auth-mark">M</span>
             <span className="auth-brand-name">MDCAT LMS</span>
           </div>
+          <div className="auth-mobile-stat"><i />400k+ Students</div>
           <div className="auth-brand-content">
             <div className="label-xs auth-kicker">Pakistan&apos;s #1 MDCAT Platform</div>
             <h1>Sign in to continue</h1>
