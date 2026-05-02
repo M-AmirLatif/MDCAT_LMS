@@ -801,11 +801,11 @@
 @media (max-width: 720px) {
   .lp-nav {
     height: auto;
-    padding: 12px 16px 14px;
+    padding: 14px 18px 16px;
     display: grid;
-    grid-template-columns: 52px minmax(0, 1fr);
-    align-items: start;
-    gap: 12px;
+    grid-template-columns: 52px minmax(0, 1fr) 52px;
+    align-items: center;
+    gap: 10px;
   }
 
   .lp-brand span:last-child {
@@ -818,8 +818,9 @@
 
   .lp-actions {
     width: 100%;
+    grid-column: 2 / -1;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 44px;
+    grid-template-columns: minmax(0, 1fr) 52px;
     align-items: center;
     gap: 10px;
   }
@@ -829,8 +830,8 @@
     order: 2;
     grid-column: 2;
     grid-row: 1;
-    width: 44px;
-    height: 44px;
+    width: 46px;
+    height: 46px;
     justify-self: end;
   }
 
@@ -844,6 +845,11 @@
     order: 3;
     grid-column: 1 / -1;
     grid-row: 2;
+  }
+
+  .lp-actions .lp-btn {
+    min-height: 46px;
+    border-radius: 23px;
   }
 
   .lp-hero {
