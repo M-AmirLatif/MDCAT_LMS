@@ -603,9 +603,9 @@
 
 .subject-card-banner-top {
   display: grid;
-  grid-template-columns: 46px minmax(0, 1fr) auto;
-  align-items: start;
-  gap: 14px;
+  grid-template-columns: 56px minmax(112px, 1fr) 132px;
+  align-items: center;
+  gap: 16px;
   margin-bottom: 16px;
 }
 
@@ -614,6 +614,16 @@
   min-height: 46px;
   display: flex;
   align-items: center;
+  overflow: hidden;
+}
+
+.subject-card-banner-copy .label-xs {
+  display: block;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .subject-card-icon {
@@ -628,11 +638,15 @@
 }
 
 .subject-card-banner-top .state-chip {
-  min-width: 140px;
+  width: 132px;
+  min-width: 132px;
+  max-width: 132px;
   justify-content: center;
   text-align: center;
   white-space: nowrap;
   align-self: center;
+  padding-inline: 12px;
+  overflow: hidden;
 }
 
 .subject-card-banner h3,
@@ -1842,6 +1856,18 @@
   .quick-actions-grid,
   .chapter-browser-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .subject-card-banner-top {
+    grid-template-columns: 48px minmax(96px, 1fr) 120px;
+    gap: 12px;
+  }
+
+  .subject-card-banner-top .state-chip {
+    width: 120px;
+    min-width: 120px;
+    max-width: 120px;
+    font-size: 11px;
   }
 }
 
