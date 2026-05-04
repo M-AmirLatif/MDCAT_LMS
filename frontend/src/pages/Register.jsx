@@ -31,6 +31,7 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [termsAccepted, setTermsAccepted] = useState(false)
+  const [editableFields, setEditableFields] = useState({ email: false, password: false, confirmPassword: false })
   const emailValid = /\S+@\S+\.\S+/.test(email)
   const passwordValid = password.trim().length > 0
   const confirmPasswordValid = confirmPassword.trim().length > 0 && confirmPassword === password
@@ -101,7 +102,7 @@ export default function Register() {
               <h1 className="auth-title">Create your student account</h1>
               <p className="auth-subtitle">Join with Google-first onboarding or fill details below.</p>
 
-              <form className="auth-form" onSubmit={handleCreateAccount}>
+              <form className="auth-form" onSubmit={handleCreateAccount} autoComplete="off">
                 <div className="auth-google-block auth-google-block--register">
                   {googleSignIn.configured ? (
                     <>
@@ -120,13 +121,37 @@ export default function Register() {
                 <div className={`floating-field auth-input-shell ${email ? 'auth-input-shell--filled' : ''} ${emailValid ? 'auth-input-shell--valid' : ''}`}>
                   <span className="auth-input-icon" aria-hidden="true"><MailIcon /></span>
                   <label htmlFor="register-email">Email</label>
-                  <input id="register-email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="student@mdcat.pk" />
+                  <input
+                    id="register-email"
+                    name="register-email"
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    onFocus={() => setEditableFields((current) => ({ ...current, email: true }))}
+                    placeholder="student@mdcat.pk"
+                    autoComplete="new-password"
+                    data-lpignore="true"
+                    data-form-type="other"
+                    readOnly={!editableFields.email}
+                  />
                 </div>
 
                 <div className={`floating-field auth-input-shell auth-password-field ${password ? 'auth-input-shell--filled' : ''} ${passwordValid ? 'auth-input-shell--valid' : ''}`}>
                   <span className="auth-input-icon" aria-hidden="true"><LockIcon /></span>
                   <label htmlFor="register-password">Password</label>
-                  <input id="register-password" type={showPassword ? 'text' : 'password'} value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Create a password" />
+                  <input
+                    id="register-password"
+                    name="register-password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    onFocus={() => setEditableFields((current) => ({ ...current, password: true }))}
+                    placeholder="Create a password"
+                    autoComplete="new-password"
+                    data-lpignore="true"
+                    data-form-type="other"
+                    readOnly={!editableFields.password}
+                  />
                   <button className="auth-inline-toggle" type="button" onClick={() => setShowPassword((current) => !current)}>
                     {showPassword ? 'Hide' : 'Show'}
                   </button>
@@ -135,7 +160,19 @@ export default function Register() {
                 <div className={`floating-field auth-input-shell auth-password-field ${confirmPassword ? 'auth-input-shell--filled' : ''} ${confirmPasswordValid ? 'auth-input-shell--valid' : ''}`}>
                   <span className="auth-input-icon" aria-hidden="true"><LockIcon /></span>
                   <label htmlFor="register-confirm-password">Confirm Password</label>
-                  <input id="register-confirm-password" type={showConfirmPassword ? 'text' : 'password'} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="Confirm your password" />
+                  <input
+                    id="register-confirm-password"
+                    name="register-confirm-password"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    onFocus={() => setEditableFields((current) => ({ ...current, confirmPassword: true }))}
+                    placeholder="Confirm your password"
+                    autoComplete="new-password"
+                    data-lpignore="true"
+                    data-form-type="other"
+                    readOnly={!editableFields.confirmPassword}
+                  />
                   <button className="auth-inline-toggle" type="button" onClick={() => setShowConfirmPassword((current) => !current)}>
                     {showConfirmPassword ? 'Hide' : 'Show'}
                   </button>

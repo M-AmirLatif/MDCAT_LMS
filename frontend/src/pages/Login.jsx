@@ -3,7 +3,6 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import API from '../services/api'
 import { useAuth } from '../context/AuthContext'
-import { clearRememberedCredentials, setRememberedCredentials } from '../services/authStorage'
 import { getDefaultRouteForRole, getRoleLabel } from '../lib/platform'
 import { useGoogleSignIn } from '../hooks/useGoogleSignIn'
 import ThemeToggle from '../components/ThemeToggle'
@@ -42,6 +41,7 @@ export default function Login() {
   const [remember, setRemember] = useState(false)
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [editableFields, setEditableFields] = useState({ email: false, password: false })
   const navigate = useNavigate()
   const { login } = useAuth()
   const googleSignIn = useGoogleSignIn({ remember, nextPath, mode: 'signin' })
@@ -56,11 +56,6 @@ export default function Login() {
   const roleLabel = getRoleLabel(requestedRole)
   const emailValid = /\S+@\S+\.\S+/.test(formData.email)
   const passwordValid = formData.password.trim().length > 0
-
-  const onChange = (event) => {
-    const { name, value } = event.target
-    setFormData((current) => ({ ...current, [name]: value }))
-  }
 
   const switchRole = (role) => {
     const params = new URLSearchParams(searchParams)
@@ -86,12 +81,6 @@ export default function Login() {
         return
       }
       login(response.data.token, user, remember)
-      if (remember) {
-        setRememberedCredentials({ email: formData.email, remember })
-      } else {
-        clearRememberedCredentials()
-      }
-
       navigate(nextPath || getDefaultRouteForRole(user?.role || requestedRole))
     } catch (error) {
       const message =
@@ -157,18 +146,44 @@ export default function Login() {
               <h1 className="auth-title">Sign in to continue</h1>
               <p className="auth-subtitle">Access your prep workspace, progress metrics, and role-specific tools.</p>
 
-              <form className="auth-form" onSubmit={handleSubmit}>
+              <form className="auth-form" onSubmit={handleSubmit} autoComplete="off">
                 <div className={`floating-field auth-input-shell ${formData.email ? 'auth-input-shell--filled' : ''} ${emailValid ? 'auth-input-shell--valid' : ''}`}>
                   <span className="auth-input-icon" aria-hidden="true"><MailIcon /></span>
                   <label htmlFor="email">Email</label>
-                  <input id="email" name="email" type="email" value={formData.email} onChange={onChange} placeholder="admin@mdcat.pk" required />
+                  <input
+                    id="email"
+                    name="login-email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(event) => setFormData((current) => ({ ...current, email: event.target.value }))}
+                    onFocus={() => setEditableFields((current) => ({ ...current, email: true }))}
+                    placeholder="admin@mdcat.pk"
+                    autoComplete="new-password"
+                    data-lpignore="true"
+                    data-form-type="other"
+                    readOnly={!editableFields.email}
+                    required
+                  />
                   {emailValid ? <span className="auth-valid-dot" aria-hidden="true" /> : null}
                 </div>
 
                 <div className={`floating-field auth-input-shell auth-password-field ${formData.password ? 'auth-input-shell--filled' : ''} ${passwordValid ? 'auth-input-shell--valid' : ''}`}>
                   <span className="auth-input-icon" aria-hidden="true"><LockIcon /></span>
                   <label htmlFor="password">Password</label>
-                  <input id="password" name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={onChange} placeholder="Enter your password" required />
+                  <input
+                    id="password"
+                    name="login-password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={formData.password}
+                    onChange={(event) => setFormData((current) => ({ ...current, password: event.target.value }))}
+                    onFocus={() => setEditableFields((current) => ({ ...current, password: true }))}
+                    placeholder="Enter your password"
+                    autoComplete="new-password"
+                    data-lpignore="true"
+                    data-form-type="other"
+                    readOnly={!editableFields.password}
+                    required
+                  />
                   <button className="auth-inline-toggle" type="button" onClick={() => setShowPassword((current) => !current)}>
                     {showPassword ? 'Hide' : 'Show'}
                   </button>
