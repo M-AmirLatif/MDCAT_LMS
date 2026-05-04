@@ -152,15 +152,15 @@ export default function Login() {
                   <label htmlFor="email">Email</label>
                   <input
                     id="email"
-                    name="login-email"
+                    name="email"
                     type="email"
                     value={formData.email}
                     onChange={(event) => setFormData((current) => ({ ...current, email: event.target.value }))}
+                    onMouseDown={() => setEditableFields((current) => ({ ...current, email: true }))}
+                    onTouchStart={() => setEditableFields((current) => ({ ...current, email: true }))}
                     onFocus={() => setEditableFields((current) => ({ ...current, email: true }))}
                     placeholder="admin@mdcat.pk"
-                    autoComplete="new-password"
-                    data-lpignore="true"
-                    data-form-type="other"
+                    autoComplete="email"
                     readOnly={!editableFields.email}
                     required
                   />
@@ -172,15 +172,15 @@ export default function Login() {
                   <label htmlFor="password">Password</label>
                   <input
                     id="password"
-                    name="login-password"
+                    name="password"
                     type={showPassword ? 'text' : 'password'}
                     value={formData.password}
                     onChange={(event) => setFormData((current) => ({ ...current, password: event.target.value }))}
+                    onMouseDown={() => setEditableFields((current) => ({ ...current, password: true }))}
+                    onTouchStart={() => setEditableFields((current) => ({ ...current, password: true }))}
                     onFocus={() => setEditableFields((current) => ({ ...current, password: true }))}
                     placeholder="Enter your password"
-                    autoComplete="new-password"
-                    data-lpignore="true"
-                    data-form-type="other"
+                    autoComplete="current-password"
                     readOnly={!editableFields.password}
                     required
                   />

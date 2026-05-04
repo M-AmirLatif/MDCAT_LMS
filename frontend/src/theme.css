@@ -1271,6 +1271,18 @@ html[data-theme="dark"] .auth-card--platform {
   box-shadow: none !important;
 }
 
+html[data-theme="dark"] .auth-card--platform:hover,
+html[data-theme="dark"] .auth-card:hover,
+html[data-theme="dark"] .auth-left-inner:hover,
+html[data-theme="dark"] .auth-form-panel:hover {
+  transform: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
 html[data-theme="dark"] .auth-title {
   line-height: 1.08 !important;
   text-shadow: 0 1px 0 rgba(0,0,0,0.22);

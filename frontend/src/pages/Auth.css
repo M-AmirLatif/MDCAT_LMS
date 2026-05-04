@@ -1176,6 +1176,25 @@ input:focus-visible {
 }
 
 /* Final auth polish overrides: keep these after responsive rules. */
+.auth-page .auth-card,
+.auth-page .auth-card:hover,
+.auth-page .auth-card--platform,
+.auth-page .auth-card--platform:hover,
+.auth-page .auth-left-inner,
+.auth-page .auth-left-inner:hover,
+.auth-page .auth-form-panel,
+.auth-page .auth-form-panel:hover {
+  transform: none !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.auth-page .auth-form .floating-field:hover {
+  transform: none !important;
+}
+
 html[data-theme="dark"] .auth-form .floating-field:hover,
 html[data-theme="dark"] .auth-form .floating-field:focus-within {
   border-color: transparent !important;
