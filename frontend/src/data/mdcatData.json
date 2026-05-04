@@ -5,124 +5,30 @@
       "name": "Biology",
       "theme": "green",
       "icon": "dna",
-      "description": "Chapter-wise biology MCQ drills focused on core MDCAT concepts, human physiology, and quick recall."
+      "description": "Chapter-wise Biology MCQ practice will appear here after teachers add real MDCAT content."
     },
     {
       "id": "chemistry",
       "name": "Chemistry",
       "theme": "purple",
       "icon": "flask",
-      "description": "High-yield chemistry practice covering conceptual theory, equations, bonding trends, and applied reasoning."
+      "description": "Chapter-wise Chemistry MCQ practice will appear here after teachers add real MDCAT content."
     },
     {
       "id": "physics",
       "name": "Physics",
       "theme": "blue",
       "icon": "atom",
-      "description": "Numerical and concept-driven physics MCQs with formula fluency, motion, waves, and electrostatics."
+      "description": "Chapter-wise Physics MCQ practice will appear here after teachers add real MDCAT content."
     },
     {
       "id": "english",
       "name": "English",
       "theme": "orange",
       "icon": "book",
-      "description": "MDCAT English practice for grammar, vocabulary, sentence correction, and reading-based questions."
+      "description": "Chapter-wise English MCQ practice will appear here after teachers add real MDCAT content."
     }
   ],
-  "chapters": [
-    { "id": "bio-cell", "subjectId": "biology", "name": "Cell Biology", "description": "Cell organelles, membranes, and transport." },
-    { "id": "bio-biomolecules", "subjectId": "biology", "name": "Biological Molecules", "description": "Carbohydrates, proteins, lipids, and nucleic acids." },
-    { "id": "bio-enzymes", "subjectId": "biology", "name": "Enzymes", "description": "Catalysis, factors affecting enzyme activity, and regulation." },
-    { "id": "bio-genetics", "subjectId": "biology", "name": "Genetics", "description": "Inheritance, genes, chromosomes, and DNA." },
-    { "id": "bio-physiology", "subjectId": "biology", "name": "Human Physiology", "description": "Circulation, respiration, and hormonal control." },
-
-    { "id": "chem-atomic", "subjectId": "chemistry", "name": "Atomic Structure", "description": "Subatomic particles, isotopes, and electronic configuration." },
-    { "id": "chem-bonding", "subjectId": "chemistry", "name": "Chemical Bonding", "description": "Ionic, covalent, coordinate, and molecular shapes." },
-    { "id": "chem-stoich", "subjectId": "chemistry", "name": "Stoichiometry", "description": "Mole concept, chemical equations, and limiting reagent." },
-    { "id": "chem-states", "subjectId": "chemistry", "name": "States of Matter", "description": "Gases, liquids, solids, and kinetic theory." },
-    { "id": "chem-organic", "subjectId": "chemistry", "name": "Organic Chemistry", "description": "Hydrocarbons, functional groups, and basic reactions." },
-
-    { "id": "phys-kinematics", "subjectId": "physics", "name": "Kinematics", "description": "Motion, displacement, velocity, and acceleration." },
-    { "id": "phys-dynamics", "subjectId": "physics", "name": "Dynamics", "description": "Forces, inertia, and Newton's laws." },
-    { "id": "phys-work", "subjectId": "physics", "name": "Work, Energy and Power", "description": "Mechanical energy and power relations." },
-    { "id": "phys-waves", "subjectId": "physics", "name": "Waves", "description": "Wave properties, sound, and resonance." },
-    { "id": "phys-electro", "subjectId": "physics", "name": "Electrostatics", "description": "Charge, electric field, and potential." },
-
-    { "id": "eng-vocab", "subjectId": "english", "name": "Vocabulary", "description": "Synonyms, antonyms, and contextual usage." },
-    { "id": "eng-grammar", "subjectId": "english", "name": "Grammar", "description": "Tenses, articles, prepositions, and agreement." },
-    { "id": "eng-correction", "subjectId": "english", "name": "Sentence Correction", "description": "Error spotting and sentence improvement." },
-    { "id": "eng-reading", "subjectId": "english", "name": "Reading Skills", "description": "Inference, tone, and main idea." },
-    { "id": "eng-analogy", "subjectId": "english", "name": "Analogies and Usage", "description": "Word relations and precise usage." }
-  ],
-  "mcqs": [
-    { "id": "bio1", "subjectId": "biology", "chapterId": "bio-cell", "question": "Which organelle is primarily responsible for ATP production in eukaryotic cells?", "options": ["Golgi apparatus", "Mitochondrion", "Ribosome", "Lysosome"], "correctAnswer": "B", "explanation": "Mitochondria generate most cellular ATP through aerobic respiration.", "difficulty": "Easy" },
-    { "id": "bio2", "subjectId": "biology", "chapterId": "bio-cell", "question": "The fluid mosaic model describes the structure of the:", "options": ["Nuclear membrane only", "Cell wall", "Plasma membrane", "Mitochondrial matrix"], "correctAnswer": "C", "explanation": "The fluid mosaic model explains the dynamic lipid bilayer and embedded proteins of the plasma membrane.", "difficulty": "Medium" },
-    { "id": "bio3", "subjectId": "biology", "chapterId": "bio-cell", "question": "Diffusion of water across a selectively permeable membrane is called:", "options": ["Active transport", "Osmosis", "Facilitated diffusion", "Pinocytosis"], "correctAnswer": "B", "explanation": "Osmosis is the movement of water from a region of higher water potential to lower water potential.", "difficulty": "Easy" },
-
-    { "id": "bio4", "subjectId": "biology", "chapterId": "bio-biomolecules", "question": "Amino acids are the monomers of:", "options": ["Carbohydrates", "Proteins", "Lipids", "Nucleotides"], "correctAnswer": "B", "explanation": "Proteins are polymers made from amino acid monomers linked by peptide bonds.", "difficulty": "Easy" },
-    { "id": "bio5", "subjectId": "biology", "chapterId": "bio-biomolecules", "question": "Which biomolecule stores genetic information?", "options": ["Lipid", "Polysaccharide", "Nucleic acid", "Protein"], "correctAnswer": "C", "explanation": "DNA and RNA are nucleic acids that store and transmit genetic information.", "difficulty": "Easy" },
-    { "id": "bio6", "subjectId": "biology", "chapterId": "bio-biomolecules", "question": "The bond between two monosaccharides is called a:", "options": ["Hydrogen bond", "Glycosidic bond", "Peptide bond", "Phosphodiester bond"], "correctAnswer": "B", "explanation": "Monosaccharides join through glycosidic bonds to form disaccharides and polysaccharides.", "difficulty": "Medium" },
-
-    { "id": "bio7", "subjectId": "biology", "chapterId": "bio-enzymes", "question": "Enzymes speed up reactions by:", "options": ["Increasing activation energy", "Decreasing activation energy", "Changing equilibrium constants", "Supplying ATP to all reactions"], "correctAnswer": "B", "explanation": "Enzymes lower activation energy and increase the rate of reaction without being consumed.", "difficulty": "Easy" },
-    { "id": "bio8", "subjectId": "biology", "chapterId": "bio-enzymes", "question": "The region of an enzyme where the substrate binds is called the:", "options": ["Catalytic loop", "Active site", "Promoter", "Matrix"], "correctAnswer": "B", "explanation": "The active site is complementary in shape and chemistry to the substrate.", "difficulty": "Easy" },
-    { "id": "bio9", "subjectId": "biology", "chapterId": "bio-enzymes", "question": "A sharp fall in enzyme activity at very high temperature usually occurs because of:", "options": ["Substrate depletion", "Denaturation", "Coenzyme formation", "Competitive inhibition"], "correctAnswer": "B", "explanation": "Excess heat disrupts the enzyme's three-dimensional structure, causing denaturation.", "difficulty": "Medium" },
-
-    { "id": "bio10", "subjectId": "biology", "chapterId": "bio-genetics", "question": "A trait that appears in the F1 generation of a monohybrid cross is generally:", "options": ["Recessive", "Dominant", "Linked", "Mutated"], "correctAnswer": "B", "explanation": "Dominant alleles express in the heterozygous F1 generation.", "difficulty": "Easy" },
-    { "id": "bio11", "subjectId": "biology", "chapterId": "bio-genetics", "question": "DNA replication takes place during which phase of the cell cycle?", "options": ["G1 phase", "S phase", "G2 phase", "M phase"], "correctAnswer": "B", "explanation": "DNA synthesis occurs during the S phase.", "difficulty": "Medium" },
-    { "id": "bio12", "subjectId": "biology", "chapterId": "bio-genetics", "question": "The basic unit of heredity is the:", "options": ["Chromosome", "Gene", "Nucleus", "Allele pair"], "correctAnswer": "B", "explanation": "A gene is a sequence of DNA that influences a specific characteristic.", "difficulty": "Easy" },
-
-    { "id": "bio13", "subjectId": "biology", "chapterId": "bio-physiology", "question": "Which blood vessel carries oxygenated blood from lungs to heart?", "options": ["Pulmonary artery", "Pulmonary vein", "Aorta", "Vena cava"], "correctAnswer": "B", "explanation": "Pulmonary veins return oxygenated blood from the lungs to the left atrium.", "difficulty": "Easy" },
-    { "id": "bio14", "subjectId": "biology", "chapterId": "bio-physiology", "question": "The functional unit of the kidney is the:", "options": ["Neuron", "Alveolus", "Nephron", "Atrium"], "correctAnswer": "C", "explanation": "The nephron filters blood and forms urine.", "difficulty": "Easy" },
-    { "id": "bio15", "subjectId": "biology", "chapterId": "bio-physiology", "question": "Insulin mainly helps lower blood glucose by:", "options": ["Stimulating glycogen breakdown", "Increasing cellular uptake of glucose", "Suppressing all digestion", "Increasing glucagon release"], "correctAnswer": "B", "explanation": "Insulin promotes glucose uptake and storage, lowering blood glucose concentration.", "difficulty": "Medium" },
-
-    { "id": "chem1", "subjectId": "chemistry", "chapterId": "chem-atomic", "question": "The atomic number of an element equals the number of:", "options": ["Neutrons", "Electrons plus neutrons", "Protons", "Nucleons"], "correctAnswer": "C", "explanation": "Atomic number is defined by the number of protons in the nucleus.", "difficulty": "Easy" },
-    { "id": "chem2", "subjectId": "chemistry", "chapterId": "chem-atomic", "question": "Isotopes of an element differ in the number of:", "options": ["Protons", "Electrons in neutral atoms", "Neutrons", "Valence electrons only"], "correctAnswer": "C", "explanation": "Isotopes have the same atomic number but different mass numbers due to different neutron counts.", "difficulty": "Easy" },
-    { "id": "chem3", "subjectId": "chemistry", "chapterId": "chem-atomic", "question": "Which subatomic particle has a negative charge?", "options": ["Proton", "Neutron", "Electron", "Alpha particle"], "correctAnswer": "C", "explanation": "Electrons carry a negative charge.", "difficulty": "Easy" },
-
-    { "id": "chem4", "subjectId": "chemistry", "chapterId": "chem-bonding", "question": "A covalent bond is formed by:", "options": ["Transfer of protons", "Sharing of electrons", "Transfer of neutrons", "Loss of orbitals"], "correctAnswer": "B", "explanation": "Atoms in covalent compounds share electron pairs.", "difficulty": "Easy" },
-    { "id": "chem5", "subjectId": "chemistry", "chapterId": "chem-bonding", "question": "The bond in sodium chloride is predominantly:", "options": ["Covalent", "Metallic", "Ionic", "Coordinate"], "correctAnswer": "C", "explanation": "Sodium transfers an electron to chlorine, forming an ionic bond.", "difficulty": "Easy" },
-    { "id": "chem6", "subjectId": "chemistry", "chapterId": "chem-bonding", "question": "The shape of a methane molecule is:", "options": ["Trigonal planar", "Linear", "Tetrahedral", "Bent"], "correctAnswer": "C", "explanation": "Methane has four bonding pairs around carbon, giving a tetrahedral shape.", "difficulty": "Medium" },
-
-    { "id": "chem7", "subjectId": "chemistry", "chapterId": "chem-stoich", "question": "One mole of any substance contains:", "options": ["6.02 × 10^21 particles", "6.02 × 10^23 particles", "3.01 × 10^23 particles", "1.00 × 10^23 particles"], "correctAnswer": "B", "explanation": "Avogadro's number is 6.02 × 10^23 particles per mole.", "difficulty": "Easy" },
-    { "id": "chem8", "subjectId": "chemistry", "chapterId": "chem-stoich", "question": "The molar mass of oxygen gas (O2) is:", "options": ["16 g/mol", "18 g/mol", "32 g/mol", "64 g/mol"], "correctAnswer": "C", "explanation": "Oxygen has atomic mass 16, so O2 has a molar mass of 32 g/mol.", "difficulty": "Easy" },
-    { "id": "chem9", "subjectId": "chemistry", "chapterId": "chem-stoich", "question": "The reagent that is completely consumed first in a reaction is the:", "options": ["Catalyst", "Limiting reagent", "Excess reagent", "Solvent"], "correctAnswer": "B", "explanation": "The limiting reagent determines the maximum amount of product formed.", "difficulty": "Medium" },
-
-    { "id": "chem10", "subjectId": "chemistry", "chapterId": "chem-states", "question": "According to kinetic molecular theory, gas pressure results from:", "options": ["Attraction between molecules", "Random molecular collisions with container walls", "Density of solids", "Electron transfer"], "correctAnswer": "B", "explanation": "Gas pressure is produced when particles collide with the walls of the container.", "difficulty": "Medium" },
-    { "id": "chem11", "subjectId": "chemistry", "chapterId": "chem-states", "question": "Which state of matter has definite volume but no definite shape?", "options": ["Solid", "Liquid", "Gas", "Plasma"], "correctAnswer": "B", "explanation": "Liquids maintain volume but take the shape of their container.", "difficulty": "Easy" },
-    { "id": "chem12", "subjectId": "chemistry", "chapterId": "chem-states", "question": "Boiling occurs when:", "options": ["Vapor pressure equals external pressure", "All molecules stop moving", "Temperature falls below freezing point", "Ions form in solution"], "correctAnswer": "A", "explanation": "A liquid boils when its vapor pressure becomes equal to the surrounding pressure.", "difficulty": "Medium" },
-
-    { "id": "chem13", "subjectId": "chemistry", "chapterId": "chem-organic", "question": "The functional group of alcohols is:", "options": ["-COOH", "-CHO", "-OH", "-NH2"], "correctAnswer": "C", "explanation": "Alcohols contain the hydroxyl functional group (-OH).", "difficulty": "Easy" },
-    { "id": "chem14", "subjectId": "chemistry", "chapterId": "chem-organic", "question": "Methane belongs to which homologous series?", "options": ["Alkenes", "Alkynes", "Alkanes", "Alcohols"], "correctAnswer": "C", "explanation": "Methane is the simplest alkane.", "difficulty": "Easy" },
-    { "id": "chem15", "subjectId": "chemistry", "chapterId": "chem-organic", "question": "Unsaturated hydrocarbons contain at least one:", "options": ["Single bond only", "Ionic bond", "Double or triple bond", "Hydrogen bond"], "correctAnswer": "C", "explanation": "Unsaturated compounds contain carbon-carbon double or triple bonds.", "difficulty": "Medium" },
-
-    { "id": "phys1", "subjectId": "physics", "chapterId": "phys-kinematics", "question": "The slope of a velocity-time graph represents:", "options": ["Distance", "Acceleration", "Speed", "Momentum"], "correctAnswer": "B", "explanation": "The gradient of a velocity-time graph gives acceleration.", "difficulty": "Medium" },
-    { "id": "phys2", "subjectId": "physics", "chapterId": "phys-kinematics", "question": "An object moving with constant velocity has:", "options": ["Zero acceleration", "Increasing acceleration", "Decreasing mass", "Zero displacement"], "correctAnswer": "A", "explanation": "Constant velocity means no change in velocity, so acceleration is zero.", "difficulty": "Easy" },
-
-    { "id": "phys3", "subjectId": "physics", "chapterId": "phys-dynamics", "question": "Newton's second law can be written as:", "options": ["F = ma", "P = VI", "W = Fs", "v = u + at"], "correctAnswer": "A", "explanation": "Newton's second law states that force equals mass times acceleration.", "difficulty": "Easy" },
-    { "id": "phys4", "subjectId": "physics", "chapterId": "phys-dynamics", "question": "The tendency of a body to resist change in its state of motion is called:", "options": ["Momentum", "Inertia", "Impulse", "Pressure"], "correctAnswer": "B", "explanation": "Inertia is the resistance of an object to change in motion.", "difficulty": "Easy" },
-
-    { "id": "phys5", "subjectId": "physics", "chapterId": "phys-work", "question": "Work done is maximum when the angle between force and displacement is:", "options": ["0°", "45°", "90°", "180°"], "correctAnswer": "A", "explanation": "Work equals Fs cosθ, which is maximum at θ = 0°.", "difficulty": "Medium" },
-    { "id": "phys6", "subjectId": "physics", "chapterId": "phys-work", "question": "The SI unit of power is:", "options": ["Joule", "Newton", "Watt", "Pascal"], "correctAnswer": "C", "explanation": "Power is measured in watts (J/s).", "difficulty": "Easy" },
-
-    { "id": "phys7", "subjectId": "physics", "chapterId": "phys-waves", "question": "Frequency is measured in:", "options": ["Meters", "Seconds", "Hertz", "Joules"], "correctAnswer": "C", "explanation": "Hertz is the SI unit of frequency.", "difficulty": "Easy" },
-    { "id": "phys8", "subjectId": "physics", "chapterId": "phys-waves", "question": "In a longitudinal wave, particles vibrate:", "options": ["Perpendicular to wave direction", "Parallel to wave direction", "In circles only", "Only at the source"], "correctAnswer": "B", "explanation": "Longitudinal waves involve particle vibrations parallel to the direction of propagation.", "difficulty": "Medium" },
-
-    { "id": "phys9", "subjectId": "physics", "chapterId": "phys-electro", "question": "The SI unit of electric charge is:", "options": ["Volt", "Ampere", "Coulomb", "Ohm"], "correctAnswer": "C", "explanation": "Electric charge is measured in coulombs.", "difficulty": "Easy" },
-    { "id": "phys10", "subjectId": "physics", "chapterId": "phys-electro", "question": "Like charges:", "options": ["Attract each other", "Repel each other", "Become neutral", "Produce sound"], "correctAnswer": "B", "explanation": "Charges of the same type repel according to electrostatic principles.", "difficulty": "Easy" },
-
-    { "id": "eng1", "subjectId": "english", "chapterId": "eng-vocab", "question": "Choose the synonym of 'abundant'.", "options": ["Scarce", "Plentiful", "Hidden", "Rigid"], "correctAnswer": "B", "explanation": "Abundant means existing in large quantities; plentiful is the closest synonym.", "difficulty": "Easy" },
-    { "id": "eng2", "subjectId": "english", "chapterId": "eng-vocab", "question": "Choose the antonym of 'hostile'.", "options": ["Friendly", "Harsh", "Severe", "Angry"], "correctAnswer": "A", "explanation": "Friendly is opposite in meaning to hostile.", "difficulty": "Easy" },
-
-    { "id": "eng3", "subjectId": "english", "chapterId": "eng-grammar", "question": "Choose the correct sentence.", "options": ["He go to college every day.", "He goes to college every day.", "He going to college every day.", "He gone to college every day."], "correctAnswer": "B", "explanation": "With third person singular in present simple, the verb takes 's'.", "difficulty": "Easy" },
-    { "id": "eng4", "subjectId": "english", "chapterId": "eng-grammar", "question": "Select the correct article: She bought ___ umbrella.", "options": ["a", "an", "the", "no article"], "correctAnswer": "B", "explanation": "Umbrella begins with a vowel sound, so 'an' is correct.", "difficulty": "Easy" },
-
-    { "id": "eng5", "subjectId": "english", "chapterId": "eng-correction", "question": "Identify the sentence with correct subject-verb agreement.", "options": ["The list of items are on the table.", "The list of items is on the table.", "The list of items were on the table.", "The list of items have on the table."], "correctAnswer": "B", "explanation": "The subject is 'list', which is singular, so it takes 'is'.", "difficulty": "Medium" },
-    { "id": "eng6", "subjectId": "english", "chapterId": "eng-correction", "question": "Choose the correct form: If I ___ enough money, I would buy a laptop.", "options": ["have", "had", "has", "am having"], "correctAnswer": "B", "explanation": "A second conditional sentence takes past simple in the if-clause.", "difficulty": "Medium" },
-
-    { "id": "eng7", "subjectId": "english", "chapterId": "eng-reading", "question": "In reading comprehension, the main idea of a passage is the:", "options": ["First sentence only", "Most repeated word", "Central message of the passage", "Last example given"], "correctAnswer": "C", "explanation": "The main idea is the author's central point or message.", "difficulty": "Easy" },
-    { "id": "eng8", "subjectId": "english", "chapterId": "eng-reading", "question": "An inference is:", "options": ["A direct quote", "A conclusion drawn from clues", "A grammar rule", "A dictionary definition"], "correctAnswer": "B", "explanation": "An inference is a logical conclusion based on evidence in the text.", "difficulty": "Medium" },
-
-    { "id": "eng9", "subjectId": "english", "chapterId": "eng-analogy", "question": "Doctor : Hospital :: Teacher : ?", "options": ["Classroom", "Homework", "Student", "Library card"], "correctAnswer": "A", "explanation": "A doctor works in a hospital just as a teacher works in a classroom.", "difficulty": "Easy" },
-    { "id": "eng10", "subjectId": "english", "chapterId": "eng-analogy", "question": "Choose the best word to complete the meaning: Her explanation was so ___ that everyone understood it easily.", "options": ["obscure", "lucid", "vague", "dense"], "correctAnswer": "B", "explanation": "Lucid means clear and easy to understand.", "difficulty": "Medium" }
-  ]
+  "chapters": [],
+  "mcqs": []
 }

@@ -15,9 +15,9 @@ function StudentLiveClasses() {
           <div className="workspace-hero-stats">
             <div className="hero-mini-card hero-mini-card--live">
               <div className="hero-live-label"><span className="hero-live-dot" /> LIVE NOW</div>
-              <strong className="hero-session-count">1 session</strong>
-              <p className="hero-session-name">Biology Rapid Revision is active</p>
-              <button className="btn btn-danger btn-sm" type="button">Join Active Session</button>
+              <strong className="hero-session-count">0 sessions</strong>
+              <p className="hero-session-name">Real live classes will appear after teachers schedule them.</p>
+              <button className="btn btn-danger btn-sm" type="button" disabled>Join Active Session</button>
             </div>
           </div>
         </div>
@@ -43,6 +43,13 @@ function StudentLiveClasses() {
                 </div>
               </div>
             ))}
+            {liveClasses.length === 0 ? (
+              <div className="empty-state empty-state--compact">
+                <div className="empty-orb" />
+                <h3>No live classes scheduled</h3>
+                <p>Teachers can schedule real sessions from the teacher workspace.</p>
+              </div>
+            ) : null}
           </div>
         </div>
 
@@ -59,6 +66,13 @@ function StudentLiveClasses() {
                 </div>
               </div>
             ))}
+            {recordings.length === 0 ? (
+              <div className="empty-state empty-state--compact">
+                <div className="empty-orb" />
+                <h3>No recordings yet</h3>
+                <p>Recordings will appear after real live classes are completed.</p>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
@@ -74,10 +88,10 @@ function TeacherLiveClasses() {
           <div className="workspace-card-head"><div><div className="label-xs">Schedule Class</div><h2 className="workspace-card-title">Create a live session</h2></div></div>
           <div className="workspace-card-body form-shell">
             <div className="floating-grid">
-              <div className="floating-field"><label htmlFor="live-title">Session title</label><input id="live-title" type="text" defaultValue="Biology Rapid Revision" /></div>
-              <div className="floating-field"><label htmlFor="live-course">Course</label><select id="live-course" defaultValue="Biology Mastery Sprint"><option>Biology Mastery Sprint</option><option>Chemistry Numericals Intensive</option></select></div>
-              <div className="floating-field"><label htmlFor="live-date">Date</label><input id="live-date" type="date" defaultValue="2026-05-02" /></div>
-              <div className="floating-field"><label htmlFor="live-time">Time</label><input id="live-time" type="time" defaultValue="20:00" /></div>
+              <div className="floating-field"><label htmlFor="live-title">Session title</label><input id="live-title" type="text" placeholder="Enter live class title" /></div>
+              <div className="floating-field"><label htmlFor="live-course">Subject</label><select id="live-course" defaultValue=""><option value="">Select subject</option><option>Biology</option><option>Chemistry</option><option>Physics</option><option>English</option></select></div>
+              <div className="floating-field"><label htmlFor="live-date">Date</label><input id="live-date" type="date" /></div>
+              <div className="floating-field"><label htmlFor="live-time">Time</label><input id="live-time" type="time" /></div>
             </div>
             <div className="inline-actions">
               <button className="btn btn-success" type="button">Publish Session</button>
@@ -114,6 +128,13 @@ function TeacherLiveClasses() {
               </div>
             </div>
           ))}
+          {liveClasses.length === 0 ? (
+            <div className="empty-state empty-state--compact">
+              <div className="empty-orb" />
+              <h3>No upcoming sessions</h3>
+              <p>Use the schedule form to create the first real class.</p>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

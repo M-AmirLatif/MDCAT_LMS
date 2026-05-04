@@ -64,6 +64,14 @@ export default function CourseDetail() {
           </article>
         ))}
       </div>
+      {chapters.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-orb" />
+          <h3>No chapters added yet</h3>
+          <p>Teachers will add real chapters and MCQs for {subject.name}. Check back after content is published.</p>
+          <Link className="btn btn-secondary" to="/courses">Back to Subjects</Link>
+        </div>
+      ) : null}
     </div>
   )
 }

@@ -79,7 +79,7 @@ function StudentDashboard({ firstName }) {
             <div className="hero-mini-card">
               <span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Overall Accuracy</span>
               <strong>{summary.averageAccuracy}%</strong>
-              <p>Physics still needs the most recovery work</p>
+              <p>Accuracy will update after real MCQ attempts</p>
             </div>
           </div>
         </div>
@@ -123,6 +123,7 @@ function StudentDashboard({ firstName }) {
             </div>
           </div>
           <div className="workspace-card-body chart-panel">
+            {performanceTrend.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={performanceTrend}>
                 <defs>
@@ -138,6 +139,13 @@ function StudentDashboard({ firstName }) {
                 <Area type="monotone" dataKey="Biology" stroke="#1db884" fill="url(#studentAreaBio)" strokeWidth={3} />
               </AreaChart>
             </ResponsiveContainer>
+            ) : (
+              <div className="empty-state empty-state--compact">
+                <div className="empty-orb" />
+                <h3>No performance data yet</h3>
+                <p>Subject-wise graphs will appear after students attempt real MCQs.</p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -159,6 +167,13 @@ function StudentDashboard({ firstName }) {
                 </div>
               </div>
             ))}
+            {studentNotifications.length === 0 ? (
+              <div className="empty-state empty-state--compact">
+                <div className="empty-orb" />
+                <h3>No notifications yet</h3>
+                <p>Practice prompts and system updates will appear after real activity starts.</p>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
@@ -186,22 +201,22 @@ function TeacherDashboard() {
             <div className="hero-mini-card">
               <span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Total Uploaded MCQs</span>
               <strong>{totalMcqs}</strong>
-              <p>Distributed across all four MDCAT subjects</p>
+              <p>Real teacher uploads will appear here</p>
             </div>
             <div className="hero-mini-card">
               <span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Student Attempts</span>
-              <strong>1,284</strong>
-              <p>Average student score is currently 76%</p>
+              <strong>0</strong>
+              <p>Attempts will update after students start practicing</p>
             </div>
           </div>
         </div>
       </section>
 
       <div className="workspace-columns-4">
-        <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Total MCQs</span><span className="badge badge-teal">Bank</span></div><strong>{totalMcqs}</strong><small>50 seeded MDCAT-style questions</small></div>
-        <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Total Chapters</span><span className="badge badge-purple">Coverage</span></div><strong>20</strong><small>Five chapters per subject path</small></div>
-        <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Student Attempts</span><span className="badge badge-amber">Active</span></div><strong>1,284</strong><small>Physics practice volume is rising fastest</small></div>
-        <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>Average Score</span><span className="badge badge-coral">Class</span></div><strong>76%</strong><small>Target improvement: Chemistry numericals</small></div>
+        <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Total MCQs</span><span className="badge badge-teal">Bank</span></div><strong>{totalMcqs}</strong><small>No demo MCQs are loaded</small></div>
+        <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Total Chapters</span><span className="badge badge-purple">Coverage</span></div><strong>0</strong><small>Teachers will create real chapters</small></div>
+        <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Student Attempts</span><span className="badge badge-amber">Active</span></div><strong>0</strong><small>Attempts will appear after launch</small></div>
+        <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>Average Score</span><span className="badge badge-coral">Class</span></div><strong>0%</strong><small>Analytics will use real submissions</small></div>
       </div>
 
       <section className="workspace-card">
@@ -268,6 +283,13 @@ function TeacherDashboard() {
                 </div>
               </div>
             ))}
+            {teacherStudents.length === 0 ? (
+              <div className="empty-state empty-state--compact">
+                <div className="empty-orb" />
+                <h3>No student attempts yet</h3>
+                <p>Student support insights will appear after real practice sessions.</p>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
@@ -294,28 +316,36 @@ function AdminDashboard() {
           </div>
           <div className="workspace-hero-stats">
             <div className="hero-mini-card"><span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Active Subjects</span><strong>4</strong><p>Strict MDCAT-only structure enforced</p></div>
-            <div className="hero-mini-card"><span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Pending Reviews</span><strong>12</strong><p>Teacher uploads and flagged explanations</p></div>
+            <div className="hero-mini-card"><span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Pending Reviews</span><strong>0</strong><p>Teacher uploads and flagged explanations</p></div>
           </div>
         </div>
       </section>
 
       <div className="workspace-columns-4">
         <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Total Subjects</span><span className="badge badge-purple">Fixed</span></div><strong>4</strong><small>Biology, Chemistry, Physics, English</small></div>
-        <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Total Chapters</span><span className="badge badge-teal">Organized</span></div><strong>20</strong><small>Clean chapter-wise separation</small></div>
-        <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Total MCQs</span><span className="badge badge-amber">Moderated</span></div><strong>50</strong><small>Seeded realistic MDCAT MCQs</small></div>
-        <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>Teacher Uploads</span><span className="badge badge-coral">Review</span></div><strong>16</strong><small>4 need moderation follow-up</small></div>
+        <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Total Chapters</span><span className="badge badge-teal">Organized</span></div><strong>0</strong><small>Real chapters will appear after teacher uploads</small></div>
+        <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Total MCQs</span><span className="badge badge-amber">Moderated</span></div><strong>0</strong><small>No demo MCQs are loaded</small></div>
+        <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>Teacher Uploads</span><span className="badge badge-coral">Review</span></div><strong>0</strong><small>Moderation queue is empty</small></div>
       </div>
 
       <div className="workspace-section-grid">
         <div className="workspace-card">
           <div className="workspace-card-head"><div><div className="label-xs">Content Mix</div><h3 className="workspace-card-title">MCQs by subject</h3></div></div>
           <div className="workspace-card-body chart-panel">
+            {subjectMix.some((item) => item.value > 0) ? (
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie data={subjectMix} dataKey="value" nameKey="name" outerRadius={96} innerRadius={54} paddingAngle={4} />
                 <Tooltip contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 12 }} labelStyle={{ color: chartTheme.tooltipText }} />
               </PieChart>
             </ResponsiveContainer>
+            ) : (
+              <div className="empty-state empty-state--compact">
+                <div className="empty-orb" />
+                <h3>No MCQs uploaded yet</h3>
+                <p>Subject distribution will render after real MCQs are approved.</p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -331,6 +361,13 @@ function AdminDashboard() {
                 <p>{teacher.subject} • Rating {teacher.rating} • {teacher.students} students</p>
               </div>
             ))}
+            {adminTeachers.length === 0 ? (
+              <div className="empty-state empty-state--compact">
+                <div className="empty-orb" />
+                <h3>No teacher uploads yet</h3>
+                <p>Teacher ownership and moderation status will appear after real uploads.</p>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
@@ -350,7 +387,7 @@ function SuperAdminDashboard() {
           </div>
           <div className="workspace-hero-stats">
             <div className="hero-mini-card"><span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Platform Scope</span><strong>4 subjects</strong><p>No unrelated course catalog remains</p></div>
-            <div className="hero-mini-card"><span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Critical Alerts</span><strong>2</strong><p>Moderation and analytics latency alerts</p></div>
+            <div className="hero-mini-card"><span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Critical Alerts</span><strong>0</strong><p>System alerts will appear after real operations start</p></div>
           </div>
         </div>
       </section>

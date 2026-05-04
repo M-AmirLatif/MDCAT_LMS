@@ -2,17 +2,9 @@ import './PlatformPages.css'
 import { studentNotifications } from './platformContent'
 
 export default function PlatformNotifications() {
-  const inboxItems = [
-    ...studentNotifications,
-    {
-      title: 'Server maintenance scheduled',
-      body: 'Platform access will be limited from 1:00 AM to 1:30 AM on Sunday.',
-      tone: 'coral',
-      time: 'Admin broadcast',
-    },
-  ]
+  const inboxItems = studentNotifications
 
-  const unreadCount = 3
+  const unreadCount = 0
   const liveClassCount = inboxItems.filter((item) => item.tone === 'teal').length
   const paymentCount = inboxItems.filter((item) => item.tone === 'amber').length
   const systemCount = inboxItems.filter((item) => item.tone === 'coral').length
@@ -73,7 +65,7 @@ export default function PlatformNotifications() {
             <button className="filter-pill" type="button">Payments</button>
             <button className="filter-pill" type="button">System</button>
           </div>
-          <div className="notification-toolbar-note">Last sync: 2 minutes ago</div>
+          <div className="notification-toolbar-note">No activity synced yet</div>
         </div>
       </section>
 
@@ -81,22 +73,22 @@ export default function PlatformNotifications() {
         <div className="stat-tile stat-tile--purple">
           <div className="stat-tile-top"><span>Total inbox</span><span className="badge badge-purple">Today</span></div>
           <strong>{String(inboxItems.length).padStart(2, '0')}</strong>
-          <small>Every alert, reminder, and announcement in one stream.</small>
+          <small>Every real alert, reminder, and announcement in one stream.</small>
         </div>
         <div className="stat-tile stat-tile--teal">
           <div className="stat-tile-top"><span>Live classes</span><span className="badge badge-teal">Action</span></div>
           <strong>{String(liveClassCount).padStart(2, '0')}</strong>
-          <small>Join revision sessions before they go live.</small>
+          <small>Class alerts will appear after sessions are scheduled.</small>
         </div>
         <div className="stat-tile stat-tile--amber">
           <div className="stat-tile-top"><span>Payments</span><span className="badge badge-amber">Due</span></div>
           <strong>{String(paymentCount).padStart(2, '0')}</strong>
-          <small>Subscription and invoice alerts waiting for review.</small>
+          <small>Subscription and invoice alerts will appear after real transactions.</small>
         </div>
         <div className="stat-tile stat-tile--coral">
           <div className="stat-tile-top"><span>System notes</span><span className="badge badge-coral">Broadcast</span></div>
           <strong>{String(systemCount).padStart(2, '0')}</strong>
-          <small>Operational notices that may affect access tonight.</small>
+          <small>Operational notices will appear when admins publish them.</small>
         </div>
       </div>
 
@@ -134,6 +126,13 @@ export default function PlatformNotifications() {
                 </div>
               </article>
             ))}
+            {inboxItems.length === 0 ? (
+              <div className="empty-state empty-state--compact">
+                <div className="empty-orb" />
+                <h3>No notifications yet</h3>
+                <p>Real class alerts, payment reminders, and announcements will appear here after launch.</p>
+              </div>
+            ) : null}
           </div>
         </div>
 

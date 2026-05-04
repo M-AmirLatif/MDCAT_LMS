@@ -21,38 +21,7 @@ export default function Courses() {
   const navigate = useNavigate()
   const user = getAuthUser()
   const isGuest = !user?.role
-  const sampleCourses = [
-    {
-      _id: 'sample-bio',
-      name: 'MDCAT Biology Foundations',
-      description:
-        'Concept-first lessons with diagrams, flashcards, and daily recall tests.',
-      category: 'Biology',
-      createdBy: { firstName: 'Dr. Ayesha', lastName: 'Khan' },
-      enrolledCount: 1240,
-      isSample: true,
-    },
-    {
-      _id: 'sample-chem',
-      name: 'MDCAT Chemistry Numericals',
-      description:
-        'Practice-heavy modules with guided problem solving and quick formulas.',
-      category: 'Chemistry',
-      createdBy: { firstName: 'Sana', lastName: 'Malik' },
-      enrolledCount: 980,
-      isSample: true,
-    },
-    {
-      _id: 'sample-phys',
-      name: 'MDCAT Physics Sprint',
-      description:
-        'High-yield revision plan focused on motion, waves, and quick tricks.',
-      category: 'Physics',
-      createdBy: { firstName: 'Amir', lastName: 'Latif' },
-      enrolledCount: 860,
-      isSample: true,
-    },
-  ]
+  const sampleCourses = []
 
   useEffect(() => {
     if (isGuest) {
@@ -140,7 +109,7 @@ export default function Courses() {
             <h2>Available Courses</h2>
             <p>
               {isGuest
-                ? 'Preview sample courses. Login to access full content.'
+                ? 'Real MDCAT courses will appear after teachers publish content.'
                 : 'Enroll in a course and start learning today.'}
             </p>
           </div>

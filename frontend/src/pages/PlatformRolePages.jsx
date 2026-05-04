@@ -23,20 +23,8 @@ import {
   teacherStudents,
 } from './platformContent'
 
-const scoreDistribution = [
-  { band: '40-50', count: 18 },
-  { band: '50-60', count: 34 },
-  { band: '60-70', count: 48 },
-  { band: '70-80', count: 59 },
-  { band: '80-90', count: 43 },
-]
-
-const multiStudentTrend = [
-  { week: 'W1', ayesha: 82, usman: 64, iqra: 50 },
-  { week: 'W2', ayesha: 84, usman: 66, iqra: 54 },
-  { week: 'W3', ayesha: 86, usman: 69, iqra: 57 },
-  { week: 'W4', ayesha: 89, usman: 71, iqra: 61 },
-]
+const scoreDistribution = []
+const multiStudentTrend = []
 
 export function TeacherStudentsPage() {
   return (
@@ -75,6 +63,9 @@ export function TeacherStudentsPage() {
                     <td>{student.risk}</td>
                   </tr>
                 ))}
+                {teacherStudents.length === 0 ? (
+                  <tr><td colSpan="5"><div className="empty-state empty-state--compact"><div className="empty-orb" /><h3>No students yet</h3><p>Student rows will appear after real learners start practicing.</p></div></td></tr>
+                ) : null}
               </tbody>
             </table>
           </div>
@@ -84,7 +75,7 @@ export function TeacherStudentsPage() {
           <div className="workspace-card-head">
             <div>
               <div className="label-xs">Student Detail</div>
-              <h3 className="workspace-card-title">Ayesha Rehman</h3>
+              <h3 className="workspace-card-title">No student selected</h3>
             </div>
           </div>
           <div className="workspace-card-body">
@@ -99,7 +90,7 @@ export function TeacherStudentsPage() {
                 </LineChart>
               </ResponsiveContainer>
             </div>
-            <div className="metric-row"><span>Email</span><strong>ayesha@example.com</strong></div>
+            <div className="metric-row"><span>Email</span><strong>No student selected</strong></div>
             <div className="metric-row"><span>Action</span><div className="inline-actions"><button className="btn btn-secondary btn-sm" type="button">Contact</button><button className="btn btn-ghost btn-sm" type="button">Assign Work</button></div></div>
           </div>
         </aside>
@@ -132,16 +123,19 @@ export function TeacherAssignmentsPage() {
             <p>{assignment.submissions} practice attempts • Updated {assignment.due}</p>
           </div>
         ))}
+        {teacherAssignments.length === 0 ? (
+          <div className="empty-state empty-state--compact"><div className="empty-orb" /><h3>No MCQ work yet</h3><p>Created chapters and MCQs will appear here after teachers save real content.</p></div>
+        ) : null}
       </div>
 
       <div className="split-layout">
         <section className="workspace-card">
           <div className="workspace-card-head"><div><div className="label-xs">MCQ Entry</div><h3 className="workspace-card-title">Question builder</h3></div></div>
           <div className="workspace-card-body">
-            <p><strong>Question:</strong> Which organelle is primarily responsible for ATP production in eukaryotic cells?</p>
+            <p><strong>Question:</strong> No MCQ selected.</p>
             <div className="workspace-card" style={{ marginTop: '16px' }}>
               <div className="workspace-card-body">
-                <p>Option A: Golgi apparatus • Option B: Mitochondrion • Option C: Ribosome • Option D: Lysosome</p>
+                <p>Options will appear after a real MCQ is selected or created.</p>
               </div>
             </div>
           </div>
@@ -150,8 +144,8 @@ export function TeacherAssignmentsPage() {
         <aside className="workspace-card">
           <div className="workspace-card-head"><div><div className="label-xs">Explanation</div><h3 className="workspace-card-title">Save final MCQ</h3></div></div>
           <div className="workspace-card-body form-shell">
-            <div className="floating-field"><label htmlFor="score">Correct Option</label><input id="score" type="text" defaultValue="B" /></div>
-            <div className="floating-field"><label htmlFor="feedback">Explanation</label><textarea id="feedback" defaultValue="Mitochondria generate ATP through aerobic respiration, so they are called the powerhouse of the cell." rows="5" /></div>
+            <div className="floating-field"><label htmlFor="score">Correct Option</label><input id="score" type="text" placeholder="A, B, C, or D" /></div>
+            <div className="floating-field"><label htmlFor="feedback">Explanation</label><textarea id="feedback" placeholder="Write the real explanation for the selected MCQ." rows="5" /></div>
             <button className="btn btn-primary" type="button">Save MCQ</button>
           </div>
         </aside>
@@ -164,10 +158,10 @@ export function TeacherAnalyticsPage() {
   return (
     <div className="workspace-page animate-fade-up">
       <div className="workspace-columns-4">
-        <div className="stat-tile"><span>Class Average</span><strong>76%</strong></div>
-        <div className="stat-tile"><span>Submission Rate</span><strong>84%</strong></div>
-        <div className="stat-tile"><span>Live Attendance</span><strong>71%</strong></div>
-        <div className="stat-tile"><span>At Risk</span><strong>23</strong></div>
+        <div className="stat-tile"><span>Class Average</span><strong>0%</strong></div>
+        <div className="stat-tile"><span>Submission Rate</span><strong>0%</strong></div>
+        <div className="stat-tile"><span>Live Attendance</span><strong>0%</strong></div>
+        <div className="stat-tile"><span>At Risk</span><strong>0</strong></div>
       </div>
 
       <div className="workspace-section-grid">
@@ -189,10 +183,10 @@ export function TeacherAnalyticsPage() {
         <div className="workspace-card">
           <div className="workspace-card-head"><div><div className="label-xs">Heatmap</div><h3 className="workspace-card-title">Subject mastery</h3></div></div>
           <div className="workspace-card-body heatmap-grid">
-            <div className="heat-cell" style={{ background: '#1db884' }}>Bio 89</div>
-            <div className="heat-cell" style={{ background: '#4a90e2' }}>Phys 72</div>
-            <div className="heat-cell" style={{ background: '#f59e0b' }}>Chem 68</div>
-            <div className="heat-cell" style={{ background: '#6c47ff' }}>Eng 91</div>
+            <div className="heat-cell" style={{ background: '#1db884' }}>Bio 0</div>
+            <div className="heat-cell" style={{ background: '#4a90e2' }}>Phys 0</div>
+            <div className="heat-cell" style={{ background: '#f59e0b' }}>Chem 0</div>
+            <div className="heat-cell" style={{ background: '#6c47ff' }}>Eng 0</div>
           </div>
         </div>
       </div>
@@ -240,6 +234,9 @@ export function AdminStudentsPage() {
                   <td><div className="inline-actions"><button className="btn btn-secondary btn-sm" type="button">Suspend</button><button className="btn btn-ghost btn-sm" type="button">Reset Password</button></div></td>
                 </tr>
               ))}
+              {adminStudents.length === 0 ? (
+                <tr><td colSpan="7"><div className="empty-state empty-state--compact"><div className="empty-orb" /><h3>No students yet</h3><p>Real student accounts will appear here.</p></div></td></tr>
+              ) : null}
             </tbody>
           </table>
         </div>
@@ -268,15 +265,18 @@ export function AdminTeachersPage() {
                 </div>
               </div>
             ))}
+            {adminTeachers.length === 0 ? (
+              <div className="empty-state empty-state--compact"><div className="empty-orb" /><h3>No teachers yet</h3><p>Real teacher accounts and approvals will appear here.</p></div>
+            ) : null}
           </div>
         </div>
 
         <aside className="workspace-card drawer-card">
-          <div className="workspace-card-head"><div><div className="label-xs">Teacher Detail</div><h3 className="workspace-card-title">Prof. Adeel Raza</h3></div></div>
+          <div className="workspace-card-head"><div><div className="label-xs">Teacher Detail</div><h3 className="workspace-card-title">No teacher selected</h3></div></div>
           <div className="workspace-card-body list-stack">
-            <div className="metric-row"><span>Approval status</span><strong>Pending</strong></div>
-            <div className="metric-row"><span>Student rating</span><strong>4.8 / 5</strong></div>
-            <div className="metric-row"><span>Assignable courses</span><strong>12</strong></div>
+            <div className="metric-row"><span>Approval status</span><strong>No data</strong></div>
+            <div className="metric-row"><span>Student rating</span><strong>No data</strong></div>
+            <div className="metric-row"><span>Assignable courses</span><strong>0</strong></div>
             <button className="btn btn-amber" type="button">Approve Teacher</button>
           </div>
         </aside>
@@ -292,10 +292,10 @@ export function AdminCoursesPage() {
         <div className="workspace-card-head"><div><div className="label-xs">MCQ Moderation</div><h2 className="workspace-card-title">Edit chapter metadata and moderate question quality</h2></div></div>
         <div className="workspace-card-body form-shell">
           <div className="floating-grid">
-            <div className="floating-field"><label htmlFor="course-name">Subject</label><input id="course-name" type="text" defaultValue="Biology" /></div>
-            <div className="floating-field"><label htmlFor="teacher">Assigned Teacher</label><select id="teacher" defaultValue="Dr. Hira Khan"><option>Dr. Hira Khan</option><option>Prof. Adeel Raza</option></select></div>
+            <div className="floating-field"><label htmlFor="course-name">Subject</label><select id="course-name" defaultValue=""><option value="">Select subject</option><option>Biology</option><option>Chemistry</option><option>Physics</option><option>English</option></select></div>
+            <div className="floating-field"><label htmlFor="teacher">Assigned Teacher</label><select id="teacher" defaultValue=""><option value="">Select real teacher</option></select></div>
           </div>
-          <div className="floating-field"><label htmlFor="description">Moderation Notes</label><textarea id="description" rows="6" defaultValue="Flag duplicated wording, verify correct answer mapping, and ensure the explanation matches MDCAT standard phrasing." /></div>
+          <div className="floating-field"><label htmlFor="description">Moderation Notes</label><textarea id="description" rows="6" placeholder="Add moderation notes for a real teacher upload." /></div>
           <div className="metric-row"><span>Publish toggle</span><span className="toggle toggle--on" /></div>
           <div className="inline-actions"><button className="btn btn-primary" type="button">Save Changes</button><button className="btn btn-ghost" type="button">Archive Question</button></div>
         </div>
@@ -315,11 +315,11 @@ export function AdminAnnouncementsPage() {
             <span className="variable-chip">Teachers</span>
             <span className="variable-chip">Admins</span>
           </div>
-          <div className="floating-field"><label htmlFor="announcement-title">Title</label><input id="announcement-title" type="text" defaultValue="New Mock Test Window Opens Tonight" /></div>
-          <div className="floating-field"><label htmlFor="announcement-body">Message</label><textarea id="announcement-body" rows="6" defaultValue="Push this update to students enrolled in premium plans and schedule it for 7:30 PM." /></div>
+          <div className="floating-field"><label htmlFor="announcement-title">Title</label><input id="announcement-title" type="text" placeholder="Enter announcement title" /></div>
+          <div className="floating-field"><label htmlFor="announcement-body">Message</label><textarea id="announcement-body" rows="6" placeholder="Write a real announcement before publishing." /></div>
           <div className="floating-grid">
-            <div className="floating-field"><label htmlFor="schedule">Schedule</label><input id="schedule" type="datetime-local" defaultValue="2026-05-01T19:30" /></div>
-            <div className="floating-field"><label htmlFor="channel">Channel Mix</label><select id="channel" defaultValue="Push + Email + In-App"><option>Push + Email + In-App</option><option>Push only</option></select></div>
+            <div className="floating-field"><label htmlFor="schedule">Schedule</label><input id="schedule" type="datetime-local" /></div>
+            <div className="floating-field"><label htmlFor="channel">Channel Mix</label><select id="channel" defaultValue=""><option value="">Select channels</option><option>Push + Email + In-App</option><option>Push only</option></select></div>
           </div>
           <button className="btn btn-primary" type="button">Publish Announcement</button>
         </div>
@@ -362,8 +362,8 @@ export function AdminSettingsPage() {
         <section className="workspace-card">
           <div className="workspace-card-head"><div><div className="label-xs">Gateways</div><h3 className="workspace-card-title">API keys</h3></div></div>
           <div className="workspace-card-body form-shell">
-            <div className="floating-field"><label htmlFor="jazzcash">JazzCash Key</label><input id="jazzcash" type="password" defaultValue="sk_live_jazzcash_key" /></div>
-            <div className="floating-field"><label htmlFor="easypaisa">EasyPaisa Key</label><input id="easypaisa" type="password" defaultValue="sk_live_easypaisa_key" /></div>
+            <div className="floating-field"><label htmlFor="jazzcash">JazzCash Key</label><input id="jazzcash" type="password" placeholder="Add real gateway key in environment variables" /></div>
+            <div className="floating-field"><label htmlFor="easypaisa">EasyPaisa Key</label><input id="easypaisa" type="password" placeholder="Add real gateway key in environment variables" /></div>
             <div className="maintenance-toggle"><div><strong>Maintenance Mode</strong><p>Temporarily limit platform access.</p></div><span className="toggle" /></div>
           </div>
         </section>
@@ -486,9 +486,9 @@ export function SuperAdminPaymentsPage() {
   return (
     <div className="workspace-page animate-fade-up">
       <div className="workspace-columns-3">
-        <div className="pricing-card"><div className="label-xs">Master Gateway Control</div><h3 className="workspace-card-title">JazzCash</h3><p>Primary payment route, callback health 97%.</p></div>
-        <div className="pricing-card"><div className="label-xs">Payout Management</div><h3 className="workspace-card-title">Rs 1.2M pending</h3><p>Teacher and affiliate settlements.</p></div>
-        <div className="pricing-card"><div className="label-xs">Refund Escalations</div><h3 className="workspace-card-title">7 open</h3><p>Admin-originated finance actions.</p></div>
+        <div className="pricing-card"><div className="label-xs">Master Gateway Control</div><h3 className="workspace-card-title">No gateway data</h3><p>Real payment route health will appear after integration.</p></div>
+        <div className="pricing-card"><div className="label-xs">Payout Management</div><h3 className="workspace-card-title">Rs 0 pending</h3><p>Teacher settlements will appear after real revenue starts.</p></div>
+        <div className="pricing-card"><div className="label-xs">Refund Escalations</div><h3 className="workspace-card-title">0 open</h3><p>Refund rows will appear after real transactions.</p></div>
       </div>
 
       <div className="workspace-card">
@@ -525,8 +525,8 @@ export function SuperAdminAnnouncementsPage() {
         <div className="workspace-card-head"><div><div className="label-xs">Platform-wide Broadcast</div><h2 className="workspace-card-title">Cross-role announcement composer</h2></div></div>
         <div className="workspace-card-body form-shell">
           <div className="chip-list"><span className="variable-chip">Students</span><span className="variable-chip">Teachers</span><span className="variable-chip">Admins</span><span className="variable-chip">Emergency Alert</span></div>
-          <div className="floating-field"><label htmlFor="sa-title">Title</label><input id="sa-title" type="text" defaultValue="Payment Gateway Maintenance Tonight" /></div>
-          <div className="floating-field"><label htmlFor="sa-body">Message</label><textarea id="sa-body" rows="6" defaultValue="Push banner to all roles and force in-app acknowledgment for finance and admin users." /></div>
+          <div className="floating-field"><label htmlFor="sa-title">Title</label><input id="sa-title" type="text" placeholder="Enter platform-wide alert title" /></div>
+          <div className="floating-field"><label htmlFor="sa-body">Message</label><textarea id="sa-body" rows="6" placeholder="Write a real emergency announcement before sending." /></div>
           <button className="btn btn-danger" type="button">Send Emergency Alert</button>
         </div>
       </section>

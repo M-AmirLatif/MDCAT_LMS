@@ -46,16 +46,16 @@ function StudentPayments() {
         <div className="workspace-card-head">
           <div>
             <div className="label-xs">Active Plan</div>
-            <h2 className="workspace-card-title">Premium Plus Annual</h2>
-            <p>Unlimited tests, teacher classes, analytics, and recording access.</p>
+            <h2 className="workspace-card-title">No active plan yet</h2>
+            <p>Real subscription status will appear after the student purchases a plan.</p>
           </div>
-          <span className="badge badge-purple">Renews 04 May</span>
+          <span className="badge badge-purple">Inactive</span>
         </div>
         <div className="workspace-card-body">
           <div className="workspace-columns-3">
-            <div className="metric-row"><span>Amount</span><strong>Rs 15,000 / year</strong></div>
-            <div className="metric-row"><span>Gateway</span><strong>JazzCash</strong></div>
-            <div className="metric-row"><span>Status</span><strong>Active</strong></div>
+            <div className="metric-row"><span>Amount</span><strong>Rs 0</strong></div>
+            <div className="metric-row"><span>Gateway</span><strong>Not selected</strong></div>
+            <div className="metric-row"><span>Status</span><strong>Inactive</strong></div>
           </div>
         </div>
       </section>
@@ -89,9 +89,7 @@ function StudentPayments() {
               <tr><th>DATE</th><th>METHOD</th><th>AMOUNT</th><th>STATUS</th></tr>
             </thead>
             <tbody>
-              <tr><td>01 May 2026</td><td><PaymentMethod method="JazzCash" /></td><td><span className="amount-strong">Rs 15,000</span></td><td><StatusBadge status="Paid" /></td></tr>
-              <tr><td>01 Apr 2026</td><td><PaymentMethod method="JazzCash" /></td><td><span className="amount-strong">Rs 1,500</span></td><td><StatusBadge status="Pending" /></td></tr>
-              <tr><td>01 Mar 2026</td><td><PaymentMethod method="Card" /></td><td><span className="amount-strong">Rs 1,500</span></td><td><StatusBadge status="Failed" /></td></tr>
+              <tr><td colSpan="4"><div className="empty-state empty-state--compact"><div className="empty-orb" /><h3>No payment history yet</h3><p>Real transactions will appear here after payment gateway activity starts.</p></div></td></tr>
             </tbody>
           </table>
         </div>
@@ -104,10 +102,10 @@ function AdminPayments() {
   return (
     <div className="workspace-page workspace-page--payments animate-fade-up">
       <div className="workspace-columns-4">
-        <div className="stat-tile"><span>Monthly Revenue</span><strong>Rs 4.8M</strong><small>+14.2%</small></div>
-        <div className="stat-tile"><span>Refund Requests</span><strong>7</strong><small>2 urgent</small></div>
-        <div className="stat-tile"><span>JazzCash Share</span><strong>38%</strong><small>Top gateway</small></div>
-        <div className="stat-tile"><span>EasyPaisa Share</span><strong>24%</strong><small>Stable</small></div>
+        <div className="stat-tile"><span>Monthly Revenue</span><strong>Rs 0</strong><small>No transactions yet</small></div>
+        <div className="stat-tile"><span>Refund Requests</span><strong>0</strong><small>No refund activity</small></div>
+        <div className="stat-tile"><span>JazzCash Share</span><strong>0%</strong><small>No gateway data</small></div>
+        <div className="stat-tile"><span>EasyPaisa Share</span><strong>0%</strong><small>No gateway data</small></div>
       </div>
 
       <div className="workspace-card payments-history-card">
@@ -126,6 +124,9 @@ function AdminPayments() {
                   <td><button className="btn btn-ghost btn-sm" type="button">Refund</button></td>
                 </tr>
               ))}
+              {adminTransactions.length === 0 ? (
+                <tr><td colSpan="6"><div className="empty-state empty-state--compact"><div className="empty-orb" /><h3>No transactions yet</h3><p>Revenue rows will appear after real student payments.</p></div></td></tr>
+              ) : null}
             </tbody>
           </table>
         </div>

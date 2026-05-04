@@ -199,6 +199,14 @@ function TeacherMcqManagement() {
                     <span className="btn btn-secondary btn-sm">Open</span>
                   </button>
                 ))}
+                {chapterOptions.length === 0 ? (
+                  <div className="empty-state empty-state--compact">
+                    <div className="empty-orb" />
+                    <h3>No chapters yet</h3>
+                    <p>Create the first real chapter for {selectedSubject.name}, then add MCQs under it.</p>
+                    <button className="btn btn-primary btn-sm" type="button" onClick={() => openPanel('chapter')}>Add Chapter</button>
+                  </div>
+                ) : null}
               </div>
             </div>
           </section>
@@ -208,7 +216,7 @@ function TeacherMcqManagement() {
               <div>
                 <div className="label-xs" style={{ color: selectedStyle.accent }}>{selectedChapter?.name || 'Chapter'}</div>
                 <h3 className="workspace-card-title">Chapter MCQs</h3>
-                <p>Click Add MCQ for empty fields, or Edit on a seeded MCQ to review content.</p>
+                <p>Click Add MCQ for empty fields after selecting a real chapter.</p>
               </div>
               <div className="inline-actions">
                 <button className="btn btn-primary btn-sm" type="button" onClick={() => openPanel('mcq')}>Add MCQ</button>
@@ -256,7 +264,7 @@ function TeacherMcqManagement() {
                 <span>{selectedChapter?.name || 'Choose a chapter'} - add a clean MDCAT-style question with explanation.</span>
               </div>
               <div className="floating-field"><label htmlFor="mcq-subject">Subject</label><select id="mcq-subject" value={selectedSubjectId} onChange={(event) => chooseSubject(event.target.value)}>{mdcatSubjects.map((subject) => <option key={subject.id} value={subject.id}>{subject.name}</option>)}</select></div>
-              <div className="floating-field"><label htmlFor="mcq-chapter">Chapter</label><select id="mcq-chapter" value={selectedChapter?.id || ''} onChange={(event) => setSelectedChapterId(event.target.value)}>{chapterOptions.map((chapter) => <option key={chapter.id} value={chapter.id}>{chapter.name}</option>)}</select></div>
+              <div className="floating-field"><label htmlFor="mcq-chapter">Chapter</label><select id="mcq-chapter" value={selectedChapter?.id || ''} onChange={(event) => setSelectedChapterId(event.target.value)}>{chapterOptions.length === 0 ? <option value="">Create a chapter first</option> : chapterOptions.map((chapter) => <option key={chapter.id} value={chapter.id}>{chapter.name}</option>)}</select></div>
               <div className="floating-field"><label htmlFor="mcq-question">Question</label><textarea id="mcq-question" rows="4" placeholder="Type the MCQ question here..." /></div>
               <div className="floating-grid">
                 <div className="floating-field"><label htmlFor="mcq-a">Option A</label><input id="mcq-a" type="text" placeholder="Enter option A" /></div>

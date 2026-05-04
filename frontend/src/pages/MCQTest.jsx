@@ -50,6 +50,19 @@ export default function MCQTest() {
     )
   }
 
+  if (!currentMcq) {
+    return (
+      <div className="workspace-page">
+        <div className="empty-state">
+          <div className="empty-orb" />
+          <h3>No MCQs in this chapter yet</h3>
+          <p>Teachers will add real questions, correct answers, and explanations before students can attempt this chapter.</p>
+          <Link className="btn btn-primary" to={`/course/${subject.id}`}>Back to Chapters</Link>
+        </div>
+      </div>
+    )
+  }
+
   const handleSelect = (optionIndex) => {
     if (submitted) return
     setAnswers((current) => ({ ...current, [currentMcq.id]: optionIndex }))

@@ -4,30 +4,20 @@ import { getAuthUser } from '../services/authStorage'
 import './Home.css'
 
 const stats = [
-  ['400.6k+', 'Registered Students', 'people'],
-  ['4.71', 'Rating', 'star'],
-  ['30.2M+', 'Questions Attempted', 'chart'],
-  ['6k+', 'Qualified Doctors', 'medical'],
-  ['10k+', 'Engineers & IT Professionals', 'code'],
-  ['500+', 'Cities Worldwide', 'globe'],
-  ['9+ Years', 'Academic Excellence', 'trophy'],
-  ['96%', 'Parent Satisfaction', 'heart'],
+  ['4', 'MDCAT Subjects', 'people'],
+  ['0', 'Published Chapters', 'chart'],
+  ['0', 'Published MCQs', 'medical'],
+  ['0', 'Student Attempts', 'trophy'],
 ]
 
 const subjects = [
-  ['Biology', '10 MCQs + Explanations', 'bio', '/sample-test/biology'],
-  ['Chemistry', '10 MCQs + Explanations', 'chem', '/sample-test/chemistry'],
-  ['Physics', '10 MCQs + Explanations', 'phy', '/sample-test/physics'],
-  ['English', '10 MCQs + Explanations', 'eng', '/sample-test/english'],
+  ['Biology', 'Real MCQs coming soon', 'bio', '/sample-test/biology'],
+  ['Chemistry', 'Real MCQs coming soon', 'chem', '/sample-test/chemistry'],
+  ['Physics', 'Real MCQs coming soon', 'phy', '/sample-test/physics'],
+  ['English', 'Real MCQs coming soon', 'eng', '/sample-test/english'],
 ]
 
-const reviews = [
-  ['MDCAT PESHAWAR', 'Ayesha Khan', 'The chapter-wise practice and explanations made revision much easier at home.'],
-  ['MDCAT LAHORE', 'Hamza Ali', 'Daily MCQs helped me identify weak areas in Biology and Physics before test day.'],
-  ['MDCAT MULTAN', 'Sana Noor', 'The platform feels focused on MDCAT only. No confusing extra courses.'],
-  ['MDCAT KARACHI', 'Bilal Ahmed', 'Sample tests, explanations, and progress tracking kept me consistent.'],
-  ['MDCAT ISLAMABAD', 'Mehwish Raza', 'I could practice at night after college and still see clear performance analytics.'],
-]
+const reviews = []
 
 function Icon({ name }) {
   const common = { viewBox: '0 0 24 24', fill: 'none', 'aria-hidden': true }
@@ -79,17 +69,17 @@ export default function Home() {
         <div className="lp-grid-bg" />
         <div className="lp-float-card lp-float-card-one">
           <span>MDCAT BATCH 2026</span>
-          <strong>84%</strong>
-          <small>Weekly progress</small>
+          <strong>0%</strong>
+          <small>Weekly progress after launch</small>
         </div>
         <div className="lp-float-card lp-float-card-two">
           <span><i /> Next Class</span>
-          <strong>8:00 PM</strong>
-          <small>Biology Rapid Revision</small>
+          <strong>Coming soon</strong>
+          <small>Real live classes</small>
         </div>
         <div className="lp-float-card lp-float-card-three">
           <div className="lp-avatars"><b>A</b><b>S</b><b>H</b></div>
-          <strong>28k+ Active Learners</strong>
+          <strong>Real learners after launch</strong>
         </div>
 
         <div className="lp-hero-content reveal">
@@ -99,7 +89,7 @@ export default function Home() {
             <span className="lp-gradient-text">Faster, Smarter</span>
             <span>Preparation at Home</span>
           </h1>
-          <p>Best MDCAT prep from the comfort of your home. 400k+ students. 9+ years.</p>
+          <p>Focused MDCAT preparation from the comfort of your home. Real chapters, MCQs, and analytics will be added by your teaching team.</p>
           <div className="lp-hero-ctas">
             <Link className="lp-btn lp-btn-primary" to="/register">Start Your Preparation Now</Link>
             <Link className="lp-btn lp-btn-ghost" to="/login">I Already Have an Account</Link>
@@ -149,7 +139,7 @@ export default function Home() {
       <section id="sample" className="lp-section lp-section-light">
         <div className="lp-container lp-narrow reveal">
           <h2 className="lp-section-title">Try a Free Sample Test <em>No Login Required</em></h2>
-          <p className="lp-center-copy">Practice 10 real-style MCQs, get explanations, and see your score instantly.</p>
+          <p className="lp-center-copy">Public sample tests will activate after real MDCAT MCQs are published.</p>
           <div className="lp-subject-grid">
             {subjects.map(([name, meta, tone, path]) => (
               <Link className={`lp-subject lp-subject-${tone}`} to={path} key={name}>
@@ -161,14 +151,14 @@ export default function Home() {
               </Link>
             ))}
           </div>
-          <Link className="lp-btn lp-btn-primary lp-btn-wide" to="/sample-test">Start Free Sample Test</Link>
+          <Link className="lp-btn lp-btn-primary lp-btn-wide" to="/sample-test">View Sample Test Status</Link>
           <p className="lp-micro-copy">No account needed • Instant results • Full explanations</p>
         </div>
       </section>
 
       <section id="reviews" className="lp-section lp-section-dark">
         <div className="lp-container reveal">
-          <h2 className="lp-section-title lp-section-title-dark">8000+ Genuine Student Reviews</h2>
+          <h2 className="lp-section-title lp-section-title-dark">Student Reviews</h2>
           <div className="lp-review-meta">EXCELLENT REVIEWS • <span>★★★★★</span> • 4.71 Average</div>
           <div className="lp-review-row">
             {reviews.map(([tag, name, text]) => (

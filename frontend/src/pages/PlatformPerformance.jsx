@@ -49,6 +49,7 @@ export default function PlatformPerformance() {
             </div>
           </div>
           <div className="workspace-card-body chart-panel">
+            {performanceTrend.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={performanceTrend}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.gridColor} />
@@ -62,6 +63,13 @@ export default function PlatformPerformance() {
                 <Line type="monotone" dataKey="English" stroke="#f59e0b" strokeWidth={3} dot={false} />
               </LineChart>
             </ResponsiveContainer>
+            ) : (
+              <div className="empty-state empty-state--compact">
+                <div className="empty-orb" />
+                <h3>No performance trend yet</h3>
+                <p>Graphs will appear after students submit real MCQ attempts.</p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -69,17 +77,17 @@ export default function PlatformPerformance() {
           <div className="insight-card-top">
             <div>
               <div className="label-xs">AI Recommendation</div>
-              <h3 className="workspace-card-title">Shift your next two practice blocks toward Physics and Chemistry</h3>
+              <h3 className="workspace-card-title">Recommendations will appear after real attempts</h3>
             </div>
-            <div className="insight-badge">Priority Focus</div>
+            <div className="insight-badge">Waiting for data</div>
           </div>
           <p className="insight-copy">
-            Biology and English are stable. The cleanest uplift now will come from repeated chapter attempts in Physics dynamics and Chemistry states of matter.
+            The system needs real chapter attempts before it can calculate weak areas, recovery blocks, and suggested test sets.
           </p>
           <div className="insight-highlights">
-            <div className="insight-highlight"><span>Best recovery block</span><strong>7:00 PM - 8:15 PM</strong></div>
-            <div className="insight-highlight"><span>Suggested test set</span><strong>Physics Dynamics + Chemistry States</strong></div>
-            <div className="insight-highlight insight-highlight--accent"><span>Target uplift</span><strong>+8%</strong></div>
+            <div className="insight-highlight"><span>Best recovery block</span><strong>No data yet</strong></div>
+            <div className="insight-highlight"><span>Suggested test set</span><strong>No data yet</strong></div>
+            <div className="insight-highlight insight-highlight--accent"><span>Target uplift</span><strong>0%</strong></div>
           </div>
         </div>
       </div>
@@ -125,6 +133,13 @@ export default function PlatformPerformance() {
                 </div>
               </div>
             ))}
+            {practiceAttempts.length === 0 ? (
+              <div className="empty-state empty-state--compact">
+                <div className="empty-orb" />
+                <h3>No attempts yet</h3>
+                <p>Recent practice history will appear after students submit real MCQs.</p>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
