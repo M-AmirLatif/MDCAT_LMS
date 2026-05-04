@@ -1324,6 +1324,21 @@ html[data-theme="dark"] .profile-upload-btn {
   border-color: #8B6FFF !important;
 }
 
+html[data-theme="dark"] .avatar-camera {
+  background: #FFFFFF !important;
+  color: #6C47FF !important;
+  -webkit-text-fill-color: #6C47FF !important;
+  border-color: rgba(255,255,255,0.96) !important;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.34), 0 0 0 2px rgba(108,71,255,0.18) !important;
+}
+
+html[data-theme="dark"] .avatar-camera svg,
+html[data-theme="dark"] .avatar-camera svg * {
+  color: #6C47FF !important;
+  stroke: #6C47FF !important;
+  opacity: 1 !important;
+}
+
 /* Auth dark-mode polish: cleaner spacing, visible fields, and readable toggle. */
 html[data-theme="dark"] .auth-left-inner {
   max-width: 480px;

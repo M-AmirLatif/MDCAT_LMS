@@ -1249,17 +1249,26 @@
 
 .avatar-camera {
   position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 34px;
-  height: 34px;
+  right: -4px;
+  bottom: -4px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--navy);
-  color: #fff;
-  border: 3px solid #fff;
+  background: #ffffff;
+  color: #6c47ff;
+  border: 3px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 20px rgba(15, 15, 26, 0.18);
+}
+
+.avatar-camera svg {
+  width: 18px;
+  height: 18px;
+  color: currentColor;
+  stroke: currentColor;
+  opacity: 1;
 }
 
 .profile-hero-copy {
