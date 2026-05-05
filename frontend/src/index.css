@@ -477,6 +477,15 @@ textarea{
   min-height:100px;
   resize:none !important;
 }
+
+.route-loading {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: var(--bg-page, #f4f2ff);
+  color: var(--text-primary, #1a1a2e);
+  font-weight: 800;
+}
 input:focus,textarea:focus,select:focus{
   outline:none;border-color:var(--purple);border-width:2px;background:#fff;
   box-shadow:0 0 0 4px rgba(108,71,255,0.15);

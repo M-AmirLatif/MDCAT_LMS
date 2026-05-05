@@ -58,7 +58,13 @@ function App() {
           }
         />
 
-        <Route element={<AppLayout />}>
+        <Route
+          element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/dashboard" element={<PlatformDashboard />} />
           <Route path="/courses" element={<CourseSelection />} />
           <Route path="/mcqs" element={<CourseSelection />} />

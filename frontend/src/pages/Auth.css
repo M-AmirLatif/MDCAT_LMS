@@ -1215,6 +1215,7 @@ html[data-theme="dark"] .auth-form .floating-field {
   outline: 0 !important;
 }
 
+.auth-google-rendered,
 html[data-theme="dark"] .auth-google-rendered {
   position: relative !important;
   width: min(100%, 376px) !important;
@@ -1222,12 +1223,13 @@ html[data-theme="dark"] .auth-google-rendered {
   min-height: 52px !important;
   margin: 0 auto !important;
   overflow: hidden !important;
-  border: 1.5px solid rgba(165, 144, 255, 0.32) !important;
+  border: 1.5px solid rgba(108, 71, 255, 0.28) !important;
   border-radius: 999px !important;
-  background: rgba(139, 111, 255, 0.14) !important;
+  background: #ffffff !important;
   box-shadow: none !important;
 }
 
+.auth-google-rendered::before,
 html[data-theme="dark"] .auth-google-rendered::before {
   content: "G  Continue with Google";
   position: absolute;
@@ -1236,13 +1238,15 @@ html[data-theme="dark"] .auth-google-rendered::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #f0eeff;
-  -webkit-text-fill-color: #f0eeff;
+  color: #1a1a2e;
+  -webkit-text-fill-color: #1a1a2e;
   font-size: 14px;
   font-weight: 800;
   pointer-events: none;
 }
 
+.auth-google-rendered > div,
+.auth-google-rendered iframe,
 html[data-theme="dark"] .auth-google-rendered > div,
 html[data-theme="dark"] .auth-google-rendered iframe {
   position: absolute !important;
@@ -1255,6 +1259,16 @@ html[data-theme="dark"] .auth-google-rendered iframe {
   opacity: 0.01 !important;
   border-radius: 999px !important;
   background: transparent !important;
+}
+
+html[data-theme="dark"] .auth-google-rendered {
+  border-color: rgba(165, 144, 255, 0.42) !important;
+  background: rgba(139, 111, 255, 0.16) !important;
+}
+
+html[data-theme="dark"] .auth-google-rendered::before {
+  color: #f0eeff;
+  -webkit-text-fill-color: #f0eeff;
 }
 
 @media (max-width: 768px) {
@@ -1292,5 +1306,31 @@ html[data-theme="dark"] .auth-google-rendered iframe {
     text-align: right;
     font-size: 12px !important;
     line-height: 1.2;
+  }
+
+  .auth-google-block {
+    display: flex !important;
+    width: 100% !important;
+    min-height: 58px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 14px 0 16px !important;
+  }
+
+  .auth-google-rendered {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .auth-password-field input,
+  .auth-form .floating-field input {
+    min-width: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .auth-password-field input {
+    max-width: none !important;
+    padding-right: 96px !important;
   }
 }
