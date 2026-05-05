@@ -3177,15 +3177,29 @@
 .teacher-mcq-editor-bottom .floating-field {
   display: grid !important;
   gap: 8px !important;
-  padding: 12px !important;
+  padding: 14px !important;
   border: 1px solid #E5E7EB !important;
   border-radius: 10px !important;
   background: #F9FAFB !important;
 }
 
 .teacher-mcq-editor-bottom .floating-field:first-child {
+  align-content: start !important;
+  gap: 10px !important;
   background: #EDE9FE !important;
   border-color: #DDD6FE !important;
+}
+
+.teacher-mcq-editor-bottom .floating-field:first-child label {
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1.2 !important;
+}
+
+.teacher-mcq-editor-bottom .floating-field:first-child select {
+  min-height: 56px !important;
+  margin: 0 !important;
+  padding: 12px 14px !important;
 }
 
 .teacher-mcq-editor-bottom .floating-field:last-child label::before {
