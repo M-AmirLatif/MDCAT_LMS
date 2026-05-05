@@ -438,10 +438,10 @@ function QuizAttempt() {
   const [skipped, setSkipped] = useState({})
   const [remaining, setRemaining] = useState(0)
   const [submitting, setSubmitting] = useState(false)
+  const quizUserKey = useMemo(() => user?.email || user?._id || user?.id || 'guest', [user?.email, user?._id, user?.id])
   const quizStorageKey = useMemo(() => {
-    const userKey = user?._id || user?.id || user?.email || 'guest'
-    return `mcq-draft-${userKey}-${subject}-${chapterId}`
-  }, [chapterId, subject, user])
+    return `mcq-draft-${quizUserKey}-${subject}-${chapterId}`
+  }, [chapterId, quizUserKey, subject])
 
   useEffect(() => {
     let alive = true
@@ -469,19 +469,44 @@ function QuizAttempt() {
         } catch {
           savedDraft = null
         }
+        if (!savedDraft) {
+          const suffix = `-${subject}-${chapterId}`
+          const matchingDrafts = Object.keys(localStorage)
+            .filter((key) => key.startsWith('mcq-draft-') && key.endsWith(suffix))
+            .map((key) => {
+              try {
+                return { key, draft: JSON.parse(localStorage.getItem(key) || 'null') }
+              } catch {
+                return null
+              }
+            })
+            .filter((item) => item?.draft)
+            .sort((a, b) => new Date(b.draft.updatedAt || 0) - new Date(a.draft.updatedAt || 0))
+          savedDraft = matchingDrafts[0]?.draft || null
+        }
         const loadedIds = loadedMcqs.map((mcq) => String(mcq._id))
+        const loadedIdSet = new Set(loadedIds)
         const savedIds = Array.isArray(savedDraft?.mcqIds) ? savedDraft.mcqIds.map(String) : []
+        const savedAnswers = Object.fromEntries(
+          Object.entries(savedDraft?.answers || {}).filter(([mcqId]) => loadedIdSet.has(String(mcqId))),
+        )
+        const savedSkipped = Object.fromEntries(
+          Object.entries(savedDraft?.skipped || {}).filter(([mcqId]) => loadedIdSet.has(String(mcqId))),
+        )
         const canRestore =
           savedDraft &&
           loadedIds.length > 0 &&
-          loadedIds.length === savedIds.length &&
-          loadedIds.every((id, index) => id === savedIds[index])
+          (
+            Object.keys(savedAnswers).length > 0 ||
+            Object.values(savedSkipped).some(Boolean) ||
+            (savedIds.length > 0 && savedIds.every((id) => loadedIdSet.has(id)))
+          )
 
         setChapter(response.data.chapter)
         setMcqs(loadedMcqs)
         setCurrentIndex(canRestore ? Math.min(Number(savedDraft.currentIndex) || 0, loadedMcqs.length - 1) : 0)
-        setAnswers(canRestore && savedDraft.answers ? savedDraft.answers : {})
-        setSkipped(canRestore && savedDraft.skipped ? savedDraft.skipped : {})
+        setAnswers(canRestore ? savedAnswers : {})
+        setSkipped(canRestore ? savedSkipped : {})
         setRemaining(canRestore && Number(savedDraft.remaining) > 0 ? Number(savedDraft.remaining) : defaultRemaining)
       } catch (error) {
         if (alive) toast.error(error.response?.data?.error || 'Unable to load quiz')
@@ -524,7 +549,10 @@ function QuizAttempt() {
         timeLimitSeconds: mcqs.length * 50,
         timeSpentSeconds: mcqs.length * 50 - remaining,
       })
-      localStorage.removeItem(quizStorageKey)
+      const suffix = `-${subject}-${chapterId}`
+      Object.keys(localStorage)
+        .filter((key) => key.startsWith('mcq-draft-') && key.endsWith(suffix))
+        .forEach((key) => localStorage.removeItem(key))
       sessionStorage.setItem(`mcq-result-${subject}-${chapterId}`, JSON.stringify(res.data))
       navigate(`/mcqs/${subject}/${chapterId}/result`, { state: { result: res.data } })
     } catch (error) {
