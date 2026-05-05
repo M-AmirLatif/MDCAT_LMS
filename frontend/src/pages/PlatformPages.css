@@ -341,6 +341,52 @@
   color: var(--muted);
 }
 
+[data-theme="dark"] .teacher-mcq-row {
+  background: linear-gradient(135deg, #12102A 0%, #1A1640 100%) !important;
+  border-color: rgba(139, 111, 255, 0.24) !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.34) !important;
+}
+
+[data-theme="dark"] .teacher-mcq-row h4 {
+  color: #F0EEFF !important;
+  -webkit-text-fill-color: #F0EEFF !important;
+  background: none !important;
+  opacity: 1 !important;
+}
+
+[data-theme="dark"] .teacher-mcq-row p {
+  color: rgba(240, 238, 255, 0.70) !important;
+  -webkit-text-fill-color: rgba(240, 238, 255, 0.70) !important;
+  background: none !important;
+  opacity: 1 !important;
+}
+
+[data-theme="dark"] .teacher-mcq-row .state-chip {
+  background: rgba(139, 111, 255, 0.22) !important;
+  color: #C4B5FF !important;
+  -webkit-text-fill-color: #C4B5FF !important;
+  border: 1px solid rgba(139, 111, 255, 0.24) !important;
+}
+
+[data-theme="dark"] .teacher-mcq-row .btn {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .teacher-mcq-row .btn-secondary {
+  background: rgba(139, 111, 255, 0.12) !important;
+  border-color: #8B6FFF !important;
+  color: #C4B5FF !important;
+  -webkit-text-fill-color: #C4B5FF !important;
+}
+
+[data-theme="dark"] .teacher-mcq-row .btn-ghost {
+  background: transparent !important;
+  border-color: rgba(255, 138, 138, 0.42) !important;
+  color: #FF8A8A !important;
+  -webkit-text-fill-color: #FF8A8A !important;
+}
+
 .empty-state--compact {
   min-height: 260px;
   padding: 28px;
