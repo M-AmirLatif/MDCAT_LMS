@@ -472,7 +472,11 @@ input,textarea,select{
   font-family:var(--font-body);font-size:14px;
   transition:all var(--ease);
 }
-textarea{height:auto;min-height:100px;resize:vertical}
+textarea{
+  height:auto;
+  min-height:100px;
+  resize:none !important;
+}
 input:focus,textarea:focus,select:focus{
   outline:none;border-color:var(--purple);border-width:2px;background:#fff;
   box-shadow:0 0 0 4px rgba(108,71,255,0.15);
