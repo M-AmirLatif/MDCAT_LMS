@@ -317,6 +317,10 @@
   gap: 12px;
 }
 
+.teacher-mcq-list--editable {
+  gap: 18px;
+}
+
 .teacher-mcq-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -339,6 +343,130 @@
 .teacher-mcq-row p {
   margin: 0;
   color: var(--muted);
+}
+
+.teacher-mcq-row--editor {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: stretch;
+  gap: 14px;
+  padding: 20px;
+}
+
+.teacher-mcq-editor-head,
+.teacher-mcq-editor-bottom {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.teacher-mcq-editor-bottom {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+}
+
+.teacher-mcq-question-field textarea,
+.teacher-mcq-editor-bottom textarea,
+.teacher-mcq-option-field input,
+.teacher-mcq-editor-bottom select {
+  width: 100%;
+}
+
+.teacher-mcq-option-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.teacher-mcq-option-field {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(108, 71, 255, 0.12);
+  background: rgba(108, 71, 255, 0.04);
+}
+
+.teacher-mcq-option-field label,
+.teacher-mcq-editor-bottom label,
+.teacher-mcq-question-field label {
+  color: var(--purple);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.teacher-mcq-option-field input,
+.teacher-mcq-editor-bottom select,
+.teacher-mcq-question-field textarea,
+.teacher-mcq-editor-bottom textarea {
+  min-height: 46px;
+  border: 1px solid rgba(108, 71, 255, 0.14);
+  border-radius: 12px;
+  background: var(--bg-surface, #fff);
+  color: var(--text-primary, #1A1A2E);
+  padding: 12px 14px;
+  resize: vertical;
+}
+
+.teacher-mcq-option-field--correct {
+  border-color: rgba(29, 184, 132, 0.42);
+  background: rgba(29, 184, 132, 0.08);
+}
+
+.student-quiz-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.student-quiz-summary-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 118px;
+  padding: 20px;
+  border-radius: 18px;
+  border: 1px solid rgba(108, 71, 255, 0.14);
+  background: linear-gradient(135deg, rgba(108, 71, 255, 0.08), rgba(74, 144, 226, 0.06));
+}
+
+.student-quiz-summary-icon {
+  width: 54px;
+  height: 54px;
+  flex: 0 0 54px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: var(--grad-purple);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 900;
+  box-shadow: 0 14px 28px rgba(108, 71, 255, 0.18);
+}
+
+.student-quiz-summary-icon--timer {
+  background: linear-gradient(135deg, #1DB884, #4A90E2);
+}
+
+.student-quiz-summary-card small {
+  display: block;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.student-quiz-summary-card strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--heading);
+  font-size: 28px;
+  line-height: 1;
 }
 
 [data-theme="dark"] .teacher-mcq-row {
@@ -366,6 +494,36 @@
   color: #C4B5FF !important;
   -webkit-text-fill-color: #C4B5FF !important;
   border: 1px solid rgba(139, 111, 255, 0.24) !important;
+}
+
+[data-theme="dark"] .teacher-mcq-option-field {
+  background: rgba(255, 255, 255, 0.035);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .teacher-mcq-option-field--correct {
+  background: rgba(45, 217, 155, 0.10);
+  border-color: rgba(45, 217, 155, 0.36);
+}
+
+[data-theme="dark"] .teacher-mcq-option-field input,
+[data-theme="dark"] .teacher-mcq-editor-bottom select,
+[data-theme="dark"] .teacher-mcq-question-field textarea,
+[data-theme="dark"] .teacher-mcq-editor-bottom textarea {
+  background: #0F0D28 !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+  color: #F0EEFF !important;
+  -webkit-text-fill-color: #F0EEFF !important;
+}
+
+[data-theme="dark"] .student-quiz-summary-card {
+  background: linear-gradient(135deg, #12102A, #1A1640);
+  border-color: rgba(139, 111, 255, 0.22);
+}
+
+[data-theme="dark"] .student-quiz-summary-card strong {
+  color: #F0EEFF !important;
+  -webkit-text-fill-color: #F0EEFF !important;
 }
 
 [data-theme="dark"] .teacher-mcq-row .btn {
@@ -2440,6 +2598,14 @@
     min-width: 0;
     max-width: none;
     font-size: 11px;
+  }
+}
+
+@media (max-width: 900px) {
+  .student-quiz-summary-grid,
+  .teacher-mcq-option-grid,
+  .teacher-mcq-editor-bottom {
+    grid-template-columns: 1fr;
   }
 }
 

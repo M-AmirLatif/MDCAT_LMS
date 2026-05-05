@@ -286,6 +286,75 @@ function McqForm({ initial, onSubmit }) {
   )
 }
 
+function TeacherMcqEditor({ mcq, index, chapter, chapterId, meta, onSaved, onDelete }) {
+  const [form, setForm] = useState(() => mcqToForm(mcq))
+  const [saving, setSaving] = useState(false)
+  const setField = (field, value) => setForm((current) => ({ ...current, [field]: value }))
+
+  const saveInline = async () => {
+    setSaving(true)
+    try {
+      const options = ['A', 'B', 'C', 'D'].map((letter) => ({
+        text: form[`option${letter}`],
+        isCorrect: form.correctAnswer === letter,
+      }))
+      await API.put(`/mcqs/${mcq._id}`, {
+        question: form.question,
+        options,
+        explanation: form.explanation,
+        correctAnswer: form.correctAnswer,
+        topic: chapter?.name,
+        chapterName: chapter?.name,
+        chapterId,
+        subject: meta?.name,
+        isPublished: true,
+      })
+      toast.success(`Q${index + 1} saved`)
+      onSaved()
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Unable to save MCQ')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <article className="teacher-mcq-row teacher-mcq-row--editor">
+      <div className="teacher-mcq-editor-head">
+        <span className="state-chip state-chip--neutral">Q{index + 1}</span>
+        <div className="inline-actions">
+          <button className="btn btn-primary btn-sm" type="button" onClick={saveInline} disabled={saving}>{saving ? 'Saving...' : 'Save'}</button>
+          <button className="btn btn-ghost btn-sm" type="button" onClick={() => onDelete(mcq)}>Delete</button>
+        </div>
+      </div>
+      <div className="floating-field teacher-mcq-question-field">
+        <label htmlFor={`mcq-question-${mcq._id}`}>Question statement</label>
+        <textarea id={`mcq-question-${mcq._id}`} rows="3" value={form.question} onChange={(event) => setField('question', event.target.value)} />
+      </div>
+      <div className="teacher-mcq-option-grid">
+        {['A', 'B', 'C', 'D'].map((letter) => (
+          <div className={`teacher-mcq-option-field ${form.correctAnswer === letter ? 'teacher-mcq-option-field--correct' : ''}`} key={letter}>
+            <label htmlFor={`mcq-${mcq._id}-${letter}`}>Option {letter}</label>
+            <input id={`mcq-${mcq._id}-${letter}`} value={form[`option${letter}`]} onChange={(event) => setField(`option${letter}`, event.target.value)} />
+          </div>
+        ))}
+      </div>
+      <div className="teacher-mcq-editor-bottom">
+        <div className="floating-field">
+          <label htmlFor={`mcq-correct-${mcq._id}`}>Correct Answer</label>
+          <select id={`mcq-correct-${mcq._id}`} value={form.correctAnswer} onChange={(event) => setField('correctAnswer', event.target.value)}>
+            <option>A</option><option>B</option><option>C</option><option>D</option>
+          </select>
+        </div>
+        <div className="floating-field">
+          <label htmlFor={`mcq-explanation-${mcq._id}`}>Explanation / Description</label>
+          <textarea id={`mcq-explanation-${mcq._id}`} rows="3" value={form.explanation} onChange={(event) => setField('explanation', event.target.value)} placeholder="Add explanation for students." />
+        </div>
+      </div>
+    </article>
+  )
+}
+
 function McqList() {
   const { subject, chapterId } = useParams()
   const { isTeacher } = useAuth()
@@ -371,6 +440,8 @@ function McqList() {
   }
 
   if (!meta) return <EmptyState title="Subject not found" text="Choose Biology, Chemistry, Physics, or English." action={<Link className="btn btn-primary" to="/mcqs">Back to Subjects</Link>} />
+  const totalSeconds = mcqs.length * 50
+  const formattedTime = `${Math.floor(totalSeconds / 60)}:${String(totalSeconds % 60).padStart(2, '0')}`
 
   return (
     <div className="workspace-page animate-fade-up">
@@ -394,23 +465,30 @@ function McqList() {
       {loading ? <LoadingCard label="Loading MCQs..." /> : null}
       <div className="workspace-card">
         <div className="workspace-card-body">
-          <div className="teacher-mcq-list">
-            {mcqs.map((mcq, index) => (
-              <article key={mcq._id} className="teacher-mcq-row">
-                <div>
-                  <span className="state-chip state-chip--neutral">Q{index + 1}</span>
-                  <h4>{mcq.question}</h4>
-                  {isTeacher ? <p>Correct answer: {mcq.correctAnswer || 'Hidden'} · {mcq.explanation ? 'Explanation added' : 'No explanation'}</p> : <p>Four-option MDCAT practice question.</p>}
-                </div>
-                {isTeacher ? (
-                  <div className="inline-actions">
-                    <button className="btn btn-secondary btn-sm" type="button" onClick={() => setModal({ type: 'mcq', mcq })}>Edit</button>
-                    <button className="btn btn-ghost btn-sm" type="button" onClick={() => deleteMcq(mcq)}>Delete</button>
-                  </div>
-                ) : null}
-              </article>
-            ))}
-          </div>
+          {isTeacher ? (
+            <div className="teacher-mcq-list teacher-mcq-list--editable">
+              {mcqs.map((mcq, index) => (
+                <TeacherMcqEditor key={mcq._id} mcq={mcq} index={index} chapter={chapter} chapterId={chapterId} meta={meta} onSaved={load} onDelete={deleteMcq} />
+              ))}
+            </div>
+          ) : (
+            <div className="student-quiz-summary-grid">
+              <div className="student-quiz-summary-card">
+                <span className="student-quiz-summary-icon">?</span>
+                <div><small>Total MCQs</small><strong>{mcqs.length}</strong></div>
+              </div>
+              <div className="student-quiz-summary-card">
+                <span className="student-quiz-summary-icon student-quiz-summary-icon--timer">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true"><circle cx="12" cy="13" r="8" stroke="currentColor" strokeWidth="2" /><path d="M9 2h6M12 7v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </span>
+                <div><small>Quiz Time</small><strong>{formattedTime}</strong></div>
+              </div>
+              <div className="student-quiz-summary-card">
+                <span className="student-quiz-summary-icon">50s</span>
+                <div><small>Per MCQ</small><strong>50 sec</strong></div>
+              </div>
+            </div>
+          )}
           {!loading && mcqs.length === 0 ? (
             <EmptyState
               title="No MCQs in this chapter yet"
@@ -738,3 +816,4 @@ function ReviewSection({ title, items }) {
 export { CourseSelection, ChapterList, McqList, QuizAttempt, QuizResult }
 
 export default CourseSelection
+
