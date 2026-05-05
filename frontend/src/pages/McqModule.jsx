@@ -440,18 +440,37 @@ function QuizAttempt() {
 
   useEffect(() => {
     let alive = true
-    setLoading(true)
-    API.get(`/mcqs/${subject}/${chapterId}`)
-      .then((res) => {
-        if (!alive) return
-        setChapter(res.data.chapter)
-        setMcqs(res.data.mcqs || [])
-        setRemaining((res.data.mcqs || []).length * 50)
-      })
-      .catch((error) => toast.error(error.response?.data?.error || 'Unable to load quiz'))
-      .finally(() => {
+
+    const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+    const loadQuiz = async () => {
+      setLoading(true)
+      try {
+        let response = null
+        for (let attempt = 0; attempt < 3; attempt += 1) {
+          response = await API.get(`/mcqs/${subject}/${chapterId}`)
+          const loadedMcqs = response.data.mcqs || []
+          if (loadedMcqs.length || attempt === 2) break
+          await wait(700)
+          if (!alive) return
+        }
+
+        if (!alive || !response) return
+        const loadedMcqs = response.data.mcqs || []
+        setChapter(response.data.chapter)
+        setMcqs(loadedMcqs)
+        setCurrentIndex(0)
+        setAnswers({})
+        setSkipped({})
+        setRemaining(loadedMcqs.length * 50)
+      } catch (error) {
+        if (alive) toast.error(error.response?.data?.error || 'Unable to load quiz')
+      } finally {
         if (alive) setLoading(false)
-      })
+      }
+    }
+
+    loadQuiz()
     return () => { alive = false }
   }, [chapterId, subject])
 
