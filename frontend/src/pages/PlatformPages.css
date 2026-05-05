@@ -639,9 +639,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.18);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.86);
+  color: currentColor;
+  box-shadow: 0 10px 24px rgba(15, 15, 26, 0.08);
 }
+
+.subject-card--biology .subject-card-icon { color: #0f8f68; }
+.subject-card--chemistry .subject-card-icon { color: #6c47ff; }
+.subject-card--physics .subject-card-icon { color: #2f7fd9; }
+.subject-card--english .subject-card-icon { color: #c56b00; }
 
 .subject-card-banner-top .state-chip {
   grid-column: 1 / -1;
@@ -655,6 +661,7 @@
   min-height: 36px;
   padding-inline: 12px;
   overflow: hidden;
+  background: rgba(255, 255, 255, 0.72);
 }
 
 .subject-card-banner h3,
@@ -694,6 +701,7 @@
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
+  line-height: 1;
 }
 
 .state-chip--success {
@@ -1740,7 +1748,7 @@
 }
 
 .insight-card {
-  padding: 22px;
+  padding: 24px;
   border-radius: 18px;
   background: linear-gradient(180deg, rgba(108, 71, 255, 0.08) 0%, rgba(74, 144, 226, 0.06) 100%);
   border: 1px solid rgba(108, 71, 255, 0.14);
@@ -1753,9 +1761,9 @@
 
 .insight-card-top {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   align-items: start;
-  gap: 18px;
+  gap: 14px;
 }
 
 .insight-card-top > div:first-child {
@@ -1764,7 +1772,7 @@
 
 .insight-card .workspace-card-title {
   margin-top: 8px;
-  max-width: 420px;
+  max-width: 520px;
   font-size: 22px;
   line-height: 1.18;
 }
@@ -1779,8 +1787,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 152px;
-  padding: 8px 12px;
+  width: fit-content;
+  min-width: 0;
+  padding: 8px 14px;
   border-radius: 999px;
   background: rgba(108, 71, 255, 0.14);
   color: var(--purple);

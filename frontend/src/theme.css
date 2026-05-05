@@ -1636,11 +1636,23 @@ html[data-theme="dark"] .sidebar .sidebar-usercard .sidebar-usercard-role {
   -webkit-text-fill-color: rgba(240,238,255,0.62) !important;
 }
 
+html[data-theme="dark"] .sidebar .sidebar-usercard .sidebar-usercard-meta,
+html[data-theme="dark"] .sidebar .sidebar-usercard .sidebar-usercard-name,
+html[data-theme="dark"] .sidebar .sidebar-usercard .sidebar-usercard-role {
+  width: auto !important;
+  max-width: 128px !important;
+  padding: 0 !important;
+}
+
 html[data-theme="dark"] .sidebar.sidebar--collapsed .sidebar-usercard .sidebar-usercard-meta,
 html[data-theme="dark"] .sidebar.sidebar--collapsed .sidebar-usercard .sidebar-usercard-name,
 html[data-theme="dark"] .sidebar.sidebar--collapsed .sidebar-usercard .sidebar-usercard-role,
 html[data-theme="dark"] .sidebar.sidebar--collapsed .sidebar-usercard .sidebar-usercard-meta * {
   display: none !important;
+  width: 0 !important;
+  max-width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 html[data-theme="dark"] .sidebar.sidebar--collapsed .sidebar-usercard {
