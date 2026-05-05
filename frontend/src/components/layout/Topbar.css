@@ -194,15 +194,72 @@
 
 @media (max-width: 768px) {
   .topbar {
-    height: 60px;
-    padding: 0 16px;
+    height: 66px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 0;
+  }
+
+  .topbar-left {
+    gap: 8px;
+    overflow: hidden;
+  }
+
+  .topbar-toggle,
+  .topbar-action,
+  .theme-toggle--topbar {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    border-radius: 14px;
+  }
+
+  .theme-toggle--topbar {
+    position: static !important;
+    right: auto !important;
+    bottom: auto !important;
+    z-index: auto !important;
+    display: inline-flex;
+  }
+
+  .topbar-right {
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .topbar-heading {
+    min-width: 0;
+    max-width: 78px;
+  }
+
+  .topbar-heading .label-xs {
+    font-size: 10px;
+    line-height: 1.1;
   }
 
   .topbar-page-title {
     font-size: 18px;
+    line-height: 1.1;
+    max-width: 78px;
   }
 
   .topbar-user-info {
     display: none;
+  }
+
+  .topbar-user {
+    min-width: 56px;
+    width: 56px;
+    height: 46px;
+    padding: 4px;
+    justify-content: center;
+    flex: 0 0 56px;
+  }
+
+  .topbar-avatar {
+    width: 42px;
+    height: 42px;
+    flex-basis: 42px;
   }
 }

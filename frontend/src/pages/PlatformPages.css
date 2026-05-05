@@ -1021,6 +1021,21 @@
   top: 96px;
 }
 
+.mcq-practice-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mcq-question-panel-toggle,
+.mcq-question-close {
+  display: none;
+}
+
+.mcq-question-backdrop {
+  display: none;
+}
+
 .mcq-question-dots {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -1070,6 +1085,152 @@
   border-color: transparent;
   color: #fff;
   box-shadow: 0 10px 22px rgba(255, 107, 107, 0.22);
+}
+
+@media (max-width: 768px) {
+  .mcq-practice-page {
+    padding-bottom: 92px;
+  }
+
+  .mcq-practice-shell {
+    gap: 14px;
+  }
+
+  .mcq-practice-top {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 18px;
+  }
+
+  .mcq-practice-top h1 {
+    font-size: 30px;
+    line-height: 1.1;
+  }
+
+  .mcq-practice-tools {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .mcq-question-panel-toggle {
+    display: inline-flex;
+    min-width: 128px;
+    height: 46px;
+    justify-content: center;
+  }
+
+  .mcq-timer {
+    min-width: 112px;
+    height: 46px;
+    border-radius: 16px;
+    font-size: 24px;
+  }
+
+  .mcq-attempt-layout {
+    display: block;
+  }
+
+  .mcq-question-card {
+    width: 100%;
+    padding: 18px;
+    overflow: visible;
+  }
+
+  .mcq-question-card h2 {
+    font-size: 25px;
+    line-height: 1.35;
+    word-break: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .mcq-option-card {
+    min-height: 72px;
+    padding: 14px;
+    align-items: flex-start;
+  }
+
+  .mcq-option-card span:last-child {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .mcq-nav-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .mcq-nav-actions .btn {
+    width: 100%;
+    min-width: 0;
+    height: 48px;
+    padding-inline: 10px;
+  }
+
+  .mcq-question-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 130;
+    border: 0;
+    background: rgba(0, 0, 0, 0.55);
+  }
+
+  .mcq-question-sidebar {
+    position: fixed !important;
+    top: auto !important;
+    left: 12px;
+    right: 12px;
+    bottom: 88px;
+    z-index: 140;
+    max-height: min(72vh, 560px);
+    overflow: auto;
+    transform: translateY(calc(100% + 120px));
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 220ms ease, opacity 220ms ease !important;
+  }
+
+  .mcq-question-sidebar--open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mcq-question-sidebar .workspace-card-head {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--bg-surface, #fff);
+  }
+
+  .mcq-question-close {
+    display: inline-flex;
+    width: 38px;
+    height: 38px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(108, 71, 255, 0.16);
+    border-radius: 12px;
+    background: rgba(108, 71, 255, 0.10);
+    color: var(--purple);
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .mcq-question-dots {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .mcq-dot {
+    width: 100%;
+    min-width: 0;
+    height: 46px;
+    border-radius: 14px;
+  }
 }
 
 .book-icon {

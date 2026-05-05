@@ -360,7 +360,7 @@
     right: 0;
     bottom: 0;
     z-index: 96;
-    padding: 10px 12px 14px;
+    padding: 8px 10px calc(10px + env(safe-area-inset-bottom));
     background: #ffffff;
     border-top: 1px solid rgba(108, 71, 255, 0.12);
     backdrop-filter: blur(12px);
@@ -369,7 +369,7 @@
   .mobile-bottom-nav-inner {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: 4px;
+    gap: 6px;
     max-width: 480px;
     margin: 0 auto;
     padding: 0;
@@ -378,14 +378,14 @@
   }
 
   .mobile-nav-item {
-    min-width: 44px;
-    min-height: 44px;
+    min-width: 0;
+    min-height: 50px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3px;
-    padding: 7px 2px;
+    gap: 4px;
+    padding: 7px 2px 6px;
     border-radius: 14px;
     background: transparent;
     color: #9494b8;
@@ -406,16 +406,25 @@
   }
 
   .mobile-nav-item-label {
-    font-size: 9px;
+    width: 100%;
+    max-width: 52px;
+    font-size: clamp(8px, 2.35vw, 10px);
     font-weight: 600;
-    line-height: 1;
+    line-height: 1.05;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .theme-toggle--mobile-nav {
     position: static !important;
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
+    right: auto !important;
+    bottom: auto !important;
+    z-index: auto !important;
+    width: 50px;
+    height: 50px;
+    min-width: 0;
     border-radius: 14px;
     justify-self: center;
     align-self: center;
@@ -425,8 +434,8 @@
   }
 
   .theme-toggle--mobile-nav svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
   }
 
   .mobile-nav-item--logout {

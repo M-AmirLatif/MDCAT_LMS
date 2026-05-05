@@ -379,10 +379,10 @@ img{max-width:100%;display:block}
 
 @media (max-width: 768px) {
   .theme-toggle {
-    position: fixed;
-    right: 20px;
-    bottom: 80px;
-    z-index: 999;
+    position: static;
+    right: auto;
+    bottom: auto;
+    z-index: auto;
   }
 }
 

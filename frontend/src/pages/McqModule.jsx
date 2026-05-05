@@ -438,6 +438,7 @@ function QuizAttempt() {
   const [skipped, setSkipped] = useState({})
   const [remaining, setRemaining] = useState(0)
   const [submitting, setSubmitting] = useState(false)
+  const [showQuestionPanel, setShowQuestionPanel] = useState(false)
   const quizUserKey = useMemo(() => user?.email || user?._id || user?.id || 'guest', [user?.email, user?._id, user?.id])
   const quizStorageKey = useMemo(() => {
     return `mcq-draft-${quizUserKey}-${subject}-${chapterId}`
@@ -620,7 +621,10 @@ function QuizAttempt() {
             <h1>Quiz Attempt</h1>
             <p>Question {currentIndex + 1} of {mcqs.length}</p>
           </div>
-          <div className="mcq-timer">{minutes}:{seconds}</div>
+          <div className="mcq-practice-tools">
+            <button className="btn btn-secondary mcq-question-panel-toggle" type="button" onClick={() => setShowQuestionPanel(true)}>Questions</button>
+            <div className="mcq-timer">{minutes}:{seconds}</div>
+          </div>
         </div>
 
         <div className="mcq-attempt-layout">
@@ -642,13 +646,17 @@ function QuizAttempt() {
             </div>
           </div>
 
-          <aside className="workspace-card mcq-question-sidebar">
-            <div className="workspace-card-head"><div><div className="label-xs">Jump</div><h3 className="workspace-card-title">Questions</h3></div></div>
+          {showQuestionPanel ? <button className="mcq-question-backdrop" type="button" aria-label="Close question list" onClick={() => setShowQuestionPanel(false)} /> : null}
+          <aside className={`workspace-card mcq-question-sidebar ${showQuestionPanel ? 'mcq-question-sidebar--open' : ''}`}>
+            <div className="workspace-card-head">
+              <div><div className="label-xs">Jump</div><h3 className="workspace-card-title">Questions</h3></div>
+              <button className="mcq-question-close" type="button" onClick={() => setShowQuestionPanel(false)} aria-label="Close question list">×</button>
+            </div>
             <div className="workspace-card-body mcq-question-dots">
               {mcqs.map((mcq, index) => {
                 const answered = answers[mcq._id] !== undefined
                 const isSkipped = skipped[mcq._id]
-                return <button key={mcq._id} className={`mcq-dot ${index === currentIndex ? 'mcq-dot--active' : ''} ${answered ? 'mcq-dot--answered' : ''} ${isSkipped ? 'mcq-dot--skipped' : ''}`} type="button" onClick={() => setCurrentIndex(index)}>{index + 1}</button>
+                return <button key={mcq._id} className={`mcq-dot ${index === currentIndex ? 'mcq-dot--active' : ''} ${answered ? 'mcq-dot--answered' : ''} ${isSkipped ? 'mcq-dot--skipped' : ''}`} type="button" onClick={() => { setCurrentIndex(index); setShowQuestionPanel(false) }}>{index + 1}</button>
               })}
             </div>
           </aside>
