@@ -16,6 +16,32 @@ const googleClientIds = (process.env.GOOGLE_CLIENT_ID || '')
   .filter(Boolean)
 
 const googleClient = googleClientIds.length ? new OAuth2Client() : null
+const DEFAULT_JWT_EXPIRE = '7d'
+
+const getJwtSecret = () => {
+  return process.env.JWT_SECRET || 'mdcat-lms-development-secret-change-in-production'
+}
+
+const getJwtExpire = () => {
+  const value = process.env.JWT_EXPIRE
+  if (typeof value === 'number') return value
+  if (typeof value !== 'string') return DEFAULT_JWT_EXPIRE
+
+  const trimmed = value.trim()
+  if (!trimmed) return DEFAULT_JWT_EXPIRE
+
+  if (/^\d+$/.test(trimmed)) return Number(trimmed)
+  if (/^\d+\s*(ms|s|m|h|d|w|y)$/i.test(trimmed)) return trimmed.replace(/\s+/g, '')
+
+  console.warn(`Invalid JWT_EXPIRE value "${trimmed}". Falling back to ${DEFAULT_JWT_EXPIRE}.`)
+  return DEFAULT_JWT_EXPIRE
+}
+
+const signAuthToken = (userId) => {
+  return jwt.sign({ id: userId }, getJwtSecret(), {
+    expiresIn: getJwtExpire(),
+  })
+}
 
 const generateOtp = () => {
   return Math.floor(100000 + Math.random() * 900000).toString()
@@ -254,9 +280,7 @@ exports.login = async (req, res) => {
     }
 
     // Generate token (role is derived from DB on each request via `protect`)
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRE,
-    })
+    const token = signAuthToken(user._id)
 
     res.status(200).json({
       success: true,
@@ -578,9 +602,7 @@ exports.googleLogin = async (req, res) => {
       })
     }
 
-    const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRE,
-    })
+    const token = signAuthToken(existingUser._id)
 
     res.status(200).json({
       success: true,
@@ -699,9 +721,7 @@ exports.setPassword = async (req, res) => {
       })
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRE,
-    })
+    const token = signAuthToken(user._id)
 
     res.status(200).json({
       success: true,
