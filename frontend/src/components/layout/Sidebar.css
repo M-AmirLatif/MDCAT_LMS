@@ -311,12 +311,14 @@
 }
 
 .sidebar--collapsed .sidebar-footer {
-  padding: 12px 10px 14px;
+  padding: 18px 10px 28px;
+  gap: 12px;
 }
 
 .sidebar--collapsed .sidebar-usercard {
-  padding: 10px 8px;
-  min-height: 68px;
+  padding: 12px 8px;
+  min-height: 72px;
+  margin-bottom: 8px;
 }
 
 .sidebar--collapsed .sidebar-usercard-avatar {
