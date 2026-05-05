@@ -1004,8 +1004,17 @@
 }
 
 .mcq-dot--skipped {
-  border-color: rgba(245, 158, 11, 0.55);
-  box-shadow: inset 0 0 0 2px rgba(245, 158, 11, 0.18);
+  background: rgba(255, 107, 107, 0.10);
+  border-color: rgba(255, 107, 107, 0.85);
+  color: #FF6B6B;
+  box-shadow: inset 0 0 0 2px rgba(255, 107, 107, 0.22);
+}
+
+.mcq-dot--skipped.mcq-dot--active {
+  background: linear-gradient(135deg, #FF6B6B, #E64D4D);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(255, 107, 107, 0.22);
 }
 
 .book-icon {

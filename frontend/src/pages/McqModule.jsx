@@ -474,8 +474,16 @@ function QuizAttempt() {
     return () => { alive = false }
   }, [chapterId, subject])
 
-  const submit = async () => {
+  const submit = async ({ force = false } = {}) => {
     if (submitting || !mcqs.length) return
+    if (!force) {
+      const unansweredCount = mcqs.filter((mcq) => answers[mcq._id] === undefined).length
+      const skippedCount = mcqs.filter((mcq) => skipped[mcq._id]).length
+      if (unansweredCount > 0 || skippedCount > 0) {
+        toast.error(`Please attempt all MCQs before submitting. ${unansweredCount} unanswered, ${skippedCount} skipped.`)
+        return
+      }
+    }
     setSubmitting(true)
     try {
       const res = await API.post(`/mcqs/${subject}/${chapterId}/submit`, {
@@ -495,7 +503,7 @@ function QuizAttempt() {
   useEffect(() => {
     if (!mcqs.length || submitting) return undefined
     if (remaining <= 0) {
-      submit()
+      submit({ force: true })
       return undefined
     }
     const timer = setInterval(() => setRemaining((value) => Math.max(0, value - 1)), 1000)
@@ -526,6 +534,11 @@ function QuizAttempt() {
 
   const skipQuestion = () => {
     setSkipped((currentSkipped) => ({ ...currentSkipped, [current._id]: true }))
+    setAnswers((currentAnswers) => {
+      const nextAnswers = { ...currentAnswers }
+      delete nextAnswers[current._id]
+      return nextAnswers
+    })
     setCurrentIndex((index) => Math.min(mcqs.length - 1, index + 1))
   }
 
@@ -556,7 +569,7 @@ function QuizAttempt() {
               <button className="btn btn-secondary" type="button" disabled={currentIndex === 0} onClick={() => setCurrentIndex((index) => index - 1)}>Previous</button>
               <button className="btn btn-ghost" type="button" onClick={skipQuestion}>Skip</button>
               <button className="btn btn-primary" type="button" disabled={currentIndex === mcqs.length - 1} onClick={() => setCurrentIndex((index) => index + 1)}>Next</button>
-              <button className="btn btn-danger" type="button" onClick={submit} disabled={submitting}>Submit</button>
+              <button className="btn btn-danger" type="button" onClick={() => submit()} disabled={submitting}>Submit</button>
             </div>
           </div>
 
