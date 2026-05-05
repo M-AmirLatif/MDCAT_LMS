@@ -3080,14 +3080,14 @@
 
 .teacher-mcq-question-field {
   display: grid !important;
-  gap: 8px !important;
+  gap: 12px !important;
 }
 
 .teacher-mcq-question-field textarea {
   min-height: 64px !important;
   height: auto !important;
   field-sizing: content;
-  padding: 16px !important;
+  padding: 18px 16px 16px !important;
   border: 1px solid #E5E7EB !important;
   border-radius: 10px !important;
   background: #F9FAFB !important;
@@ -3486,6 +3486,7 @@
   .teacher-mcq-question-field textarea {
     min-height: 72px !important;
     font-size: 14px !important;
+    padding-top: 18px !important;
   }
 
   .teacher-mcq-option-grid {
