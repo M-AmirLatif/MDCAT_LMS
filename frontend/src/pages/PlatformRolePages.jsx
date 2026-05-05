@@ -183,10 +183,10 @@ export function TeacherAnalyticsPage() {
         <div className="workspace-card">
           <div className="workspace-card-head"><div><div className="label-xs">Heatmap</div><h3 className="workspace-card-title">Subject mastery</h3></div></div>
           <div className="workspace-card-body heatmap-grid">
-            <div className="heat-cell" style={{ background: '#1db884' }}>Bio 0</div>
-            <div className="heat-cell" style={{ background: '#4a90e2' }}>Phys 0</div>
-            <div className="heat-cell" style={{ background: '#f59e0b' }}>Chem 0</div>
-            <div className="heat-cell" style={{ background: '#6c47ff' }}>Eng 0</div>
+            <div className="heat-cell" style={{ background: '#1db884' }}><span>Biology</span><strong>0</strong></div>
+            <div className="heat-cell" style={{ background: '#4a90e2' }}><span>Physics</span><strong>0</strong></div>
+            <div className="heat-cell" style={{ background: '#f59e0b' }}><span>Chemistry</span><strong>0</strong></div>
+            <div className="heat-cell" style={{ background: '#6c47ff' }}><span>English</span><strong>0</strong></div>
           </div>
         </div>
       </div>
