@@ -542,6 +542,13 @@ function QuizAttempt() {
     setCurrentIndex((index) => Math.min(mcqs.length - 1, index + 1))
   }
 
+  const nextQuestion = () => {
+    if (answers[current._id] === undefined) {
+      setSkipped((currentSkipped) => ({ ...currentSkipped, [current._id]: true }))
+    }
+    setCurrentIndex((index) => Math.min(mcqs.length - 1, index + 1))
+  }
+
   return (
     <div className="mcq-practice-page animate-fade-up">
       <section className="mcq-practice-shell">
@@ -568,7 +575,7 @@ function QuizAttempt() {
             <div className="mcq-nav-actions">
               <button className="btn btn-secondary" type="button" disabled={currentIndex === 0} onClick={() => setCurrentIndex((index) => index - 1)}>Previous</button>
               <button className="btn btn-ghost" type="button" onClick={skipQuestion}>Skip</button>
-              <button className="btn btn-primary" type="button" disabled={currentIndex === mcqs.length - 1} onClick={() => setCurrentIndex((index) => index + 1)}>Next</button>
+              <button className="btn btn-primary" type="button" disabled={currentIndex === mcqs.length - 1} onClick={nextQuestion}>Next</button>
               <button className="btn btn-danger" type="button" onClick={() => submit()} disabled={submitting}>Submit</button>
             </div>
           </div>

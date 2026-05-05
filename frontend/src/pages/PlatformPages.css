@@ -999,8 +999,17 @@
 }
 
 .mcq-dot--answered {
-  border-color: rgba(29, 184, 132, 0.45);
-  box-shadow: inset 0 0 0 2px rgba(29, 184, 132, 0.18);
+  background: rgba(29, 184, 132, 0.14);
+  border-color: rgba(29, 184, 132, 0.85);
+  color: #0F8A64;
+  box-shadow: inset 0 0 0 2px rgba(29, 184, 132, 0.22);
+}
+
+.mcq-dot--answered.mcq-dot--active {
+  background: linear-gradient(135deg, #1DB884, #0FA870);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(29, 184, 132, 0.22);
 }
 
 .mcq-dot--skipped {
