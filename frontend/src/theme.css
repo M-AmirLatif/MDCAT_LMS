@@ -266,6 +266,7 @@ html[data-theme="dark"] .topbar-user .badge {
   -webkit-text-fill-color: rgba(240, 238, 255, 0.92) !important;
 }
 
+html[data-theme="dark"] .theme-toggle,
 html[data-theme="dark"] .theme-toggle--topbar {
   background: #6C47FF !important;
   color: #FFFFFF !important;
@@ -273,6 +274,7 @@ html[data-theme="dark"] .theme-toggle--topbar {
   box-shadow: 0 10px 28px rgba(108, 71, 255, 0.45), 0 0 0 5px rgba(108, 71, 255, 0.2) !important;
 }
 
+html[data-theme="dark"] .theme-toggle svg,
 html[data-theme="dark"] .theme-toggle--topbar svg {
   color: #FFFFFF !important;
   filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.58));
