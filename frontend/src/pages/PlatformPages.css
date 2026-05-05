@@ -3219,6 +3219,17 @@
   text-transform: none;
 }
 
+.teacher-mcq-editor-bottom .floating-field:last-child {
+  gap: 12px !important;
+  padding: 16px 18px !important;
+}
+
+.teacher-mcq-editor-bottom .floating-field:last-child label {
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1.2 !important;
+}
+
 .teacher-mcq-editor-bottom select,
 .teacher-mcq-editor-bottom textarea {
   min-height: 48px !important;
@@ -3236,6 +3247,7 @@
   min-height: 70px !important;
   height: auto !important;
   field-sizing: content;
+  padding: 14px 16px !important;
   color: #374151 !important;
   -webkit-text-fill-color: #374151 !important;
   font-style: italic;
