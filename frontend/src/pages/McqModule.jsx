@@ -489,6 +489,17 @@ function McqList() {
                 <div><small>Per MCQ</small><strong>50 sec</strong></div>
               </div>
             </div>
+            <div className="student-quiz-motivation">
+              <div>
+                <span className="student-quiz-motivation-kicker">Practice mindset</span>
+                <h3>One focused attempt can expose your weak spots before the exam does.</h3>
+                <p>Answer calmly, mark difficult questions, and review explanations after submission. Consistent chapter practice is how MDCAT accuracy improves.</p>
+              </div>
+              <div className="student-quiz-motivation-card">
+                <strong>{mcqs.length ? Math.ceil(mcqs.length / 10) : 0}</strong>
+                <span>short blocks of 10 MCQs</span>
+              </div>
+            </div>
           )}
           {!loading && mcqs.length === 0 ? (
             <EmptyState
