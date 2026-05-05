@@ -414,16 +414,17 @@
 .subject-focus-metrics,
 .subject-stats-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(2, minmax(112px, 1fr));
+  gap: 16px;
 }
 
 .subject-focus-metrics div,
 .subject-stats-grid div {
-  padding: 12px 14px;
+  box-sizing: border-box;
+  padding: 14px 18px;
   border-radius: 14px;
   background: #faf8ff;
-  border: 1px solid rgba(108, 71, 255, 0.08);
+  border: 1.25px solid rgba(108, 71, 255, 0.13);
   min-height: 118px;
   display: flex;
   flex-direction: column;
@@ -434,16 +435,17 @@
 .subject-focus-metrics span,
 .subject-stats-grid span {
   display: block;
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.045em;
   text-transform: uppercase;
   color: #7a69d6;
   line-height: 1.35;
   word-break: normal;
   overflow-wrap: normal;
   hyphens: none;
-  padding-right: 8px;
+  padding-right: 14px;
+  max-width: 100%;
 }
 
 .subject-focus-metrics strong,
@@ -455,7 +457,7 @@
 }
 
 .subject-card--mdcat .subject-stats-grid {
-  gap: 16px;
+  gap: 18px;
 }
 
 .stat-tile {
