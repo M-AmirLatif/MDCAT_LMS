@@ -317,13 +317,14 @@
   .sidebar--collapsed .sidebar-role-row,
   .sidebar--collapsed .sidebar-section-label,
   .sidebar--collapsed .sidebar-item-label,
-  .sidebar--collapsed .sidebar-usercard-meta {
-    display: initial;
+  .sidebar--collapsed .sidebar-usercard-meta,
+  .sidebar--collapsed .sidebar-item-badge {
+    display: none;
   }
 
   .sidebar--collapsed .sidebar-item,
   .sidebar--collapsed .sidebar-usercard {
-    justify-content: flex-start;
+    justify-content: center;
   }
 }
 
