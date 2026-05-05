@@ -609,10 +609,10 @@
 
 .subject-card-banner-top {
   display: grid;
-  grid-template-columns: 56px minmax(112px, 1fr) 132px;
+  grid-template-columns: 46px minmax(0, 1fr);
   align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 14px;
+  margin-bottom: 14px;
 }
 
 .subject-card-banner-copy {
@@ -644,13 +644,15 @@
 }
 
 .subject-card-banner-top .state-chip {
-  width: 132px;
-  min-width: 132px;
-  max-width: 132px;
+  grid-column: 1 / -1;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
   justify-content: center;
   text-align: center;
   white-space: nowrap;
   align-self: center;
+  min-height: 36px;
   padding-inline: 12px;
   overflow: hidden;
 }
@@ -1750,16 +1752,21 @@
 }
 
 .insight-card-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 18px;
+}
+
+.insight-card-top > div:first-child {
+  min-width: 0;
 }
 
 .insight-card .workspace-card-title {
   margin-top: 8px;
-  font-size: 20px;
-  line-height: 1.25;
+  max-width: 420px;
+  font-size: 22px;
+  line-height: 1.18;
 }
 
 .insight-copy {
@@ -1771,6 +1778,8 @@
 .insight-badge {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  min-width: 152px;
   padding: 8px 12px;
   border-radius: 999px;
   background: rgba(108, 71, 255, 0.14);
@@ -1917,14 +1926,14 @@
   }
 
   .subject-card-banner-top {
-    grid-template-columns: 48px minmax(96px, 1fr) 120px;
+    grid-template-columns: 46px minmax(0, 1fr);
     gap: 12px;
   }
 
   .subject-card-banner-top .state-chip {
-    width: 120px;
-    min-width: 120px;
-    max-width: 120px;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
     font-size: 11px;
   }
 }
@@ -1972,7 +1981,7 @@
   }
 
   .insight-card-top {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   .notification-showcase-top,
