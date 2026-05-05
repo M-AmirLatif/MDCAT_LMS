@@ -1732,3 +1732,53 @@ html[data-theme="dark"] .landing .lp-student-line {
   color: rgba(255,255,255,0.72) !important;
   -webkit-text-fill-color: rgba(255,255,255,0.72) !important;
 }
+
+/* Targeted cleanup for leftover white text-background artifacts. */
+.subject-card-banner-top,
+.subject-card-banner-copy,
+.subject-card-banner-copy *,
+.insight-card-top,
+.insight-card-top *,
+.sidebar-usercard-meta,
+.sidebar-usercard-meta * {
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+.subject-card-banner .subject-card-icon {
+  background: rgba(255,255,255,0.18) !important;
+  border: 1px solid rgba(255,255,255,0.24) !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+.subject-card-banner-copy .label-xs,
+.subject-card-banner-top .state-chip {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+.workspace-hero-actions .btn-primary,
+.workspace-hero-actions .btn-primary:visited,
+.workspace-hero-actions .btn-primary:hover {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  border: 1.5px solid rgba(255,255,255,0.42) !important;
+}
+
+.insight-card .workspace-card-title {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+html:not([data-theme="dark"]) .insight-card .workspace-card-title {
+  color: #1A1A2E !important;
+  -webkit-text-fill-color: #1A1A2E !important;
+}
+
+html:not([data-theme="dark"]) .insight-card .label-xs,
+html:not([data-theme="dark"]) .insight-card .insight-badge {
+  color: #6C47FF !important;
+  -webkit-text-fill-color: #6C47FF !important;
+}

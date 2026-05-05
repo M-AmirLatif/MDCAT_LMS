@@ -222,17 +222,41 @@
 
 .sidebar-usercard-meta {
   min-width: 0;
+  width: auto;
+  max-width: 128px;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
 }
 
 .sidebar-usercard-name {
   font-size: 14px;
   font-weight: 700;
   color: #fff;
+  display: block;
+  max-width: 128px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  -webkit-text-fill-color: #fff !important;
 }
 
 .sidebar-usercard-role {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.52);
+  display: block;
+  max-width: 128px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.52) !important;
 }
 
 .sidebar-item--footer {

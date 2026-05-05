@@ -70,6 +70,22 @@
   margin-top: 20px;
 }
 
+.workspace-hero-actions .btn-primary {
+  border: 1.5px solid rgba(255, 255, 255, 0.36);
+  box-shadow:
+    0 14px 32px rgba(15, 15, 26, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+}
+
+.workspace-hero-actions .btn-primary:hover {
+  border-color: rgba(255, 255, 255, 0.58);
+  box-shadow:
+    0 18px 38px rgba(15, 15, 26, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
 .workspace-hero-stats {
   display: grid;
   gap: 14px;
@@ -614,6 +630,8 @@
   align-items: center;
   gap: 14px;
   margin-bottom: 14px;
+  background: transparent !important;
+  background-image: none !important;
 }
 
 .subject-card-banner-copy {
@@ -622,6 +640,8 @@
   display: flex;
   align-items: center;
   overflow: hidden;
+  background: transparent !important;
+  background-image: none !important;
 }
 
 .subject-card-banner-copy .label-xs {
@@ -631,6 +651,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  background: transparent !important;
+  background-image: none !important;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
 }
 
 .subject-card-icon {
@@ -640,15 +664,16 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.86);
-  color: currentColor;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.22);
   box-shadow: 0 10px 24px rgba(15, 15, 26, 0.08);
 }
 
-.subject-card--biology .subject-card-icon { color: #0f8f68; }
-.subject-card--chemistry .subject-card-icon { color: #6c47ff; }
-.subject-card--physics .subject-card-icon { color: #2f7fd9; }
-.subject-card--english .subject-card-icon { color: #c56b00; }
+.subject-card--biology .subject-card-icon,
+.subject-card--chemistry .subject-card-icon,
+.subject-card--physics .subject-card-icon,
+.subject-card--english .subject-card-icon { color: #fff; }
 
 .subject-card-banner-top .state-chip {
   grid-column: 1 / -1;
@@ -662,7 +687,10 @@
   min-height: 36px;
   padding-inline: 12px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.18) !important;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
 }
 
 .subject-card-banner h3,
@@ -1749,7 +1777,7 @@
 }
 
 .insight-card {
-  padding: 24px;
+  padding: 28px;
   border-radius: 18px;
   background: linear-gradient(180deg, rgba(108, 71, 255, 0.08) 0%, rgba(74, 144, 226, 0.06) 100%);
   border: 1px solid rgba(108, 71, 255, 0.14);
@@ -1765,10 +1793,14 @@
   grid-template-columns: minmax(0, 1fr);
   align-items: start;
   gap: 14px;
+  background: transparent !important;
+  background-image: none !important;
 }
 
 .insight-card-top > div:first-child {
   min-width: 0;
+  background: transparent !important;
+  background-image: none !important;
 }
 
 .insight-card .workspace-card-title {
@@ -1776,6 +1808,17 @@
   max-width: 520px;
   font-size: 22px;
   line-height: 1.18;
+  background: transparent !important;
+  background-image: none !important;
+  color: #1A1A2E;
+  -webkit-text-fill-color: #1A1A2E;
+}
+
+.insight-card .label-xs {
+  background: transparent !important;
+  background-image: none !important;
+  color: var(--purple) !important;
+  -webkit-text-fill-color: var(--purple) !important;
 }
 
 .insight-copy {
@@ -1799,6 +1842,7 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
+  margin-top: 2px;
 }
 
 .insight-highlights {
