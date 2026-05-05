@@ -431,6 +431,7 @@ function QuizAttempt() {
   const meta = subjectById(subject)
   const [chapter, setChapter] = useState(null)
   const [mcqs, setMcqs] = useState([])
+  const [loading, setLoading] = useState(true)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState({})
   const [skipped, setSkipped] = useState({})
@@ -439,6 +440,7 @@ function QuizAttempt() {
 
   useEffect(() => {
     let alive = true
+    setLoading(true)
     API.get(`/mcqs/${subject}/${chapterId}`)
       .then((res) => {
         if (!alive) return
@@ -447,6 +449,9 @@ function QuizAttempt() {
         setRemaining((res.data.mcqs || []).length * 50)
       })
       .catch((error) => toast.error(error.response?.data?.error || 'Unable to load quiz'))
+      .finally(() => {
+        if (alive) setLoading(false)
+      })
     return () => { alive = false }
   }, [chapterId, subject])
 
@@ -482,6 +487,14 @@ function QuizAttempt() {
   const selected = current ? answers[current._id] : undefined
   const minutes = String(Math.floor(remaining / 60)).padStart(2, '0')
   const seconds = String(remaining % 60).padStart(2, '0')
+
+  if (loading) {
+    return (
+      <div className="workspace-page animate-fade-up">
+        <LoadingCard label="Preparing your quiz..." />
+      </div>
+    )
+  }
 
   if (!current) {
     return <div className="workspace-page"><EmptyState title="No MCQs available" text="This chapter has no published MCQs yet." action={<Link className="btn btn-primary" to={`/mcqs/${subject}/${chapterId}`}>Back to MCQs</Link>} /></div>
