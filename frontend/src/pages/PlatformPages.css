@@ -2251,3 +2251,79 @@
     width: 100%;
   }
 }
+
+/* Final MCQ subject-card containment: prevents stat boxes from bleeding into neighboring cards. */
+.workspace-page .mcq-subject-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 20px !important;
+}
+
+.workspace-page .mcq-subject-card {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  padding: 22px 18px !important;
+  contain: layout paint;
+}
+
+.workspace-page .mcq-subject-card-top,
+.workspace-page .mcq-subject-card-top *,
+.workspace-page .mcq-subject-card .workspace-card-title,
+.workspace-page .mcq-subject-card .label-xs {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+.workspace-page .mcq-subject-card-top {
+  grid-template-columns: 58px minmax(0, 1fr) !important;
+  gap: 14px !important;
+}
+
+.workspace-page .mcq-subject-icon {
+  width: 58px !important;
+  height: 58px !important;
+  flex-shrink: 0 !important;
+}
+
+.workspace-page .mcq-subject-card .subject-stats-grid {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  gap: 12px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+.workspace-page .mcq-subject-card .subject-stats-grid div {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  min-height: 104px !important;
+  padding: 14px 12px !important;
+}
+
+.workspace-page .mcq-subject-card .subject-stats-grid span {
+  font-size: 9px !important;
+  letter-spacing: 0.035em !important;
+  padding-right: 2px !important;
+}
+
+.workspace-page .mcq-subject-card .btn {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+@media (max-width: 1200px) {
+  .workspace-page .mcq-subject-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .workspace-page .mcq-subject-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
