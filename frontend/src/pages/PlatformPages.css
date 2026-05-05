@@ -86,6 +86,22 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.24);
 }
 
+.notification-hero .workspace-hero-actions .btn-primary {
+  background:
+    linear-gradient(135deg, rgba(108, 71, 255, 0.82), rgba(74, 144, 226, 0.92)) padding-box,
+    linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.22)) border-box;
+  border: 1.5px solid transparent;
+  box-shadow:
+    0 14px 32px rgba(15, 15, 26, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.notification-hero .workspace-hero-actions .btn-primary:hover {
+  background:
+    linear-gradient(135deg, rgba(108, 71, 255, 0.92), rgba(74, 144, 226, 1)) padding-box,
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.36)) border-box;
+}
+
 .workspace-hero-stats {
   display: grid;
   gap: 14px;
