@@ -87,8 +87,8 @@
 
 .topbar-action {
   position: relative;
-  width: 46px;
-  height: 46px;
+  width: 48px;
+  height: 48px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -117,9 +117,9 @@
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  min-width: 190px;
-  height: 62px;
-  padding: 6px 14px 6px 8px;
+  min-width: 184px;
+  height: 56px;
+  padding: 6px 12px 6px 7px;
   border-radius: 999px;
   border: 1px solid rgba(108, 71, 255, 0.08);
   background: #fff;
@@ -130,9 +130,9 @@
 }
 
 .topbar-avatar {
-  width: 48px;
-  height: 48px;
-  flex: 0 0 48px;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
@@ -154,7 +154,7 @@
 }
 
 .topbar-user-name {
-  max-width: 118px;
+  max-width: 112px;
   font-size: 14px;
   font-weight: 700;
   color: var(--navy);
@@ -165,11 +165,17 @@
 }
 
 .topbar-user .badge {
-  min-width: 96px;
+  min-width: 92px;
   justify-content: center;
-  padding: 6px 14px;
+  padding: 6px 12px;
   font-size: 11px;
   line-height: 1;
+}
+
+.theme-toggle--topbar {
+  width: 48px;
+  height: 48px;
+  flex-basis: 48px;
 }
 
 @media (max-width: 1024px) {

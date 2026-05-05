@@ -1459,17 +1459,17 @@ html[data-theme="dark"] .auth-link {
 
 html[data-theme="dark"] .theme-toggle,
 html[data-theme="dark"] .theme-toggle--auth {
-  background: linear-gradient(135deg, #FFFFFF 0%, #E7E3FF 100%) !important;
-  color: #6C47FF !important;
-  border: 2px solid rgba(108,71,255,0.48) !important;
-  box-shadow: 0 12px 32px rgba(0,0,0,0.40), 0 0 0 5px rgba(108,71,255,0.16) !important;
+  background: #6C47FF !important;
+  color: #FFFFFF !important;
+  border: 2px solid rgba(255,255,255,0.34) !important;
+  box-shadow: 0 12px 32px rgba(108,71,255,0.42), 0 0 0 5px rgba(108,71,255,0.18) !important;
 }
 
 html[data-theme="dark"] .theme-toggle svg,
 html[data-theme="dark"] .theme-toggle--auth svg {
-  color: #6C47FF !important;
+  color: #FFFFFF !important;
   opacity: 1 !important;
-  filter: drop-shadow(0 1px 0 rgba(255,255,255,0.45));
+  filter: drop-shadow(0 0 5px rgba(255,255,255,0.55));
 }
 
 html[data-theme="dark"] .auth-primary,
@@ -1634,6 +1634,26 @@ html[data-theme="dark"] .sidebar .sidebar-usercard .sidebar-usercard-name {
 html[data-theme="dark"] .sidebar .sidebar-usercard .sidebar-usercard-role {
   color: rgba(240,238,255,0.62) !important;
   -webkit-text-fill-color: rgba(240,238,255,0.62) !important;
+}
+
+html[data-theme="dark"] .sidebar.sidebar--collapsed .sidebar-usercard .sidebar-usercard-meta,
+html[data-theme="dark"] .sidebar.sidebar--collapsed .sidebar-usercard .sidebar-usercard-name,
+html[data-theme="dark"] .sidebar.sidebar--collapsed .sidebar-usercard .sidebar-usercard-role,
+html[data-theme="dark"] .sidebar.sidebar--collapsed .sidebar-usercard .sidebar-usercard-meta * {
+  display: none !important;
+}
+
+html[data-theme="dark"] .sidebar.sidebar--collapsed .sidebar-usercard {
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  min-height: 64px !important;
+  padding: 10px 8px !important;
+}
+
+html[data-theme="dark"] .sidebar.sidebar--collapsed .sidebar-item--logout {
+  justify-content: center !important;
+  padding: 12px 8px !important;
 }
 
 /* Home page CTA/nav visibility: keep button text bright over gradients. */
