@@ -427,6 +427,7 @@
   word-break: normal;
   overflow-wrap: normal;
   hyphens: none;
+  padding-right: 8px;
 }
 
 .subject-focus-metrics strong,
