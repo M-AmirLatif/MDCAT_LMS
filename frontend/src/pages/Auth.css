@@ -492,9 +492,17 @@
 
 .auth-link,
 .auth-footer a,
+.auth-footer button,
 .auth-checkbox a {
   color: #6c47ff;
   font-weight: 900;
+}
+
+.auth-footer button {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
 }
 
 .auth-link {
@@ -1131,7 +1139,8 @@ input:focus-visible {
     font-size: 14px;
   }
 
-  .auth-footer a {
+  .auth-footer a,
+  .auth-footer button {
     color: #6c47ff;
     font-weight: 600;
     text-decoration: none;
