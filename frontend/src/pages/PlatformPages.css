@@ -825,6 +825,126 @@
   font-weight: 700;
 }
 
+.mcq-subject-grid {
+  align-items: stretch;
+}
+
+.mcq-subject-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 22px;
+  text-decoration: none;
+  border-top: 4px solid var(--subject, var(--purple));
+}
+
+.mcq-subject-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 38px rgba(108, 71, 255, 0.16);
+}
+
+.mcq-subject-card-top {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+}
+
+.mcq-subject-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--subject, var(--purple));
+  background: color-mix(in srgb, var(--subject, #6C47FF) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--subject, #6C47FF) 22%, transparent);
+}
+
+.mcq-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(10, 10, 26, 0.68);
+  backdrop-filter: blur(8px);
+}
+
+.mcq-modal {
+  width: min(760px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+}
+
+.teacher-mcq-row h4 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.mcq-attempt-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 18px;
+  align-items: start;
+}
+
+.mcq-timer {
+  min-width: 130px;
+  height: 52px;
+  border-radius: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #6C47FF, #4A90E2);
+  color: #fff;
+  font-size: 24px;
+  font-weight: 800;
+  box-shadow: 0 12px 30px rgba(108, 71, 255, 0.28);
+}
+
+.mcq-question-sidebar {
+  position: sticky;
+  top: 96px;
+}
+
+.mcq-question-dots {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.mcq-dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(108, 71, 255, 0.18);
+  background: var(--bg-surface-2, #F8F7FF);
+  color: var(--text-primary, #1A1A2E);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.mcq-dot--active {
+  background: var(--grad-purple);
+  color: #fff;
+  border-color: transparent;
+}
+
+.mcq-dot--answered {
+  border-color: rgba(29, 184, 132, 0.45);
+  box-shadow: inset 0 0 0 2px rgba(29, 184, 132, 0.18);
+}
+
+.mcq-dot--skipped {
+  border-color: rgba(245, 158, 11, 0.55);
+  box-shadow: inset 0 0 0 2px rgba(245, 158, 11, 0.18);
+}
+
 .book-icon {
   width: 14px;
   height: 14px;

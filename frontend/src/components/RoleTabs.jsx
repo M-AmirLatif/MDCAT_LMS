@@ -17,7 +17,7 @@ export default function RoleTabs({ user, showGuest = false }) {
 
   const items = [
     { key: 'student', label: 'Student', path: '/dashboard' },
-    { key: 'teacher', label: 'Teacher', path: '/teacher/courses' },
+    { key: 'teacher', label: 'Teacher', path: '/teacher/mcqs' },
     { key: 'admin', label: 'Admin', path: '/admin' },
     { key: 'superadmin', label: 'Super Admin', path: '/admin' },
   ]

@@ -25,7 +25,7 @@ export const PLATFORM_NAV = {
       label: 'Practice',
       items: [
         { key: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
-        { key: 'courses', label: 'Practice Subjects', path: '/courses', icon: 'courses' },
+        { key: 'courses', label: 'Practice Subjects', path: '/mcqs', icon: 'courses' },
         { key: 'performance', label: 'Performance', path: '/performance', icon: 'performance' },
         { key: 'notifications', label: 'Notifications', path: '/notifications', icon: 'notifications', badge: '3' },
       ],
@@ -42,7 +42,7 @@ export const PLATFORM_NAV = {
       label: 'Management',
       items: [
         { key: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
-        { key: 'my-courses', label: 'MCQ Management', path: '/teacher/courses', icon: 'courses' },
+        { key: 'my-courses', label: 'MCQ Management', path: '/teacher/mcqs', icon: 'courses' },
         { key: 'students', label: 'Student Attempts', path: '/teacher/students', icon: 'students' },
         { key: 'assignments', label: 'MCQ Builder', path: '/teacher/assignments', icon: 'assignments' },
         { key: 'analytics', label: 'Performance Analytics', path: '/teacher/analytics', icon: 'analytics' },
@@ -111,6 +111,10 @@ export function getPageTitle(pathname, role = 'student') {
   if (pathname.startsWith('/course/') && pathname.includes('/create-mcq')) return 'Create MCQ Bank'
   if (pathname.startsWith('/course/') && pathname.includes('/create-assignment')) return 'Create Assignment'
   if (pathname.startsWith('/course/') && pathname.includes('/assignments')) return 'Assignments'
+  if (pathname.startsWith('/mcqs/') && pathname.includes('/attempt')) return 'Quiz Attempt'
+  if (pathname.startsWith('/mcqs/') && pathname.includes('/result')) return 'Quiz Result'
+  if (pathname.startsWith('/mcqs/')) return 'MCQ Bank'
+  if (pathname === '/mcqs' || pathname === '/student/mcqs' || pathname === '/teacher/mcqs') return 'Practice Subjects'
   if (pathname.startsWith('/course/') && pathname.includes('/mcqs')) return 'Practice Test'
   if (pathname.startsWith('/course/')) return 'Subject Chapters'
   if (pathname.startsWith('/lecture/')) return 'Lecture Player'
@@ -125,7 +129,7 @@ export function getMobileNavForRole(role = 'student') {
   if (role === 'student') {
     return [
       { key: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
-      { key: 'courses', label: 'Subjects', path: '/courses', icon: 'courses' },
+      { key: 'courses', label: 'Subjects', path: '/mcqs', icon: 'courses' },
       { key: 'performance', label: 'Performance', path: '/performance', icon: 'performance' },
       { key: 'profile', label: 'Profile', path: '/profile/edit', icon: 'profile' },
       { key: 'notifications', label: 'Alerts', path: '/notifications', icon: 'notifications' },

@@ -8,12 +8,12 @@ import ForgotPassword from './pages/ForgotPassword'
 import SetPassword from './pages/SetPassword'
 import ProtectedRoute from './components/ProtectedRoute'
 import PlatformDashboard from './pages/PlatformDashboard'
-import PlatformCourses from './pages/PlatformCourses'
 import PlatformPerformance from './pages/PlatformPerformance'
 import PlatformLiveClasses from './pages/PlatformLiveClasses'
 import PlatformPayments from './pages/PlatformPayments'
 import PlatformNotifications from './pages/PlatformNotifications'
 import PlatformProfile from './pages/PlatformProfile'
+import { ChapterList, CourseSelection, McqList, QuizAttempt, QuizResult } from './pages/McqModule'
 import {
   AdminAnnouncementsPage,
   AdminCoursesPage,
@@ -63,7 +63,14 @@ function App() {
 
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<PlatformDashboard />} />
-          <Route path="/courses" element={<PlatformCourses />} />
+          <Route path="/courses" element={<CourseSelection />} />
+          <Route path="/mcqs" element={<CourseSelection />} />
+          <Route path="/student/mcqs" element={<CourseSelection />} />
+          <Route path="/teacher/mcqs" element={<CourseSelection />} />
+          <Route path="/mcqs/:subject" element={<ChapterList />} />
+          <Route path="/mcqs/:subject/:chapterId" element={<McqList />} />
+          <Route path="/mcqs/:subject/:chapterId/attempt" element={<QuizAttempt />} />
+          <Route path="/mcqs/:subject/:chapterId/result" element={<QuizResult />} />
           <Route path="/performance" element={<PlatformPerformance />} />
           <Route path="/live-sessions" element={<PlatformLiveClasses />} />
           <Route path="/payments" element={<PlatformPayments />} />
@@ -79,7 +86,7 @@ function App() {
             path="/teacher/courses"
             element={
               <ProtectedRoute roles={['teacher', 'admin', 'superadmin']}>
-                <PlatformCourses />
+                <CourseSelection />
               </ProtectedRoute>
             }
           />

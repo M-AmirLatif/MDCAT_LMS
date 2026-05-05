@@ -65,7 +65,7 @@ function StudentDashboard({ firstName }) {
               Focus only on Biology, Chemistry, Physics, and English with chapter-wise MCQ sets, clean explanations, and subject-wise tracking after every attempt.
             </p>
             <div className="workspace-hero-actions">
-              <Link className="btn btn-primary" to="/courses">Open Subjects</Link>
+              <Link className="btn btn-primary" to="/mcqs">Open Subjects</Link>
               <Link className="btn btn-secondary" to="/performance">View Performance</Link>
             </div>
           </div>
@@ -108,7 +108,7 @@ function StudentDashboard({ firstName }) {
               <div className="progress-bar-bg">
                 <div className="progress-bar-fill" style={{ '--fill': `${subject.accuracy}%`, width: `${subject.accuracy}%`, background: SUBJECT_STYLES[subject.name].progress }} />
               </div>
-              <Link className="btn btn-primary btn-sm" to={`/course/${subject.id}`}>Continue Practice</Link>
+              <Link className="btn btn-primary btn-sm" to={`/mcqs/${subject.id}`}>Continue Practice</Link>
             </div>
           </article>
         ))}
@@ -193,7 +193,7 @@ function TeacherDashboard() {
             <h1 style={{ color: '#fff' }}>Manage MDCAT chapters, MCQs, and explanations from one focused workspace</h1>
             <p>Track uploads by subject, monitor student attempts, and keep the Biology, Chemistry, Physics, and English bank clean and exam-relevant.</p>
             <div className="workspace-hero-actions">
-              <Link className="btn btn-primary" to="/teacher/courses">Open MCQ Management</Link>
+              <Link className="btn btn-primary" to="/teacher/mcqs">Open MCQ Management</Link>
               <Link className="btn btn-secondary" to="/teacher/analytics">View Analytics</Link>
             </div>
           </div>
@@ -246,7 +246,7 @@ function TeacherDashboard() {
                     <span>Total MCQs</span>
                     <strong>{subject.totalMcqs}</strong>
                   </div>
-                  <Link className="btn btn-secondary btn-sm" to="/teacher/courses">Manage Bank</Link>
+                  <Link className="btn btn-secondary btn-sm" to={`/mcqs/${subject.id}`}>Manage Bank</Link>
                 </article>
               )
             })}
