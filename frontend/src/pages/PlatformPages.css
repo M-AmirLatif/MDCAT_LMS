@@ -349,8 +349,21 @@
   display: grid;
   grid-template-columns: 1fr;
   align-items: stretch;
-  gap: 14px;
-  padding: 20px;
+  gap: 16px;
+  padding: 22px;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(260px circle at 100% 0%, rgba(108, 71, 255, 0.11), transparent 58%),
+    linear-gradient(180deg, #ffffff 0%, #fbfaff 100%);
+}
+
+.teacher-mcq-row--editor::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: linear-gradient(90deg, #6C47FF, #4A90E2, #1DB884);
 }
 
 .teacher-mcq-editor-head,
@@ -359,6 +372,25 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 14px;
+}
+
+.teacher-mcq-editor-head {
+  align-items: center;
+  padding-bottom: 4px;
+}
+
+.teacher-mcq-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(29, 184, 132, 0.12);
+  color: #0f8a64;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .teacher-mcq-editor-bottom {
@@ -382,10 +414,11 @@
 .teacher-mcq-option-field {
   display: grid;
   gap: 8px;
-  padding: 14px;
+  padding: 16px;
   border-radius: 14px;
   border: 1px solid rgba(108, 71, 255, 0.12);
-  background: rgba(108, 71, 255, 0.04);
+  background: linear-gradient(180deg, rgba(108, 71, 255, 0.055), rgba(108, 71, 255, 0.025));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
 }
 
 .teacher-mcq-option-field label,
@@ -409,11 +442,21 @@
   color: var(--text-primary, #1A1A2E);
   padding: 12px 14px;
   resize: vertical;
+  box-shadow: 0 8px 20px rgba(108, 71, 255, 0.045);
 }
 
 .teacher-mcq-option-field--correct {
   border-color: rgba(29, 184, 132, 0.42);
-  background: rgba(29, 184, 132, 0.08);
+  background:
+    linear-gradient(180deg, rgba(29, 184, 132, 0.12), rgba(29, 184, 132, 0.055));
+}
+
+.teacher-mcq-action-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(108, 71, 255, 0.10);
 }
 
 .student-quiz-summary-grid {
@@ -475,6 +518,12 @@
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.34) !important;
 }
 
+[data-theme="dark"] .teacher-mcq-row--editor {
+  background:
+    radial-gradient(260px circle at 100% 0%, rgba(139, 111, 255, 0.18), transparent 58%),
+    linear-gradient(180deg, #12102A 0%, #17133A 100%) !important;
+}
+
 [data-theme="dark"] .teacher-mcq-row h4 {
   color: #F0EEFF !important;
   -webkit-text-fill-color: #F0EEFF !important;
@@ -499,6 +548,7 @@
 [data-theme="dark"] .teacher-mcq-option-field {
   background: rgba(255, 255, 255, 0.035);
   border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: none;
 }
 
 [data-theme="dark"] .teacher-mcq-option-field--correct {
@@ -524,6 +574,12 @@
 [data-theme="dark"] .student-quiz-summary-card strong {
   color: #F0EEFF !important;
   -webkit-text-fill-color: #F0EEFF !important;
+}
+
+[data-theme="dark"] .teacher-mcq-status {
+  background: rgba(45, 217, 155, 0.14);
+  color: #2DD99B;
+  -webkit-text-fill-color: #2DD99B;
 }
 
 [data-theme="dark"] .teacher-mcq-row .btn {
@@ -2606,6 +2662,45 @@
   .teacher-mcq-option-grid,
   .teacher-mcq-editor-bottom {
     grid-template-columns: 1fr;
+  }
+
+  .teacher-mcq-row--editor {
+    padding: 18px;
+    gap: 14px;
+  }
+
+  .teacher-mcq-editor-head {
+    justify-content: space-between;
+  }
+
+  .teacher-mcq-status {
+    font-size: 10px;
+    padding: 6px 10px;
+  }
+
+  .teacher-mcq-action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding-top: 14px;
+    margin-top: 2px;
+  }
+
+  .teacher-mcq-action-row .btn {
+    width: 100%;
+    min-width: 0;
+    height: 48px;
+  }
+
+  .teacher-mcq-option-field {
+    padding: 14px;
+  }
+
+  .teacher-mcq-option-field input,
+  .teacher-mcq-editor-bottom select,
+  .teacher-mcq-question-field textarea,
+  .teacher-mcq-editor-bottom textarea {
+    font-size: 14px;
   }
 }
 

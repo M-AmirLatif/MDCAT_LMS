@@ -322,10 +322,7 @@ function TeacherMcqEditor({ mcq, index, chapter, chapterId, meta, onSaved, onDel
     <article className="teacher-mcq-row teacher-mcq-row--editor">
       <div className="teacher-mcq-editor-head">
         <span className="state-chip state-chip--neutral">Q{index + 1}</span>
-        <div className="inline-actions">
-          <button className="btn btn-primary btn-sm" type="button" onClick={saveInline} disabled={saving}>{saving ? 'Saving...' : 'Save'}</button>
-          <button className="btn btn-ghost btn-sm" type="button" onClick={() => onDelete(mcq)}>Delete</button>
-        </div>
+        <span className="teacher-mcq-status">Correct answer: {form.correctAnswer}</span>
       </div>
       <div className="floating-field teacher-mcq-question-field">
         <label htmlFor={`mcq-question-${mcq._id}`}>Question statement</label>
@@ -350,6 +347,10 @@ function TeacherMcqEditor({ mcq, index, chapter, chapterId, meta, onSaved, onDel
           <label htmlFor={`mcq-explanation-${mcq._id}`}>Explanation / Description</label>
           <textarea id={`mcq-explanation-${mcq._id}`} rows="3" value={form.explanation} onChange={(event) => setField('explanation', event.target.value)} placeholder="Add explanation for students." />
         </div>
+      </div>
+      <div className="teacher-mcq-action-row">
+        <button className="btn btn-primary btn-sm" type="button" onClick={saveInline} disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</button>
+        <button className="btn btn-ghost btn-sm" type="button" onClick={() => onDelete(mcq)}>Delete MCQ</button>
       </div>
     </article>
   )
