@@ -322,17 +322,16 @@ function TeacherMcqEditor({ mcq, index, chapter, chapterId, meta, onSaved, onDel
     <article className="teacher-mcq-row teacher-mcq-row--editor">
       <div className="teacher-mcq-editor-head">
         <span className="state-chip state-chip--neutral">Q{index + 1}</span>
-        <span className="teacher-mcq-status">Correct answer: {form.correctAnswer}</span>
       </div>
       <div className="floating-field teacher-mcq-question-field">
         <label htmlFor={`mcq-question-${mcq._id}`}>Question statement</label>
-        <textarea id={`mcq-question-${mcq._id}`} rows="3" value={form.question} onChange={(event) => setField('question', event.target.value)} />
+        <textarea id={`mcq-question-${mcq._id}`} rows="2" value={form.question} onChange={(event) => setField('question', event.target.value)} />
       </div>
       <div className="teacher-mcq-option-grid">
         {['A', 'B', 'C', 'D'].map((letter) => (
           <div className={`teacher-mcq-option-field ${form.correctAnswer === letter ? 'teacher-mcq-option-field--correct' : ''}`} key={letter}>
             <label htmlFor={`mcq-${mcq._id}-${letter}`}>Option {letter}</label>
-            <input id={`mcq-${mcq._id}-${letter}`} value={form[`option${letter}`]} onChange={(event) => setField(`option${letter}`, event.target.value)} />
+            <textarea id={`mcq-${mcq._id}-${letter}`} rows="2" value={form[`option${letter}`]} onChange={(event) => setField(`option${letter}`, event.target.value)} />
           </div>
         ))}
       </div>
@@ -345,7 +344,7 @@ function TeacherMcqEditor({ mcq, index, chapter, chapterId, meta, onSaved, onDel
         </div>
         <div className="floating-field">
           <label htmlFor={`mcq-explanation-${mcq._id}`}>Explanation / Description</label>
-          <textarea id={`mcq-explanation-${mcq._id}`} rows="3" value={form.explanation} onChange={(event) => setField('explanation', event.target.value)} placeholder="Add explanation for students." />
+          <textarea id={`mcq-explanation-${mcq._id}`} rows="2" value={form.explanation} onChange={(event) => setField('explanation', event.target.value)} placeholder="Add explanation for students." />
         </div>
       </div>
       <div className="teacher-mcq-action-row">
@@ -445,7 +444,7 @@ function McqList() {
   const formattedTime = `${Math.floor(totalSeconds / 60)}:${String(totalSeconds % 60).padStart(2, '0')}`
 
   return (
-    <div className="workspace-page animate-fade-up">
+    <div className="workspace-page workspace-page--mcq-list animate-fade-up">
       <section className="workspace-card">
         <div className="workspace-card-head">
           <div>

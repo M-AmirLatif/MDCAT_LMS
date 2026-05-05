@@ -2983,6 +2983,14 @@
   max-width: 100% !important;
 }
 
+[data-theme="light"] .workspace-page--mcq-list,
+.workspace-page--mcq-list {
+  background: #F3F4F6 !important;
+  margin: -8px;
+  padding: 18px;
+  border-radius: 22px;
+}
+
 @media (max-width: 1200px) {
   .workspace-page .mcq-subject-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -3076,7 +3084,9 @@
 }
 
 .teacher-mcq-question-field textarea {
-  min-height: 136px !important;
+  min-height: 76px !important;
+  height: auto !important;
+  field-sizing: content;
   padding: 16px !important;
   border: 1px solid #E5E7EB !important;
   border-radius: 10px !important;
@@ -3135,8 +3145,11 @@
   font-weight: 900;
 }
 
-.teacher-mcq-option-field input {
+.teacher-mcq-option-field textarea {
+  width: 100% !important;
   min-height: 50px !important;
+  height: auto !important;
+  field-sizing: content;
   padding: 12px 16px !important;
   border: 1px solid #E5E7EB !important;
   border-radius: 10px !important;
@@ -3146,6 +3159,10 @@
   font-size: 15px !important;
   line-height: 1.5 !important;
   box-shadow: none !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  resize: none !important;
 }
 
 .teacher-mcq-editor-bottom {
@@ -3200,7 +3217,9 @@
 }
 
 .teacher-mcq-editor-bottom textarea {
-  min-height: 96px !important;
+  min-height: 70px !important;
+  height: auto !important;
+  field-sizing: content;
   color: #374151 !important;
   -webkit-text-fill-color: #374151 !important;
   font-style: italic;
@@ -3297,6 +3316,7 @@
 
 [data-theme="dark"] .teacher-mcq-question-field textarea,
 [data-theme="dark"] .teacher-mcq-option-field input,
+[data-theme="dark"] .teacher-mcq-option-field textarea,
 [data-theme="dark"] .teacher-mcq-editor-bottom select,
 [data-theme="dark"] .teacher-mcq-editor-bottom textarea {
   background: #2D2A3E !important;
@@ -3379,7 +3399,7 @@
   }
 
   .teacher-mcq-question-field textarea {
-    min-height: 118px !important;
+    min-height: 72px !important;
     font-size: 14px !important;
   }
 
@@ -3392,7 +3412,7 @@
     padding: 14px !important;
   }
 
-  .teacher-mcq-option-field input,
+  .teacher-mcq-option-field textarea,
   .teacher-mcq-editor-bottom select,
   .teacher-mcq-editor-bottom textarea {
     font-size: 14px !important;
