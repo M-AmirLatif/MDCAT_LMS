@@ -3080,17 +3080,21 @@
 
 .teacher-mcq-question-field {
   display: grid !important;
-  gap: 12px !important;
+  gap: 10px !important;
+  padding: 16px 18px !important;
+  border: 1px solid #E5E7EB !important;
+  border-radius: 12px !important;
+  background: #F9FAFB !important;
 }
 
 .teacher-mcq-question-field textarea {
-  min-height: 64px !important;
+  min-height: 54px !important;
   height: auto !important;
   field-sizing: content;
-  padding: 18px 16px 16px !important;
-  border: 1px solid #E5E7EB !important;
+  padding: 0 !important;
+  border: 0 !important;
   border-radius: 10px !important;
-  background: #F9FAFB !important;
+  background: transparent !important;
   color: #111827 !important;
   -webkit-text-fill-color: #111827 !important;
   font-size: 15px !important;
@@ -3148,7 +3152,7 @@
 
 .teacher-mcq-option-field textarea {
   width: 100% !important;
-  min-height: 50px !important;
+  min-height: 54px !important;
   max-width: 100% !important;
   height: auto !important;
   field-sizing: content;
@@ -3220,7 +3224,7 @@
 }
 
 .teacher-mcq-editor-bottom .floating-field:last-child {
-  gap: 12px !important;
+  gap: 10px !important;
   padding: 16px 18px !important;
 }
 
@@ -3244,10 +3248,10 @@
 }
 
 .teacher-mcq-editor-bottom textarea {
-  min-height: 70px !important;
+  min-height: 74px !important;
   height: auto !important;
   field-sizing: content;
-  padding: 14px 16px !important;
+  padding: 12px 14px !important;
   color: #374151 !important;
   -webkit-text-fill-color: #374151 !important;
   font-style: italic;
@@ -3357,8 +3361,14 @@
   -webkit-text-fill-color: #F3F4F6 !important;
 }
 
-[data-theme="dark"] .teacher-mcq-question-field textarea {
+[data-theme="dark"] .teacher-mcq-question-field {
   background: #2D2A3E !important;
+  border-color: #3B3654 !important;
+}
+
+[data-theme="dark"] .teacher-mcq-question-field textarea {
+  background: transparent !important;
+  border-color: transparent !important;
 }
 
 [data-theme="dark"] .teacher-mcq-option-field {
@@ -3510,9 +3520,8 @@
   }
 
   .teacher-mcq-question-field textarea {
-    min-height: 72px !important;
+    min-height: 54px !important;
     font-size: 14px !important;
-    padding-top: 18px !important;
   }
 
   .teacher-mcq-option-grid {
