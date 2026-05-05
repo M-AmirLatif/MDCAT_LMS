@@ -473,33 +473,39 @@ function McqList() {
               ))}
             </div>
           ) : (
-            <div className="student-quiz-summary-grid">
-              <div className="student-quiz-summary-card">
-                <span className="student-quiz-summary-icon">?</span>
-                <div><small>Total MCQs</small><strong>{mcqs.length}</strong></div>
+            <>
+              <div className="student-quiz-summary-grid">
+                <div className="student-quiz-summary-card">
+                  <span className="student-quiz-summary-icon">?</span>
+                  <div><small>Total MCQs</small><strong>{mcqs.length}</strong></div>
+                </div>
+                <div className="student-quiz-summary-card">
+                  <span className="student-quiz-summary-icon student-quiz-summary-icon--timer">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true"><circle cx="12" cy="13" r="8" stroke="currentColor" strokeWidth="2" /><path d="M9 2h6M12 7v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  </span>
+                  <div><small>Quiz Time</small><strong>{formattedTime}</strong></div>
+                </div>
+                <div className="student-quiz-summary-card">
+                  <span className="student-quiz-summary-icon">50s</span>
+                  <div><small>Per MCQ</small><strong>50 sec</strong></div>
+                </div>
               </div>
-              <div className="student-quiz-summary-card">
-                <span className="student-quiz-summary-icon student-quiz-summary-icon--timer">
-                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true"><circle cx="12" cy="13" r="8" stroke="currentColor" strokeWidth="2" /><path d="M9 2h6M12 7v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                </span>
-                <div><small>Quiz Time</small><strong>{formattedTime}</strong></div>
-              </div>
-              <div className="student-quiz-summary-card">
-                <span className="student-quiz-summary-icon">50s</span>
-                <div><small>Per MCQ</small><strong>50 sec</strong></div>
-              </div>
-            </div>
-            <div className="student-quiz-motivation">
-              <div>
-                <span className="student-quiz-motivation-kicker">Practice mindset</span>
-                <h3>One focused attempt can expose your weak spots before the exam does.</h3>
-                <p>Answer calmly, mark difficult questions, and review explanations after submission. Consistent chapter practice is how MDCAT accuracy improves.</p>
-              </div>
-              <div className="student-quiz-motivation-card">
-                <strong>{mcqs.length ? Math.ceil(mcqs.length / 10) : 0}</strong>
-                <span>short blocks of 10 MCQs</span>
-              </div>
-            </div>
+              {mcqs.length > 0 ? (
+                <div className="student-quiz-motivation">
+                  <div className="student-quiz-motivation-copy">
+                    <span className="student-quiz-motivation-kicker">Practice mindset</span>
+                    <h3>One focused attempt can expose your weak spots before the exam does.</h3>
+                    <p>Answer calmly, skip what blocks you, then review every explanation. Chapter practice improves accuracy faster than random revision.</p>
+                  </div>
+                  <div className="student-quiz-motivation-steps" aria-label="Practice approach">
+                    <span><b>1</b> Attempt every MCQ</span>
+                    <span><b>2</b> Mark difficult questions</span>
+                    <span><b>3</b> Review explanations</span>
+                  </div>
+                  <Link className="btn btn-primary" to={`/mcqs/${subject}/${chapterId}/attempt`}>Start focused practice</Link>
+                </div>
+              ) : null}
+            </>
           )}
           {!loading && mcqs.length === 0 ? (
             <EmptyState
