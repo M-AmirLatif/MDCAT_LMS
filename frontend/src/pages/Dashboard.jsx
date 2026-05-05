@@ -131,7 +131,7 @@ export default function Dashboard() {
                       </div>
                       <div className="filler-title">Begin your MDCAT journey today</div>
                       <div className="filler-subtitle">
-                        Explore courses, attempt a free sample test, and keep track of your progress — all in one place.
+                        Explore courses, practice MDCAT MCQs, and keep track of your progress — all in one place.
                       </div>
                     </div>
 
@@ -139,8 +139,8 @@ export default function Dashboard() {
                       <button className="btn-primary" type="button" onClick={() => navigate('/courses')}>
                         Browse Courses
                       </button>
-                      <button className="btn-secondary" type="button" onClick={() => navigate('/sample-test')}>
-                        Try Sample Test
+                      <button className="btn-secondary" type="button" onClick={() => navigate('/mcqs')}>
+                        Practice MCQs
                       </button>
                     </div>
 

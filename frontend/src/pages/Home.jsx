@@ -10,26 +10,13 @@ const stats = [
   ['0', 'Student Attempts', 'trophy'],
 ]
 
-const subjects = [
-  ['Biology', 'Real MCQs coming soon', 'bio', '/sample-test/biology'],
-  ['Chemistry', 'Real MCQs coming soon', 'chem', '/sample-test/chemistry'],
-  ['Physics', 'Real MCQs coming soon', 'phy', '/sample-test/physics'],
-  ['English', 'Real MCQs coming soon', 'eng', '/sample-test/english'],
-]
-
-const reviews = []
-
 function Icon({ name }) {
   const common = { viewBox: '0 0 24 24', fill: 'none', 'aria-hidden': true }
   const paths = {
     people: <><circle cx="9" cy="8" r="3" stroke="currentColor" strokeWidth="2" /><path d="M3.5 20a5.5 5.5 0 0 1 11 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><circle cx="17" cy="9" r="2.5" stroke="currentColor" strokeWidth="2" /><path d="M15.5 15.5A5 5 0 0 1 21 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></>,
-    star: <path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.8 1-6.1-4.4-4.3 6.1-.9L12 3Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />,
     chart: <><path d="M4 19V5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M4 19h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="m7 15 3-4 3 2 4-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></>,
     medical: <><path d="M9 3h6v5h5v6h-5v7H9v-7H4V8h5V3Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" /></>,
-    code: <><path d="m8 8-4 4 4 4M16 8l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path d="m14 5-4 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></>,
-    globe: <><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" /><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18" stroke="currentColor" strokeWidth="2" /></>,
     trophy: <><path d="M8 4h8v5a4 4 0 0 1-8 0V4Z" stroke="currentColor" strokeWidth="2" /><path d="M8 6H4v2a4 4 0 0 0 4 4M16 6h4v2a4 4 0 0 1-4 4M12 13v5M8 21h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></>,
-    heart: <path d="M12 21s8-4.7 8-11a5 5 0 0 0-9-3 5 5 0 0 0-9 3c0 6.3 8 11 8 11Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />,
   }
   return <svg {...common}>{paths[name]}</svg>
 }
@@ -47,7 +34,6 @@ export default function Home() {
         <nav className="lp-links" aria-label="Public navigation">
           <a href="#home">Home</a>
           <a href="#courses">Courses</a>
-          <a href="#sample">Sample Test</a>
           <a href="#reviews">About</a>
         </nav>
         <div className="lp-actions">
@@ -93,9 +79,9 @@ export default function Home() {
           <div className="lp-hero-ctas">
             <Link className="lp-btn lp-btn-primary" to="/register">Start Your Preparation Now</Link>
             <Link className="lp-btn lp-btn-ghost" to="/login">I Already Have an Account</Link>
-            <Link className="lp-btn lp-btn-teal" to="/sample-test">Try Free Sample Test</Link>
+            <Link className="lp-btn lp-btn-teal" to="/mcqs">Explore MDCAT Subjects</Link>
           </div>
-          <div className="lp-student-line">★ 400.6k+ Online Registered Students</div>
+          <div className="lp-student-line">400.6k+ Online Registered Students</div>
         </div>
       </section>
 
@@ -116,7 +102,7 @@ export default function Home() {
               <div className="lp-quote lp-quote-one">You will not need any academy</div>
               <div className="lp-quote lp-quote-two">Practice daily</div>
             </div>
-            <p>We will make your exam prep easier & enjoyable</p>
+            <p>We will make your exam prep easier and enjoyable</p>
           </div>
         </div>
       </section>
@@ -136,40 +122,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="sample" className="lp-section lp-section-light">
-        <div className="lp-container lp-narrow reveal">
-          <h2 className="lp-section-title">Try a Free Sample Test <em>No Login Required</em></h2>
-          <p className="lp-center-copy">Public sample tests will activate after real MDCAT MCQs are published.</p>
-          <div className="lp-subject-grid">
-            {subjects.map(([name, meta, tone, path]) => (
-              <Link className={`lp-subject lp-subject-${tone}`} to={path} key={name}>
-                <div>
-                  <strong>{name}</strong>
-                  <span>{meta}</span>
-                </div>
-                <b>Start Test →</b>
-              </Link>
-            ))}
-          </div>
-          <Link className="lp-btn lp-btn-primary lp-btn-wide" to="/sample-test">View Sample Test Status</Link>
-          <p className="lp-micro-copy">No account needed • Instant results • Full explanations</p>
-        </div>
-      </section>
-
       <section id="reviews" className="lp-section lp-section-dark">
         <div className="lp-container reveal">
           <h2 className="lp-section-title lp-section-title-dark">Student Reviews</h2>
-          <div className="lp-review-meta">EXCELLENT REVIEWS • <span>★★★★★</span> • 4.71 Average</div>
-          <div className="lp-review-row">
-            {reviews.map(([tag, name, text]) => (
-              <article className="lp-review" key={name}>
-                <span>{tag}</span>
-                <div>★★★★★</div>
-                <p>{text}</p>
-                <footer><b>{name[0]}</b><strong>{name}</strong></footer>
-              </article>
-            ))}
-          </div>
+          <div className="lp-review-meta">Reviews will appear after real student feedback is collected.</div>
         </div>
       </section>
 
@@ -179,7 +135,7 @@ export default function Home() {
         <p>Build a daily practice habit with focused Biology, Chemistry, Physics, and English MCQs.</p>
         <div className="lp-hero-ctas">
           <Link className="lp-btn lp-btn-white" to="/register">Join Now</Link>
-          <Link className="lp-btn lp-btn-ghost" to="/sample-test">Try Free Test</Link>
+          <Link className="lp-btn lp-btn-ghost" to="/login">Login</Link>
         </div>
       </section>
 
@@ -189,7 +145,6 @@ export default function Home() {
           <nav>
             <Link to="/">Home</Link>
             <Link to="/courses">Courses</Link>
-            <Link to="/sample-test">Sample Test</Link>
             <Link to="/login">Login</Link>
             <Link to="/register">Register</Link>
           </nav>

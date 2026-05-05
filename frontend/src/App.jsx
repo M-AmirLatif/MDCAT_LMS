@@ -31,7 +31,6 @@ import {
   TeacherAssignmentsPage,
   TeacherStudentsPage,
 } from './pages/PlatformRolePages'
-import SampleTest from './pages/SampleTest'
 import CourseDetail from './pages/CourseDetail'
 import LecturePlayer from './pages/LecturePlayer'
 import MCQTest from './pages/MCQTest'
@@ -46,8 +45,6 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/sample-test" element={<SampleTest />} />
-        <Route path="/sample-test/:subject" element={<SampleTest />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify-email" element={<VerifyEmail />} />

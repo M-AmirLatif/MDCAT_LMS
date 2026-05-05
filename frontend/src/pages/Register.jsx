@@ -85,7 +85,7 @@ export default function Register() {
             </div>
 
             <div className="auth-feature-list">
-              <span>Free Sample Test</span>
+              <span>Chapter-wise MCQs</span>
               <span>No OTP Email</span>
               <span>Mobile Friendly</span>
               <span>400k+ Students</span>
