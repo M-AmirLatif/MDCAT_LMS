@@ -9,7 +9,7 @@ const {
   getEnrolledCourses,
   getMyCourses,
 } = require('../controllers/courseController')
-const { protect, authorize } = require('../middlewares/auth')
+const { protect, protectWithPermissions, authorize } = require('../middlewares/auth')
 
 const router = express.Router()
 
@@ -23,7 +23,7 @@ router.post('/:courseId/enroll', protect, enrollInCourse)
 // Teacher routes
 router.get(
   '/teacher/my-courses',
-  protect,
+  protectWithPermissions,
   authorize('manage_courses'),
   getMyCourses,
 )
@@ -32,11 +32,11 @@ router.get(
 router.get('/:courseId', getCourseById)
 
 // Protected routes
-router.post('/', protect, authorize('manage_courses'), createCourse)
-router.put('/:courseId', protect, authorize('manage_courses'), updateCourse)
+router.post('/', protectWithPermissions, authorize('manage_courses'), createCourse)
+router.put('/:courseId', protectWithPermissions, authorize('manage_courses'), updateCourse)
 router.delete(
   '/:courseId',
-  protect,
+  protectWithPermissions,
   authorize('manage_courses'),
   deleteCourse,
 )

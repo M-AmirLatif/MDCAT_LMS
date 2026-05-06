@@ -6,14 +6,29 @@ const Course = require('../models/Course')
 // ==================== GET NOTIFICATIONS ====================
 exports.getNotifications = async (req, res) => {
   try {
-    const notifications = await Notification.find({
-      recipientId: req.user.id,
-    }).sort({ createdAt: -1 })
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1)
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 50))
+    const skip = (page - 1) * limit
+
+    const filter = { recipientId: req.user.id }
+
+    const [notifications, total] = await Promise.all([
+      Notification.find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      Notification.countDocuments(filter),
+    ])
 
     res.status(200).json({
       success: true,
       count: notifications.length,
       notifications,
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
     })
   } catch (error) {
     res.status(500).json({ error: error.message })

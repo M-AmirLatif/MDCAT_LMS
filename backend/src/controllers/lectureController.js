@@ -71,6 +71,7 @@ exports.getLecturesByCourse = async (req, res) => {
     })
       .populate('uploadedBy', 'firstName lastName email')
       .sort({ createdAt: -1 })
+      .lean()
 
     res.status(200).json({
       success: true,

@@ -97,17 +97,65 @@ app.use(
   }),
 )
 
+// ==================== COMPRESSION ====================
+// Compress JSON responses — typically 60-80% size reduction on list endpoints.
+// Uses Node built-in zlib; no extra dependency required.
+const zlib = require('zlib')
+const compressResponse = (req, res, next) => {
+  const acceptEncoding = req.headers['accept-encoding'] || ''
+  if (!acceptEncoding.includes('gzip')) return next()
+
+  const originalJson = res.json.bind(res)
+  res.json = (body) => {
+    const raw = JSON.stringify(body)
+    // Only compress responses larger than 1KB
+    if (raw.length < 1024) {
+      return originalJson(body)
+    }
+    zlib.gzip(Buffer.from(raw), (err, compressed) => {
+      if (err) return originalJson(body)
+      res.set('Content-Encoding', 'gzip')
+      res.set('Content-Type', 'application/json')
+      res.set('Vary', 'Accept-Encoding')
+      res.end(compressed)
+    })
+  }
+  next()
+}
+app.use(compressResponse)
+
 // ==================== LOGGING ====================
 if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('dev'))
 }
 
+// ==================== ROUTE TIMING (Phase 5 Observability) ====================
+// Lightweight request timing — logs slow routes (>500ms) to help diagnose bottlenecks.
+const SLOW_ROUTE_THRESHOLD_MS = parseInt(process.env.SLOW_ROUTE_MS, 10) || 500
+app.use((req, res, next) => {
+  const start = process.hrtime.bigint()
+  res.on('finish', () => {
+    const durationMs = Number(process.hrtime.bigint() - start) / 1e6
+    // Attach timing header for client-side observability
+    if (!res.headersSent) {
+      res.set('Server-Timing', `total;dur=${durationMs.toFixed(1)}`)
+    }
+    if (durationMs > SLOW_ROUTE_THRESHOLD_MS) {
+      console.warn(`⚠ Slow route: ${req.method} ${req.originalUrl} — ${durationMs.toFixed(0)}ms`)
+    }
+  })
+  next()
+})
+
 // ==================== BODY PARSERS ====================
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ limit: '10mb', extended: true }))
 
-// Serve uploaded files
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')))
+// Serve uploaded files with long cache (immutable content-addressed uploads)
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads'), {
+  maxAge: '7d',
+  immutable: true,
+}))
 
 // ==================== DATABASE CONNECTION ====================
 connectDB()
@@ -144,35 +192,40 @@ app.use('/api/live-sessions', liveSessionRoutes)
 app.use('/api/payments', paymentRoutes)
 app.use('/api/uploads', uploadRoutes)
 
-// Background scheduler for notification jobs
+// ==================== NOTIFICATION SCHEDULER ====================
+// Hardened scheduler: uses lean() for read efficiency, atomic findOneAndUpdate
+// to prevent duplicate processing across restarts/instances, and uses the
+// compound index { status: 1, sendAt: 1 } on NotificationJob.
+let schedulerRunning = false
 setInterval(async () => {
+  if (schedulerRunning) return // prevent overlap
+  schedulerRunning = true
   try {
     const now = new Date()
-    const jobs = await NotificationJob.find({
-      status: 'scheduled',
-      sendAt: { $lte: now },
-    }).limit(10)
+    // Process up to 10 due jobs per tick
+    for (let i = 0; i < 10; i++) {
+      // Atomically claim the next due job to prevent double-processing
+      const job = await NotificationJob.findOneAndUpdate(
+        { status: 'scheduled', sendAt: { $lte: now } },
+        { $set: { status: 'sent' } },
+        { new: false, lean: true },
+      )
+      if (!job) break // no more due jobs
 
-    for (const job of jobs) {
-      if (!job.recipientIds.length) {
-        job.status = 'sent'
-        await job.save()
-        continue
+      if (job.recipientIds && job.recipientIds.length > 0) {
+        const docs = job.recipientIds.map((recipientId) => ({
+          recipientId,
+          type: job.type,
+          title: job.title,
+          message: job.message,
+        }))
+        await Notification.insertMany(docs)
       }
-
-      const docs = job.recipientIds.map((recipientId) => ({
-        recipientId,
-        type: job.type,
-        title: job.title,
-        message: job.message,
-      }))
-
-      await Notification.insertMany(docs)
-      job.status = 'sent'
-      await job.save()
     }
   } catch (error) {
     console.error('Notification scheduler error:', error.message)
+  } finally {
+    schedulerRunning = false
   }
 }, 30000)
 

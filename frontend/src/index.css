@@ -3,7 +3,7 @@
    Purple-Indigo-Teal palette · Navy sidebar · Lavender page bg
    ═══════════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap');
+/* Font loaded async via index.html <link> — no render-blocking @import */
 
 :root {
   /* ── Brand ── */
@@ -290,7 +290,14 @@
   --eng-bg: rgba(165,144,255,0.16);
 }
 
-*, *::before, *::after {
+/* Theme transitions — scoped to elements that actually change during theme switch.
+   The previous `*, *::before, *::after` rule was extremely expensive, forcing the
+   browser to track transition state on thousands of DOM nodes. */
+.card, .workspace-card, .summary-card, .stat-tile,
+.btn, .badge, .filter-pill,
+input, textarea, select,
+.sidebar, .topbar, .navbar,
+body, .app-layout {
   transition:
     background-color 300ms ease,
     border-color 300ms ease,
@@ -483,8 +490,21 @@ textarea{
   display: grid;
   place-items: center;
   background: var(--bg-page, #f4f2ff);
-  color: var(--text-primary, #1a1a2e);
-  font-weight: 800;
+  color: var(--text-muted, #9494b8);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+}
+.route-loading::after {
+  content: '';
+  display: block;
+  width: 32px;
+  height: 32px;
+  margin-top: 12px;
+  border: 3px solid var(--border, rgba(108,71,255,0.1));
+  border-top-color: var(--purple, #6c47ff);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
 }
 input:focus,textarea:focus,select:focus{
   outline:none;border-color:var(--purple);border-width:2px;background:#fff;

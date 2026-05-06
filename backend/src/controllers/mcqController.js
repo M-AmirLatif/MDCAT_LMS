@@ -261,16 +261,30 @@ exports.getTopicsByCourse = async (req, res) => {
 // ==================== GET MCQS BY COURSE (Teacher/Admin) ====================
 exports.getMcqsByCourseFull = async (req, res) => {
   try {
-    const mcqs = await MCQ.find({
-      courseId: req.params.courseId,
-    })
-      .populate('createdBy', 'firstName lastName email')
-      .sort({ createdAt: -1 })
+    const filter = { courseId: req.params.courseId }
+
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1)
+    const limit = Math.min(200, Math.max(1, parseInt(req.query.limit, 10) || 50))
+    const skip = (page - 1) * limit
+
+    const [mcqs, total] = await Promise.all([
+      MCQ.find(filter)
+        .populate('createdBy', 'firstName lastName email')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      MCQ.countDocuments(filter),
+    ])
 
     res.status(200).json({
       success: true,
       count: mcqs.length,
       mcqs,
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
     })
   } catch (error) {
     res.status(500).json({ error: error.message })

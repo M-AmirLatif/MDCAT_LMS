@@ -156,7 +156,8 @@ exports.getMyTestHistory = async (req, res) => {
         .select('courseId studentId score negativeScore finalScore totalQuestions percentage topic submittedAt timeSpentSeconds')
         .sort({ submittedAt: -1 })
         .skip((page - 1) * limit)
-        .limit(limit),
+        .limit(limit)
+        .lean(),
     ])
 
     res.status(200).json({

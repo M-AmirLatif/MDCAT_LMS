@@ -65,7 +65,16 @@ const migrateLegacyUserRoles = async ({ superadminRole, adminRole, teacherRole, 
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI)
+    await mongoose.connect(process.env.MONGO_URI, {
+      // Connection pool — prevents exhaustion under concurrent load
+      maxPoolSize: parseInt(process.env.MONGO_POOL_SIZE, 10) || 10,
+      minPoolSize: 2,
+      // Timeouts — fail fast instead of hanging
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+      // Auto-build indexes defined in schemas
+      autoIndex: true,
+    })
     const roles = await ensureAuthDefaults()
     await migrateLegacyUserRoles(roles)
     console.log('MongoDB Connected')

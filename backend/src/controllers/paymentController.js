@@ -31,14 +31,30 @@ exports.createPayment = async (req, res) => {
 // ==================== GET MY PAYMENTS ====================
 exports.getMyPayments = async (req, res) => {
   try {
-    const payments = await Payment.find({ studentId: req.user.id })
-      .populate('courseId', 'name category')
-      .sort({ createdAt: -1 })
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1)
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 50))
+    const skip = (page - 1) * limit
+
+    const filter = { studentId: req.user.id }
+
+    const [payments, total] = await Promise.all([
+      Payment.find(filter)
+        .populate('courseId', 'name category')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      Payment.countDocuments(filter),
+    ])
 
     res.status(200).json({
       success: true,
       count: payments.length,
       payments,
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
     })
   } catch (error) {
     res.status(500).json({ error: error.message })

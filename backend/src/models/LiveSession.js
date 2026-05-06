@@ -42,4 +42,7 @@ const liveSessionSchema = new mongoose.Schema(
   { timestamps: true },
 )
 
+// ==================== INDEXES ====================
+liveSessionSchema.index({ courseId: 1, scheduledAt: -1 })
+
 module.exports = mongoose.model('LiveSession', liveSessionSchema)

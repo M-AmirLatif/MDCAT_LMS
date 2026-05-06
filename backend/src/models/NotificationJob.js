@@ -39,4 +39,7 @@ const notificationJobSchema = new mongoose.Schema(
   { timestamps: true },
 )
 
+// ==================== INDEXES ====================
+notificationJobSchema.index({ status: 1, sendAt: 1 })
+
 module.exports = mongoose.model('NotificationJob', notificationJobSchema)

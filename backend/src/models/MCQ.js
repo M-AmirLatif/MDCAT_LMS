@@ -93,5 +93,7 @@ const mcqSchema = new mongoose.Schema(
 mcqSchema.index({ courseId: 1, topic: 1, isPublished: 1 })
 mcqSchema.index({ courseId: 1, difficulty: 1 })
 mcqSchema.index({ courseId: 1, isPastPaper: 1, year: 1 })
+mcqSchema.index({ courseId: 1, subject: 1, chapterId: 1, isPublished: 1 })
+mcqSchema.index({ subject: 1 })
 
 module.exports = mongoose.model('MCQ', mcqSchema)

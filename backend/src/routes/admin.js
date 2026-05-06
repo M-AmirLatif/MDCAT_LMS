@@ -6,11 +6,11 @@ const {
   deactivateUser,
   getAllCoursesAdmin,
 } = require('../controllers/adminController')
-const { protect, authorize } = require('../middlewares/auth')
+const { protectWithPermissions, authorize } = require('../middlewares/auth')
 
 const router = express.Router()
 
-router.use(protect, authorize('manage_users'))
+router.use(protectWithPermissions, authorize('manage_users'))
 
 // Users
 router.get('/users', getAllUsers)

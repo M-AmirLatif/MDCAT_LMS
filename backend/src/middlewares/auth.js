@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/User')
 
 // ==================== PROTECT ROUTE (Verify JWT) ====================
+// Lightweight version: populates role name only (single populate, no nested permissions).
+// Sufficient for most endpoints that only need role-based checks.
 exports.protect = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(' ')[1]
@@ -14,7 +16,39 @@ exports.protect = async (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
     
-    // Fetch full user with role and permissions to ensure fresh data
+    // Lightweight: populate role name only (covers role-based authorize checks)
+    const user = await User.findById(decoded.id).populate('role', 'name')
+    
+    if (!user) {
+      return res.status(401).json({ error: 'User no longer exists' })
+    }
+    if (user.isActive === false) {
+       return res.status(403).json({ error: 'Account is deactivated' })
+    }
+
+    req.user = user
+    next()
+  } catch (error) {
+    res.status(401).json({ error: 'Not authorized to access this route' })
+  }
+}
+
+// ==================== PROTECT WITH PERMISSIONS (Full Hydration) ====================
+// Deep version: populates role → permissions. Only use on routes that check
+// granular permission names (not just role-based authorize).
+exports.protectWithPermissions = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1]
+
+    if (!token) {
+      return res
+        .status(401)
+        .json({ error: 'Not authorized to access this route' })
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    
+    // Full hydration: populate role with nested permissions
     const user = await User.findById(decoded.id).populate({
       path: 'role',
       populate: { path: 'permissions' }

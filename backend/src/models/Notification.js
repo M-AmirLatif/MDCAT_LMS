@@ -30,4 +30,8 @@ const notificationSchema = new mongoose.Schema(
   { timestamps: true },
 )
 
+// ==================== INDEXES ====================
+notificationSchema.index({ recipientId: 1, createdAt: -1 })
+notificationSchema.index({ recipientId: 1, isRead: 1, createdAt: -1 })
+
 module.exports = mongoose.model('Notification', notificationSchema)

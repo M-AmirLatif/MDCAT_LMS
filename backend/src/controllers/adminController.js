@@ -101,8 +101,8 @@ exports.getAllUsers = async (req, res) => {
     let filter = {}
     if (requesterRole !== 'superadmin') {
       const [teacherRole, studentRole] = await Promise.all([
-        Role.findOne({ name: 'teacher' }),
-        Role.findOne({ name: 'student' }),
+        Role.findOne({ name: 'teacher' }).lean(),
+        Role.findOne({ name: 'student' }).lean(),
       ])
       filter = {
         role: {
@@ -111,15 +111,29 @@ exports.getAllUsers = async (req, res) => {
       }
     }
 
-    const users = await User.find(filter)
-      .select('-password')
-      .populate('role', 'name')
-      .sort({ createdAt: -1 })
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1)
+    const limit = Math.min(200, Math.max(1, parseInt(req.query.limit, 10) || 50))
+    const skip = (page - 1) * limit
+
+    const [users, total] = await Promise.all([
+      User.find(filter)
+        .select('-password')
+        .populate('role', 'name')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      User.countDocuments(filter),
+    ])
 
     res.status(200).json({
       success: true,
       count: users.length,
       users,
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
     })
   } catch (error) {
     res.status(500).json({ error: error.message })

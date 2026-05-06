@@ -305,7 +305,8 @@ exports.login = async (req, res) => {
 // ==================== GET PROFILE ====================
 exports.getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).populate('role')
+    // req.user is already hydrated by the protect middleware (with role populated)
+    const user = req.user
     if (!user) {
       return res.status(404).json({ error: 'User not found' })
     }

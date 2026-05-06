@@ -37,4 +37,7 @@ const paymentSchema = new mongoose.Schema(
   { timestamps: true },
 )
 
+// ==================== INDEXES ====================
+paymentSchema.index({ studentId: 1, createdAt: -1 })
+
 module.exports = mongoose.model('Payment', paymentSchema)

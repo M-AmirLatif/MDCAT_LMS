@@ -193,7 +193,7 @@ exports.getEnrolledCourses = async (req, res) => {
   try {
     const courses = await Course.find({
       enrolledStudents: req.user.id,
-    }).populate('createdBy', 'firstName lastName email')
+    }).populate('createdBy', 'firstName lastName email').lean()
 
     res.status(200).json({
       success: true,
@@ -211,7 +211,7 @@ exports.getMyCourses = async (req, res) => {
     const courses = await Course.find({ createdBy: req.user.id }).populate(
       'enrolledStudents',
       'firstName lastName email',
-    )
+    ).lean()
 
     res.status(200).json({
       success: true,

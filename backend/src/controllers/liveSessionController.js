@@ -54,15 +54,29 @@ exports.getLiveSessions = async (req, res) => {
       filter.courseId = req.query.courseId
     }
 
-    const sessions = await LiveSession.find(filter)
-      .populate('courseId', 'name category')
-      .populate('teacherId', 'firstName lastName email')
-      .sort({ scheduledAt: -1 })
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1)
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 50))
+    const skip = (page - 1) * limit
+
+    const [sessions, total] = await Promise.all([
+      LiveSession.find(filter)
+        .populate('courseId', 'name category')
+        .populate('teacherId', 'firstName lastName email')
+        .sort({ scheduledAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      LiveSession.countDocuments(filter),
+    ])
 
     res.status(200).json({
       success: true,
       count: sessions.length,
       sessions,
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
     })
   } catch (error) {
     res.status(500).json({ error: error.message })
