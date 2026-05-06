@@ -43,6 +43,23 @@ function RouteFallback() {
   )
 }
 
+// ==================== PREFETCH HEAVY CHUNKS ====================
+// After initial load, prefetch the two heaviest modules during browser idle time
+// so navigation to MCQs / admin pages feels instant.
+const prefetchMcqModule = () => import('./pages/McqModule')
+const prefetchRolePages = () => import('./pages/PlatformRolePages')
+if (typeof window !== 'undefined') {
+  const idlePrefetch = () => {
+    prefetchMcqModule()
+    prefetchRolePages()
+  }
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(idlePrefetch, { timeout: 3000 })
+  } else {
+    setTimeout(idlePrefetch, 2000)
+  }
+}
+
 // ==================== LAZY WRAPPERS ====================
 // These resolve named exports from lazy-loaded modules so React.lazy can use them.
 const LazyMcqCourseSelection = lazy(() =>

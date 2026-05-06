@@ -71,6 +71,7 @@ const lectureSchema = new mongoose.Schema(
 
 // ==================== INDEXES ====================
 lectureSchema.index({ courseId: 1, order: 1 })
+lectureSchema.index({ courseId: 1, isPublished: 1, createdAt: -1 })
 lectureSchema.index({ uploadedBy: 1 })
 
 module.exports = mongoose.model('Lecture', lectureSchema)

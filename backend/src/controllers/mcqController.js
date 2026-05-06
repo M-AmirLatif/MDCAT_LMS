@@ -26,11 +26,19 @@ const canManageCourse = (course, user) => {
 }
 
 const getSubjectCourse = async (subject) => {
+  return Course.findOne({ category: subject })
+    .select('_id category chapters name')
+    .sort({ createdAt: 1 })
+    .lean()
+}
+
+// Full Mongoose document — required for chapter CRUD that calls .save()
+const getSubjectCourseFull = async (subject) => {
   return Course.findOne({ category: subject }).sort({ createdAt: 1 })
 }
 
 const ensureSubjectCourse = async (subject, user) => {
-  let course = await getSubjectCourse(subject)
+  let course = await getSubjectCourseFull(subject)
   if (course) return course
 
   course = await Course.create({
@@ -392,7 +400,9 @@ exports.deleteMcq = async (req, res) => {
 // ==================== MDCAT SUBJECT SUMMARY ====================
 exports.getSubjectSummary = async (req, res) => {
   try {
-    const courses = await Course.find({ category: { $in: SUBJECTS } }).lean()
+    const courses = await Course.find({ category: { $in: SUBJECTS } })
+      .select('_id category chapters')
+      .lean()
     const courseBySubject = new Map(courses.map((course) => [course.category, course]))
     const courseIds = courses.map((course) => course._id)
 
@@ -498,7 +508,7 @@ exports.updateChapter = async (req, res) => {
     const subject = normalizeSubject(req.params.subject)
     if (!subject) return res.status(400).json({ error: 'Invalid subject' })
 
-    const course = await getSubjectCourse(subject)
+    const course = await getSubjectCourseFull(subject)
     if (!course) return res.status(404).json({ error: 'Subject course not found' })
     if (!canManageCourse(course, req.user)) {
       return res.status(403).json({ error: 'Not authorized to manage this subject' })
@@ -535,7 +545,7 @@ exports.deleteChapter = async (req, res) => {
     const subject = normalizeSubject(req.params.subject)
     if (!subject) return res.status(400).json({ error: 'Invalid subject' })
 
-    const course = await getSubjectCourse(subject)
+    const course = await getSubjectCourseFull(subject)
     if (!course) return res.status(404).json({ error: 'Subject course not found' })
     if (!canManageCourse(course, req.user)) {
       return res.status(403).json({ error: 'Not authorized to manage this subject' })
