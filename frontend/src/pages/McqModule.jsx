@@ -542,19 +542,10 @@ function QuizAttempt() {
   useEffect(() => {
     let alive = true
 
-    const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-
     const loadQuiz = async () => {
       setLoading(true)
       try {
-        let response = null
-        for (let attempt = 0; attempt < 3; attempt += 1) {
-          response = await API.get(`/mcqs/${subject}/${chapterId}`)
-          const loadedMcqs = response.data.mcqs || []
-          if (loadedMcqs.length || attempt === 2) break
-          await wait(700)
-          if (!alive) return
-        }
+        const response = await API.get(`/mcqs/${subject}/${chapterId}`)
 
         if (!alive || !response) return
         const loadedMcqs = response.data.mcqs || []
