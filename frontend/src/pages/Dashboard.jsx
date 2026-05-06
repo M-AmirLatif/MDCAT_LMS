@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   XAxis,
@@ -62,14 +62,13 @@ export default function Dashboard() {
     )
   }
 
-  const chartData = [
-    { name: 'Jan', tests: 40, score: 60 },
-    { name: 'Feb', tests: 30, score: 70 },
-    { name: 'Mar', tests: 60, score: 75 },
-    { name: 'Apr', tests: 80, score: 85 },
-    { name: 'May', tests: 45, score: 90 },
-    { name: 'Jun', tests: 70, score: 92 },
-  ]
+  // Chart data will populate from real test history — empty initially
+  const chartData = testSummary?.totalTests > 0
+    ? [
+        { name: 'Tests', tests: testSummary.totalTests, score: testSummary.avgPercentage || 0 },
+        { name: 'Best', tests: testSummary.totalTests, score: testSummary.bestPercentage || 0 },
+      ]
+    : []
 
   const subjectColor = (cat) => {
     const map = {
@@ -146,16 +145,16 @@ export default function Dashboard() {
 
                     <div className="filler-stats" aria-hidden="true">
                       <div className="mini">
-                        <div className="mini-k">Questions</div>
-                        <div className="mini-v">30.2M+</div>
+                        <div className="mini-k">Subjects</div>
+                        <div className="mini-v">4</div>
                       </div>
                       <div className="mini">
-                        <div className="mini-k">Rating</div>
-                        <div className="mini-v">4.71</div>
+                        <div className="mini-k">Tests Done</div>
+                        <div className="mini-v">{testSummary?.totalTests || 0}</div>
                       </div>
                       <div className="mini">
-                        <div className="mini-k">Students</div>
-                        <div className="mini-v">400K+</div>
+                        <div className="mini-k">Avg Score</div>
+                        <div className="mini-v">{testSummary?.avgPercentage || 0}%</div>
                       </div>
                     </div>
                   </div>
@@ -178,7 +177,7 @@ export default function Dashboard() {
                       <div
                         className="progress-bar-fill"
                         style={{
-                          width: `${Math.floor(Math.random() * 60) + 20}%`,
+                          width: '0%',
                           background: subjectColor(course.category),
                         }}
                       />

@@ -81,7 +81,7 @@ export default function Home() {
             <Link className="lp-btn lp-btn-ghost" to="/login">I Already Have an Account</Link>
             <Link className="lp-btn lp-btn-teal" to="/mcqs">Explore MDCAT Subjects</Link>
           </div>
-          <div className="lp-student-line">400.6k+ Online Registered Students</div>
+          <div className="lp-student-line">Join MDCAT aspirants preparing smarter, together</div>
         </div>
       </section>
 
@@ -109,7 +109,7 @@ export default function Home() {
 
       <section className="lp-section lp-section-dark">
         <div className="lp-container reveal">
-          <h2 className="lp-section-title lp-section-title-dark">Trusted by Thousands, Proven by Results</h2>
+          <h2 className="lp-section-title lp-section-title-dark">Built for Focused MDCAT Prep</h2>
           <div className="lp-stat-grid">
             {stats.map(([value, label, icon], index) => (
               <article className={`lp-stat lp-stat-${index % 4}`} key={label}>
@@ -141,7 +141,7 @@ export default function Home() {
 
       <footer className="lp-footer">
         <div className="lp-container lp-footer-inner">
-          <div className="lp-footer-brand"><span className="lp-mark">M</span><div><strong>MDCAT LMS</strong><small>Pakistan's #1 MDCAT Prep Platform</small></div></div>
+          <div className="lp-footer-brand"><span className="lp-mark">M</span><div><strong>MDCAT LMS</strong><small>Your MDCAT Prep Companion</small></div></div>
           <nav>
             <Link to="/">Home</Link>
             <Link to="/courses">Courses</Link>

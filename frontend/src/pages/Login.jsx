@@ -105,9 +105,9 @@ export default function Login() {
             <span className="auth-mark">M</span>
             <span className="auth-brand-name">MDCAT LMS</span>
           </div>
-          <div className="auth-mobile-stat"><i />400k+ Students</div>
+          <div className="auth-mobile-stat"><i />MDCAT Prep</div>
           <div className="auth-brand-content">
-            <div className="label-xs auth-kicker">Pakistan&apos;s #1 MDCAT Platform</div>
+            <div className="label-xs auth-kicker">Your MDCAT Prep Companion</div>
             <h1>Sign in to continue</h1>
             <p>Access your prep workspace, progress metrics, and role-specific tools.</p>
 
@@ -126,9 +126,9 @@ export default function Login() {
             </div>
 
             <div className="auth-stat-row">
-              <div><strong>84%</strong><span>Avg Mock Score</span></div>
-              <div><strong>8 PM</strong><span>Next Class</span></div>
-              <div><strong>400k+</strong><span>Students</span></div>
+              <div><strong>4</strong><span>Subjects</span></div>
+              <div><strong>Live</strong><span>Classes</span></div>
+              <div><strong>Free</strong><span>MCQ Bank</span></div>
             </div>
           </div>
         </section>

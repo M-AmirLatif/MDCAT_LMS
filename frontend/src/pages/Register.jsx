@@ -62,11 +62,11 @@ export default function Register() {
             <span className="auth-mark">M</span>
             <span className="auth-brand-name">MDCAT LMS</span>
           </div>
-          <div className="auth-mobile-stat"><i />400k+ Students</div>
+          <div className="auth-mobile-stat"><i />MDCAT Prep</div>
           <div className="auth-brand-content">
             <div className="label-xs auth-kicker">New to MDCAT LMS?</div>
             <h1>Create Your Account</h1>
-            <p>Join Pakistan&apos;s largest MDCAT prep platform. 400k+ students trust us.</p>
+            <p>Join Pakistan&apos;s focused MDCAT prep platform. Practice chapter-wise MCQs at home.</p>
 
             <div className="auth-register-steps">
               {[
@@ -88,10 +88,10 @@ export default function Register() {
               <span>Chapter-wise MCQs</span>
               <span>No OTP Email</span>
               <span>Mobile Friendly</span>
-              <span>400k+ Students</span>
+              <span>Growing Community</span>
               <span>Live Classes</span>
             </div>
-            <p className="auth-bottom-quote">Already helping 400k+ MDCAT aspirants achieve their dream of becoming doctors.</p>
+            <p className="auth-bottom-quote">Helping MDCAT aspirants achieve their dream of becoming doctors — one chapter at a time.</p>
           </div>
         </section>
 
