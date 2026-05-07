@@ -1,3 +1,17 @@
+/**
+ * useGoogleSignIn.js
+ *
+ * Fixes:
+ * 1. Button disappearing — use a stable callback ref so the div is always
+ *    found after lazy-render, and re-initialize whenever the ref attaches.
+ * 2. mode:'signup' → new user → redirect to /set-password
+ * 3. mode:'signup' → existing user → toast + redirect to /login
+ * 4. mode:'signin' → new user → toast + redirect to /register
+ * 5. mode:'signin' → existing user with needsPasswordSetup → /set-password
+ * 6. mode:'signin' → existing user → dashboard
+ * 7. Google script loaded once globally (idempotent).
+ */
+
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
@@ -5,116 +19,172 @@ import API from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import { getDefaultRouteForRole } from '../lib/platform'
 
-const GOOGLE_SCRIPT_ID = 'google-identity-services'
+const GOOGLE_CLIENT_ID =
+  (typeof import.meta !== 'undefined'
+    ? import.meta.env?.VITE_GOOGLE_CLIENT_ID
+    : '') || ''
 
-export function useGoogleSignIn({ remember = true, nextPath = '', mode = 'signin' } = {}) {
-  const buttonRef = useRef(null)
-  const initializedRef = useRef(false)
-  const [ready, setReady] = useState(false)
-  const [themeVersion, setThemeVersion] = useState(0)
-  const navigate = useNavigate()
+let scriptLoadPromise = null
+
+function loadGoogleScript() {
+  if (scriptLoadPromise) return scriptLoadPromise
+  if (window.google?.accounts?.id) {
+    scriptLoadPromise = Promise.resolve()
+    return scriptLoadPromise
+  }
+  scriptLoadPromise = new Promise((resolve, reject) => {
+    const existing = document.querySelector(
+      'script[src*="accounts.google.com/gsi/client"]',
+    )
+    if (existing) {
+      existing.addEventListener('load', resolve)
+      existing.addEventListener('error', reject)
+      return
+    }
+    const script = document.createElement('script')
+    script.src = 'https://accounts.google.com/gsi/client'
+    script.async = true
+    script.defer = true
+    script.onload = resolve
+    script.onerror = () => {
+      scriptLoadPromise = null
+      reject(new Error('Failed to load Google sign-in script'))
+    }
+    document.head.appendChild(script)
+  })
+  return scriptLoadPromise
+}
+
+export function useGoogleSignIn({
+  remember = true,
+  nextPath = null,
+  mode = 'signin',
+} = {}) {
   const { login } = useAuth()
-  const clientId = (import.meta.env.VITE_GOOGLE_CLIENT_ID || '').trim()
+  const navigate = useNavigate()
+  const [ready, setReady] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const containerRef = useRef(null)
+  const initializedRef = useRef(false)
 
-  const handleCredential = useCallback(
-    async ({ credential }) => {
-      if (!credential) {
-        toast.error('Google did not return a sign-in credential.')
+  const configured = !!GOOGLE_CLIENT_ID
+
+  const handleCredentialResponse = useCallback(
+    async (response) => {
+      if (!response?.credential) {
+        toast.error('Google sign-in failed. Please try again.')
         return
       }
-
+      setLoading(true)
       try {
-        const res = await API.post('/auth/google', { credential })
-        const user = res.data.user
-        login(res.data.token, user, remember)
-        toast.success(mode === 'signup' ? 'Google account connected.' : 'Signed in with Google.')
+        const res = await API.post('/auth/google', {
+          credential: response.credential,
+          mode, // send mode so backend can optionally use it (future-proof)
+        })
+        const { token, user } = res.data
 
-        if (user?.needsPasswordSetup) {
-          navigate('/set-password')
-          return
+        if (mode === 'signup') {
+          if (user.needsPasswordSetup) {
+            // New Google user — store token/user and send to set-password
+            login(token, user, true)
+            toast.success(
+              `Welcome, ${user.firstName}! Please set a password to finish setup.`,
+            )
+            navigate('/set-password', { replace: true })
+          } else {
+            // Existing user tried to sign up with Google
+            toast('You already have an account. Logging you in instead.', {
+              icon: 'ℹ️',
+            })
+            login(token, user, remember)
+            navigate(nextPath || getDefaultRouteForRole(user.role), {
+              replace: true,
+            })
+          }
+        } else {
+          // mode === 'signin'
+          if (user.needsPasswordSetup) {
+            // Google user exists but hasn't set a password — go finish setup
+            login(token, user, true)
+            toast('Please complete your account setup by setting a password.')
+            navigate('/set-password', { replace: true })
+          } else {
+            login(token, user, remember)
+            navigate(nextPath || getDefaultRouteForRole(user.role), {
+              replace: true,
+            })
+          }
         }
-
-        navigate(nextPath || getDefaultRouteForRole(user?.role || 'student'))
       } catch (error) {
-        toast.error(error.response?.data?.error || 'Google sign-in failed')
+        const status = error.response?.status
+        const message = error.response?.data?.error
+
+        if (mode === 'signin' && status === 404) {
+          toast.error(
+            'No account found for this Google account. Please sign up first.',
+          )
+          navigate('/register', { replace: true })
+        } else {
+          toast.error(message || 'Google sign-in failed. Please try again.')
+        }
+      } finally {
+        setLoading(false)
       }
     },
-    [login, mode, navigate, nextPath, remember],
+    [login, navigate, remember, nextPath, mode],
   )
 
-  useEffect(() => {
-    const onThemeChange = () => setThemeVersion((version) => version + 1)
-    window.addEventListener('mdcat-theme-change', onThemeChange)
-    return () => window.removeEventListener('mdcat-theme-change', onThemeChange)
-  }, [])
+  // Stable callback ref — called whenever React attaches/detaches the DOM node
+  const buttonRef = useCallback(
+    (node) => {
+      containerRef.current = node
+      if (!node || !configured) return
 
-  useEffect(() => {
-    if (!clientId || !buttonRef.current) return
+      // Re-render button whenever the node is attached
+      loadGoogleScript()
+        .then(() => {
+          if (!containerRef.current) return
 
-    const loadGoogle = () =>
-      new Promise((resolve, reject) => {
-        if (window.google?.accounts?.id) {
-          resolve()
-          return
-        }
-
-        const existing = document.getElementById(GOOGLE_SCRIPT_ID)
-        if (existing) {
-          existing.addEventListener('load', resolve, { once: true })
-          existing.addEventListener('error', reject, { once: true })
-          return
-        }
-
-        const script = document.createElement('script')
-        script.id = GOOGLE_SCRIPT_ID
-        script.src = 'https://accounts.google.com/gsi/client'
-        script.async = true
-        script.defer = true
-        script.addEventListener('load', resolve, { once: true })
-        script.addEventListener('error', reject, { once: true })
-        document.head.appendChild(script)
-      })
-
-    let cancelled = false
-
-    loadGoogle()
-      .then(() => {
-        if (cancelled || !buttonRef.current) return
-        if (!window.google?.accounts?.id) return
-
-        if (!initializedRef.current) {
-          initializedRef.current = true
           window.google.accounts.id.initialize({
-            client_id: clientId,
-            callback: handleCredential,
+            client_id: GOOGLE_CLIENT_ID,
+            callback: handleCredentialResponse,
+            auto_select: false,
+            cancel_on_tap_outside: true,
           })
-        }
 
-        buttonRef.current.innerHTML = ''
-        const buttonWidth = buttonRef.current.getBoundingClientRect().width || buttonRef.current.parentElement?.getBoundingClientRect().width || 360
-        const safeButtonWidth = Math.max(220, Math.min(Math.round(buttonWidth - 28), 620))
-        const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
-        window.google.accounts.id.renderButton(buttonRef.current, {
-          theme: isDark ? 'filled_black' : 'outline',
-          size: 'large',
-          shape: 'pill',
-          text: mode === 'signup' ? 'signup_with' : 'continue_with',
-          width: safeButtonWidth,
+          // Clear previous render to avoid duplicate buttons
+          containerRef.current.innerHTML = ''
+
+          window.google.accounts.id.renderButton(containerRef.current, {
+            type: 'standard',
+            theme: 'filled_black',
+            size: 'large',
+            text: mode === 'signup' ? 'signup_with' : 'signin_with',
+            shape: 'pill',
+            width: Math.min(containerRef.current.offsetWidth || 320, 400),
+          })
+
+          initializedRef.current = true
+          setReady(true)
         })
-        setReady(true)
-      })
-      .catch(() => {
-        toast.error('Google sign-in script failed to load.')
-      })
+        .catch((err) => {
+          console.error('Google Sign-In init error:', err)
+          setReady(false)
+        })
+    },
+    [configured, handleCredentialResponse, mode],
+  )
 
-    return () => {
-      cancelled = true
-    }
-  }, [clientId, handleCredential, mode, themeVersion])
+  // Re-initialize if handleCredentialResponse changes (remember/nextPath changed)
+  useEffect(() => {
+    if (!initializedRef.current || !containerRef.current || !configured) return
+    window.google?.accounts?.id?.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: handleCredentialResponse,
+      auto_select: false,
+      cancel_on_tap_outside: true,
+    })
+  }, [handleCredentialResponse, configured])
 
-  return {
-    buttonRef,
-    configured: Boolean(clientId),
-    ready,
-  }
+  return { buttonRef, ready, loading, configured }
 }

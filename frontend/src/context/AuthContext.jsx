@@ -1,16 +1,28 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from 'react'
 import API from '../services/api'
-import { clearAuth, getAuthToken, getAuthUser, setAuth, setStoredUser } from '../services/authStorage'
+import {
+  clearAuth,
+  getAuthToken,
+  getAuthUser,
+  setAuth,
+  setStoredUser,
+} from '../services/authStorage'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-  // Initialize from localStorage instantly — no loading flash for returning users
   const [user, setUser] = useState(() => getAuthUser())
   const [token, setToken] = useState(() => getAuthToken())
-  // If we have a cached user, render immediately (loading = false)
-  // Only show loading if there's a token but no cached user (edge case)
-  const [loading, setLoading] = useState(() => !!getAuthToken() && !getAuthUser())
+  // Show loading only when we have a token but no cached user (edge case)
+  const [loading, setLoading] = useState(
+    () => !!getAuthToken() && !getAuthUser(),
+  )
 
   useEffect(() => {
     let alive = true
@@ -22,7 +34,6 @@ export function AuthProvider({ children }) {
       try {
         const res = await API.get('/auth/profile')
         if (!alive) return
-        // Silently update user if server data differs from cache
         setUser(res.data.user)
         setStoredUser(res.data.user)
       } catch {
@@ -33,7 +44,9 @@ export function AuthProvider({ children }) {
       }
     }
     verifyAuth()
-    return () => { alive = false }
+    return () => {
+      alive = false
+    }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const login = useCallback((tokenValue, userData, remember = true) => {
@@ -54,6 +67,8 @@ export function AuthProvider({ children }) {
   }, [])
 
   const isAuthenticated = !!token && !!user
+  const needsPasswordSetup =
+    isAuthenticated && user?.needsPasswordSetup === true
   const isTeacher =
     user?.role === 'teacher' ||
     user?.role === 'admin' ||
@@ -67,6 +82,7 @@ export function AuthProvider({ children }) {
         token,
         loading,
         isAuthenticated,
+        needsPasswordSetup,
         isTeacher,
         isAdmin,
         login,

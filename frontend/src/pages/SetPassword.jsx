@@ -43,9 +43,10 @@ export default function SetPassword() {
     setLoading(true)
     try {
       const res = await API.post('/auth/set-password', { password })
+      // Update stored token + user — needsPasswordSetup will be false on the new user object
       storeLogin(res.data.token, res.data.user, true)
-      toast.success('Password set. You can now login with email + password.')
-      navigate('/dashboard')
+      toast.success('Password set! You can now log in with email and password.')
+      navigate('/dashboard', { replace: true })
     } catch (error) {
       toast.error(error.response?.data?.error || 'Failed to set password')
     } finally {
@@ -100,7 +101,9 @@ export default function SetPassword() {
               <span className="role-pill">Student Setup</span>
               <h1 className="auth-title">Set your password</h1>
               <p className="auth-subtitle">
-                {user?.email ? `Create a password for ${user.email}.` : 'Create a password for your account.'}
+                {user?.email
+                  ? `Create a password for ${user.email}.`
+                  : 'Create a password for your account.'}
               </p>
 
               <form className="auth-form" onSubmit={handleSubmit} autoComplete="off">
@@ -146,10 +149,16 @@ export default function SetPassword() {
                   </button>
                 </div>
 
-                <button className="auth-primary" type="submit" disabled={loading}>
-                  {loading ? 'Saving...' : 'Save Password'}
+                <button className="auth-primary" type="submit" disabled={loading || !passwordValid || !confirmValid}>
+                  {loading ? 'Saving…' : 'Save Password'}
                 </button>
-                <p className="auth-footer">Already completed setup? <button type="button" onClick={() => navigate('/dashboard')}>Go to dashboard</button></p>
+
+                <p className="auth-footer">
+                  Already completed setup?{' '}
+                  <button type="button" onClick={() => navigate('/dashboard', { replace: true })}>
+                    Go to dashboard
+                  </button>
+                </p>
               </form>
             </div>
           </div>
