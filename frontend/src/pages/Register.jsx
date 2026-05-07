@@ -1,87 +1,10 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import toast from 'react-hot-toast'
 import { useGoogleSignIn } from '../hooks/useGoogleSignIn'
 import ThemeToggle from '../components/ThemeToggle'
+import { Link } from 'react-router-dom'
 import './Auth.css'
 
-function MailIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      width="20"
-      height="20"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path
-        d="M4 7h16v10H4V7Zm0 0 8 6 8-6"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-      />
-    </svg>
-  )
-}
-
-function LockIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      width="20"
-      height="20"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path
-        d="M7 10V8a5 5 0 1 1 10 0v2"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <rect
-        x="5"
-        y="10"
-        width="14"
-        height="10"
-        rx="3"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <circle cx="12" cy="15" r="1.4" fill="currentColor" />
-    </svg>
-  )
-}
-
 export default function Register() {
-  // mode:'signup' → new user → /set-password; existing user → logged in + toast
   const googleSignIn = useGoogleSignIn({ remember: true, mode: 'signup' })
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [termsAccepted, setTermsAccepted] = useState(false)
-  const [editableFields, setEditableFields] = useState({
-    email: false,
-    password: false,
-    confirmPassword: false,
-  })
-
-  const emailValid = /\S+@\S+\.\S+/.test(email)
-  const passwordValid = password.trim().length >= 6
-  const confirmPasswordValid =
-    confirmPassword.trim().length > 0 && confirmPassword === password
-
-  const handleCreateAccount = (event) => {
-    event.preventDefault()
-    // Email+password self-registration is disabled on the backend (returns 403).
-    // Guide user to Google sign-up instead.
-    toast('Please use "Continue with Google" to create your account.', {
-      icon: 'ℹ️',
-    })
-  }
 
   return (
     <div className="auth-page">
@@ -152,12 +75,11 @@ export default function Register() {
             <div className="auth-card auth-card--platform">
               <h1 className="auth-title">Create your student account</h1>
               <p className="auth-subtitle">
-                Sign up with Google to get started instantly. Existing accounts
-                will be logged in automatically.
+                Sign up with Google to get started. You&apos;ll set a password
+                right after to enable email + password login too.
               </p>
 
               <div className="auth-form">
-                {/* Google sign-up — primary CTA */}
                 <div className="auth-google-block auth-google-block--register">
                   {googleSignIn.configured ? (
                     <>
@@ -183,129 +105,7 @@ export default function Register() {
                   )}
                 </div>
 
-                <div className="auth-divider">
-                  <span>or fill in manually (staff accounts)</span>
-                </div>
-
-                <div
-                  className={`floating-field auth-input-shell ${email ? 'auth-input-shell--filled' : ''} ${emailValid ? 'auth-input-shell--valid' : ''}`}
-                >
-                  <span className="auth-input-icon" aria-hidden="true">
-                    <MailIcon />
-                  </span>
-                  <label htmlFor="register-email">Email</label>
-                  <input
-                    id="register-email"
-                    name="register-email"
-                    type="email"
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                    onFocus={() =>
-                      setEditableFields((current) => ({
-                        ...current,
-                        email: true,
-                      }))
-                    }
-                    placeholder="student@mdcat.pk"
-                    autoComplete="new-password"
-                    data-lpignore="true"
-                    data-form-type="other"
-                    readOnly={!editableFields.email}
-                  />
-                </div>
-
-                <div
-                  className={`floating-field auth-input-shell auth-password-field ${password ? 'auth-input-shell--filled' : ''} ${passwordValid ? 'auth-input-shell--valid' : ''}`}
-                >
-                  <span className="auth-input-icon" aria-hidden="true">
-                    <LockIcon />
-                  </span>
-                  <label htmlFor="register-password">Password</label>
-                  <input
-                    id="register-password"
-                    name="register-password"
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(event) => setPassword(event.target.value)}
-                    onFocus={() =>
-                      setEditableFields((current) => ({
-                        ...current,
-                        password: true,
-                      }))
-                    }
-                    placeholder="Create a password (min 6 chars)"
-                    autoComplete="new-password"
-                    data-lpignore="true"
-                    data-form-type="other"
-                    readOnly={!editableFields.password}
-                  />
-                  <button
-                    className="auth-inline-toggle"
-                    type="button"
-                    onClick={() => setShowPassword((current) => !current)}
-                  >
-                    {showPassword ? 'Hide' : 'Show'}
-                  </button>
-                </div>
-
-                <div
-                  className={`floating-field auth-input-shell auth-password-field ${confirmPassword ? 'auth-input-shell--filled' : ''} ${confirmPasswordValid ? 'auth-input-shell--valid' : ''}`}
-                >
-                  <span className="auth-input-icon" aria-hidden="true">
-                    <LockIcon />
-                  </span>
-                  <label htmlFor="register-confirm-password">
-                    Confirm Password
-                  </label>
-                  <input
-                    id="register-confirm-password"
-                    name="register-confirm-password"
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    value={confirmPassword}
-                    onChange={(event) => setConfirmPassword(event.target.value)}
-                    onFocus={() =>
-                      setEditableFields((current) => ({
-                        ...current,
-                        confirmPassword: true,
-                      }))
-                    }
-                    placeholder="Confirm your password"
-                    autoComplete="new-password"
-                    data-lpignore="true"
-                    data-form-type="other"
-                    readOnly={!editableFields.confirmPassword}
-                  />
-                  <button
-                    className="auth-inline-toggle"
-                    type="button"
-                    onClick={() =>
-                      setShowConfirmPassword((current) => !current)
-                    }
-                  >
-                    {showConfirmPassword ? 'Hide' : 'Show'}
-                  </button>
-                </div>
-
-                <label className="checkbox auth-terms auth-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={termsAccepted}
-                    onChange={(event) => setTermsAccepted(event.target.checked)}
-                  />
-                  <span>
-                    I agree to the <Link to="/terms">terms</Link> and{' '}
-                    <Link to="/privacy">privacy policy</Link>.
-                  </span>
-                </label>
-
-                <button
-                  className="auth-primary"
-                  type="button"
-                  onClick={handleCreateAccount}
-                >
-                  Create Account
-                </button>
-                <p className="auth-footer">
+                <p className="auth-footer" style={{ marginTop: '1.5rem' }}>
                   Already have an account? <Link to="/login">Log in</Link>
                 </p>
               </div>
