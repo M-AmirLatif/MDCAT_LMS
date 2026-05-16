@@ -152,6 +152,7 @@ exports.getMyTestHistory = async (req, res) => {
     const [total, sessions] = await Promise.all([
       TestSession.countDocuments(filter),
       TestSession.find(filter)
+        .populate('studentId', 'firstName lastName email')
         .populate('courseId', 'name category')
         .select(
           'courseId studentId subject chapterId chapterName score negativeScore finalScore totalQuestions percentage topic submittedAt timeSpentSeconds',

@@ -12,6 +12,7 @@ import {
   YAxis,
 } from 'recharts'
 import { useAuth } from '../context/AuthContext'
+import useMcqSubjectSummary from '../hooks/useMcqSubjectSummary'
 import useStudentPerformanceData from '../hooks/useStudentPerformanceData'
 import useThemeMode from '../hooks/useThemeMode'
 import './PlatformPages.css'
@@ -21,7 +22,6 @@ import {
   mdcatSubjects,
   SUBJECT_STYLES,
   studentNotifications,
-  teacherMcqSummary,
   teacherStudents,
 } from './platformContent'
 
@@ -175,7 +175,9 @@ function StudentDashboard({ firstName }) {
 }
 
 function TeacherDashboard() {
-  const totalMcqs = teacherMcqSummary.reduce((sum, item) => sum + item.mcqs, 0)
+  const { subjects, totals, teacherSummary } = useMcqSubjectSummary()
+  const totalMcqs = totals.totalMcqs
+  const totalChapters = totals.totalChapters
 
   return (
     <div className="workspace-page animate-fade-up">
@@ -194,7 +196,7 @@ function TeacherDashboard() {
             <div className="hero-mini-card">
               <span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Total Uploaded MCQs</span>
               <strong>{totalMcqs}</strong>
-              <p>Real teacher uploads will appear here</p>
+              <p>Live chapter-wise bank count</p>
             </div>
             <div className="hero-mini-card">
               <span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Student Attempts</span>
@@ -206,8 +208,8 @@ function TeacherDashboard() {
       </section>
 
       <div className="workspace-columns-4">
-        <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Total MCQs</span><span className="badge badge-teal">Bank</span></div><strong>{totalMcqs}</strong><small>No demo MCQs are loaded</small></div>
-        <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Total Chapters</span><span className="badge badge-purple">Coverage</span></div><strong>0</strong><small>Teachers will create real chapters</small></div>
+        <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Total MCQs</span><span className="badge badge-teal">Bank</span></div><strong>{totalMcqs}</strong><small>Live count from uploaded subject banks</small></div>
+        <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Total Chapters</span><span className="badge badge-purple">Coverage</span></div><strong>{totalChapters}</strong><small>Chapter count across MDCAT subjects</small></div>
         <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Student Attempts</span><span className="badge badge-amber">Active</span></div><strong>0</strong><small>Attempts will appear after launch</small></div>
         <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>Average Score</span><span className="badge badge-coral">Class</span></div><strong>0%</strong><small>Analytics will use real submissions</small></div>
       </div>
@@ -222,7 +224,7 @@ function TeacherDashboard() {
         </div>
         <div className="workspace-card-body">
           <div className="workspace-columns-4">
-            {mdcatSubjects.map((subject) => {
+            {subjects.map((subject) => {
               const style = SUBJECT_STYLES[subject.name]
               return (
                 <article key={subject.id} className={`teacher-subject-bank ${style.className}`}>
@@ -251,7 +253,7 @@ function TeacherDashboard() {
         <div className="workspace-card">
           <div className="workspace-card-head"><div><div className="label-xs">MCQ Coverage</div><h3 className="workspace-card-title">MCQs by subject</h3></div></div>
           <div className="workspace-card-body list-stack">
-            {teacherMcqSummary.map((item) => (
+            {teacherSummary.map((item) => (
               <div key={item.subject} className="course-manage-card" style={{ padding: '18px' }}>
                 <div className="workspace-card-title-row">
                   <strong>{item.subject}</strong>
@@ -292,7 +294,8 @@ function TeacherDashboard() {
 
 function AdminDashboard() {
   const chartTheme = useThemeMode()
-  const subjectMix = mdcatSubjects.map((subject) => ({
+  const { subjects, totals } = useMcqSubjectSummary()
+  const subjectMix = subjects.map((subject) => ({
     name: subject.name,
     value: subject.totalMcqs,
     fill: subject.name === 'Biology' ? '#1db884' : subject.name === 'Chemistry' ? '#6c47ff' : subject.name === 'Physics' ? '#4a90e2' : '#f59e0b',
@@ -316,8 +319,8 @@ function AdminDashboard() {
 
       <div className="workspace-columns-4">
         <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Total Subjects</span><span className="badge badge-purple">Fixed</span></div><strong>4</strong><small>Biology, Chemistry, Physics, English</small></div>
-        <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Total Chapters</span><span className="badge badge-teal">Organized</span></div><strong>0</strong><small>Real chapters will appear after teacher uploads</small></div>
-        <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Total MCQs</span><span className="badge badge-amber">Moderated</span></div><strong>0</strong><small>No demo MCQs are loaded</small></div>
+        <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Total Chapters</span><span className="badge badge-teal">Organized</span></div><strong>{totals.totalChapters}</strong><small>Live chapter coverage across all subjects</small></div>
+        <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Total MCQs</span><span className="badge badge-amber">Moderated</span></div><strong>{totals.totalMcqs}</strong><small>Live MCQ count across all subject banks</small></div>
         <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>Teacher Uploads</span><span className="badge badge-coral">Review</span></div><strong>0</strong><small>Moderation queue is empty</small></div>
       </div>
 

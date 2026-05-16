@@ -12,6 +12,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import useTeacherAnalyticsData from '../hooks/useTeacherAnalyticsData'
 import './PlatformPages.css'
 import {
   adminStudents,
@@ -155,38 +156,67 @@ export function TeacherAssignmentsPage() {
 }
 
 export function TeacherAnalyticsPage() {
+  const { summary, scoreDistribution, subjectMastery, multiStudentTrend, loading } = useTeacherAnalyticsData()
+  const trendLines = multiStudentTrend.length > 0
+    ? Object.keys(multiStudentTrend.reduce((merged, item) => ({ ...merged, ...item }), {})).filter((key) => key !== 'label')
+    : []
+  const trendColors = ['#6c47ff', '#ff6b6b', '#1db884']
+
   return (
     <div className="workspace-page animate-fade-up">
       <div className="workspace-columns-4">
-        <div className="stat-tile"><span>Class Average</span><strong>0%</strong></div>
-        <div className="stat-tile"><span>Submission Rate</span><strong>0%</strong></div>
-        <div className="stat-tile"><span>Live Attendance</span><strong>0%</strong></div>
-        <div className="stat-tile"><span>At Risk</span><strong>0</strong></div>
+        <div className="stat-tile"><span>Class Average</span><strong>{summary.classAverage}%</strong></div>
+        <div className="stat-tile"><span>Submission Rate</span><strong>{summary.submissionRate}%</strong></div>
+        <div className="stat-tile"><span>Live Attendance</span><strong>{summary.liveAttendance}%</strong></div>
+        <div className="stat-tile"><span>At Risk</span><strong>{summary.atRisk}</strong></div>
       </div>
 
       <div className="workspace-section-grid">
         <div className="workspace-card">
           <div className="workspace-card-head"><div><div className="label-xs">Distribution</div><h2 className="workspace-card-title">Score distribution</h2></div></div>
           <div className="workspace-card-body chart-panel">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={scoreDistribution}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(108,71,255,0.08)" />
-                <XAxis dataKey="band" axisLine={false} tickLine={false} />
-                <YAxis axisLine={false} tickLine={false} />
-                <Tooltip />
-                <Bar dataKey="count" fill="#1db884" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {!loading && scoreDistribution.some((item) => item.count > 0) ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={scoreDistribution}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(108,71,255,0.08)" />
+                  <XAxis dataKey="band" axisLine={false} tickLine={false} />
+                  <YAxis axisLine={false} tickLine={false} />
+                  <Tooltip />
+                  <Bar dataKey="count" fill="#1db884" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="empty-state empty-state--compact">
+                <div className="empty-orb" />
+                <h3>No submissions yet</h3>
+                <p>Score distribution will appear after students attempt your MCQ banks.</p>
+              </div>
+            )}
           </div>
         </div>
 
         <div className="workspace-card">
           <div className="workspace-card-head"><div><div className="label-xs">Heatmap</div><h3 className="workspace-card-title">Subject mastery</h3></div></div>
           <div className="workspace-card-body heatmap-grid">
-            <div className="heat-cell" style={{ background: '#1db884' }}><span>Biology</span><strong>0</strong></div>
-            <div className="heat-cell" style={{ background: '#4a90e2' }}><span>Physics</span><strong>0</strong></div>
-            <div className="heat-cell" style={{ background: '#f59e0b' }}><span>Chemistry</span><strong>0</strong></div>
-            <div className="heat-cell" style={{ background: '#6c47ff' }}><span>English</span><strong>0</strong></div>
+            {subjectMastery.map((item) => (
+              <div
+                key={item.subject}
+                className="heat-cell"
+                style={{
+                  background:
+                    item.subject === 'Biology'
+                      ? '#1db884'
+                      : item.subject === 'Physics'
+                        ? '#4a90e2'
+                        : item.subject === 'Chemistry'
+                          ? '#f59e0b'
+                          : '#6c47ff',
+                }}
+              >
+                <span>{item.subject}</span>
+                <strong>{item.score}%</strong>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -194,18 +224,26 @@ export function TeacherAnalyticsPage() {
       <div className="workspace-card">
         <div className="workspace-card-head"><div><div className="label-xs">Comparison</div><h3 className="workspace-card-title">Multi-student line chart</h3></div></div>
         <div className="workspace-card-body chart-panel">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={multiStudentTrend}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(108,71,255,0.08)" />
-              <XAxis dataKey="week" axisLine={false} tickLine={false} />
-              <YAxis axisLine={false} tickLine={false} domain={[40, 100]} />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="ayesha" stroke="#6c47ff" strokeWidth={3} />
-              <Line type="monotone" dataKey="usman" stroke="#1db884" strokeWidth={3} />
-              <Line type="monotone" dataKey="iqra" stroke="#ff6b6b" strokeWidth={3} />
-            </LineChart>
-          </ResponsiveContainer>
+          {!loading && trendLines.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={multiStudentTrend}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(108,71,255,0.08)" />
+                <XAxis dataKey="label" axisLine={false} tickLine={false} />
+                <YAxis axisLine={false} tickLine={false} domain={[0, 100]} />
+                <Tooltip />
+                <Legend />
+                {trendLines.map((lineKey, index) => (
+                  <Line key={lineKey} type="monotone" dataKey={lineKey} stroke={trendColors[index % trendColors.length]} strokeWidth={3} connectNulls />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="empty-state empty-state--compact">
+              <div className="empty-orb" />
+              <h3>No multi-student trend yet</h3>
+              <p>Student comparison will appear after multiple attempts are recorded.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
