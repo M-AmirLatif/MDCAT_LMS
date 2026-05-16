@@ -443,4 +443,29 @@
   .mobile-nav-item--logout {
     color: #ff6b6b;
   }
+
+  /* Dark mode: mobile bottom nav */
+  [data-theme="dark"] .mobile-bottom-nav {
+    background: rgba(12, 10, 30, 0.96);
+    border-top-color: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(16px);
+  }
+
+  [data-theme="dark"] .mobile-nav-item {
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  [data-theme="dark"] .mobile-nav-item--active {
+    background: rgba(139, 111, 255, 0.14);
+    color: #A590FF;
+  }
+
+  [data-theme="dark"] .mobile-nav-item--logout {
+    color: #FF8A8A;
+  }
+
+  [data-theme="dark"] .theme-toggle--mobile-nav {
+    background: rgba(139, 111, 255, 0.14);
+    color: #A590FF;
+  }
 }

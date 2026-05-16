@@ -1098,15 +1098,8 @@ html[data-theme="dark"] .badge-purple {
   color: #A590FF !important;
 }
 
-*, *::before, *::after {
-  transition:
-    background-color 250ms ease,
-    border-color 250ms ease,
-    color 250ms ease,
-    box-shadow 250ms ease,
-    opacity 250ms ease !important;
-}
-
+/* Theme transitions already handled by scoped rules in index.css.
+   The previous *, *::before, *::after rule was extremely expensive. */
 img,
 svg,
 video,

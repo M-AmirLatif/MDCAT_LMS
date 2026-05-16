@@ -205,8 +205,8 @@
 }
 
 .workspace-card {
-  background: #fff;
-  border: 0.5px solid rgba(108, 71, 255, 0.12);
+  background: var(--bg-surface, #fff);
+  border: 0.5px solid var(--border-card, rgba(108, 71, 255, 0.12));
   border-radius: 14px;
   box-shadow: var(--shadow-card);
   transition: transform var(--ease), box-shadow var(--ease), border-color var(--ease);
@@ -854,8 +854,8 @@
   box-sizing: border-box;
   padding: 14px 18px;
   border-radius: 14px;
-  background: #faf8ff;
-  border: 1.25px solid rgba(108, 71, 255, 0.13);
+  background: var(--bg-hover, #faf8ff);
+  border: 1.25px solid var(--border-card, rgba(108, 71, 255, 0.13));
   min-height: 118px;
   display: flex;
   flex-direction: column;
@@ -921,8 +921,8 @@
 .stat-tile {
   padding: 18px;
   border-radius: 14px;
-  border: 0.5px solid rgba(108, 71, 255, 0.12);
-  background: #fff;
+  border: 0.5px solid var(--border-card, rgba(108, 71, 255, 0.12));
+  background: var(--bg-surface, #fff);
   box-shadow: var(--shadow-card);
   transition: transform var(--ease), box-shadow var(--ease);
   position: relative;
@@ -1018,8 +1018,9 @@
 .action-box {
   padding: 16px;
   border-radius: 16px;
-  border: 0.5px solid rgba(108, 71, 255, 0.12);
-  background: linear-gradient(180deg, #fff 0%, #faf8ff 100%);
+  border: 0.5px solid var(--border-card, rgba(108, 71, 255, 0.12));
+  background:
+    linear-gradient(180deg, var(--bg-surface, #fff) 0%, var(--bg-hover, #faf8ff) 100%);
   text-align: left;
 }
 
@@ -1042,8 +1043,8 @@
   gap: 8px;
   padding: 10px 16px;
   border-radius: 999px;
-  border: 1px solid rgba(108, 71, 255, 0.12);
-  background: #fff;
+  border: 1px solid var(--border-card, rgba(108, 71, 255, 0.12));
+  background: var(--bg-surface, #fff);
   color: var(--purple);
   font-weight: 700;
 }
@@ -1063,8 +1064,8 @@
 .session-card,
 .course-manage-card {
   border-radius: 14px;
-  border: 0.5px solid rgba(108, 71, 255, 0.12);
-  background: #fff;
+  border: 0.5px solid var(--border-card, rgba(108, 71, 255, 0.12));
+  background: var(--bg-surface, #fff);
   box-shadow: var(--shadow-card);
 }
 
@@ -1160,7 +1161,8 @@
 
 .subject-card-body {
   padding: 20px;
-  background: linear-gradient(180deg, #ffffff 0%, #faf8ff 100%);
+  background:
+    linear-gradient(180deg, var(--bg-surface, #ffffff) 0%, var(--bg-hover, #faf8ff) 100%);
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -1619,7 +1621,7 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--purple);
-  background: #F4F2FF;
+  background: var(--bg-hover, #F4F2FF);
 }
 
 .simple-table tr:last-child td {
@@ -1647,8 +1649,8 @@
   gap: 14px;
   padding: 16px;
   border-radius: 14px;
-  background: #fff;
-  border: 0.5px solid rgba(108, 71, 255, 0.1);
+  background: var(--bg-surface, #fff);
+  border: 0.5px solid var(--border-card, rgba(108, 71, 255, 0.1));
 }
 
 .timeline-dot,
@@ -1694,8 +1696,9 @@
 .summary-card {
   padding: 24px 20px;
   border-radius: 18px;
-  border: 0.5px solid rgba(108, 71, 255, 0.12);
-  background: linear-gradient(180deg, #fff 0%, #faf8ff 100%);
+  border: 0.5px solid var(--border-card, rgba(108, 71, 255, 0.12));
+  background:
+    linear-gradient(180deg, var(--bg-surface, #fff) 0%, var(--bg-hover, #faf8ff) 100%);
   box-shadow: var(--shadow-card);
 }
 
@@ -1844,8 +1847,8 @@
   gap: 14px;
   padding: 18px;
   border-radius: 18px;
-  border: 1px solid rgba(108, 71, 255, 0.1);
-  background: #fff;
+  border: 1px solid var(--border-card, rgba(108, 71, 255, 0.1));
+  background: var(--bg-surface, #fff);
   box-shadow: 0 16px 32px rgba(108, 71, 255, 0.08);
 }
 
@@ -2415,7 +2418,8 @@
   text-align: center;
   border-radius: 18px;
   border: 1px dashed rgba(108, 71, 255, 0.22);
-  background: linear-gradient(180deg, #fff 0%, #faf8ff 100%);
+  background:
+    linear-gradient(180deg, var(--bg-surface, #fff) 0%, var(--bg-hover, #faf8ff) 100%);
 }
 
 .empty-state {
@@ -2425,7 +2429,8 @@
   padding: 36px 24px;
   border-radius: 18px;
   border: 1px dashed rgba(108, 71, 255, 0.2);
-  background: linear-gradient(180deg, #fff 0%, #faf8ff 100%);
+  background:
+    linear-gradient(180deg, var(--bg-surface, #fff) 0%, var(--bg-hover, #faf8ff) 100%);
   text-align: center;
 }
 
@@ -2556,10 +2561,15 @@
   gap: 12px;
   padding: 14px 16px;
   border-radius: 14px;
-  background: #fff;
+  background: var(--bg-surface, #fff);
   border-left: 3px solid var(--teal);
   box-shadow: 0 16px 36px rgba(15, 15, 26, 0.12);
   color: #0F6E56;
+}
+
+[data-theme="dark"] .profile-toast {
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.36);
+  color: var(--teal);
 }
 
 .profile-toast-icon {
@@ -2741,8 +2751,8 @@
   gap: 14px;
   padding: 14px 16px;
   border-radius: 14px;
-  background: #faf8ff;
-  border: 1px solid rgba(108, 71, 255, 0.08);
+  background: var(--bg-hover, #faf8ff);
+  border: 1px solid var(--border-card, rgba(108, 71, 255, 0.08));
 }
 
 .dashboard-course-card {
@@ -3118,10 +3128,14 @@
 
 [data-theme="light"] .workspace-page--mcq-list,
 .workspace-page--mcq-list {
-  background: #F3F4F6 !important;
+  background: var(--bg-surface-2, #F3F4F6) !important;
   margin: -8px;
   padding: 18px;
   border-radius: 22px;
+}
+
+[data-theme="dark"] .workspace-page--mcq-list {
+  background: var(--bg-surface, #12102A) !important;
 }
 
 @media (max-width: 1200px) {
@@ -3148,11 +3162,11 @@
   position: relative !important;
   overflow: hidden !important;
   padding: 28px !important;
-  border: 1px solid #E5E7EB !important;
-  border-left: 4px solid #7C3AED !important;
+  border: 1px solid var(--border-card, rgba(108, 71, 255, 0.12)) !important;
+  border-left: 4px solid var(--purple, #7C3AED) !important;
   border-radius: 16px !important;
-  background: #FFFFFF !important;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08) !important;
+  background: var(--bg-surface, #FFFFFF) !important;
+  box-shadow: var(--shadow-card, 0 2px 12px rgba(0, 0, 0, 0.08)) !important;
   transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease !important;
 }
 
@@ -3215,9 +3229,9 @@
   display: grid !important;
   gap: 10px !important;
   padding: 16px 18px !important;
-  border: 1px solid #E5E7EB !important;
+  border: 1px solid var(--border-card, rgba(108, 71, 255, 0.10)) !important;
   border-radius: 12px !important;
-  background: #F9FAFB !important;
+  background: var(--bg-hover, #F9FAFB) !important;
 }
 
 .teacher-mcq-question-field textarea {
@@ -3247,9 +3261,9 @@
   gap: 10px !important;
   min-width: 0 !important;
   padding: 16px !important;
-  border: 1px solid #E5E7EB !important;
+  border: 1px solid var(--border-card, rgba(108, 71, 255, 0.10)) !important;
   border-radius: 10px !important;
-  background: #F3F4F6 !important;
+  background: var(--bg-hover, #F3F4F6) !important;
   box-shadow: none !important;
   transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
 }
@@ -3268,8 +3282,8 @@
 .teacher-mcq-editor-bottom label,
 .teacher-mcq-question-field label {
   display: block !important;
-  color: #7C3AED !important;
-  -webkit-text-fill-color: #7C3AED !important;
+  color: var(--purple, #7C3AED) !important;
+  -webkit-text-fill-color: var(--purple, #7C3AED) !important;
   font-size: 11px !important;
   font-weight: 900 !important;
   letter-spacing: 0.05em !important;
@@ -3445,23 +3459,23 @@
 }
 
 .workspace-hero .inline-actions .btn-primary {
-  background: #7C3AED !important;
+  background: var(--purple, #7C3AED) !important;
   color: #FFFFFF !important;
   -webkit-text-fill-color: #FFFFFF !important;
 }
 
 .workspace-hero .inline-actions .btn-secondary:first-child {
-  border-color: #D1D5DB !important;
-  color: #374151 !important;
-  -webkit-text-fill-color: #374151 !important;
-  background: #FFFFFF !important;
+  border-color: var(--border-card, #D1D5DB) !important;
+  color: var(--text-primary, #374151) !important;
+  -webkit-text-fill-color: var(--text-primary, #374151) !important;
+  background: var(--bg-surface, #FFFFFF) !important;
 }
 
 .workspace-hero .inline-actions .btn-secondary:not(:first-child) {
-  border-color: #7C3AED !important;
-  color: #7C3AED !important;
-  -webkit-text-fill-color: #7C3AED !important;
-  background: #FFFFFF !important;
+  border-color: var(--purple, #7C3AED) !important;
+  color: var(--purple, #7C3AED) !important;
+  -webkit-text-fill-color: var(--purple, #7C3AED) !important;
+  background: var(--bg-surface, #FFFFFF) !important;
 }
 
 [data-theme="dark"] .teacher-mcq-row--editor {

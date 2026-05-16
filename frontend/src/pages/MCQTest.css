@@ -1,3 +1,7 @@
+/* ═══════════════════════════════════════════════
+   MCQ Quiz Attempt — Premium Practice UI
+   ═══════════════════════════════════════════════ */
+
 .mcq-practice-page {
   min-height: 100%;
 }
@@ -11,30 +15,36 @@
 .mcq-progress-card,
 .mcq-question-card,
 .mcq-result-card {
-  background: #fff;
-  border: 1px solid rgba(108, 71, 255, 0.12);
-  border-radius: 18px;
+  background: var(--bg-surface, #fff);
+  border: 1px solid var(--border-card, rgba(108, 71, 255, 0.12));
+  border-radius: 20px;
   box-shadow: var(--shadow-card);
 }
 
+/* ── Header ── */
 .mcq-practice-top {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 18px;
-  padding: 24px;
-  background: linear-gradient(135deg, rgba(108, 71, 255, 0.08), rgba(74, 144, 226, 0.06));
+  padding: 28px;
+  background:
+    linear-gradient(135deg, rgba(108, 71, 255, 0.07), rgba(74, 144, 226, 0.05)),
+    var(--bg-surface, #fff);
+  border-bottom: 3px solid var(--purple, #6C47FF);
 }
 
 .mcq-practice-top h1 {
   margin: 8px 0 8px;
   font-size: 28px;
+  letter-spacing: -0.02em;
 }
 
+/* ── Cards ── */
 .mcq-progress-card,
 .mcq-question-card,
 .mcq-result-card {
-  padding: 22px;
+  padding: 24px;
 }
 
 .mcq-progress-row {
@@ -48,9 +58,10 @@
 }
 
 .mcq-progress-row strong {
-  color: var(--heading);
+  color: var(--heading, var(--text-primary));
 }
 
+/* ── Question Meta ── */
 .mcq-question-meta {
   display: flex;
   flex-wrap: wrap;
@@ -59,11 +70,13 @@
 }
 
 .mcq-question-card h2 {
-  margin-bottom: 18px;
-  font-size: 24px;
-  line-height: 1.4;
+  margin-bottom: 22px;
+  font-size: 22px;
+  line-height: 1.45;
+  color: var(--text-primary);
 }
 
+/* ── Options Grid ── */
 .mcq-options-grid {
   display: grid;
   gap: 12px;
@@ -72,73 +85,203 @@
 .mcq-option-card {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   width: 100%;
-  padding: 16px 18px;
+  padding: 18px 20px;
   border-radius: 16px;
-  border: 1px solid rgba(108, 71, 255, 0.12);
-  background: linear-gradient(180deg, #fff 0%, #faf8ff 100%);
-  color: var(--heading);
+  border: 1.5px solid var(--border-card, rgba(108, 71, 255, 0.12));
+  background: var(--bg-surface, #fff);
+  color: var(--text-primary);
   text-align: left;
-  transition: transform var(--ease), border-color var(--ease), box-shadow var(--ease), background var(--ease);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  cursor: pointer;
+  transition:
+    transform 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease,
+    background 200ms ease;
 }
 
 .mcq-option-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(108, 71, 255, 0.24);
-  box-shadow: 0 10px 24px rgba(108, 71, 255, 0.08);
+  border-color: rgba(108, 71, 255, 0.28);
+  box-shadow: 0 10px 28px rgba(108, 71, 255, 0.08);
+  background: var(--bg-hover, #F0EDFF);
 }
 
 .mcq-option-card--selected {
-  border-color: #6c47ff;
-  background: linear-gradient(180deg, rgba(108, 71, 255, 0.12) 0%, rgba(74, 144, 226, 0.08) 100%);
-  box-shadow: 0 10px 24px rgba(108, 71, 255, 0.12);
+  border-color: var(--purple, #6c47ff);
+  background:
+    linear-gradient(135deg, rgba(108, 71, 255, 0.10), rgba(74, 144, 226, 0.06));
+  box-shadow:
+    0 0 0 3px rgba(108, 71, 255, 0.12),
+    0 10px 28px rgba(108, 71, 255, 0.10);
 }
 
 .mcq-option-letter {
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(108, 71, 255, 0.1);
-  color: var(--purple);
+  background: rgba(108, 71, 255, 0.10);
+  color: var(--purple, #6C47FF);
   font-weight: 800;
+  font-size: 15px;
   flex-shrink: 0;
+  transition: background 200ms ease, color 200ms ease, box-shadow 200ms ease;
 }
 
 .mcq-option-card--selected .mcq-option-letter {
-  background: var(--grad-purple);
+  background: var(--grad-purple, linear-gradient(135deg, #6C47FF, #4A90E2));
   color: #fff;
+  box-shadow: 0 8px 20px rgba(108, 71, 255, 0.22);
 }
 
+/* ── Navigation Actions ── */
 .mcq-nav-actions {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 22px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-card, rgba(108, 71, 255, 0.08));
 }
 
+/* ── Result Card ── */
 .mcq-result-card {
   text-align: center;
-  background: linear-gradient(180deg, rgba(108, 71, 255, 0.08) 0%, rgba(255, 255, 255, 0.96) 100%);
+  padding: 40px 28px;
+  background:
+    linear-gradient(180deg, rgba(108, 71, 255, 0.06) 0%, var(--bg-surface, #fff) 100%);
 }
 
 .mcq-result-score {
-  font-size: 56px;
+  font-size: 64px;
   font-weight: 900;
   line-height: 1;
-  color: var(--purple);
+  background: var(--grad-purple, linear-gradient(135deg, #6C47FF, #4A90E2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .mcq-result-card h2 {
-  margin: 14px 0 8px;
+  margin: 16px 0 10px;
 }
 
+/* ═══ Dark Mode ═══ */
+[data-theme="dark"] .mcq-practice-top {
+  background:
+    linear-gradient(135deg, rgba(139, 111, 255, 0.12), rgba(74, 144, 226, 0.08)),
+    var(--bg-surface);
+  border-color: rgba(139, 111, 255, 0.22);
+  border-bottom-color: #8B6FFF;
+}
+
+[data-theme="dark"] .mcq-option-card {
+  background: var(--bg-surface-2, #1A1640);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .mcq-option-card:hover {
+  background: var(--bg-surface-3, #221E4A);
+  border-color: rgba(139, 111, 255, 0.32);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.24);
+}
+
+[data-theme="dark"] .mcq-option-card--selected {
+  background:
+    linear-gradient(135deg, rgba(139, 111, 255, 0.18), rgba(106, 171, 255, 0.10));
+  border-color: #8B6FFF;
+  box-shadow:
+    0 0 0 3px rgba(139, 111, 255, 0.18),
+    0 10px 28px rgba(0, 0, 0, 0.28);
+}
+
+[data-theme="dark"] .mcq-option-letter {
+  background: rgba(139, 111, 255, 0.18);
+  color: #A590FF;
+}
+
+[data-theme="dark"] .mcq-option-card--selected .mcq-option-letter {
+  background: linear-gradient(135deg, #8B6FFF, #6AABFF);
+  color: #fff;
+}
+
+[data-theme="dark"] .mcq-result-card {
+  background:
+    linear-gradient(180deg, rgba(139, 111, 255, 0.10) 0%, var(--bg-surface) 100%);
+}
+
+[data-theme="dark"] .mcq-result-score {
+  background: linear-gradient(135deg, #A590FF, #6AABFF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-theme="dark"] .mcq-nav-actions {
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ═══ Responsive ═══ */
 @media (max-width: 768px) {
-  .mcq-practice-top,
+  .mcq-practice-top {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .mcq-practice-top h1 {
+    font-size: 24px;
+  }
+
+  .mcq-question-card {
+    padding: 20px 18px;
+  }
+
+  .mcq-question-card h2 {
+    font-size: 19px;
+    line-height: 1.45;
+  }
+
+  .mcq-option-card {
+    padding: 14px 16px;
+    gap: 12px;
+    min-height: 64px;
+    align-items: flex-start;
+  }
+
+  .mcq-option-letter {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    font-size: 14px;
+  }
+
+  .mcq-option-card span:last-child {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
   .mcq-nav-actions {
     flex-direction: column;
+    gap: 10px;
+  }
+
+  .mcq-nav-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .mcq-result-card {
+    padding: 28px 20px;
+  }
+
+  .mcq-result-score {
+    font-size: 48px;
   }
 }

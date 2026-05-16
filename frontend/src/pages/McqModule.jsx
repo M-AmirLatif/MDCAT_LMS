@@ -765,6 +765,9 @@ function QuizResult() {
   const wrongItems = result.detailed.filter((item) => !item.skipped && !item.isCorrect)
   const skippedItems = result.detailed.filter((item) => item.skipped)
 
+  const pct = result.percentage || 0
+  const motivation = pct >= 80 ? 'Excellent performance! Keep it up.' : pct >= 60 ? 'Good effort. Review the mistakes below to improve.' : 'Keep practicing — review every explanation carefully.'
+
   return (
     <div className="mcq-review-page animate-fade-up">
       <section className="mcq-review-shell">
@@ -776,7 +779,12 @@ function QuizResult() {
           </div>
           <button className="btn btn-secondary" type="button" onClick={() => navigate(`/mcqs/${subject}/${chapterId}`)}>Back to MCQs</button>
         </div>
-        <div className="review-stats-grid">
+        <div className="mcq-result-card">
+          <div className="mcq-result-score">{result.percentage}%</div>
+          <h2>{result.score} / {result.totalQuestions}</h2>
+          <p>{motivation}</p>
+        </div>
+        <div className="review-stats-grid" style={{ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
           <div className="review-stat-card review-stat-card--purple"><span>Total MCQs</span><strong>{result.totalQuestions}</strong></div>
           <div className="review-stat-card review-stat-card--green"><span>Correct</span><strong>{result.correct}</strong></div>
           <div className="review-stat-card review-stat-card--red"><span>Wrong</span><strong>{result.wrong}</strong></div>
