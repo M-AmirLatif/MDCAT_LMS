@@ -126,7 +126,9 @@
   }
 }
 
-
-
-
-
+/* ═══ Dark Mode ═══ */
+[data-theme="dark"] .notifications .error-message {
+  background: rgba(255, 138, 138, 0.12);
+  border-color: rgba(255, 138, 138, 0.22);
+  color: #FF8A8A;
+}

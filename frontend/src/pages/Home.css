@@ -873,3 +873,65 @@
     padding: 72px 0;
   }
 }
+
+/* ═══════════════════════════════════════════════
+   Landing Dark Mode
+   ═══════════════════════════════════════════════ */
+
+[data-theme="dark"] .lp-section-light {
+  background:
+    radial-gradient(circle at 88% 10%, rgba(139, 111, 255, 0.10), transparent 28%),
+    var(--bg-page, #0A0A1A);
+}
+
+[data-theme="dark"] .lp-value-grid h2,
+[data-theme="dark"] .lp-section-title,
+[data-theme="dark"] .lp-final-cta h2 {
+  color: #F0EEFF;
+}
+
+[data-theme="dark"] .lp-copy,
+[data-theme="dark"] .lp-center-copy {
+  color: #9B8FCC;
+}
+
+[data-theme="dark"] .lp-label {
+  color: #A590FF;
+}
+
+[data-theme="dark"] .lp-subject {
+  background: var(--bg-surface, #12102A);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #F0EEFF;
+}
+
+[data-theme="dark"] .lp-subject:hover {
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.32);
+}
+
+[data-theme="dark"] .lp-subject span,
+[data-theme="dark"] .lp-micro-copy {
+  color: #9B8FCC;
+}
+
+[data-theme="dark"] .lp-video-card {
+  background: var(--bg-surface, #12102A);
+  border-color: rgba(139, 111, 255, 0.18);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+}
+
+[data-theme="dark"] .lp-video-card p {
+  color: #F0EEFF;
+}
+
+[data-theme="dark"] .lp-green-pill {
+  background: rgba(45, 217, 155, 0.12);
+  color: #2DD99B;
+}
+
+[data-theme="dark"] .lp-btn-white {
+  background: var(--bg-surface-2, #1A1640);
+  color: #A590FF;
+  border-color: rgba(139, 111, 255, 0.28);
+}
+

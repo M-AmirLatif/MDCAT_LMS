@@ -272,7 +272,54 @@
   margin-bottom: 16px;
 }
 
+/* ═══ Admin Dark Mode ═══ */
+[data-theme="dark"] .success-message {
+  background: rgba(45, 217, 155, 0.12);
+  border-color: rgba(45, 217, 155, 0.22);
+  color: #2DD99B;
+}
 
+[data-theme="dark"] .error-message {
+  background: rgba(255, 138, 138, 0.12);
+  border-color: rgba(255, 138, 138, 0.22);
+  color: #FF8A8A;
+}
 
+[data-theme="dark"] .status--active {
+  background: rgba(45, 217, 155, 0.12);
+  border-color: rgba(45, 217, 155, 0.22);
+  color: #2DD99B;
+}
 
+[data-theme="dark"] .status--inactive {
+  background: rgba(255, 138, 138, 0.12);
+  border-color: rgba(255, 138, 138, 0.22);
+  color: #FF8A8A;
+}
+
+[data-theme="dark"] .status--neutral {
+  background: rgba(155, 143, 204, 0.12);
+  border-color: rgba(155, 143, 204, 0.18);
+  color: #9B8FCC;
+}
+
+[data-theme="dark"] .section--create h3 {
+  background: linear-gradient(135deg, #6AABFF, #A590FF);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+[data-theme="dark"] .section--create .helper-text {
+  color: #9B8FCC;
+}
+
+[data-theme="dark"] .admin-table tbody tr:hover td {
+  background: rgba(139, 111, 255, 0.06);
+}
+
+[data-theme="dark"] .admin-table button:disabled {
+  background: rgba(139, 111, 255, 0.12);
+  color: #6B6B8A;
+}
 
