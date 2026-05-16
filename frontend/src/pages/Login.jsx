@@ -17,7 +17,6 @@ const loginRoles = [
   { key: 'student', label: 'Student', hint: 'Practice MCQs' },
   { key: 'teacher', label: 'Teacher', hint: 'Manage MCQs' },
   { key: 'admin', label: 'Admin', hint: 'Operations' },
-  { key: 'superadmin', label: 'Super Admin', hint: 'Control' },
 ]
 
 function MailIcon() {
@@ -94,7 +93,6 @@ export default function Login() {
   const accentClass = useMemo(() => {
     if (requestedRole === 'teacher') return 'auth-shell--teal'
     if (requestedRole === 'admin') return 'auth-shell--amber'
-    if (requestedRole === 'superadmin') return 'auth-shell--coral'
     return ''
   }, [requestedRole])
 
@@ -121,11 +119,10 @@ export default function Login() {
       const response = await API.post('/auth/login', formData)
       const user = response.data.user
 
-      // Role mismatch check (superadmin can access any role)
+      // Role mismatch check
       if (
         requestedRole !== 'student' &&
-        user?.role !== requestedRole &&
-        user?.role !== 'superadmin'
+        user?.role !== requestedRole
       ) {
         toast.error(
           `This account is a ${getRoleLabel(user?.role)} account, not ${roleLabel}.`,
@@ -235,7 +232,7 @@ export default function Login() {
             <div className="auth-card auth-card--platform">
               <div className="auth-role-row">
                 <span
-                  className={`badge ${requestedRole === 'teacher' ? 'badge-teal' : requestedRole === 'admin' ? 'badge-amber' : requestedRole === 'superadmin' ? 'badge-coral' : 'badge-purple'}`}
+                  className={`badge ${requestedRole === 'teacher' ? 'badge-teal' : requestedRole === 'admin' ? 'badge-amber' : 'badge-purple'}`}
                 >
                   {roleLabel}
                 </span>

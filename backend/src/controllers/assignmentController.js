@@ -3,8 +3,7 @@ const Course = require('../models/Course')
 
 const isTeacherOrAdmin = (user) =>
   user?.role?.name === 'teacher' ||
-  user?.role?.name === 'admin' ||
-  user?.role?.name === 'superadmin'
+  user?.role?.name === 'admin'
 
 // ==================== CREATE ASSIGNMENT ====================
 exports.createAssignment = async (req, res) => {
@@ -32,8 +31,7 @@ exports.createAssignment = async (req, res) => {
 
     if (
       course.createdBy.toString() !== req.user.id &&
-      req.user.role?.name !== 'admin' &&
-      req.user.role?.name !== 'superadmin'
+      req.user.role?.name !== 'admin'
     ) {
       return res
         .status(403)
@@ -141,8 +139,7 @@ exports.getAssignmentSubmissions = async (req, res) => {
 
     if (
       assignment.createdBy.toString() !== req.user.id &&
-      req.user.role?.name !== 'admin' &&
-      req.user.role?.name !== 'superadmin'
+      req.user.role?.name !== 'admin'
     ) {
       return res
         .status(403)
@@ -170,8 +167,7 @@ exports.gradeSubmission = async (req, res) => {
 
     if (
       assignment.createdBy.toString() !== req.user.id &&
-      req.user.role?.name !== 'admin' &&
-      req.user.role?.name !== 'superadmin'
+      req.user.role?.name !== 'admin'
     ) {
       return res
         .status(403)

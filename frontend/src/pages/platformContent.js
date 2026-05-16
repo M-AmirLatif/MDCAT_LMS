@@ -38,11 +38,11 @@ export const teacherMcqSummary = mdcatSubjects.map((subject) => ({
 }))
 
 export const permissionMatrix = [
-  ['Subjects', 'View', 'Edit Own', 'Manage', 'Manage'],
-  ['Chapters', 'View', 'Manage', 'Manage', 'Manage'],
-  ['MCQs', 'Attempt', 'Create/Edit', 'Moderate', 'Moderate'],
-  ['Analytics', 'View Own', 'View Class', 'View Global', 'View Global'],
-  ['Users', 'None', 'None', 'Manage', 'Manage'],
+  ['Subjects', 'View', 'Edit Own', 'Manage'],
+  ['Chapters', 'View', 'Manage', 'Manage'],
+  ['MCQs', 'Attempt', 'Create/Edit', 'Moderate'],
+  ['Analytics', 'View Own', 'View Class', 'View Global'],
+  ['Users', 'None', 'None', 'Manage'],
 ]
 
 export function getSubjectById(subjectId) {

@@ -22,7 +22,7 @@ export default function Notifications() {
 
   const user = getAuthUser()
   const isTeacher =
-    user?.role === 'teacher' || user?.role === 'admin' || user?.role === 'superadmin'
+    user?.role === 'teacher' || user?.role === 'admin'
 
   const fetchNotifications = async () => {
     try {
@@ -38,7 +38,7 @@ export default function Notifications() {
   const fetchCourses = async () => {
     if (!isTeacher) return
     try {
-      if (user?.role === 'admin' || user?.role === 'superadmin') {
+      if (user?.role === 'admin') {
         const res = await API.get('/admin/courses')
         setCourses(res.data.courses || [])
       } else {

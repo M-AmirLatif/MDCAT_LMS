@@ -24,7 +24,7 @@ export default function CreateLiveSession() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        if (user?.role === 'admin' || user?.role === 'superadmin') {
+        if (user?.role === 'admin') {
           const res = await API.get('/admin/courses')
           setCourses(res.data.courses || [])
         } else {

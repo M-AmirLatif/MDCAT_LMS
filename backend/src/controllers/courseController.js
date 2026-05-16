@@ -106,8 +106,7 @@ exports.updateCourse = async (req, res) => {
     // Check if user is creator or admin
     if (
       course.createdBy.toString() !== req.user.id &&
-      req.user.role?.name !== 'admin' &&
-      req.user.role?.name !== 'superadmin'
+      req.user.role?.name !== 'admin'
     ) {
       return res
         .status(403)
@@ -142,8 +141,7 @@ exports.deleteCourse = async (req, res) => {
     // Check if user is creator or admin
     if (
       course.createdBy.toString() !== req.user.id &&
-      req.user.role?.name !== 'admin' &&
-      req.user.role?.name !== 'superadmin'
+      req.user.role?.name !== 'admin'
     ) {
       return res
         .status(403)

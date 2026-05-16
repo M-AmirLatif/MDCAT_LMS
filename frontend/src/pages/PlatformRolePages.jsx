@@ -421,7 +421,7 @@ export function SuperAdminAdminsPage() {
         <div className="workspace-card-head"><div><div className="label-xs">Manage Admins</div><h2 className="workspace-card-title">Roles and permission matrix</h2></div><button className="btn btn-primary" type="button">Invite Admin</button></div>
         <div className="workspace-card-body">
           <table className="simple-table matrix-table">
-            <thead><tr><th>Permission</th><th>Student</th><th>Teacher</th><th>Admin</th><th>Super Admin</th></tr></thead>
+            <thead><tr><th>Permission</th><th>Student</th><th>Teacher</th><th>Admin</th></tr></thead>
             <tbody>
               {permissionMatrix.map((row) => (
                 <tr key={row[0]}>{row.map((cell) => <td key={cell}>{cell}</td>)}</tr>

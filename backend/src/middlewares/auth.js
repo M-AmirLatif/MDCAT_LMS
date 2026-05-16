@@ -71,14 +71,9 @@ exports.protectWithPermissions = async (req, res, next) => {
 // ==================== AUTHORIZE PERMISSIONS ====================
 exports.authorize = (...requiredPermissions) => {
   return (req, res, next) => {
-    const roleName = req.user?.role?.name || null
-
-    // If user's role is named 'superadmin', they bypass all checks
-    if (roleName === 'superadmin') {
-      return next()
-    }
-
-    const knownRoles = new Set(['student', 'teacher', 'admin', 'superadmin'])
+    const rawRoleName = req.user?.role?.name || null
+    const roleName = rawRoleName === 'superadmin' ? 'admin' : rawRoleName
+    const knownRoles = new Set(['student', 'teacher', 'admin'])
     const onlyRoles =
       requiredPermissions.length > 0 &&
       requiredPermissions.every((p) => knownRoles.has(p))

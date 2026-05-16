@@ -71,9 +71,8 @@ export function AuthProvider({ children }) {
     isAuthenticated && user?.needsPasswordSetup === true
   const isTeacher =
     user?.role === 'teacher' ||
-    user?.role === 'admin' ||
-    user?.role === 'superadmin'
-  const isAdmin = user?.role === 'admin' || user?.role === 'superadmin'
+    user?.role === 'admin'
+  const isAdmin = user?.role === 'admin'
 
   return (
     <AuthContext.Provider

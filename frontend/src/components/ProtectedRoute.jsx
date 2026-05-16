@@ -17,8 +17,7 @@ export default function ProtectedRoute({ children, roles }) {
   }
 
   if (Array.isArray(roles) && roles.length > 0) {
-    const allowed =
-      roles.includes(user.role) || user.role === 'superadmin'
+    const allowed = roles.includes(user.role)
     if (!allowed) {
       return <Navigate to="/dashboard" replace />
     }

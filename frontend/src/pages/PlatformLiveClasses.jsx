@@ -143,6 +143,6 @@ function TeacherLiveClasses() {
 
 export default function PlatformLiveClasses() {
   const { user } = useAuth()
-  if (['teacher', 'admin', 'superadmin'].includes(user?.role)) return <TeacherLiveClasses />
+  if (['teacher', 'admin'].includes(user?.role)) return <TeacherLiveClasses />
   return <StudentLiveClasses />
 }

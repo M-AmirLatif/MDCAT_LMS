@@ -34,20 +34,19 @@ const ensureAuthDefaults = async () => {
   const manageUsers = await ensurePermission('manage_users', 'admin')
   const viewAnalytics = await ensurePermission('view_analytics', 'admin')
 
-  const superadminRole = await ensureRole('superadmin', [])
   const adminRole = await ensureRole('admin', [manageCourses, takeTests, manageUsers, viewAnalytics])
   const teacherRole = await ensureRole('teacher', [manageCourses])
   const studentRole = await ensureRole('student', [takeTests])
 
-  return { superadminRole, adminRole, teacherRole, studentRole }
+  return { adminRole, teacherRole, studentRole }
 }
 
-const migrateLegacyUserRoles = async ({ superadminRole, adminRole, teacherRole, studentRole }) => {
+const migrateLegacyUserRoles = async ({ adminRole, teacherRole, studentRole }) => {
   const legacyUsers = await User.find({ role: { $type: 'string' } }).select('_id role')
   if (legacyUsers.length === 0) return
 
   const rolesByName = {
-    superadmin: superadminRole,
+    superadmin: adminRole,
     admin: adminRole,
     teacher: teacherRole,
     student: studentRole,

@@ -27,7 +27,7 @@ export default function CreateMCQ() {
       try {
         if (!user) return
         const res =
-          user.role === 'admin' || user.role === 'superadmin'
+          user.role === 'admin'
             ? await API.get('/admin/courses')
             : await API.get('/courses/teacher/my-courses')
         setCourses(res.data.courses || [])

@@ -78,6 +78,9 @@ const isGmailAddress = (value) => {
   return value.endsWith('@gmail.com') || value.endsWith('@googlemail.com')
 }
 
+const normalizeRoleName = (roleName) =>
+  roleName === 'superadmin' ? 'admin' : roleName
+
 const shouldReturnDebugOtp = (error) => {
   if (!isDev) return false
   const message = String(error?.message || '').toLowerCase()
@@ -101,7 +104,7 @@ const buildUserResponse = (user, roleDoc, extra = {}) => ({
   firstName: user.firstName,
   lastName: user.lastName,
   email: user.email,
-  role: roleDoc.name,
+  role: normalizeRoleName(roleDoc.name),
   roleId: roleDoc._id,
   isEmailVerified: user.isEmailVerified,
   isActive: user.isActive,
@@ -196,7 +199,7 @@ exports.getProfile = async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
-        role: user.role?.name || null,
+        role: normalizeRoleName(user.role?.name || null),
         roleId: user.role?._id || null,
         phone: user.phone,
         profilePicture: user.profilePicture,
@@ -230,7 +233,7 @@ exports.updateProfile = async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
-        role: user.role?.name || null,
+        role: normalizeRoleName(user.role?.name || null),
         roleId: user.role?._id || null,
         phone: user.phone,
         profilePicture: user.profilePicture,

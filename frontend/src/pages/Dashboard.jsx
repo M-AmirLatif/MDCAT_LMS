@@ -90,7 +90,7 @@ export default function Dashboard() {
     return map[cat] || '#f3f4f6'
   }
 
-  const isTeacher = ['teacher', 'admin', 'superadmin'].includes(user?.role)
+  const isTeacher = ['teacher', 'admin'].includes(user?.role)
   const shownCourses = enrolledCourses.slice(0, 3)
 
   const courseCards = (() => {

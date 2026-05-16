@@ -9,8 +9,7 @@ export default function RoleTabs({ user, showGuest = false }) {
 
   const canAccess = (target) => {
     if (role === 'guest') return false
-    if (role === 'superadmin') return true
-    if (role === 'admin') return target !== 'superadmin'
+    if (role === 'admin') return true
     if (role === 'teacher') return target === 'teacher' || target === 'student'
     return target === 'student'
   }
@@ -19,7 +18,6 @@ export default function RoleTabs({ user, showGuest = false }) {
     { key: 'student', label: 'Student', path: '/dashboard' },
     { key: 'teacher', label: 'Teacher', path: '/teacher/mcqs' },
     { key: 'admin', label: 'Admin', path: '/admin' },
-    { key: 'superadmin', label: 'Super Admin', path: '/admin' },
   ]
 
   const handleClick = (item) => {

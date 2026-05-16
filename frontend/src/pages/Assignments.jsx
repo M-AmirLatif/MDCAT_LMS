@@ -16,7 +16,7 @@ export default function Assignments() {
 
   const user = getAuthUser()
   const isTeacher =
-    user?.role === 'teacher' || user?.role === 'admin' || user?.role === 'superadmin'
+    user?.role === 'teacher' || user?.role === 'admin'
 
   useEffect(() => {
     const fetchAssignments = async () => {

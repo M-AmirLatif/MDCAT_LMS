@@ -18,7 +18,7 @@ const slugifyChapter = (name) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
 
-const teacherRoleNames = new Set(['teacher', 'admin', 'superadmin'])
+const teacherRoleNames = new Set(['teacher', 'admin'])
 
 const canManageCourse = (course, user) => {
   const roleName = user?.role?.name
@@ -143,8 +143,7 @@ exports.createMcq = async (req, res) => {
 
     if (
       course.createdBy.toString() !== req.user.id &&
-      req.user.role?.name !== 'admin' &&
-      req.user.role?.name !== 'superadmin'
+      req.user.role?.name !== 'admin'
     ) {
       return res
         .status(403)
@@ -324,8 +323,7 @@ exports.updateMcq = async (req, res) => {
 
     if (
       mcq.createdBy.toString() !== req.user.id &&
-      req.user.role?.name !== 'admin' &&
-      req.user.role?.name !== 'superadmin'
+      req.user.role?.name !== 'admin'
     ) {
       return res
         .status(403)
@@ -378,8 +376,7 @@ exports.deleteMcq = async (req, res) => {
 
     if (
       mcq.createdBy.toString() !== req.user.id &&
-      req.user.role?.name !== 'admin' &&
-      req.user.role?.name !== 'superadmin'
+      req.user.role?.name !== 'admin'
     ) {
       return res
         .status(403)

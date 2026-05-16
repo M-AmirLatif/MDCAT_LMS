@@ -2,21 +2,18 @@ export const ROLE_LABELS = {
   student: 'Student',
   teacher: 'Teacher',
   admin: 'Admin',
-  superadmin: 'Super Admin',
 }
 
 export const ROLE_BADGE_CLASSES = {
   student: 'badge-purple',
   teacher: 'badge-teal',
   admin: 'badge-amber',
-  superadmin: 'badge-coral',
 }
 
 export const DEFAULT_ROUTE_BY_ROLE = {
   student: '/dashboard',
   teacher: '/dashboard',
   admin: '/dashboard',
-  superadmin: '/dashboard',
 }
 
 export const PLATFORM_NAV = {
@@ -69,20 +66,6 @@ export const PLATFORM_NAV = {
       ],
     },
   ],
-  superadmin: [
-    {
-      label: 'Control',
-      items: [
-        { key: 'dashboard', label: 'Control Center', path: '/dashboard', icon: 'dashboard' },
-        { key: 'admins', label: 'Manage Admins', path: '/super-admin/admins', icon: 'admins' },
-        { key: 'platform', label: 'Platform Settings', path: '/super-admin/platform-settings', icon: 'settings' },
-        { key: 'logs', label: 'System Logs', path: '/super-admin/logs', icon: 'logs' },
-        { key: 'danger', label: 'Danger Zone', path: '/super-admin/danger-zone', icon: 'danger' },
-        { key: 'payments', label: 'Payments', path: '/super-admin/payments', icon: 'payments' },
-        { key: 'announcements', label: 'Announcements', path: '/super-admin/announcements', icon: 'announcements' },
-      ],
-    },
-  ],
 }
 
 export function getRoleLabel(role = 'student') {
@@ -121,7 +104,7 @@ export function getPageTitle(pathname, role = 'student') {
   if (pathname.startsWith('/assignments/')) return 'Submission Review'
   if (pathname.startsWith('/test-review/')) return 'Test Review'
 
-  return role === 'superadmin' ? 'Control Center' : 'MDCAT LMS'
+  return 'MDCAT LMS'
 }
 
 export function getMobileNavForRole(role = 'student') {

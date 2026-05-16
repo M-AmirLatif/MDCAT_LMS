@@ -371,26 +371,6 @@ function AdminDashboard() {
   )
 }
 
-function SuperAdminDashboard() {
-  return (
-    <div className="workspace-page animate-fade-up">
-      <section className="workspace-hero workspace-hero--coral">
-        <div className="workspace-hero-grid">
-          <div className="workspace-hero-copy">
-            <div className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Super Admin</div>
-            <h1 style={{ color: '#fff' }}>Control the full MDCAT-only practice platform, moderation policy, and cross-role analytics</h1>
-            <p>Govern the entire subject/chapter/MCQ stack, teacher permissions, and platform health with one control center.</p>
-          </div>
-          <div className="workspace-hero-stats">
-            <div className="hero-mini-card"><span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Platform Scope</span><strong>4 subjects</strong><p>No unrelated course catalog remains</p></div>
-            <div className="hero-mini-card"><span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Critical Alerts</span><strong>0</strong><p>System alerts will appear after real operations start</p></div>
-          </div>
-        </div>
-      </section>
-    </div>
-  )
-}
-
 export default function PlatformDashboard() {
   const { user } = useAuth()
   const role = user?.role || 'student'
@@ -399,7 +379,6 @@ export default function PlatformDashboard() {
   const content = useMemo(() => {
     if (role === 'teacher') return <TeacherDashboard />
     if (role === 'admin') return <AdminDashboard />
-    if (role === 'superadmin') return <SuperAdminDashboard />
     return <StudentDashboard firstName={firstName} />
   }, [firstName, role])
 

@@ -134,24 +134,6 @@ const LazyTeacherStudentsPage = lazyWithRetry(() =>
 const LazyTeacherAnalyticsPage = lazyWithRetry(() =>
   import('./pages/PlatformRolePages').then((m) => ({ default: m.TeacherAnalyticsPage })),
   'TeacherAnalyticsPage')
-const LazySuperAdminAdminsPage = lazyWithRetry(() =>
-  import('./pages/PlatformRolePages').then((m) => ({ default: m.SuperAdminAdminsPage })),
-  'SuperAdminAdminsPage')
-const LazySuperAdminSettingsPage = lazyWithRetry(() =>
-  import('./pages/PlatformRolePages').then((m) => ({ default: m.SuperAdminSettingsPage })),
-  'SuperAdminSettingsPage')
-const LazySuperAdminLogsPage = lazyWithRetry(() =>
-  import('./pages/PlatformRolePages').then((m) => ({ default: m.SuperAdminLogsPage })),
-  'SuperAdminLogsPage')
-const LazySuperAdminDangerZonePage = lazyWithRetry(() =>
-  import('./pages/PlatformRolePages').then((m) => ({ default: m.SuperAdminDangerZonePage })),
-  'SuperAdminDangerZonePage')
-const LazySuperAdminPaymentsPage = lazyWithRetry(() =>
-  import('./pages/PlatformRolePages').then((m) => ({ default: m.SuperAdminPaymentsPage })),
-  'SuperAdminPaymentsPage')
-const LazySuperAdminAnnouncementsPage = lazyWithRetry(() =>
-  import('./pages/PlatformRolePages').then((m) => ({ default: m.SuperAdminAnnouncementsPage })),
-  'SuperAdminAnnouncementsPage')
 
 function App() {
   return (
@@ -202,7 +184,7 @@ function App() {
             <Route
               path="/teacher/courses"
               element={
-                <ProtectedRoute roles={['teacher', 'admin', 'superadmin']}>
+                <ProtectedRoute roles={['teacher', 'admin']}>
                   <LazyMcqCourseSelection />
                 </ProtectedRoute>
               }
@@ -210,7 +192,7 @@ function App() {
             <Route
               path="/teacher/courses/create"
               element={
-                <ProtectedRoute roles={['teacher', 'admin', 'superadmin']}>
+                <ProtectedRoute roles={['teacher', 'admin']}>
                   <LazyAdminCoursesPage />
                 </ProtectedRoute>
               }
@@ -218,7 +200,7 @@ function App() {
             <Route
               path="/teacher/courses/:courseId/edit"
               element={
-                <ProtectedRoute roles={['teacher', 'admin', 'superadmin']}>
+                <ProtectedRoute roles={['teacher', 'admin']}>
                   <LazyAdminCoursesPage />
                 </ProtectedRoute>
               }
@@ -226,7 +208,7 @@ function App() {
             <Route
               path="/teacher/students"
               element={
-                <ProtectedRoute roles={['teacher', 'admin', 'superadmin']}>
+                <ProtectedRoute roles={['teacher', 'admin']}>
                   <LazyTeacherStudentsPage />
                 </ProtectedRoute>
               }
@@ -234,7 +216,7 @@ function App() {
             <Route
               path="/teacher/assignments"
               element={
-                <ProtectedRoute roles={['teacher', 'admin', 'superadmin']}>
+                <ProtectedRoute roles={['teacher', 'admin']}>
                   <Navigate to="/teacher/mcqs" replace />
                 </ProtectedRoute>
               }
@@ -242,7 +224,7 @@ function App() {
             <Route
               path="/teacher/analytics"
               element={
-                <ProtectedRoute roles={['teacher', 'admin', 'superadmin']}>
+                <ProtectedRoute roles={['teacher', 'admin']}>
                   <LazyTeacherAnalyticsPage />
                 </ProtectedRoute>
               }
@@ -251,7 +233,7 @@ function App() {
             <Route
               path="/admin"
               element={
-                <ProtectedRoute roles={['admin', 'superadmin']}>
+                <ProtectedRoute roles={['admin']}>
                   <PlatformDashboard />
                 </ProtectedRoute>
               }
@@ -259,7 +241,7 @@ function App() {
             <Route
               path="/admin/students"
               element={
-                <ProtectedRoute roles={['admin', 'superadmin']}>
+                <ProtectedRoute roles={['admin']}>
                   <LazyAdminStudentsPage />
                 </ProtectedRoute>
               }
@@ -267,7 +249,7 @@ function App() {
             <Route
               path="/admin/teachers"
               element={
-                <ProtectedRoute roles={['admin', 'superadmin']}>
+                <ProtectedRoute roles={['admin']}>
                   <LazyAdminTeachersPage />
                 </ProtectedRoute>
               }
@@ -275,7 +257,7 @@ function App() {
             <Route
               path="/admin/courses"
               element={
-                <ProtectedRoute roles={['admin', 'superadmin']}>
+                <ProtectedRoute roles={['admin']}>
                   <LazyAdminCoursesPage />
                 </ProtectedRoute>
               }
@@ -283,7 +265,7 @@ function App() {
             <Route
               path="/admin/payments"
               element={
-                <ProtectedRoute roles={['admin', 'superadmin']}>
+                <ProtectedRoute roles={['admin']}>
                   <PlatformPayments />
                 </ProtectedRoute>
               }
@@ -291,7 +273,7 @@ function App() {
             <Route
               path="/admin/announcements"
               element={
-                <ProtectedRoute roles={['admin', 'superadmin']}>
+                <ProtectedRoute roles={['admin']}>
                   <LazyAdminAnnouncementsPage />
                 </ProtectedRoute>
               }
@@ -299,7 +281,7 @@ function App() {
             <Route
               path="/admin/reports"
               element={
-                <ProtectedRoute roles={['admin', 'superadmin']}>
+                <ProtectedRoute roles={['admin']}>
                   <LazyAdminReportsPage />
                 </ProtectedRoute>
               }
@@ -307,57 +289,8 @@ function App() {
             <Route
               path="/admin/settings"
               element={
-                <ProtectedRoute roles={['admin', 'superadmin']}>
+                <ProtectedRoute roles={['admin']}>
                   <LazyAdminSettingsPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/super-admin/admins"
-              element={
-                <ProtectedRoute roles={['superadmin']}>
-                  <LazySuperAdminAdminsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/super-admin/platform-settings"
-              element={
-                <ProtectedRoute roles={['superadmin']}>
-                  <LazySuperAdminSettingsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/super-admin/logs"
-              element={
-                <ProtectedRoute roles={['superadmin']}>
-                  <LazySuperAdminLogsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/super-admin/danger-zone"
-              element={
-                <ProtectedRoute roles={['superadmin']}>
-                  <LazySuperAdminDangerZonePage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/super-admin/payments"
-              element={
-                <ProtectedRoute roles={['superadmin']}>
-                  <LazySuperAdminPaymentsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/super-admin/announcements"
-              element={
-                <ProtectedRoute roles={['superadmin']}>
-                  <LazySuperAdminAnnouncementsPage />
                 </ProtectedRoute>
               }
             />

@@ -12,6 +12,9 @@ const isValidEmail = (value) => {
   return emailRegex.test(value)
 }
 
+const normalizeRoleName = (value) =>
+  String(value || '').toLowerCase() === 'superadmin' ? 'admin' : String(value || '').toLowerCase()
+
 // ==================== CREATE USER (Admin/Superadmin) ====================
 exports.createUser = async (req, res) => {
   try {
@@ -20,7 +23,7 @@ exports.createUser = async (req, res) => {
     const email = normalizeEmail(req.body.email)
     const password = req.body.password
     const roleInput = normalizeString(req.body.role)
-    const role = roleInput ? roleInput.toLowerCase() : 'teacher'
+    const role = roleInput ? normalizeRoleName(roleInput) : 'teacher'
 
     if (!firstName || !lastName || !email || !password) {
       return res
@@ -44,12 +47,8 @@ exports.createUser = async (req, res) => {
         .json({ error: 'Students must self-register.' })
     }
 
-    const requesterRole = req.user.role?.name
-
-    const allowedRoles =
-      requesterRole === 'superadmin'
-        ? ['teacher', 'admin', 'superadmin']
-        : ['teacher']
+    const requesterRole = normalizeRoleName(req.user.role?.name)
+    const allowedRoles = ['teacher', 'admin']
 
     if (!allowedRoles.includes(role)) {
       return res.status(403).json({ error: 'Not authorized for this role' })
@@ -83,7 +82,7 @@ exports.createUser = async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
-        role: roleDoc.name,
+        role: normalizeRoleName(roleDoc.name),
         roleId: roleDoc._id,
         isActive: user.isActive,
       },
@@ -96,20 +95,7 @@ exports.createUser = async (req, res) => {
 // ==================== GET ALL USERS (Admin) ====================
 exports.getAllUsers = async (req, res) => {
   try {
-    const requesterRole = req.user.role?.name
-
     let filter = {}
-    if (requesterRole !== 'superadmin') {
-      const [teacherRole, studentRole] = await Promise.all([
-        Role.findOne({ name: 'teacher' }).lean(),
-        Role.findOne({ name: 'student' }).lean(),
-      ])
-      filter = {
-        role: {
-          $in: [teacherRole?._id, studentRole?._id].filter(Boolean),
-        },
-      }
-    }
 
     const page = Math.max(1, parseInt(req.query.page, 10) || 1)
     const limit = Math.min(200, Math.max(1, parseInt(req.query.limit, 10) || 50))
@@ -129,7 +115,10 @@ exports.getAllUsers = async (req, res) => {
     res.status(200).json({
       success: true,
       count: users.length,
-      users,
+      users: users.map((user) => ({
+        ...user,
+        role: normalizeRoleName(user.role?.name),
+      })),
       page,
       limit,
       total,
@@ -144,8 +133,7 @@ exports.getAllUsers = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
     const { role, isActive } = req.body
-
-    const requesterRole = req.user.role?.name
+    const requesterRole = normalizeRoleName(req.user.role?.name)
 
     const user = await User.findById(req.params.userId).populate('role', 'name')
     if (!user) {
@@ -165,28 +153,10 @@ exports.updateUser = async (req, res) => {
       }
     }
 
-    const targetRole = user.role?.name
-
-    if (requesterRole !== 'superadmin') {
-      if (targetRole === 'superadmin') {
-        return res
-          .status(403)
-          .json({ error: 'Only super admin can manage this user' })
-      }
-      if (targetRole === 'admin') {
-        return res
-          .status(403)
-          .json({ error: 'Only super admin can manage admins' })
-      }
-      if (role && (role === 'admin' || role === 'superadmin')) {
-        return res
-          .status(403)
-          .json({ error: 'Only super admin can assign admin roles' })
-      }
-    }
+    const targetRole = normalizeRoleName(user.role?.name)
 
     if (role) {
-      const roleDoc = await Role.findOne({ name: String(role).toLowerCase() })
+      const roleDoc = await Role.findOne({ name: normalizeRoleName(role) })
       if (!roleDoc) {
         return res.status(400).json({ error: 'Invalid role' })
       }
@@ -205,7 +175,10 @@ exports.updateUser = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'User updated successfully',
-      user: updated,
+      user: {
+        ...updated.toObject(),
+        role: normalizeRoleName(updated.role?.name),
+      },
     })
   } catch (error) {
     res.status(500).json({ error: error.message })
@@ -221,24 +194,9 @@ exports.deactivateUser = async (req, res) => {
         .json({ error: 'You cannot deactivate your own account' })
     }
 
-    const requesterRole = req.user.role?.name
-
     const target = await User.findById(req.params.userId).populate('role', 'name')
     if (!target) {
       return res.status(404).json({ error: 'User not found' })
-    }
-
-    const targetRole = target.role?.name
-
-    if (requesterRole !== 'superadmin' && targetRole === 'superadmin') {
-      return res
-        .status(403)
-        .json({ error: 'Only super admin can manage this user' })
-    }
-    if (requesterRole !== 'superadmin' && targetRole === 'admin') {
-      return res
-        .status(403)
-        .json({ error: 'Only super admin can manage admins' })
     }
 
     const user = await User.findByIdAndUpdate(
@@ -256,7 +214,10 @@ exports.deactivateUser = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'User deactivated successfully',
-      user,
+      user: {
+        ...user.toObject(),
+        role: normalizeRoleName(user.role?.name),
+      },
     })
   } catch (error) {
     res.status(500).json({ error: error.message })

@@ -13,7 +13,6 @@ export default function AdminDashboard() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const currentUser = getAuthUser()
-  const isSuperAdmin = currentUser?.role === 'superadmin'
   const [createForm, setCreateForm] = useState({
     firstName: '',
     lastName: '',
@@ -74,7 +73,7 @@ export default function AdminDashboard() {
         lastName: '',
         email: '',
         password: '',
-        role: isSuperAdmin ? 'teacher' : 'teacher',
+        role: 'teacher',
       })
       await fetchData()
     } catch (err) {
@@ -176,8 +175,7 @@ export default function AdminDashboard() {
               onChange={handleCreateChange}
             >
               <option value="teacher">teacher</option>
-              {isSuperAdmin && <option value="admin">admin</option>}
-              {isSuperAdmin && <option value="superadmin">superadmin</option>}
+              <option value="admin">admin</option>
             </select>
             <button type="submit">Create User</button>
           </form>
@@ -200,9 +198,7 @@ export default function AdminDashboard() {
               </thead>
               <tbody>
                 {users.map((user) => {
-                  const isProtected =
-                    !isSuperAdmin &&
-                    (user.role === 'admin' || user.role === 'superadmin')
+                  const isProtected = false
                   return (
                     <tr key={user._id}>
                       <td>
@@ -219,10 +215,7 @@ export default function AdminDashboard() {
                           >
                             <option value="student">student</option>
                             <option value="teacher">teacher</option>
-                            {isSuperAdmin && <option value="admin">admin</option>}
-                            {isSuperAdmin && (
-                              <option value="superadmin">superadmin</option>
-                            )}
+                            <option value="admin">admin</option>
                           </select>
                         )}
                       </td>

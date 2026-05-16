@@ -9,7 +9,7 @@ const buildTestFilter = async (req) => {
     const courses = await Course.find({ createdBy: req.user.id }).select('_id')
     const courseIds = courses.map(c => c._id)
     return { courseId: { $in: courseIds } }
-  } else if (role === 'admin' || role === 'superadmin') {
+  } else if (role === 'admin') {
     return {}
   }
   return { studentId: new mongoose.Types.ObjectId(req.user.id) }

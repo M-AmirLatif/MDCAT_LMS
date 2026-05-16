@@ -143,6 +143,6 @@ function AdminPayments() {
 
 export default function PlatformPayments() {
   const { user } = useAuth()
-  if (['admin', 'superadmin'].includes(user?.role)) return <AdminPayments />
+  if (user?.role === 'admin') return <AdminPayments />
   return <StudentPayments />
 }

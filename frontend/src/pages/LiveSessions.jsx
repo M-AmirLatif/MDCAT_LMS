@@ -13,7 +13,7 @@ export default function LiveSessions() {
 
   const user = getAuthUser()
   const isTeacher =
-    user?.role === 'teacher' || user?.role === 'admin' || user?.role === 'superadmin'
+    user?.role === 'teacher' || user?.role === 'admin'
 
   useEffect(() => {
     const fetchSessions = async () => {
