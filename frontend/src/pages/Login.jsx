@@ -5,6 +5,11 @@ import API from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import { getDefaultRouteForRole, getRoleLabel } from '../lib/platform'
 import { useGoogleSignIn } from '../hooks/useGoogleSignIn'
+import {
+  clearRememberedCredentials,
+  getRememberedCredentials,
+  setRememberedCredentials,
+} from '../services/authStorage'
 import ThemeToggle from '../components/ThemeToggle'
 import './Auth.css'
 
@@ -65,15 +70,19 @@ function LockIcon() {
 }
 
 export default function Login() {
+  const rememberedCredentials = getRememberedCredentials()
   const [searchParams] = useSearchParams()
   const requestedRole = searchParams.get('role') || 'student'
   const nextPath = searchParams.get('next')
-  const [formData, setFormData] = useState({ email: '', password: '' })
-  const [remember, setRemember] = useState(false)
+  const [formData, setFormData] = useState({
+    email: rememberedCredentials.email || '',
+    password: '',
+  })
+  const [remember, setRemember] = useState(rememberedCredentials.remember)
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [editableFields, setEditableFields] = useState({
-    email: false,
+    email: !!rememberedCredentials.email,
     password: false,
   })
   const navigate = useNavigate()
@@ -127,11 +136,21 @@ export default function Login() {
 
       // If account needs password setup (shouldn't happen via email login, but guard anyway)
       if (user?.needsPasswordSetup) {
+        if (remember || formData.email) {
+          setRememberedCredentials({ email: formData.email, remember })
+        } else {
+          clearRememberedCredentials()
+        }
         login(response.data.token, user, remember)
         navigate('/set-password', { replace: true })
         return
       }
 
+      if (remember || formData.email) {
+        setRememberedCredentials({ email: formData.email, remember })
+      } else {
+        clearRememberedCredentials()
+      }
       login(response.data.token, user, remember)
       navigate(nextPath || getDefaultRouteForRole(user?.role || requestedRole))
     } catch (error) {
