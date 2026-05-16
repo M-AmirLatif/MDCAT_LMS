@@ -5,34 +5,65 @@ import './App.css'
 import './pages/PlatformPages.css'
 import './theme.css'
 
+function lazyWithRetry(importer, key) {
+  return lazy(async () => {
+    try {
+      const module = await importer()
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem(`lazy-retry:${key}`)
+      }
+      return module
+    } catch (error) {
+      const message = String(error?.message || '')
+      const isChunkLoadError =
+        /Failed to fetch dynamically imported module|Importing a module script failed|Loading chunk/i.test(message)
+
+      if (typeof window !== 'undefined' && isChunkLoadError) {
+        const retryKey = `lazy-retry:${key}`
+        const alreadyRetried = sessionStorage.getItem(retryKey) === '1'
+
+        if (!alreadyRetried) {
+          sessionStorage.setItem(retryKey, '1')
+          window.location.reload()
+          return new Promise(() => {})
+        }
+
+        sessionStorage.removeItem(retryKey)
+      }
+
+      throw error
+    }
+  })
+}
+
 // ==================== LAZY ROUTE IMPORTS ====================
 // Each page is loaded only when its route is visited, splitting the initial
 // bundle from ~one mega-chunk into per-route chunks.  Recharts, McqModule,
 // and role-specific pages are the biggest wins — they stay out of the
 // critical path until actually needed.
 
-const AppLayout = lazy(() => import('./components/layout/AppLayout'))
-const Home = lazy(() => import('./pages/Home'))
-const Login = lazy(() => import('./pages/Login'))
-const Register = lazy(() => import('./pages/Register'))
-const VerifyEmail = lazy(() => import('./pages/VerifyEmail'))
-const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
-const SetPassword = lazy(() => import('./pages/SetPassword'))
+const AppLayout = lazyWithRetry(() => import('./components/layout/AppLayout'), 'AppLayout')
+const Home = lazyWithRetry(() => import('./pages/Home'), 'Home')
+const Login = lazyWithRetry(() => import('./pages/Login'), 'Login')
+const Register = lazyWithRetry(() => import('./pages/Register'), 'Register')
+const VerifyEmail = lazyWithRetry(() => import('./pages/VerifyEmail'), 'VerifyEmail')
+const ForgotPassword = lazyWithRetry(() => import('./pages/ForgotPassword'), 'ForgotPassword')
+const SetPassword = lazyWithRetry(() => import('./pages/SetPassword'), 'SetPassword')
 
 // Platform pages (authenticated)
-const PlatformDashboard = lazy(() => import('./pages/PlatformDashboard'))
-const PlatformPerformance = lazy(() => import('./pages/PlatformPerformance'))
-const PlatformLiveClasses = lazy(() => import('./pages/PlatformLiveClasses'))
-const PlatformPayments = lazy(() => import('./pages/PlatformPayments'))
-const PlatformNotifications = lazy(() => import('./pages/PlatformNotifications'))
-const PlatformProfile = lazy(() => import('./pages/PlatformProfile'))
+const PlatformDashboard = lazyWithRetry(() => import('./pages/PlatformDashboard'), 'PlatformDashboard')
+const PlatformPerformance = lazyWithRetry(() => import('./pages/PlatformPerformance'), 'PlatformPerformance')
+const PlatformLiveClasses = lazyWithRetry(() => import('./pages/PlatformLiveClasses'), 'PlatformLiveClasses')
+const PlatformPayments = lazyWithRetry(() => import('./pages/PlatformPayments'), 'PlatformPayments')
+const PlatformNotifications = lazyWithRetry(() => import('./pages/PlatformNotifications'), 'PlatformNotifications')
+const PlatformProfile = lazyWithRetry(() => import('./pages/PlatformProfile'), 'PlatformProfile')
 
 // Individual course/lecture/test pages
-const CourseDetail = lazy(() => import('./pages/CourseDetail'))
-const LecturePlayer = lazy(() => import('./pages/LecturePlayer'))
-const MCQTest = lazy(() => import('./pages/MCQTest'))
-const TestReview = lazy(() => import('./pages/TestReview'))
-const NotFound = lazy(() => import('./pages/NotFound'))
+const CourseDetail = lazyWithRetry(() => import('./pages/CourseDetail'), 'CourseDetail')
+const LecturePlayer = lazyWithRetry(() => import('./pages/LecturePlayer'), 'LecturePlayer')
+const MCQTest = lazyWithRetry(() => import('./pages/MCQTest'), 'MCQTest')
+const TestReview = lazyWithRetry(() => import('./pages/TestReview'), 'TestReview')
+const NotFound = lazyWithRetry(() => import('./pages/NotFound'), 'NotFound')
 
 // ==================== SUSPENSE FALLBACK ====================
 function RouteFallback() {
@@ -62,68 +93,68 @@ if (typeof window !== 'undefined') {
 
 // ==================== LAZY WRAPPERS ====================
 // These resolve named exports from lazy-loaded modules so React.lazy can use them.
-const LazyMcqCourseSelection = lazy(() =>
+const LazyMcqCourseSelection = lazyWithRetry(() =>
   import('./pages/McqModule').then((m) => ({ default: m.CourseSelection })),
-)
-const LazyMcqChapterList = lazy(() =>
+  'CourseSelection')
+const LazyMcqChapterList = lazyWithRetry(() =>
   import('./pages/McqModule').then((m) => ({ default: m.ChapterList })),
-)
-const LazyMcqMcqList = lazy(() =>
+  'ChapterList')
+const LazyMcqMcqList = lazyWithRetry(() =>
   import('./pages/McqModule').then((m) => ({ default: m.McqList })),
-)
-const LazyMcqQuizAttempt = lazy(() =>
+  'McqList')
+const LazyMcqQuizAttempt = lazyWithRetry(() =>
   import('./pages/McqModule').then((m) => ({ default: m.QuizAttempt })),
-)
-const LazyMcqQuizResult = lazy(() =>
+  'QuizAttempt')
+const LazyMcqQuizResult = lazyWithRetry(() =>
   import('./pages/McqModule').then((m) => ({ default: m.QuizResult })),
-)
+  'QuizResult')
 
 // Role pages lazy wrappers
-const LazyAdminCoursesPage = lazy(() =>
+const LazyAdminCoursesPage = lazyWithRetry(() =>
   import('./pages/PlatformRolePages').then((m) => ({ default: m.AdminCoursesPage })),
-)
-const LazyAdminStudentsPage = lazy(() =>
+  'AdminCoursesPage')
+const LazyAdminStudentsPage = lazyWithRetry(() =>
   import('./pages/PlatformRolePages').then((m) => ({ default: m.AdminStudentsPage })),
-)
-const LazyAdminTeachersPage = lazy(() =>
+  'AdminStudentsPage')
+const LazyAdminTeachersPage = lazyWithRetry(() =>
   import('./pages/PlatformRolePages').then((m) => ({ default: m.AdminTeachersPage })),
-)
-const LazyAdminAnnouncementsPage = lazy(() =>
+  'AdminTeachersPage')
+const LazyAdminAnnouncementsPage = lazyWithRetry(() =>
   import('./pages/PlatformRolePages').then((m) => ({ default: m.AdminAnnouncementsPage })),
-)
-const LazyAdminReportsPage = lazy(() =>
+  'AdminAnnouncementsPage')
+const LazyAdminReportsPage = lazyWithRetry(() =>
   import('./pages/PlatformRolePages').then((m) => ({ default: m.AdminReportsPage })),
-)
-const LazyAdminSettingsPage = lazy(() =>
+  'AdminReportsPage')
+const LazyAdminSettingsPage = lazyWithRetry(() =>
   import('./pages/PlatformRolePages').then((m) => ({ default: m.AdminSettingsPage })),
-)
-const LazyTeacherStudentsPage = lazy(() =>
+  'AdminSettingsPage')
+const LazyTeacherStudentsPage = lazyWithRetry(() =>
   import('./pages/PlatformRolePages').then((m) => ({ default: m.TeacherStudentsPage })),
-)
-const LazyTeacherAssignmentsPage = lazy(() =>
+  'TeacherStudentsPage')
+const LazyTeacherAssignmentsPage = lazyWithRetry(() =>
   import('./pages/PlatformRolePages').then((m) => ({ default: m.TeacherAssignmentsPage })),
-)
-const LazyTeacherAnalyticsPage = lazy(() =>
+  'TeacherAssignmentsPage')
+const LazyTeacherAnalyticsPage = lazyWithRetry(() =>
   import('./pages/PlatformRolePages').then((m) => ({ default: m.TeacherAnalyticsPage })),
-)
-const LazySuperAdminAdminsPage = lazy(() =>
+  'TeacherAnalyticsPage')
+const LazySuperAdminAdminsPage = lazyWithRetry(() =>
   import('./pages/PlatformRolePages').then((m) => ({ default: m.SuperAdminAdminsPage })),
-)
-const LazySuperAdminSettingsPage = lazy(() =>
+  'SuperAdminAdminsPage')
+const LazySuperAdminSettingsPage = lazyWithRetry(() =>
   import('./pages/PlatformRolePages').then((m) => ({ default: m.SuperAdminSettingsPage })),
-)
-const LazySuperAdminLogsPage = lazy(() =>
+  'SuperAdminSettingsPage')
+const LazySuperAdminLogsPage = lazyWithRetry(() =>
   import('./pages/PlatformRolePages').then((m) => ({ default: m.SuperAdminLogsPage })),
-)
-const LazySuperAdminDangerZonePage = lazy(() =>
+  'SuperAdminLogsPage')
+const LazySuperAdminDangerZonePage = lazyWithRetry(() =>
   import('./pages/PlatformRolePages').then((m) => ({ default: m.SuperAdminDangerZonePage })),
-)
-const LazySuperAdminPaymentsPage = lazy(() =>
+  'SuperAdminDangerZonePage')
+const LazySuperAdminPaymentsPage = lazyWithRetry(() =>
   import('./pages/PlatformRolePages').then((m) => ({ default: m.SuperAdminPaymentsPage })),
-)
-const LazySuperAdminAnnouncementsPage = lazy(() =>
+  'SuperAdminPaymentsPage')
+const LazySuperAdminAnnouncementsPage = lazyWithRetry(() =>
   import('./pages/PlatformRolePages').then((m) => ({ default: m.SuperAdminAnnouncementsPage })),
-)
+  'SuperAdminAnnouncementsPage')
 
 function App() {
   return (
