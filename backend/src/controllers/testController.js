@@ -147,13 +147,15 @@ exports.getMyTestHistory = async (req, res) => {
     }
 
     const page = Math.max(1, parseInt(req.query.page, 10) || 1)
-    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit, 10) || 20))
+    const limit = Math.min(200, Math.max(1, parseInt(req.query.limit, 10) || 20))
 
     const [total, sessions] = await Promise.all([
       TestSession.countDocuments(filter),
       TestSession.find(filter)
         .populate('courseId', 'name category')
-        .select('courseId studentId score negativeScore finalScore totalQuestions percentage topic submittedAt timeSpentSeconds')
+        .select(
+          'courseId studentId subject chapterId chapterName score negativeScore finalScore totalQuestions percentage topic submittedAt timeSpentSeconds',
+        )
         .sort({ submittedAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit)

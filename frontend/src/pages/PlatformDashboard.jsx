@@ -12,13 +12,13 @@ import {
   YAxis,
 } from 'recharts'
 import { useAuth } from '../context/AuthContext'
+import useStudentPerformanceData from '../hooks/useStudentPerformanceData'
 import useThemeMode from '../hooks/useThemeMode'
 import './PlatformPages.css'
 import {
   adminTeachers,
   liveClasses,
   mdcatSubjects,
-  performanceTrend,
   SUBJECT_STYLES,
   studentNotifications,
   teacherMcqSummary,
@@ -42,15 +42,8 @@ function SubjectGlyph({ subject }) {
 
 function StudentDashboard({ firstName }) {
   const chartTheme = useThemeMode()
-  const summary = useMemo(() => {
-    const totalAttempted = mdcatSubjects.reduce((sum, subject) => sum + subject.attemptedMcqs, 0)
-    const totalMcqs = mdcatSubjects.reduce((sum, subject) => sum + subject.totalMcqs, 0)
-    return {
-      totalAttempted,
-      totalMcqs,
-      averageAccuracy: Math.round(mdcatSubjects.reduce((sum, subject) => sum + subject.accuracy, 0) / mdcatSubjects.length),
-    }
-  }, [])
+  const { subjects, summary, performanceTrend, loading } = useStudentPerformanceData()
+  const visibleSubjects = subjects.length ? subjects : mdcatSubjects
 
   return (
     <div className="workspace-page animate-fade-up">
@@ -78,7 +71,7 @@ function StudentDashboard({ firstName }) {
             </div>
             <div className="hero-mini-card">
               <span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Overall Accuracy</span>
-              <strong>{summary.averageAccuracy}%</strong>
+              <strong>{summary.overallAccuracy}%</strong>
               <p>Accuracy will update after real MCQ attempts</p>
             </div>
           </div>
@@ -86,7 +79,7 @@ function StudentDashboard({ firstName }) {
       </section>
 
       <div className="workspace-columns-4">
-        {mdcatSubjects.map((subject) => (
+        {visibleSubjects.map((subject) => (
           <article key={subject.id} className={`workspace-card subject-focus-card ${SUBJECT_STYLES[subject.name].className}`}>
             <div className="workspace-card-head subject-focus-topline">
               <div className="subject-focus-head">
@@ -123,7 +116,7 @@ function StudentDashboard({ firstName }) {
             </div>
           </div>
           <div className="workspace-card-body chart-panel">
-            {performanceTrend.length > 0 ? (
+            {!loading && performanceTrend.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={performanceTrend}>
                 <defs>
@@ -133,10 +126,10 @@ function StudentDashboard({ firstName }) {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.gridColor} />
-                <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} />
+                <XAxis dataKey="attemptDate" axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} domain={[40, 100]} />
                 <Tooltip contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 12 }} labelStyle={{ color: chartTheme.tooltipText }} />
-                <Area type="monotone" dataKey="Biology" stroke="#1db884" fill="url(#studentAreaBio)" strokeWidth={3} />
+                <Area type="monotone" dataKey="Biology" stroke="#1db884" fill="url(#studentAreaBio)" strokeWidth={3} connectNulls />
               </AreaChart>
             </ResponsiveContainer>
             ) : (

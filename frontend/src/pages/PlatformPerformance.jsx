@@ -8,14 +8,10 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import useStudentPerformanceData from '../hooks/useStudentPerformanceData'
 import useThemeMode from '../hooks/useThemeMode'
 import './PlatformPages.css'
-import {
-  getPerformanceSummary,
-  mdcatSubjects,
-  performanceTrend,
-  practiceAttempts,
-} from './platformContent'
+import { mdcatSubjects } from './platformContent'
 
 function StatIcon({ tone }) {
   return (
@@ -28,13 +24,14 @@ function StatIcon({ tone }) {
 }
 
 export default function PlatformPerformance() {
-  const summary = getPerformanceSummary()
   const chartTheme = useThemeMode()
+  const { summary, subjects, performanceTrend, practiceAttempts, loading } = useStudentPerformanceData()
+  const visibleSubjects = subjects.length ? subjects : mdcatSubjects
 
   return (
     <div className="workspace-page animate-fade-up">
       <div className="workspace-columns-4">
-        <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Attempted MCQs</span><StatIcon tone="purple" /></div><strong>{summary.totalAttempted}</strong><small>{summary.totalMcqs - summary.totalAttempted} still unattempted</small></div>
+        <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Attempted MCQs</span><StatIcon tone="purple" /></div><strong>{summary.totalAttempted}</strong><small>{Math.max(summary.totalMcqs - summary.totalAttempted, 0)} still unattempted</small></div>
         <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Overall Accuracy</span><StatIcon tone="teal" /></div><strong>{summary.overallAccuracy}%</strong><small>Live average across all attempts</small></div>
         <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Best Subject</span><StatIcon tone="amber" /></div><strong>{summary.bestSubject}</strong><small>Highest current subject accuracy</small></div>
         <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>Weakest Subject</span><StatIcon tone="coral" /></div><strong>{summary.weakestSubject}</strong><small>Main recovery target for this week</small></div>
@@ -49,20 +46,20 @@ export default function PlatformPerformance() {
             </div>
           </div>
           <div className="workspace-card-body chart-panel">
-            {performanceTrend.length > 0 ? (
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={performanceTrend}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.gridColor} />
-                <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor }} domain={[40, 100]} />
-                <Tooltip contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 12 }} labelStyle={{ color: chartTheme.tooltipText }} />
-                <Legend wrapperStyle={{ color: chartTheme.legendColor }} />
-                <Line type="monotone" dataKey="Biology" stroke="#1db884" strokeWidth={3} dot={false} />
-                <Line type="monotone" dataKey="Chemistry" stroke="#6c47ff" strokeWidth={3} dot={false} />
-                <Line type="monotone" dataKey="Physics" stroke="#4a90e2" strokeWidth={3} dot={false} />
-                <Line type="monotone" dataKey="English" stroke="#f59e0b" strokeWidth={3} dot={false} />
-              </LineChart>
-            </ResponsiveContainer>
+            {!loading && performanceTrend.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={performanceTrend}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.gridColor} />
+                  <XAxis dataKey="attemptDate" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor }} domain={[40, 100]} />
+                  <Tooltip contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 12 }} labelStyle={{ color: chartTheme.tooltipText }} />
+                  <Legend wrapperStyle={{ color: chartTheme.legendColor }} />
+                  <Line type="monotone" dataKey="Biology" stroke="#1db884" strokeWidth={3} dot={false} connectNulls />
+                  <Line type="monotone" dataKey="Chemistry" stroke="#6c47ff" strokeWidth={3} dot={false} connectNulls />
+                  <Line type="monotone" dataKey="Physics" stroke="#4a90e2" strokeWidth={3} dot={false} connectNulls />
+                  <Line type="monotone" dataKey="English" stroke="#f59e0b" strokeWidth={3} dot={false} connectNulls />
+                </LineChart>
+              </ResponsiveContainer>
             ) : (
               <div className="empty-state empty-state--compact">
                 <div className="empty-orb" />
@@ -101,7 +98,7 @@ export default function PlatformPerformance() {
             </div>
           </div>
           <div className="workspace-card-body list-stack">
-            {mdcatSubjects.map((subject) => (
+            {visibleSubjects.map((subject) => (
               <div key={subject.id} className="progress-inline">
                 <div className="progress-inline-row">
                   <span>{subject.name}</span>
@@ -124,7 +121,7 @@ export default function PlatformPerformance() {
           </div>
           <div className="workspace-card-body list-stack">
             {practiceAttempts.map((attempt) => (
-              <div key={`${attempt.subject}-${attempt.chapter}`} className="timeline-item">
+              <div key={attempt.id} className="timeline-item">
                 <div className="timeline-dot" style={{ background: attempt.score >= 80 ? 'var(--teal)' : attempt.score >= 65 ? 'var(--amber)' : 'var(--coral)' }} />
                 <div>
                   <strong>{attempt.subject} • {attempt.chapter}</strong>
