@@ -62,6 +62,29 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    subscriptionPlan: {
+      type: String,
+      enum: ['free', 'monthly', 'quarterly', 'premium', 'enterprise'],
+      default: 'free',
+    },
+    subscriptionStatus: {
+      type: String,
+      enum: ['none', 'pending', 'active', 'expired', 'cancelled'],
+      default: 'none',
+    },
+    subscriptionStartDate: {
+      type: Date,
+      default: null,
+    },
+    subscriptionEndDate: {
+      type: Date,
+      default: null,
+    },
+    accessStatus: {
+      type: String,
+      enum: ['active', 'restricted', 'expired'],
+      default: 'active',
+    },
     isActive: {
       type: Boolean,
       default: true,

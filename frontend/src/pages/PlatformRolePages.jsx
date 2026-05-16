@@ -12,10 +12,11 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { useMemo, useState } from 'react'
+import useAdminPanelData from '../hooks/useAdminPanelData'
 import useTeacherAnalyticsData from '../hooks/useTeacherAnalyticsData'
 import './PlatformPages.css'
 import {
-  adminStudents,
   adminTeachers,
   adminTransactions,
   permissionMatrix,
@@ -25,6 +26,23 @@ import {
 
 const scoreDistribution = []
 const multiStudentTrend = []
+const PLAN_OPTIONS = ['free', 'monthly', 'quarterly', 'premium', 'enterprise']
+const SUBSCRIPTION_OPTIONS = ['none', 'pending', 'active', 'expired', 'cancelled']
+const ACCESS_OPTIONS = ['active', 'restricted', 'expired']
+
+const formatTitle = (value = '') =>
+  String(value || '')
+    .split(/[_\s-]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
+
+const formatDate = (value) => {
+  if (!value) return 'Not set'
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return 'Not set'
+  return date.toLocaleDateString()
+}
 
 export function TeacherStudentsPage() {
   const { studentRows, loading } = useTeacherAnalyticsData()
@@ -255,33 +273,145 @@ export function TeacherAnalyticsPage() {
 }
 
 export function AdminStudentsPage() {
+  const [search, setSearch] = useState('')
+  const [filter, setFilter] = useState('all')
+  const [selectedId, setSelectedId] = useState('')
+  const [savingField, setSavingField] = useState('')
+  const { overview, students, loadingStudents, error, updateUser } = useAdminPanelData({
+    includeStudents: true,
+    search,
+  })
+
+  const visibleStudents = useMemo(() => {
+    return students.filter((student) => {
+      if (filter === 'all') return true
+      if (filter === 'active') return student.accessStatus === 'active' && student.isActive
+      if (filter === 'restricted') return student.accessStatus === 'restricted' || !student.isActive
+      if (filter === 'expiring') {
+        if (!student.subscriptionEndDate) return false
+        const expiry = new Date(student.subscriptionEndDate)
+        const now = new Date()
+        const weekAhead = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        return expiry >= now && expiry <= weekAhead
+      }
+      return true
+    })
+  }, [filter, students])
+
+  const selectedStudent =
+    visibleStudents.find((student) => student._id === selectedId) ||
+    visibleStudents[0] ||
+    null
+
+  const saveStudentField = async (studentId, payload, fieldKey) => {
+    try {
+      setSavingField(`${studentId}:${fieldKey}`)
+      await updateUser(studentId, payload)
+    } finally {
+      setSavingField('')
+    }
+  }
+
   return (
     <div className="workspace-page animate-fade-up">
+      <div className="workspace-columns-4">
+        <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Total Students</span><span className="badge badge-purple">Live</span></div><strong>{overview.totalStudents}</strong><small>{overview.activeStudents} active accounts</small></div>
+        <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Paid Access</span><span className="badge badge-teal">Plans</span></div><strong>{overview.activeSubscriptions}</strong><small>Current active subscriptions</small></div>
+        <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Expiring Soon</span><span className="badge badge-amber">7 Days</span></div><strong>{overview.expiringSoon}</strong><small>Students needing renewal follow-up</small></div>
+        <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>Restricted</span><span className="badge badge-coral">Access</span></div><strong>{overview.restrictedStudents}</strong><small>Accounts requiring admin action</small></div>
+      </div>
+
       <div className="workspace-card">
-        <div className="workspace-card-head"><div><div className="label-xs">Manage Students</div><h2 className="workspace-card-title">Enrollment and profile control</h2></div></div>
+        <div className="workspace-card-head"><div><div className="label-xs">Manage Students</div><h2 className="workspace-card-title">Enrollment and access control</h2></div></div>
         <div className="workspace-card-body">
-          <table className="simple-table">
-            <thead>
-              <tr><th><input type="checkbox" aria-label="Select all students" /></th><th>Name</th><th>Plan</th><th>City</th><th>Status</th><th>Tests</th><th>Action</th></tr>
-            </thead>
-            <tbody>
-              {adminStudents.map((student) => (
-                <tr key={student.name}>
-                  <td><input type="checkbox" aria-label={`Select ${student.name}`} /></td>
-                  <td>{student.name}</td>
-                  <td>{student.plan}</td>
-                  <td>{student.city}</td>
-                  <td>{student.status}</td>
-                  <td>{student.tests}</td>
-                  <td><div className="inline-actions"><button className="btn btn-secondary btn-sm" type="button">Suspend</button><button className="btn btn-ghost btn-sm" type="button">Reset Password</button></div></td>
-                </tr>
-              ))}
-              {adminStudents.length === 0 ? (
-                <tr><td colSpan="7"><div className="empty-state empty-state--compact"><div className="empty-orb" /><h3>No students yet</h3><p>Real student accounts will appear here.</p></div></td></tr>
-              ) : null}
-            </tbody>
-          </table>
+          <div className="split-toolbar">
+            <div className="filter-pills">
+              <button className={`filter-pill ${filter === 'all' ? 'filter-pill--active' : ''}`} onClick={() => setFilter('all')} type="button">All</button>
+              <button className={`filter-pill ${filter === 'active' ? 'filter-pill--active' : ''}`} onClick={() => setFilter('active')} type="button">Active</button>
+              <button className={`filter-pill ${filter === 'expiring' ? 'filter-pill--active' : ''}`} onClick={() => setFilter('expiring')} type="button">Expiring</button>
+              <button className={`filter-pill ${filter === 'restricted' ? 'filter-pill--active' : ''}`} onClick={() => setFilter('restricted')} type="button">Restricted</button>
+            </div>
+            <div className="floating-field student-search-field">
+              <label htmlFor="student-search">Search students</label>
+              <input id="student-search" type="text" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search by name or email" />
+            </div>
+          </div>
+          {error ? <p className="error-message">{error}</p> : null}
         </div>
+      </div>
+
+      <div className="split-layout">
+        <div className="workspace-card">
+          <div className="workspace-card-body">
+            <table className="simple-table">
+              <thead>
+                <tr><th>Name</th><th>Plan</th><th>Subscription</th><th>Access</th><th>Tests</th><th>Action</th></tr>
+              </thead>
+              <tbody>
+                {visibleStudents.map((student) => (
+                  <tr key={student._id} className={selectedStudent?._id === student._id ? 'table-row-active' : ''} onClick={() => setSelectedId(student._id)}>
+                    <td>
+                      <div className="table-primary-cell">
+                        <strong>{student.firstName} {student.lastName}</strong>
+                        <small>{student.email}</small>
+                      </div>
+                    </td>
+                    <td>
+                      <select value={student.subscriptionPlan || 'free'} onChange={(event) => saveStudentField(student._id, { subscriptionPlan: event.target.value }, 'plan')}>
+                        {PLAN_OPTIONS.map((option) => <option key={option} value={option}>{formatTitle(option)}</option>)}
+                      </select>
+                    </td>
+                    <td>
+                      <select value={student.subscriptionStatus || 'none'} onChange={(event) => saveStudentField(student._id, { subscriptionStatus: event.target.value }, 'subscription')}>
+                        {SUBSCRIPTION_OPTIONS.map((option) => <option key={option} value={option}>{formatTitle(option)}</option>)}
+                      </select>
+                    </td>
+                    <td>
+                      <select value={student.accessStatus || 'active'} onChange={(event) => saveStudentField(student._id, { accessStatus: event.target.value }, 'access')}>
+                        {ACCESS_OPTIONS.map((option) => <option key={option} value={option}>{formatTitle(option)}</option>)}
+                      </select>
+                    </td>
+                    <td>{student.metrics?.totalTests || 0}</td>
+                    <td>
+                      <div className="inline-actions">
+                        <button
+                          className="btn btn-secondary btn-sm"
+                          type="button"
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            saveStudentField(student._id, { isActive: !student.isActive }, 'account')
+                          }}
+                          disabled={savingField === `${student._id}:account`}
+                        >
+                          {student.isActive ? 'Deactivate' : 'Activate'}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {!loadingStudents && visibleStudents.length === 0 ? (
+                  <tr><td colSpan="6"><div className="empty-state empty-state--compact"><div className="empty-orb" /><h3>No students found</h3><p>Student accounts will appear here after registrations and payments start.</p></div></td></tr>
+                ) : null}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <aside className="workspace-card drawer-card">
+          <div className="workspace-card-head"><div><div className="label-xs">Student Detail</div><h3 className="workspace-card-title">{selectedStudent ? `${selectedStudent.firstName} ${selectedStudent.lastName}` : 'No student selected'}</h3></div></div>
+          <div className="workspace-card-body list-stack">
+            <div className="metric-row"><span>Email</span><strong>{selectedStudent?.email || 'No student selected'}</strong></div>
+            <div className="metric-row"><span>Plan</span><strong>{formatTitle(selectedStudent?.subscriptionPlan || 'free')}</strong></div>
+            <div className="metric-row"><span>Subscription</span><strong>{formatTitle(selectedStudent?.subscriptionStatus || 'none')}</strong></div>
+            <div className="metric-row"><span>Access</span><strong>{formatTitle(selectedStudent?.accessStatus || 'active')}</strong></div>
+            <div className="metric-row"><span>Tests Attempted</span><strong>{selectedStudent?.metrics?.totalTests || 0}</strong></div>
+            <div className="metric-row"><span>Average Score</span><strong>{selectedStudent?.metrics?.averageScore || 0}%</strong></div>
+            <div className="metric-row"><span>Total Paid</span><strong>Rs {selectedStudent?.metrics?.totalPaidAmount || 0}</strong></div>
+            <div className="metric-row"><span>Last Attempt</span><strong>{formatDate(selectedStudent?.metrics?.lastAttemptAt)}</strong></div>
+            <div className="metric-row"><span>Plan Ends</span><strong>{formatDate(selectedStudent?.subscriptionEndDate)}</strong></div>
+            <div className="metric-row"><span>Joined</span><strong>{formatDate(selectedStudent?.createdAt)}</strong></div>
+          </div>
+        </aside>
       </div>
     </div>
   )

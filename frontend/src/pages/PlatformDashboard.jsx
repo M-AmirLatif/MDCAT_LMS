@@ -12,13 +12,12 @@ import {
   YAxis,
 } from 'recharts'
 import { useAuth } from '../context/AuthContext'
+import useAdminPanelData from '../hooks/useAdminPanelData'
 import useMcqSubjectSummary from '../hooks/useMcqSubjectSummary'
 import useStudentPerformanceData from '../hooks/useStudentPerformanceData'
 import useThemeMode from '../hooks/useThemeMode'
 import './PlatformPages.css'
 import {
-  adminTeachers,
-  liveClasses,
   mdcatSubjects,
   SUBJECT_STYLES,
   studentNotifications,
@@ -294,7 +293,8 @@ function TeacherDashboard() {
 
 function AdminDashboard() {
   const chartTheme = useThemeMode()
-  const { subjects, totals } = useMcqSubjectSummary()
+  const { subjects } = useMcqSubjectSummary()
+  const { overview, recentStudents } = useAdminPanelData()
   const subjectMix = subjects.map((subject) => ({
     name: subject.name,
     value: subject.totalMcqs,
@@ -307,21 +307,21 @@ function AdminDashboard() {
         <div className="workspace-hero-grid">
           <div className="workspace-hero-copy">
             <div className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Admin Dashboard</div>
-            <h1 style={{ color: '#fff' }}>Moderate the MDCAT MCQ bank, teacher uploads, and student performance from one panel</h1>
-            <p>Only Biology, Chemistry, Physics, and English are active. Review uploads, chapter coverage, and platform quality without course clutter.</p>
+            <h1 style={{ color: '#fff' }}>Control student access, subscriptions, and MCQ quality from one admin workspace</h1>
+            <p>Phase 1 is focused on operations: student access, subscription visibility, payment follow-up, and live MCQ coverage across Biology, Chemistry, Physics, and English.</p>
           </div>
           <div className="workspace-hero-stats">
-            <div className="hero-mini-card"><span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Active Subjects</span><strong>4</strong><p>Strict MDCAT-only structure enforced</p></div>
-            <div className="hero-mini-card"><span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Pending Reviews</span><strong>0</strong><p>Teacher uploads and flagged explanations</p></div>
+            <div className="hero-mini-card"><span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Active Subscriptions</span><strong>{overview.activeSubscriptions}</strong><p>Students with current paid access</p></div>
+            <div className="hero-mini-card"><span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Pending Payments</span><strong>{overview.pendingPayments}</strong><p>Manual payment follow-up queue</p></div>
           </div>
         </div>
       </section>
 
       <div className="workspace-columns-4">
-        <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Total Subjects</span><span className="badge badge-purple">Fixed</span></div><strong>4</strong><small>Biology, Chemistry, Physics, English</small></div>
-        <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Total Chapters</span><span className="badge badge-teal">Organized</span></div><strong>{totals.totalChapters}</strong><small>Live chapter coverage across all subjects</small></div>
-        <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Total MCQs</span><span className="badge badge-amber">Moderated</span></div><strong>{totals.totalMcqs}</strong><small>Live MCQ count across all subject banks</small></div>
-        <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>Teacher Uploads</span><span className="badge badge-coral">Review</span></div><strong>0</strong><small>Moderation queue is empty</small></div>
+        <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Total Students</span><span className="badge badge-purple">Live</span></div><strong>{overview.totalStudents}</strong><small>{overview.activeStudents} active accounts</small></div>
+        <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Active Subscriptions</span><span className="badge badge-teal">Billing</span></div><strong>{overview.activeSubscriptions}</strong><small>{overview.expiringSoon} expiring within 7 days</small></div>
+        <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Total Attempts</span><span className="badge badge-amber">Usage</span></div><strong>{overview.totalAttempts}</strong><small>Real chapter submissions from students</small></div>
+        <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>Monthly Revenue</span><span className="badge badge-coral">Cashflow</span></div><strong>Rs {overview.monthlyRevenue || 0}</strong><small>{overview.pendingPayments} payments still pending review</small></div>
       </div>
 
       <div className="workspace-section-grid">
@@ -346,22 +346,22 @@ function AdminDashboard() {
         </div>
 
         <div className="workspace-card">
-          <div className="workspace-card-head"><div><div className="label-xs">Teacher Uploads</div><h3 className="workspace-card-title">Recent subject owners</h3></div></div>
+          <div className="workspace-card-head"><div><div className="label-xs">Student Access</div><h3 className="workspace-card-title">Newest student accounts</h3></div></div>
           <div className="workspace-card-body list-stack">
-            {adminTeachers.map((teacher) => (
-              <div key={teacher.name} className="queue-card">
+            {recentStudents.map((student) => (
+              <div key={student._id} className="queue-card">
                 <div className="workspace-card-title-row">
-                  <strong>{teacher.name}</strong>
-                  <span className={`state-chip ${teacher.pending === 'Approved' ? 'state-chip--success' : 'state-chip--warning'}`}>{teacher.pending}</span>
+                  <strong>{student.firstName} {student.lastName}</strong>
+                  <span className={`state-chip ${student.accessStatus === 'active' ? 'state-chip--success' : student.accessStatus === 'restricted' ? 'state-chip--warning' : 'state-chip--neutral'}`}>{student.accessStatus}</span>
                 </div>
-                <p>{teacher.subject} • Rating {teacher.rating} • {teacher.students} students</p>
+                <p>{student.email} - {student.subscriptionPlan} plan - {student.metrics?.totalTests || 0} tests</p>
               </div>
             ))}
-            {adminTeachers.length === 0 ? (
+            {recentStudents.length === 0 ? (
               <div className="empty-state empty-state--compact">
                 <div className="empty-orb" />
-                <h3>No teacher uploads yet</h3>
-                <p>Teacher ownership and moderation status will appear after real uploads.</p>
+                <h3>No students yet</h3>
+                <p>New student accounts and access states will appear here after registration begins.</p>
               </div>
             ) : null}
           </div>
