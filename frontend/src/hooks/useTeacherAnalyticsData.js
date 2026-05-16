@@ -13,6 +13,7 @@ const EMPTY = {
   scoreDistribution: [],
   subjectMastery: SUBJECTS.map((subject) => ({ subject, score: 0 })),
   multiStudentTrend: [],
+  studentRows: [],
 }
 
 const getStudentName = (student) => {
@@ -41,11 +42,17 @@ const buildAnalyticsData = (sessions = [], subjects = []) => {
     : 0
 
   const studentScores = new Map()
+  const studentMeta = new Map()
   sessions.forEach((session) => {
     const studentName = getStudentName(session.studentId)
     const current = studentScores.get(studentName) || []
     current.push(Number(session.percentage) || 0)
     studentScores.set(studentName, current)
+    if (!studentMeta.has(studentName)) {
+      studentMeta.set(studentName, {
+        email: session.studentId?.email || 'No email',
+      })
+    }
   })
 
   const atRisk = [...studentScores.values()].filter((scores) => {
@@ -96,6 +103,27 @@ const buildAnalyticsData = (sessions = [], subjects = []) => {
     return acc
   }, [])
 
+  const studentRows = [...studentScores.entries()]
+    .map(([name, scores]) => {
+      const averageScore = Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length)
+      const risk = averageScore < 50 ? 'High' : averageScore < 70 ? 'Medium' : 'Low'
+      return {
+        name,
+        city: '—',
+        score: averageScore,
+        streak: `${scores.length} attempts`,
+        risk,
+        email: studentMeta.get(name)?.email || 'No email',
+        trend: sortedSessions
+          .filter((session) => getStudentName(session.studentId) === name)
+          .map((session, index) => ({
+            label: `Attempt ${index + 1}`,
+            score: Number(session.percentage) || 0,
+          })),
+      }
+    })
+    .sort((a, b) => b.score - a.score)
+
   return {
     summary: {
       classAverage,
@@ -106,6 +134,7 @@ const buildAnalyticsData = (sessions = [], subjects = []) => {
     scoreDistribution: bands.map(({ band, count }) => ({ band, count })),
     subjectMastery,
     multiStudentTrend,
+    studentRows,
   }
 }
 

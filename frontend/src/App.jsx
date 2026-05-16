@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import './App.css'
 import './pages/PlatformPages.css'
@@ -131,9 +131,6 @@ const LazyAdminSettingsPage = lazyWithRetry(() =>
 const LazyTeacherStudentsPage = lazyWithRetry(() =>
   import('./pages/PlatformRolePages').then((m) => ({ default: m.TeacherStudentsPage })),
   'TeacherStudentsPage')
-const LazyTeacherAssignmentsPage = lazyWithRetry(() =>
-  import('./pages/PlatformRolePages').then((m) => ({ default: m.TeacherAssignmentsPage })),
-  'TeacherAssignmentsPage')
 const LazyTeacherAnalyticsPage = lazyWithRetry(() =>
   import('./pages/PlatformRolePages').then((m) => ({ default: m.TeacherAnalyticsPage })),
   'TeacherAnalyticsPage')
@@ -238,7 +235,7 @@ function App() {
               path="/teacher/assignments"
               element={
                 <ProtectedRoute roles={['teacher', 'admin', 'superadmin']}>
-                  <LazyTeacherAssignmentsPage />
+                  <Navigate to="/teacher/mcqs" replace />
                 </ProtectedRoute>
               }
             />

@@ -44,7 +44,6 @@ export const PLATFORM_NAV = {
         { key: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
         { key: 'my-courses', label: 'MCQ Management', path: '/teacher/mcqs', icon: 'courses' },
         { key: 'students', label: 'Student Attempts', path: '/teacher/students', icon: 'students' },
-        { key: 'assignments', label: 'MCQ Builder', path: '/teacher/assignments', icon: 'assignments' },
         { key: 'analytics', label: 'Performance Analytics', path: '/teacher/analytics', icon: 'analytics' },
       ],
     },

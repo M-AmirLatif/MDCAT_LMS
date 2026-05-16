@@ -21,13 +21,15 @@ import {
   permissionMatrix,
   superAdminLogs,
   teacherAssignments,
-  teacherStudents,
 } from './platformContent'
 
 const scoreDistribution = []
 const multiStudentTrend = []
 
 export function TeacherStudentsPage() {
+  const { studentRows, loading } = useTeacherAnalyticsData()
+  const selectedStudent = studentRows[0] || null
+
   return (
     <div className="workspace-page animate-fade-up">
       <section className="workspace-card">
@@ -55,7 +57,7 @@ export function TeacherStudentsPage() {
                 <tr><th>Name</th><th>City</th><th>Score</th><th>Streak</th><th>Risk</th></tr>
               </thead>
               <tbody>
-                {teacherStudents.map((student) => (
+                {studentRows.map((student) => (
                   <tr key={student.name}>
                     <td>{student.name}</td>
                     <td>{student.city}</td>
@@ -64,7 +66,7 @@ export function TeacherStudentsPage() {
                     <td>{student.risk}</td>
                   </tr>
                 ))}
-                {teacherStudents.length === 0 ? (
+                {!loading && studentRows.length === 0 ? (
                   <tr><td colSpan="5"><div className="empty-state empty-state--compact"><div className="empty-orb" /><h3>No students yet</h3><p>Student rows will appear after real learners start practicing.</p></div></td></tr>
                 ) : null}
               </tbody>
@@ -76,22 +78,24 @@ export function TeacherStudentsPage() {
           <div className="workspace-card-head">
             <div>
               <div className="label-xs">Student Detail</div>
-              <h3 className="workspace-card-title">No student selected</h3>
+              <h3 className="workspace-card-title">{selectedStudent?.name || 'No student selected'}</h3>
             </div>
           </div>
           <div className="workspace-card-body">
             <div className="chart-panel" style={{ height: '180px' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={multiStudentTrend}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(108,71,255,0.08)" />
-                  <XAxis dataKey="week" axisLine={false} tickLine={false} />
-                  <YAxis axisLine={false} tickLine={false} domain={[40, 100]} />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="ayesha" stroke="#6c47ff" strokeWidth={3} dot={false} />
-                </LineChart>
-              </ResponsiveContainer>
+              {selectedStudent ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={selectedStudent.trend}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(108,71,255,0.08)" />
+                    <XAxis dataKey="label" axisLine={false} tickLine={false} />
+                    <YAxis axisLine={false} tickLine={false} domain={[0, 100]} />
+                    <Tooltip />
+                    <Line type="monotone" dataKey="score" stroke="#6c47ff" strokeWidth={3} dot={false} />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : null}
             </div>
-            <div className="metric-row"><span>Email</span><strong>No student selected</strong></div>
+            <div className="metric-row"><span>Email</span><strong>{selectedStudent?.email || 'No student selected'}</strong></div>
             <div className="metric-row"><span>Action</span><div className="inline-actions"><button className="btn btn-secondary btn-sm" type="button">Contact</button><button className="btn btn-ghost btn-sm" type="button">Assign Work</button></div></div>
           </div>
         </aside>
