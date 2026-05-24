@@ -1226,7 +1226,7 @@ function McqList() {
                 >
                   <div className="teacher-mcq-editor-head">
                     <span className="state-chip state-chip--neutral">
-                      MCQ {index + 1}
+                      MCQ {item.row || index + 1}
                     </span>
                     <span className="teacher-mcq-status">
                       {item.topicName ? `Topic: ${item.topicName}` : 'Chapter review item'}
