@@ -3277,8 +3277,8 @@
 
 .teacher-mcq-question-field {
   display: grid !important;
-  gap: 14px !important;
-  padding: 16px 18px !important;
+  gap: 18px !important;
+  padding: 18px 22px !important;
   border: 1.5px solid rgba(124, 58, 237, 0.22) !important;
   border-radius: 12px !important;
   background: #F8F7FF !important;
@@ -3288,7 +3288,8 @@
   min-height: 54px !important;
   height: auto !important;
   field-sizing: content;
-  padding: 2px 0 0 !important;
+  margin-top: 4px !important;
+  padding: 6px 0 0 !important;
   border: 0 !important;
   border-radius: 10px !important;
   background: transparent !important;
@@ -3332,6 +3333,7 @@
 .teacher-mcq-editor-bottom label,
 .teacher-mcq-question-field label {
   display: block !important;
+  margin: 0 !important;
   color: var(--purple, #7C3AED) !important;
   -webkit-text-fill-color: var(--purple, #7C3AED) !important;
   font-size: 11px !important;

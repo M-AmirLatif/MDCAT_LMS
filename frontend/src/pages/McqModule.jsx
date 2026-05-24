@@ -523,7 +523,7 @@ function McqList() {
       </section>
 
       {loading ? <LoadingCard label="Loading MCQs..." /> : null}
-      {isTeacher ? (
+      {isTeacher && topics.length > 0 ? (
         <section className="workspace-card">
           <div className="workspace-card-body">
             <div className="floating-field">
@@ -536,17 +536,15 @@ function McqList() {
               </select>
             </div>
             <p>{selectedTopic ? `New MCQs and CSV uploads will go into topic "${selectedTopic.name}".` : 'New MCQs and CSV uploads will be saved directly under the chapter without a topic.'}</p>
-            {topics.length > 0 ? (
-              <div className="inline-actions">
-                {topics.map((topic) => (
-                  <span key={topic.id} className="state-chip state-chip--neutral">
-                    {topic.name} ({topic.mcqCount || 0})
-                    <button className="btn btn-ghost btn-sm" type="button" onClick={() => setModal({ type: 'topic', topic })}>Edit</button>
-                    <button className="btn btn-ghost btn-sm" type="button" onClick={() => deleteTopic(topic)}>Delete</button>
-                  </span>
-                ))}
-              </div>
-            ) : null}
+            <div className="inline-actions">
+              {topics.map((topic) => (
+                <span key={topic.id} className="state-chip state-chip--neutral">
+                  {topic.name} ({topic.mcqCount || 0})
+                  <button className="btn btn-ghost btn-sm" type="button" onClick={() => setModal({ type: 'topic', topic })}>Edit</button>
+                  <button className="btn btn-ghost btn-sm" type="button" onClick={() => deleteTopic(topic)}>Delete</button>
+                </span>
+              ))}
+            </div>
           </div>
         </section>
       ) : null}
