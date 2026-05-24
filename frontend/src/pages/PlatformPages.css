@@ -3628,8 +3628,12 @@
 }
 
 .teacher-mcq-editor-bottom .floating-field:first-child label {
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
   margin: 0 !important;
   padding: 0 !important;
+  pointer-events: auto !important;
   line-height: 1.2 !important;
 }
 
