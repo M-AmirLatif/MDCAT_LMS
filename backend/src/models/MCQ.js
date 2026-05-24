@@ -63,6 +63,23 @@ const mcqSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    needsReview: {
+      type: Boolean,
+      default: false,
+    },
+    hasDiagram: {
+      type: Boolean,
+      default: false,
+    },
+    hasLatex: {
+      type: Boolean,
+      default: false,
+    },
+    reviewReason: {
+      type: String,
+      default: null,
+      trim: true,
+    },
     difficulty: {
       type: String,
       enum: ['easy', 'medium', 'hard'],

@@ -1,4 +1,5 @@
 const express = require('express')
+const multer = require('multer')
 const {
   createMcq,
   getMcqsByCourse,
@@ -16,6 +17,8 @@ const {
   deleteTopic,
   deleteCsvReviewItem,
   updateCsvReviewItem,
+  getCsvReviewQueue,
+  approveCsvReviewItem,
   getMcqsByChapter,
   createChapterMcq,
   uploadChapterMcqsCsv,
@@ -24,6 +27,7 @@ const {
 const { protect, authorize } = require('../middlewares/auth')
 
 const router = express.Router()
+const upload = multer({ storage: multer.memoryStorage() })
 
 // Public routes
 router.get('/course/:courseId', getMcqsByCourse)
@@ -38,11 +42,13 @@ router.delete('/:subject/chapters/:chapterId', protect, authorize('teacher', 'ad
 router.post('/:subject/chapters/:chapterId/topics', protect, authorize('teacher', 'admin'), createTopic)
 router.put('/:subject/chapters/:chapterId/topics/:topicId', protect, authorize('teacher', 'admin'), updateTopic)
 router.delete('/:subject/chapters/:chapterId/topics/:topicId', protect, authorize('teacher', 'admin'), deleteTopic)
+router.get('/:subject/chapters/:chapterId/review-queue', protect, authorize('teacher', 'admin'), getCsvReviewQueue)
 router.delete('/:subject/chapters/:chapterId/review-queue/:itemId', protect, authorize('teacher', 'admin'), deleteCsvReviewItem)
 router.put('/:subject/chapters/:chapterId/review-queue/:itemId', protect, authorize('teacher', 'admin'), updateCsvReviewItem)
+router.post('/:subject/chapters/:chapterId/review-queue/:itemId/approve', protect, authorize('teacher', 'admin'), approveCsvReviewItem)
 router.get('/:subject/:chapterId', protect, getMcqsByChapter)
 router.post('/:subject/:chapterId', protect, authorize('teacher', 'admin'), createChapterMcq)
-router.post('/:subject/:chapterId/upload-csv', protect, authorize('teacher', 'admin'), uploadChapterMcqsCsv)
+router.post('/:subject/:chapterId/upload-csv', protect, authorize('teacher', 'admin'), upload.single('file'), uploadChapterMcqsCsv)
 router.post('/:subject/:chapterId/submit', protect, submitChapterAttempt)
 
 // Teacher/Admin routes (full answers)

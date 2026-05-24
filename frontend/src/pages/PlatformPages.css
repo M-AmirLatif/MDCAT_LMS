@@ -1620,7 +1620,7 @@
     overflow: visible;
   }
 
-  .mcq-question-card h2 {
+  .mcq-question-title {
     font-size: 25px;
     line-height: 1.35;
     word-break: normal;
@@ -1633,7 +1633,7 @@
     align-items: flex-start;
   }
 
-  .mcq-option-card span:last-child {
+  .mcq-option-text {
     min-width: 0;
     overflow-wrap: anywhere;
   }
@@ -3958,6 +3958,160 @@
   line-height: 1.25 !important;
 }
 
+.mcq-renderer {
+  display: block;
+  color: inherit;
+}
+
+.mcq-renderer-block-math {
+  display: block;
+  margin: 10px 0;
+  overflow-x: auto;
+}
+
+.mcq-diagram-callout {
+  display: block;
+  gap: 8px;
+  margin: 10px 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(74, 144, 226, 0.24);
+  background: rgba(74, 144, 226, 0.08);
+}
+
+.mcq-diagram-callout-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #245ea8;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.mcq-diagram-callout-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: rgba(74, 144, 226, 0.16);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.mcq-diagram-callout-body {
+  display: block;
+  margin-top: 8px;
+  color: inherit;
+  line-height: 1.6;
+}
+
+.mcq-question-title,
+.review-question-title {
+  color: var(--text-primary, #111827);
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.mcq-option-text,
+.review-option-text,
+.review-explanation-text {
+  min-width: 0;
+  color: inherit;
+  line-height: 1.6;
+}
+
+.mcq-option-text .mcq-renderer,
+.review-option-text .mcq-renderer,
+.review-explanation-text .mcq-renderer,
+.mcq-question-title .mcq-renderer,
+.review-question-title .mcq-renderer {
+  display: block;
+}
+
+.teacher-review-render-block {
+  padding: 0 22px 18px;
+  background: #fafbff;
+}
+
+.teacher-review-render-card {
+  display: grid;
+  gap: 10px;
+  padding: 16px 18px;
+  border: 1.5px solid rgba(124, 58, 237, 0.16);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.teacher-review-render-label {
+  color: var(--purple, #7c3aed);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.teacher-review-render-content {
+  color: var(--text-primary, #111827);
+  line-height: 1.65;
+  word-break: break-word;
+}
+
+.teacher-review-render-content .mcq-renderer {
+  display: block;
+}
+
+.teacher-review-render-content .katex-display {
+  margin: 0.6em 0;
+}
+
+.mcq-under-review-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-bottom: 14px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.16);
+  color: #b45309;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+[data-theme='dark'] .mcq-diagram-callout {
+  border-color: rgba(96, 165, 250, 0.24);
+  background: rgba(30, 64, 175, 0.18);
+}
+
+[data-theme='dark'] .mcq-diagram-callout-head {
+  color: #bfdbfe;
+}
+
+[data-theme='dark'] .teacher-review-render-block {
+  background: rgba(22, 19, 40, 0.92);
+}
+
+[data-theme='dark'] .teacher-review-render-card {
+  border-color: rgba(139, 111, 255, 0.16);
+  background: rgba(18, 15, 34, 0.96);
+}
+
+[data-theme='dark'] .teacher-review-render-content {
+  color: #e5e7eb;
+}
+
+[data-theme='dark'] .mcq-under-review-badge {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fcd34d;
+}
+
 .workspace-page--mcq-list .workspace-card:not(:first-of-type) {
   background: transparent !important;
   border: 0 !important;
@@ -4020,6 +4174,10 @@
   .review-queue-head p {
     max-width: none !important;
     margin-bottom: 0 !important;
+  }
+
+  .teacher-review-render-block {
+    padding: 0 16px 16px;
   }
 
   .workspace-page--mcq-list .workspace-hero .inline-actions,

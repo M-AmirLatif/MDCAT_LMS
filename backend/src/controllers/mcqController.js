@@ -1,6 +1,8 @@
 const MCQ = require('../models/MCQ')
 const Course = require('../models/Course')
 const TestSession = require('../models/TestSession')
+const { parse } = require('csv-parse/sync')
+const createDOMPurify = require('isomorphic-dompurify')
 
 const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English']
 const SUBJECT_SLUGS = {
@@ -66,6 +68,130 @@ const getTopic = (chapter, topicId) =>
 
 const createReviewQueueItemId = () =>
   `review-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
+
+const DOMPurify = createDOMPurify
+const sanitizeCsvCell = (value) =>
+  DOMPurify.sanitize(String(value || '').trim(), { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })
+
+const hasLatex = (text) => /(\$\$[\s\S]+?\$\$|\$[^$]+?\$)/.test(String(text || ''))
+const hasDiagram = (text) => /\[DIAGRAM:\s*.*?\]/i.test(String(text || ''))
+const hasUnavailableDiagram = (text) => /\[DIAGRAM:\s*unavailable\s*\]/i.test(String(text || ''))
+
+const stripWrappedMath = (text) =>
+  String(text || '').replace(/(\$\$[\s\S]+?\$\$|\$[^$]+?\$)/g, ' ')
+
+const hasRawLatexLikeText = (text) => {
+  const stripped = stripWrappedMath(text)
+  return /\\rightarrow|\\rightleftharpoons|_\{|(?<!\\)\^\{/.test(stripped)
+}
+
+const normalizeCsvCorrectAnswer = (value) => {
+  const normalized = String(value || '').trim().toLowerCase()
+  if (!normalized) return ''
+  if (['a', 'b', 'c', 'd'].includes(normalized)) return normalized
+  const first = normalized[0]
+  return ['a', 'b', 'c', 'd'].includes(first) ? first : normalized
+}
+
+const countPresentOptions = (options) =>
+  options.filter((option) => String(option || '').trim()).length
+
+const determineReviewReasons = ({
+  question,
+  optionA,
+  optionB,
+  optionC,
+  optionD,
+  correctAnswer,
+  explanation,
+  explicitNeedsReview,
+}) => {
+  const reasons = []
+  if (!question) reasons.push('Question is empty')
+  if (countPresentOptions([optionA, optionB, optionC, optionD]) < 3) {
+    reasons.push('Fewer than 3 options present')
+  }
+  if (!['a', 'b', 'c', 'd'].includes(correctAnswer)) {
+    reasons.push('correct_answer must be a, b, c, or d')
+  }
+  if (!explanation) reasons.push('Explanation is empty')
+  if (hasUnavailableDiagram(question)) reasons.push('Diagram description unavailable')
+
+  const cells = [question, optionA, optionB, optionC, optionD, explanation]
+  if (cells.some((cell) => hasRawLatexLikeText(cell))) {
+    reasons.push('Contains raw LaTeX-like text outside math wrappers')
+  }
+  if (explicitNeedsReview) {
+    reasons.push('Flagged by CSV generator')
+  }
+  return [...new Set(reasons)]
+}
+
+const buildReviewQueueItem = ({
+  rowNumber,
+  context,
+  question,
+  optionA,
+  optionB,
+  optionC,
+  optionD,
+  correctAnswer,
+  explanation,
+  rawRow,
+  reason,
+}) => ({
+  id: createReviewQueueItemId(),
+  row: rowNumber,
+  topicId: context.topic?.id || null,
+  topicName: context.topic?.name || null,
+  reason,
+  question,
+  optionA,
+  optionB,
+  optionC,
+  optionD,
+  correctAnswer: String(correctAnswer || '').toUpperCase(),
+  explanation,
+  rawRow: rawRow.map((cell) => String(cell || '')),
+  createdAt: new Date(),
+})
+
+const createMcqDocFromRow = ({
+  context,
+  question,
+  optionA,
+  optionB,
+  optionC,
+  optionD,
+  correctAnswer,
+  explanation,
+  createdBy,
+  reviewReason = null,
+}) => ({
+  courseId: context.course._id,
+  topic: context.topic?.name || context.chapter.name,
+  subject: context.subject,
+  chapterId: context.chapter.id,
+  chapterName: context.chapter.name,
+  topicId: context.topic?.id || null,
+  question,
+  options: normalizeOptionsFromLetters({
+    optionA,
+    optionB,
+    optionC,
+    optionD,
+    correctAnswer: String(correctAnswer || '').toUpperCase(),
+  }),
+  explanation: explanation || null,
+  difficulty: 'medium',
+  createdBy,
+  isPublished: true,
+  correctAnswer: String(correctAnswer || '').toUpperCase(),
+  needsReview: false,
+  hasDiagram: [question, optionA, optionB, optionC, optionD, explanation].some(hasDiagram),
+  hasLatex: [question, optionA, optionB, optionC, optionD, explanation].some(hasLatex),
+  reviewReason,
+})
 
 const normalizeOptionsFromLetters = ({ optionA, optionB, optionC, optionD, correctAnswer }) => {
   const letters = ['A', 'B', 'C', 'D']
@@ -344,6 +470,10 @@ exports.updateMcq = async (req, res) => {
       year,
       isPastPaper,
       isPublished,
+      needsReview,
+      hasDiagram: incomingHasDiagram,
+      hasLatex: incomingHasLatex,
+      reviewReason,
     } = req.body
 
     let mcq = await MCQ.findById(req.params.mcqId)
@@ -382,6 +512,10 @@ exports.updateMcq = async (req, res) => {
         year,
         isPastPaper,
         isPublished,
+        needsReview,
+        hasDiagram: typeof incomingHasDiagram === 'boolean' ? incomingHasDiagram : [question, ...(options || []).map((option) => option?.text), explanation].some(hasDiagram),
+        hasLatex: typeof incomingHasLatex === 'boolean' ? incomingHasLatex : [question, ...(options || []).map((option) => option?.text), explanation].some(hasLatex),
+        reviewReason: reviewReason || null,
         correctAnswer: options ? ['A', 'B', 'C', 'D'][options.findIndex((option) => option.isCorrect)] || null : mcq.correctAnswer,
       },
       { new: true, runValidators: true },
@@ -836,6 +970,10 @@ exports.createChapterMcq = async (req, res) => {
       createdBy: req.user.id,
       isPublished: true,
       correctAnswer: normalizedAnswer,
+      needsReview: false,
+      hasDiagram: [question, optionA, optionB, optionC, optionD, explanation].some(hasDiagram),
+      hasLatex: [question, optionA, optionB, optionC, optionD, explanation].some(hasLatex),
+      reviewReason: null,
     })
 
     res.status(201).json({ success: true, message: 'MCQ created successfully', mcq })
@@ -847,25 +985,45 @@ exports.createChapterMcq = async (req, res) => {
 // ==================== CSV UPLOAD ====================
 exports.uploadChapterMcqsCsv = async (req, res) => {
   try {
-    const context = await buildChapterMcqFilter(req.params.subject, req.params.chapterId, true, req.body.topicId || null)
+    const topicIdFromBody = req.body?.topicId || req.query?.topicId || null
+    const context = await buildChapterMcqFilter(req.params.subject, req.params.chapterId, true, topicIdFromBody)
     if (context.error) return res.status(400).json({ error: context.error })
     if (!context.course || !context.chapter) return res.status(404).json({ error: 'Chapter not found' })
     if (!canManageCourse(context.course, req.user)) {
       return res.status(403).json({ error: 'Not authorized to manage this subject' })
     }
 
-    const csvText = String(req.body.csvText || '')
+    const csvText = req.file?.buffer
+      ? req.file.buffer.toString('utf8')
+      : String(req.body.csvText || '')
     if (!csvText.trim()) return res.status(400).json({ error: 'CSV text is required' })
 
-    const rows = parseCsv(csvText)
-    const headers = (rows.shift() || []).map((header) => String(header).trim().toLowerCase())
+    const parsedRows = parse(csvText, {
+      columns: false,
+      skip_empty_lines: true,
+      relax_column_count: true,
+      trim: false,
+    })
+    if (!parsedRows.length) {
+      return res.status(400).json({ error: 'CSV file is empty' })
+    }
+
+    const headers = (parsedRows[0] || []).map((header) => String(header || '').trim().toLowerCase())
     const required = ['question', 'option_a', 'option_b', 'option_c', 'option_d', 'correct_answer']
     const missing = required.filter((header) => !headers.includes(header))
     if (missing.length) {
       return res.status(400).json({ error: `Missing required CSV columns: ${missing.join(', ')}` })
     }
 
-    const indexOf = (name) => headers.indexOf(name)
+    const rows = parsedRows
+      .slice(1)
+      .map((row) => normalizeCsvRowToHeaders(row, headers))
+      .map((row) =>
+        Object.fromEntries(
+          headers.map((header, columnIndex) => [header, row[columnIndex] ?? '']),
+        ),
+      )
+
     const skipped = []
     const reviewItems = []
     const docs = []
@@ -879,19 +1037,22 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
 
     rows.forEach((rawRow, index) => {
       const rowNumber = index + 2
-      const row = normalizeCsvRowToHeaders(rawRow, headers)
-      const question = String(row[indexOf('question')] || '').trim()
-      const optionA = String(row[indexOf('option_a')] || '').trim()
-      const optionB = String(row[indexOf('option_b')] || '').trim()
-      const optionC = String(row[indexOf('option_c')] || '').trim()
-      const optionD = String(row[indexOf('option_d')] || '').trim()
-      const correctAnswer = String(row[indexOf('correct_answer')] || '').trim().toUpperCase()
-      const explanation = String(row[indexOf('explanation')] || '').trim()
-      const baseReviewItem = {
-        id: createReviewQueueItemId(),
-        row: rowNumber,
-        topicId: context.topic?.id || null,
-        topicName: context.topic?.name || null,
+      const row = Object.fromEntries(
+        Object.entries(rawRow || {}).map(([key, value]) => [
+          String(key).trim().toLowerCase(),
+          value,
+        ]),
+      )
+
+      const question = sanitizeCsvCell(row.question)
+      const optionA = sanitizeCsvCell(row.option_a)
+      const optionB = sanitizeCsvCell(row.option_b)
+      const optionC = sanitizeCsvCell(row.option_c)
+      const optionD = sanitizeCsvCell(row.option_d)
+      const correctAnswer = normalizeCsvCorrectAnswer(row.correct_answer)
+      const explanation = sanitizeCsvCell(row.explanation)
+      const explicitNeedsReview = String(row.needs_review || '').trim().toLowerCase() === 'true'
+      const reviewReasons = determineReviewReasons({
         question,
         optionA,
         optionB,
@@ -899,50 +1060,49 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
         optionD,
         correctAnswer,
         explanation,
-        rawRow: row.map((cell) => String(cell || '')),
+        explicitNeedsReview,
+      })
+
+      if (question && existingQuestions.has(question.toLowerCase())) {
+        reviewReasons.push('Duplicate question skipped')
       }
 
-      if (!question || !optionA || !optionB || !optionC || !optionD) {
-        skipped.push({ row: rowNumber, reason: 'Missing question or option field' })
-        reviewItems.push({
-          ...baseReviewItem,
-          reason: 'Missing question or option field',
-        })
-        return
-      }
-      if (!['A', 'B', 'C', 'D'].includes(correctAnswer)) {
-        skipped.push({ row: rowNumber, reason: 'correct_answer must be A, B, C, or D' })
-        reviewItems.push({
-          ...baseReviewItem,
-          reason: 'correct_answer must be A, B, C, or D',
-        })
-        return
-      }
-      if (existingQuestions.has(question.toLowerCase())) {
-        skipped.push({ row: rowNumber, reason: 'Duplicate question skipped' })
-        reviewItems.push({
-          ...baseReviewItem,
-          reason: 'Duplicate question skipped',
-        })
+      if (reviewReasons.length > 0) {
+        const reason = [...new Set(reviewReasons)].join('; ')
+        skipped.push({ row: rowNumber, reason })
+        reviewItems.push(
+          buildReviewQueueItem({
+            rowNumber,
+            context,
+            question,
+            optionA,
+            optionB,
+            optionC,
+            optionD,
+            correctAnswer,
+            explanation,
+            rawRow: headers.map((header) => row[header] ?? ''),
+            reason,
+          }),
+        )
         return
       }
 
       existingQuestions.add(question.toLowerCase())
-      docs.push({
-        courseId: context.course._id,
-        topic: context.topic?.name || context.chapter.name,
-        subject: context.subject,
-        chapterId: context.chapter.id,
-        chapterName: context.chapter.name,
-        topicId: context.topic?.id || null,
-        question,
-        options: normalizeOptionsFromLetters({ optionA, optionB, optionC, optionD, correctAnswer }),
-        explanation: explanation || null,
-        difficulty: 'medium',
-        createdBy: req.user.id,
-        isPublished: true,
-        correctAnswer,
-      })
+      docs.push(
+        createMcqDocFromRow({
+          context,
+          question,
+          optionA,
+          optionB,
+          optionC,
+          optionD,
+          correctAnswer,
+          explanation,
+          createdBy: req.user.id,
+          reviewReason: null,
+        }),
+      )
     })
 
     if (reviewItems.length) {
@@ -956,7 +1116,9 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
     const inserted = docs.length ? await MCQ.insertMany(docs, { ordered: false }) : []
     res.status(200).json({
       success: true,
-      message: `${inserted.length} MCQs uploaded successfully, ${skipped.length} rows skipped`,
+      imported: inserted.length,
+      review_queue: reviewItems.length,
+      message: `${inserted.length} MCQs imported. ${reviewItems.length} sent to review queue.`,
       uploaded: inserted.length,
       skippedCount: skipped.length,
       queuedForReview: reviewItems.length,
@@ -1016,14 +1178,27 @@ exports.updateCsvReviewItem = async (req, res) => {
     const item = chapter.reviewQueue.find((entry) => entry.id === req.params.itemId)
     if (!item) return res.status(404).json({ error: 'Review item not found' })
 
-    item.question = String(req.body.question || '').trim()
-    item.optionA = String(req.body.optionA || '').trim()
-    item.optionB = String(req.body.optionB || '').trim()
-    item.optionC = String(req.body.optionC || '').trim()
-    item.optionD = String(req.body.optionD || '').trim()
-    item.correctAnswer = String(req.body.correctAnswer || '').trim().toUpperCase()
-    item.explanation = String(req.body.explanation || '').trim()
-    item.reason = String(req.body.reason || item.reason || '').trim()
+    item.question = sanitizeCsvCell(req.body.question)
+    item.optionA = sanitizeCsvCell(req.body.optionA)
+    item.optionB = sanitizeCsvCell(req.body.optionB)
+    item.optionC = sanitizeCsvCell(req.body.optionC)
+    item.optionD = sanitizeCsvCell(req.body.optionD)
+    item.correctAnswer = String(normalizeCsvCorrectAnswer(req.body.correctAnswer)).toUpperCase()
+    item.explanation = sanitizeCsvCell(req.body.explanation)
+
+    const reviewReasons = determineReviewReasons({
+      question: item.question,
+      optionA: item.optionA,
+      optionB: item.optionB,
+      optionC: item.optionC,
+      optionD: item.optionD,
+      correctAnswer: String(item.correctAnswer || '').toLowerCase(),
+      explanation: item.explanation,
+      explicitNeedsReview: false,
+    })
+    item.reason = String(
+      req.body.reason || reviewReasons.join('; ') || item.reason || 'Needs manual review',
+    ).trim()
 
     await course.save()
 
@@ -1031,6 +1206,114 @@ exports.updateCsvReviewItem = async (req, res) => {
       success: true,
       message: 'Review item updated successfully',
       item,
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+}
+
+// ==================== GET CSV REVIEW QUEUE ====================
+exports.getCsvReviewQueue = async (req, res) => {
+  try {
+    const subject = normalizeSubject(req.params.subject)
+    if (!subject) return res.status(400).json({ error: 'Invalid subject' })
+
+    const course = await getSubjectCourseFull(subject)
+    if (!course) return res.status(404).json({ error: 'Subject course not found' })
+    if (!canManageCourse(course, req.user)) {
+      return res.status(403).json({ error: 'Not authorized to manage this subject' })
+    }
+
+    const chapter = getChapter(course, req.params.chapterId)
+    if (!chapter) return res.status(404).json({ error: 'Chapter not found' })
+
+    const reviewQueue = getChapterReviewQueue(chapter)
+      .filter((item) => {
+        if (!req.query.topicId) return true
+        return String(item.topicId || '') === String(req.query.topicId)
+      })
+      .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+
+    res.status(200).json({
+      success: true,
+      chapterId: chapter.id,
+      reviewQueue,
+      count: reviewQueue.length,
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+}
+
+// ==================== APPROVE CSV REVIEW ITEM ====================
+exports.approveCsvReviewItem = async (req, res) => {
+  try {
+    const subject = normalizeSubject(req.params.subject)
+    if (!subject) return res.status(400).json({ error: 'Invalid subject' })
+
+    const course = await getSubjectCourseFull(subject)
+    if (!course) return res.status(404).json({ error: 'Subject course not found' })
+    if (!canManageCourse(course, req.user)) {
+      return res.status(403).json({ error: 'Not authorized to manage this subject' })
+    }
+
+    const chapter = getChapter(course, req.params.chapterId)
+    if (!chapter) return res.status(404).json({ error: 'Chapter not found' })
+
+    chapter.reviewQueue = getChapterReviewQueue(chapter)
+    const item = chapter.reviewQueue.find((entry) => entry.id === req.params.itemId)
+    if (!item) return res.status(404).json({ error: 'Review item not found' })
+
+    const question = sanitizeCsvCell(req.body.question || item.question)
+    const optionA = sanitizeCsvCell(req.body.optionA || item.optionA)
+    const optionB = sanitizeCsvCell(req.body.optionB || item.optionB)
+    const optionC = sanitizeCsvCell(req.body.optionC || item.optionC)
+    const optionD = sanitizeCsvCell(req.body.optionD || item.optionD)
+    const correctAnswer = normalizeCsvCorrectAnswer(req.body.correctAnswer || item.correctAnswer)
+    const explanation = sanitizeCsvCell(req.body.explanation || item.explanation)
+    const reviewReasons = determineReviewReasons({
+      question,
+      optionA,
+      optionB,
+      optionC,
+      optionD,
+      correctAnswer,
+      explanation,
+      explicitNeedsReview: false,
+    })
+    if (reviewReasons.length) {
+      return res.status(400).json({ error: reviewReasons.join('; ') })
+    }
+
+    const topic = item.topicId ? getTopic(chapter, item.topicId) : null
+    const approvalContext = {
+      course,
+      chapter,
+      topic,
+      subject,
+    }
+    const mcq = await MCQ.create(
+      createMcqDocFromRow({
+        context: approvalContext,
+        question,
+        optionA,
+        optionB,
+        optionC,
+        optionD,
+        correctAnswer,
+        explanation,
+        createdBy: req.user.id,
+        reviewReason: item.reason || null,
+      }),
+    )
+
+    chapter.reviewQueue = chapter.reviewQueue.filter((entry) => entry.id !== item.id)
+    await course.save()
+
+    res.status(200).json({
+      success: true,
+      message: 'Review item approved and added to MCQs',
+      mcq,
     })
   } catch (error) {
     res.status(500).json({ error: error.message })

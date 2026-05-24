@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import API, { getUserFriendlyErrorMessage } from '../services/api'
 import { useAuth } from '../context/AuthContext'
+import MCQRenderer from '../components/MCQRenderer'
 import './PlatformPages.css'
 import './MCQTest.css'
 import './TestReview.css'
@@ -815,6 +816,78 @@ function TeacherMcqEditor({
   )
 }
 
+function ReviewQueueReadonlyCard({ item, index, onEdit, onApprove, onDelete }) {
+  return (
+    <article className="teacher-mcq-row teacher-mcq-row--editor">
+      <div className="teacher-mcq-editor-head">
+        <span className="state-chip state-chip--neutral">
+          MCQ {item.row || index + 1}
+        </span>
+        <span className="teacher-mcq-status">
+          {item.topicName ? `Topic: ${item.topicName}` : 'Chapter review item'}
+        </span>
+      </div>
+      <div className="floating-field teacher-mcq-question-field">
+        <label>Issue</label>
+        <textarea rows="2" value={item.reason || 'Rejected CSV row'} readOnly />
+      </div>
+      <div className="teacher-review-render-block">
+        <div className="teacher-review-render-card">
+          <div className="teacher-review-render-label">Question</div>
+          <div className="teacher-review-render-content">
+            <MCQRenderer text={item.question || ''} />
+          </div>
+        </div>
+      </div>
+      <div className="teacher-mcq-option-grid">
+        {['A', 'B', 'C', 'D'].map((letter) => (
+          <div className="teacher-mcq-option-field" key={letter}>
+            <label>{`Option ${letter}`}</label>
+            <div className="teacher-review-render-content">
+              <MCQRenderer text={item[`option${letter}`] || ''} />
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="teacher-mcq-editor-bottom">
+        <div className="floating-field">
+          <label>Correct Answer</label>
+          <textarea rows="2" value={item.correctAnswer || ''} readOnly />
+        </div>
+        <div className="floating-field">
+          <label>Explanation</label>
+          <div className="teacher-review-render-content">
+            <MCQRenderer text={item.explanation || ''} />
+          </div>
+        </div>
+      </div>
+      <div className="teacher-mcq-action-row review-queue-action-row">
+        <button
+          className="btn btn-secondary btn-sm"
+          type="button"
+          onClick={onEdit}
+        >
+          Edit
+        </button>
+        <button
+          className="btn btn-primary btn-sm"
+          type="button"
+          onClick={onApprove}
+        >
+          Push To Main MCQs
+        </button>
+        <button
+          className="btn btn-ghost btn-sm"
+          type="button"
+          onClick={onDelete}
+        >
+          Delete
+        </button>
+      </div>
+    </article>
+  )
+}
+
 function McqList() {
   const { subject, chapterId } = useParams()
   const { isTeacher } = useAuth()
@@ -1010,18 +1083,17 @@ function McqList() {
     )
       return
     try {
-      await API.post(`/mcqs/${subject}/${chapterId}`, {
-        question: item.question,
-        optionA: item.optionA,
-        optionB: item.optionB,
-        optionC: item.optionC,
-        optionD: item.optionD,
-        correctAnswer: item.correctAnswer,
-        explanation: item.explanation,
-        topicId: item.topicId || selectedTopicId || null,
-      })
-      await API.delete(
-        `/mcqs/${subject}/chapters/${chapterId}/review-queue/${item.id}`,
+      await API.post(
+        `/mcqs/${subject}/chapters/${chapterId}/review-queue/${item.id}/approve`,
+        {
+          question: item.question,
+          optionA: item.optionA,
+          optionB: item.optionB,
+          optionC: item.optionC,
+          optionD: item.optionD,
+          correctAnswer: item.correctAnswer,
+          explanation: item.explanation,
+        },
       )
       toast.success('Review item pushed to main MCQs')
       setViewMode('mcqs')
@@ -1220,88 +1292,14 @@ function McqList() {
             {reviewQueue.length > 0 ? (
               <div className="teacher-mcq-list teacher-mcq-list--editable">
                 {reviewQueue.map((item, index) => (
-                <article
-                  key={item.id}
-                  className="teacher-mcq-row teacher-mcq-row--editor"
-                >
-                  <div className="teacher-mcq-editor-head">
-                    <span className="state-chip state-chip--neutral">
-                      MCQ {item.row || index + 1}
-                    </span>
-                    <span className="teacher-mcq-status">
-                      {item.topicName ? `Topic: ${item.topicName}` : 'Chapter review item'}
-                    </span>
-                  </div>
-                  <div className="floating-field teacher-mcq-question-field">
-                    <label>Issue</label>
-                    <textarea
-                      rows="2"
-                      value={item.reason || 'Rejected CSV row'}
-                      readOnly
-                    />
-                  </div>
-                  <div className="teacher-mcq-option-grid">
-                    <div className="teacher-mcq-option-field">
-                      <label>Question</label>
-                      <textarea rows="2" value={item.question || ''} readOnly />
-                    </div>
-                    <div className="teacher-mcq-option-field">
-                      <label>Correct Answer</label>
-                      <textarea rows="2" value={item.correctAnswer || ''} readOnly />
-                    </div>
-                    {['A', 'B', 'C', 'D'].map((letter) => (
-                      <div className="teacher-mcq-option-field" key={letter}>
-                        <label>{`Option ${letter}`}</label>
-                        <textarea
-                          rows="2"
-                          value={item[`option${letter}`] || ''}
-                          readOnly
-                        />
-                      </div>
-                    ))}
-                  </div>
-                  <div className="teacher-mcq-editor-bottom">
-                    <div className="floating-field">
-                      <label>Explanation</label>
-                      <textarea
-                        rows="2"
-                        value={item.explanation || ''}
-                        readOnly
-                      />
-                    </div>
-                    <div className="floating-field">
-                      <label>Review Action</label>
-                      <textarea
-                        rows="2"
-                        value="Open this row in Add MCQ, correct the fields manually, then save it as a real MCQ."
-                        readOnly
-                      />
-                    </div>
-                  </div>
-                  <div className="teacher-mcq-action-row review-queue-action-row">
-                    <button
-                      className="btn btn-secondary btn-sm"
-                      type="button"
-                      onClick={() => setModal({ type: 'review', reviewItem: item })}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="btn btn-primary btn-sm"
-                      type="button"
-                      onClick={() => pushReviewItemToMain(item)}
-                    >
-                      Push To Main MCQs
-                    </button>
-                    <button
-                      className="btn btn-ghost btn-sm"
-                      type="button"
-                      onClick={() => removeReviewItem(item)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </article>
+                  <ReviewQueueReadonlyCard
+                    key={item.id}
+                    item={item}
+                    index={index}
+                    onEdit={() => setModal({ type: 'review', reviewItem: item })}
+                    onApprove={() => pushReviewItemToMain(item)}
+                    onDelete={() => removeReviewItem(item)}
+                  />
                 ))}
               </div>
             ) : (
@@ -1761,7 +1759,12 @@ function QuizAttempt() {
 
         <div className="mcq-attempt-layout">
           <div className="mcq-question-card">
-            <h2>{current.question}</h2>
+            <div className="mcq-question-title">
+              <MCQRenderer text={current.question} />
+            </div>
+            {current.needsReview ? (
+              <div className="mcq-under-review-badge">Under Review</div>
+            ) : null}
             <div className="mcq-options-grid">
               {current.options.map((option, index) => (
                 <button
@@ -1769,11 +1772,14 @@ function QuizAttempt() {
                   className={`mcq-option-card ${selected === index ? 'mcq-option-card--selected' : ''}`}
                   type="button"
                   onClick={() => selectAnswer(index)}
+                  disabled={current.needsReview}
                 >
                   <span className="mcq-option-letter">
                     {String.fromCharCode(65 + index)}
                   </span>
-                  <span>{option.text || option}</span>
+                  <div className="mcq-option-text">
+                    <MCQRenderer text={option.text || option} />
+                  </div>
                 </button>
               ))}
             </div>
@@ -1989,7 +1995,9 @@ function ReviewSection({ title, items }) {
               {title} {index + 1}
             </span>
           </div>
-          <h3>{item.question}</h3>
+          <div className="review-question-title">
+            <MCQRenderer text={item.question} />
+          </div>
           <div className="review-options-list">
             {item.options.map((option, optionIndex) => {
               const correct = item.correctIndex === optionIndex
@@ -2002,7 +2010,9 @@ function ReviewSection({ title, items }) {
                   <span className="review-option-letter">
                     {String.fromCharCode(65 + optionIndex)}
                   </span>
-                  <span>{option.text || option}</span>
+                  <div className="review-option-text">
+                    <MCQRenderer text={option.text || option} />
+                  </div>
                   {selected ? (
                     <span className="review-option-tag">Your answer</span>
                   ) : null}
@@ -2017,7 +2027,9 @@ function ReviewSection({ title, items }) {
           </div>
           <div className="review-explanation-box">
             <strong>Explanation</strong>
-            <p>{item.explanation || 'No explanation added yet.'}</p>
+            <div className="review-explanation-text">
+              <MCQRenderer text={item.explanation || 'No explanation added yet.'} />
+            </div>
           </div>
         </article>
       ))}
