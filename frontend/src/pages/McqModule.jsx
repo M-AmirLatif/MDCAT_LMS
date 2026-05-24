@@ -1200,8 +1200,8 @@ function McqList() {
         </section>
       ) : null}
       {isTeacher && viewMode === 'review' ? (
-        <section className="workspace-card">
-          <div className="workspace-card-head">
+        <section className="workspace-card review-queue-card">
+          <div className="workspace-card-head review-queue-head">
             <div>
               <div className="label-xs">CSV Review Queue</div>
               <h3 className="workspace-card-title">
@@ -1278,7 +1278,7 @@ function McqList() {
                       />
                     </div>
                   </div>
-                  <div className="teacher-mcq-action-row">
+                  <div className="teacher-mcq-action-row review-queue-action-row">
                     <button
                       className="btn btn-secondary btn-sm"
                       type="button"
