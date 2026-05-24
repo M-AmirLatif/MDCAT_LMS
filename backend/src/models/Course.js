@@ -66,6 +66,33 @@ const courseSchema = new mongoose.Schema(
             description: String,
           },
         ],
+        reviewQueue: [
+          {
+            id: String,
+            row: Number,
+            topicId: {
+              type: String,
+              default: null,
+            },
+            topicName: {
+              type: String,
+              default: null,
+            },
+            reason: String,
+            question: String,
+            optionA: String,
+            optionB: String,
+            optionC: String,
+            optionD: String,
+            correctAnswer: String,
+            explanation: String,
+            rawRow: [String],
+            createdAt: {
+              type: Date,
+              default: Date.now,
+            },
+          },
+        ],
       },
     ],
     price: {

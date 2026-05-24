@@ -481,6 +481,24 @@ function ChapterList() {
 }
 
 function mcqToForm(mcq) {
+  if (!mcq) return { ...emptyMcqForm }
+  if (
+    Object.prototype.hasOwnProperty.call(mcq, 'optionA') ||
+    Object.prototype.hasOwnProperty.call(mcq, 'optionB') ||
+    Object.prototype.hasOwnProperty.call(mcq, 'optionC') ||
+    Object.prototype.hasOwnProperty.call(mcq, 'optionD')
+  ) {
+    return {
+      question: mcq.question || '',
+      optionA: mcq.optionA || '',
+      optionB: mcq.optionB || '',
+      optionC: mcq.optionC || '',
+      optionD: mcq.optionD || '',
+      correctAnswer: mcq.correctAnswer || 'A',
+      explanation: mcq.explanation || '',
+    }
+  }
+
   const byLetter = ['A', 'B', 'C', 'D'].map((letter, index) => ({
     letter,
     text: mcq.options?.[index]?.text || '',
@@ -726,6 +744,7 @@ function McqList() {
   const [chapter, setChapter] = useState(null)
   const [topics, setTopics] = useState([])
   const [mcqs, setMcqs] = useState([])
+  const [reviewQueue, setReviewQueue] = useState([])
   const [loading, setLoading] = useState(true)
   const [modal, setModal] = useState(null)
   const [selectedTopicId, setSelectedTopicId] = useState('')
@@ -744,6 +763,7 @@ function McqList() {
       setChapter(res.data.chapter)
       setTopics(res.data.topics || [])
       setMcqs(res.data.mcqs || [])
+      setReviewQueue(res.data.reviewQueue || [])
     } catch (error) {
       toast.error(getUserFriendlyErrorMessage(error, 'We could not load the MCQs right now.'))
     } finally {
@@ -818,6 +838,11 @@ function McqList() {
           ...payload,
           topicId: selectedTopicId || null,
         })
+        if (modal?.reviewItem?.id) {
+          await API.delete(
+            `/mcqs/${subject}/chapters/${chapterId}/review-queue/${modal.reviewItem.id}`,
+          )
+        }
         toast.success('MCQ added')
       }
       setModal(null)
@@ -848,6 +873,12 @@ function McqList() {
         topicId: selectedTopicId || null,
       })
       toast.success(res.data.message)
+      if (res.data.queuedForReview) {
+        toast(
+          `${res.data.queuedForReview} rejected row${res.data.queuedForReview === 1 ? '' : 's'} saved in this chapter's review queue.`,
+          { duration: 7000 },
+        )
+      }
       if (res.data.skipped?.length) {
         toast.error(
           res.data.skipped
@@ -861,6 +892,20 @@ function McqList() {
       toast.error(getUserFriendlyErrorMessage(error, 'We could not upload the CSV right now.'))
     } finally {
       event.target.value = ''
+    }
+  }
+
+  const removeReviewItem = async (item) => {
+    if (!window.confirm('Remove this rejected CSV row from the review queue?'))
+      return
+    try {
+      await API.delete(
+        `/mcqs/${subject}/chapters/${chapterId}/review-queue/${item.id}`,
+      )
+      toast.success('Review item removed')
+      load()
+    } catch (error) {
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not remove the review item right now.'))
     }
   }
 
@@ -1023,6 +1068,106 @@ function McqList() {
           </div>
         </section>
       ) : null}
+      {isTeacher && reviewQueue.length > 0 ? (
+        <section className="workspace-card">
+          <div className="workspace-card-head">
+            <div>
+              <div className="label-xs">CSV Review Queue</div>
+              <h3 className="workspace-card-title">
+                Rejected CSV Rows
+              </h3>
+              <p>
+                These rows were not added as MCQs. Review them here, then add
+                them manually after correcting the data.
+              </p>
+            </div>
+            <span className="state-chip state-chip--neutral">
+              {reviewQueue.length} pending
+            </span>
+          </div>
+          <div className="workspace-card-body">
+            <div className="teacher-mcq-list teacher-mcq-list--editable">
+              {reviewQueue.map((item, index) => (
+                <article
+                  key={item.id}
+                  className="teacher-mcq-row teacher-mcq-row--editor"
+                >
+                  <div className="teacher-mcq-editor-head">
+                    <span className="state-chip state-chip--neutral">
+                      Row {item.row || index + 1}
+                    </span>
+                    <span className="teacher-mcq-status">
+                      {item.topicName ? `Topic: ${item.topicName}` : 'Chapter review item'}
+                    </span>
+                  </div>
+                  <div className="floating-field teacher-mcq-question-field">
+                    <label>Issue</label>
+                    <textarea
+                      rows="2"
+                      value={item.reason || 'Rejected CSV row'}
+                      readOnly
+                    />
+                  </div>
+                  <div className="teacher-mcq-option-grid">
+                    <div className="teacher-mcq-option-field">
+                      <label>Question</label>
+                      <textarea rows="2" value={item.question || ''} readOnly />
+                    </div>
+                    <div className="teacher-mcq-option-field">
+                      <label>Correct Answer</label>
+                      <textarea rows="2" value={item.correctAnswer || ''} readOnly />
+                    </div>
+                    {['A', 'B', 'C', 'D'].map((letter) => (
+                      <div className="teacher-mcq-option-field" key={letter}>
+                        <label>{`Option ${letter}`}</label>
+                        <textarea
+                          rows="2"
+                          value={item[`option${letter}`] || ''}
+                          readOnly
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="teacher-mcq-editor-bottom">
+                    <div className="floating-field">
+                      <label>Explanation</label>
+                      <textarea
+                        rows="2"
+                        value={item.explanation || ''}
+                        readOnly
+                      />
+                    </div>
+                    <div className="floating-field">
+                      <label>Review Action</label>
+                      <textarea
+                        rows="2"
+                        value="Open this row in Add MCQ, correct the fields manually, then save it as a real MCQ."
+                        readOnly
+                      />
+                    </div>
+                  </div>
+                  <div className="teacher-mcq-action-row">
+                    <button
+                      className="btn btn-primary btn-sm"
+                      type="button"
+                      onClick={() => setModal({ type: 'mcq', reviewItem: item })}
+                    >
+                      Add As MCQ
+                    </button>
+                    <button
+                      className="btn btn-ghost btn-sm"
+                      type="button"
+                      onClick={() => removeReviewItem(item)}
+                    >
+                      Remove From Queue
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
       <div className="workspace-card">
         <div className="workspace-card-body">
           {isTeacher ? (
@@ -1160,6 +1305,8 @@ function McqList() {
                 : 'Add Topic'
               : modal.mcq
                 ? 'Edit MCQ'
+                : modal.reviewItem
+                  ? 'Add Review Queue MCQ'
                 : 'Add MCQ'
           }
           onClose={() => setModal(null)}
@@ -1167,7 +1314,7 @@ function McqList() {
           {modal.type === 'topic' ? (
             <TopicForm initial={modal.topic} onSubmit={saveTopic} />
           ) : (
-            <McqForm initial={modal.mcq} onSubmit={saveMcq} />
+            <McqForm initial={modal.mcq || modal.reviewItem} onSubmit={saveMcq} />
           )}
         </Modal>
       ) : null}

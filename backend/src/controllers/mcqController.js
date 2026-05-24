@@ -59,9 +59,13 @@ const getChapter = (course, chapterId) =>
   (course.chapters || []).find((chapter) => String(chapter.id) === String(chapterId))
 
 const getChapterTopics = (chapter) => Array.isArray(chapter?.topics) ? chapter.topics : []
+const getChapterReviewQueue = (chapter) => Array.isArray(chapter?.reviewQueue) ? chapter.reviewQueue : []
 
 const getTopic = (chapter, topicId) =>
   getChapterTopics(chapter).find((topic) => String(topic.id) === String(topicId))
+
+const createReviewQueueItemId = () =>
+  `review-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
 
 const normalizeOptionsFromLetters = ({ optionA, optionB, optionC, optionD, correctAnswer }) => {
   const letters = ['A', 'B', 'C', 'D']
@@ -787,6 +791,12 @@ exports.getMcqsByChapter = async (req, res) => {
       chapter: context.chapter,
       topics: getChapterTopics(context.chapter),
       selectedTopic: context.topic,
+      reviewQueue: getChapterReviewQueue(context.chapter)
+        .filter((item) => {
+          if (!req.query.topicId) return true
+          return String(item.topicId || '') === String(req.query.topicId)
+        })
+        .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)),
       count: safeMcqs.length,
       mcqs: safeMcqs,
     })
@@ -857,6 +867,7 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
 
     const indexOf = (name) => headers.indexOf(name)
     const skipped = []
+    const reviewItems = []
     const docs = []
     const duplicateFilter = { courseId: context.course._id, chapterId: context.chapter.id }
     if (context.topic?.id) duplicateFilter.topicId = context.topic.id
@@ -876,17 +887,43 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
       const optionD = String(row[indexOf('option_d')] || '').trim()
       const correctAnswer = String(row[indexOf('correct_answer')] || '').trim().toUpperCase()
       const explanation = String(row[indexOf('explanation')] || '').trim()
+      const baseReviewItem = {
+        id: createReviewQueueItemId(),
+        row: rowNumber,
+        topicId: context.topic?.id || null,
+        topicName: context.topic?.name || null,
+        question,
+        optionA,
+        optionB,
+        optionC,
+        optionD,
+        correctAnswer,
+        explanation,
+        rawRow: row.map((cell) => String(cell || '')),
+      }
 
       if (!question || !optionA || !optionB || !optionC || !optionD) {
         skipped.push({ row: rowNumber, reason: 'Missing question or option field' })
+        reviewItems.push({
+          ...baseReviewItem,
+          reason: 'Missing question or option field',
+        })
         return
       }
       if (!['A', 'B', 'C', 'D'].includes(correctAnswer)) {
         skipped.push({ row: rowNumber, reason: 'correct_answer must be A, B, C, or D' })
+        reviewItems.push({
+          ...baseReviewItem,
+          reason: 'correct_answer must be A, B, C, or D',
+        })
         return
       }
       if (existingQuestions.has(question.toLowerCase())) {
         skipped.push({ row: rowNumber, reason: 'Duplicate question skipped' })
+        reviewItems.push({
+          ...baseReviewItem,
+          reason: 'Duplicate question skipped',
+        })
         return
       }
 
@@ -908,14 +945,53 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
       })
     })
 
+    if (reviewItems.length) {
+      const courseForReviewQueue = await getSubjectCourseFull(context.subject)
+      const chapterForReviewQueue = getChapter(courseForReviewQueue, context.chapter.id)
+      chapterForReviewQueue.reviewQueue = getChapterReviewQueue(chapterForReviewQueue)
+      chapterForReviewQueue.reviewQueue.push(...reviewItems)
+      await courseForReviewQueue.save()
+    }
+
     const inserted = docs.length ? await MCQ.insertMany(docs, { ordered: false }) : []
     res.status(200).json({
       success: true,
       message: `${inserted.length} MCQs uploaded successfully, ${skipped.length} rows skipped`,
       uploaded: inserted.length,
       skippedCount: skipped.length,
+      queuedForReview: reviewItems.length,
       skipped,
     })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+}
+
+// ==================== DELETE CSV REVIEW ITEM ====================
+exports.deleteCsvReviewItem = async (req, res) => {
+  try {
+    const subject = normalizeSubject(req.params.subject)
+    if (!subject) return res.status(400).json({ error: 'Invalid subject' })
+
+    const course = await getSubjectCourseFull(subject)
+    if (!course) return res.status(404).json({ error: 'Subject course not found' })
+    if (!canManageCourse(course, req.user)) {
+      return res.status(403).json({ error: 'Not authorized to manage this subject' })
+    }
+
+    const chapter = getChapter(course, req.params.chapterId)
+    if (!chapter) return res.status(404).json({ error: 'Chapter not found' })
+
+    const existingQueue = getChapterReviewQueue(chapter)
+    const nextQueue = existingQueue.filter((item) => item.id !== req.params.itemId)
+    if (nextQueue.length === existingQueue.length) {
+      return res.status(404).json({ error: 'Review item not found' })
+    }
+
+    chapter.reviewQueue = nextQueue
+    await course.save()
+
+    res.status(200).json({ success: true, message: 'Review item removed successfully' })
   } catch (error) {
     res.status(500).json({ error: error.message })
   }

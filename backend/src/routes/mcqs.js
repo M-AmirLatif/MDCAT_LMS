@@ -14,6 +14,7 @@ const {
   createTopic,
   updateTopic,
   deleteTopic,
+  deleteCsvReviewItem,
   getMcqsByChapter,
   createChapterMcq,
   uploadChapterMcqsCsv,
@@ -36,6 +37,7 @@ router.delete('/:subject/chapters/:chapterId', protect, authorize('teacher', 'ad
 router.post('/:subject/chapters/:chapterId/topics', protect, authorize('teacher', 'admin'), createTopic)
 router.put('/:subject/chapters/:chapterId/topics/:topicId', protect, authorize('teacher', 'admin'), updateTopic)
 router.delete('/:subject/chapters/:chapterId/topics/:topicId', protect, authorize('teacher', 'admin'), deleteTopic)
+router.delete('/:subject/chapters/:chapterId/review-queue/:itemId', protect, authorize('teacher', 'admin'), deleteCsvReviewItem)
 router.get('/:subject/:chapterId', protect, getMcqsByChapter)
 router.post('/:subject/:chapterId', protect, authorize('teacher', 'admin'), createChapterMcq)
 router.post('/:subject/:chapterId/upload-csv', protect, authorize('teacher', 'admin'), uploadChapterMcqsCsv)
