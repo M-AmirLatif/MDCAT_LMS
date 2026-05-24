@@ -3939,6 +3939,7 @@
 }
 
 .review-queue-head {
+  justify-content: flex-start !important;
   align-items: flex-start !important;
 }
 
@@ -4005,7 +4006,9 @@
 
   .review-queue-head {
     flex-direction: column !important;
+    justify-content: flex-start !important;
     align-items: stretch !important;
+    gap: 12px !important;
   }
 
   .review-queue-head .state-chip {
@@ -4500,6 +4503,15 @@
     width: 100% !important;
     min-width: 0 !important;
     justify-content: center !important;
+  }
+
+  .review-queue-action-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .review-queue-action-row .btn {
+    width: 100% !important;
+    min-width: 0 !important;
   }
 }
 
