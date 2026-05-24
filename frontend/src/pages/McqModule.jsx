@@ -601,6 +601,84 @@ function McqForm({ initial, onSubmit }) {
   )
 }
 
+function ReviewQueueForm({ initial, onSubmit }) {
+  const [form, setForm] = useState(initial ? mcqToForm(initial) : emptyMcqForm)
+  const [reason, setReason] = useState(initial?.reason || '')
+  const setField = (field, value) =>
+    setForm((current) => ({ ...current, [field]: value }))
+
+  return (
+    <form
+      className="form-shell"
+      onSubmit={(event) => {
+        event.preventDefault()
+        onSubmit({ ...form, reason })
+      }}
+    >
+      <div className="floating-field">
+        <label htmlFor="review-reason">Review Note</label>
+        <textarea
+          id="review-reason"
+          rows="3"
+          value={reason}
+          onChange={(event) => setReason(event.target.value)}
+          placeholder="Why this CSV row needs review."
+        />
+      </div>
+      <div className="floating-field">
+        <label htmlFor="review-question">Question statement</label>
+        <textarea
+          id="review-question"
+          rows="4"
+          value={form.question}
+          onChange={(event) => setField('question', event.target.value)}
+        />
+      </div>
+      <div className="floating-grid">
+        {['A', 'B', 'C', 'D'].map((letter) => (
+          <div className="floating-field" key={letter}>
+            <label htmlFor={`review-option-${letter.toLowerCase()}`}>
+              {`Option ${letter}`}
+            </label>
+            <input
+              id={`review-option-${letter.toLowerCase()}`}
+              value={form[`option${letter}`]}
+              onChange={(event) =>
+                setField(`option${letter}`, event.target.value)
+              }
+            />
+          </div>
+        ))}
+      </div>
+      <div className="floating-field">
+        <label htmlFor="review-correct-answer">Correct Answer</label>
+        <select
+          id="review-correct-answer"
+          value={form.correctAnswer}
+          onChange={(event) => setField('correctAnswer', event.target.value)}
+        >
+          <option value="A">Option A</option>
+          <option value="B">Option B</option>
+          <option value="C">Option C</option>
+          <option value="D">Option D</option>
+        </select>
+      </div>
+      <div className="floating-field">
+        <label htmlFor="review-explanation">Explanation / Description</label>
+        <textarea
+          id="review-explanation"
+          rows="5"
+          value={form.explanation}
+          onChange={(event) => setField('explanation', event.target.value)}
+        />
+      </div>
+      <button className="btn btn-primary" type="submit">
+        Save Review Item
+      </button>
+    </form>
+  )
+}
+
 function TeacherMcqEditor({
   mcq,
   index,
@@ -748,6 +826,7 @@ function McqList() {
   const [loading, setLoading] = useState(true)
   const [modal, setModal] = useState(null)
   const [selectedTopicId, setSelectedTopicId] = useState('')
+  const [viewMode, setViewMode] = useState('mcqs')
   const fileRef = useRef(null)
 
   const selectedTopic =
@@ -852,6 +931,20 @@ function McqList() {
     }
   }
 
+  const saveReviewItem = async (payload) => {
+    try {
+      await API.put(
+        `/mcqs/${subject}/chapters/${chapterId}/review-queue/${modal.reviewItem.id}`,
+        payload,
+      )
+      toast.success('Review item updated')
+      setModal(null)
+      load()
+    } catch (error) {
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not update the review item right now.'))
+    }
+  }
+
   const deleteMcq = async (mcq) => {
     if (!window.confirm('Delete this MCQ?')) return
     try {
@@ -909,6 +1002,35 @@ function McqList() {
     }
   }
 
+  const pushReviewItemToMain = async (item) => {
+    if (
+      !window.confirm(
+        'Push this reviewed item into the main MCQ list now?',
+      )
+    )
+      return
+    try {
+      await API.post(`/mcqs/${subject}/${chapterId}`, {
+        question: item.question,
+        optionA: item.optionA,
+        optionB: item.optionB,
+        optionC: item.optionC,
+        optionD: item.optionD,
+        correctAnswer: item.correctAnswer,
+        explanation: item.explanation,
+        topicId: item.topicId || selectedTopicId || null,
+      })
+      await API.delete(
+        `/mcqs/${subject}/chapters/${chapterId}/review-queue/${item.id}`,
+      )
+      toast.success('Review item pushed to main MCQs')
+      setViewMode('mcqs')
+      load()
+    } catch (error) {
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not push the review item right now.'))
+    }
+  }
+
   if (!meta)
     return (
       <EmptyState
@@ -953,6 +1075,15 @@ function McqList() {
                 onClick={() => setModal({ type: 'topic' })}
               >
                 Add Topic
+              </button>
+            ) : null}
+            {isTeacher ? (
+              <button
+                className={`btn ${viewMode === 'review' ? 'btn-primary' : 'btn-secondary'}`}
+                type="button"
+                onClick={() => setViewMode((current) => current === 'review' ? 'mcqs' : 'review')}
+              >
+                {`Review Queue${reviewQueue.length ? ` (${reviewQueue.length})` : ''}`}
               </button>
             ) : null}
             {isTeacher ? (
@@ -1068,7 +1199,7 @@ function McqList() {
           </div>
         </section>
       ) : null}
-      {isTeacher && reviewQueue.length > 0 ? (
+      {isTeacher && viewMode === 'review' ? (
         <section className="workspace-card">
           <div className="workspace-card-head">
             <div>
@@ -1086,8 +1217,9 @@ function McqList() {
             </span>
           </div>
           <div className="workspace-card-body">
-            <div className="teacher-mcq-list teacher-mcq-list--editable">
-              {reviewQueue.map((item, index) => (
+            {reviewQueue.length > 0 ? (
+              <div className="teacher-mcq-list teacher-mcq-list--editable">
+                {reviewQueue.map((item, index) => (
                 <article
                   key={item.id}
                   className="teacher-mcq-row teacher-mcq-row--editor"
@@ -1148,26 +1280,49 @@ function McqList() {
                   </div>
                   <div className="teacher-mcq-action-row">
                     <button
+                      className="btn btn-secondary btn-sm"
+                      type="button"
+                      onClick={() => setModal({ type: 'review', reviewItem: item })}
+                    >
+                      Edit
+                    </button>
+                    <button
                       className="btn btn-primary btn-sm"
                       type="button"
-                      onClick={() => setModal({ type: 'mcq', reviewItem: item })}
+                      onClick={() => pushReviewItemToMain(item)}
                     >
-                      Add As MCQ
+                      Push To Main MCQs
                     </button>
                     <button
                       className="btn btn-ghost btn-sm"
                       type="button"
                       onClick={() => removeReviewItem(item)}
                     >
-                      Remove From Queue
+                      Delete
                     </button>
                   </div>
                 </article>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <EmptyState
+                title="No rejected CSV rows"
+                text="When CSV rows fail validation, they will appear here for teacher review."
+                action={
+                  <button
+                    className="btn btn-secondary"
+                    type="button"
+                    onClick={() => setViewMode('mcqs')}
+                  >
+                    Back To Main MCQs
+                  </button>
+                }
+              />
+            )}
           </div>
         </section>
       ) : null}
+      {viewMode !== 'review' ? (
       <div className="workspace-card">
         <div className="workspace-card-body">
           {isTeacher ? (
@@ -1296,6 +1451,7 @@ function McqList() {
           ) : null}
         </div>
       </div>
+      ) : null}
       {modal ? (
         <Modal
           title={
@@ -1303,6 +1459,8 @@ function McqList() {
               ? modal.topic
                 ? 'Edit Topic'
                 : 'Add Topic'
+              : modal.type === 'review'
+                ? 'Edit Review Item'
               : modal.mcq
                 ? 'Edit MCQ'
                 : modal.reviewItem
@@ -1313,6 +1471,11 @@ function McqList() {
         >
           {modal.type === 'topic' ? (
             <TopicForm initial={modal.topic} onSubmit={saveTopic} />
+          ) : modal.type === 'review' ? (
+            <ReviewQueueForm
+              initial={modal.reviewItem}
+              onSubmit={saveReviewItem}
+            />
           ) : (
             <McqForm initial={modal.mcq || modal.reviewItem} onSubmit={saveMcq} />
           )}

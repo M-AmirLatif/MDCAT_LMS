@@ -997,6 +997,46 @@ exports.deleteCsvReviewItem = async (req, res) => {
   }
 }
 
+// ==================== UPDATE CSV REVIEW ITEM ====================
+exports.updateCsvReviewItem = async (req, res) => {
+  try {
+    const subject = normalizeSubject(req.params.subject)
+    if (!subject) return res.status(400).json({ error: 'Invalid subject' })
+
+    const course = await getSubjectCourseFull(subject)
+    if (!course) return res.status(404).json({ error: 'Subject course not found' })
+    if (!canManageCourse(course, req.user)) {
+      return res.status(403).json({ error: 'Not authorized to manage this subject' })
+    }
+
+    const chapter = getChapter(course, req.params.chapterId)
+    if (!chapter) return res.status(404).json({ error: 'Chapter not found' })
+
+    chapter.reviewQueue = getChapterReviewQueue(chapter)
+    const item = chapter.reviewQueue.find((entry) => entry.id === req.params.itemId)
+    if (!item) return res.status(404).json({ error: 'Review item not found' })
+
+    item.question = String(req.body.question || '').trim()
+    item.optionA = String(req.body.optionA || '').trim()
+    item.optionB = String(req.body.optionB || '').trim()
+    item.optionC = String(req.body.optionC || '').trim()
+    item.optionD = String(req.body.optionD || '').trim()
+    item.correctAnswer = String(req.body.correctAnswer || '').trim().toUpperCase()
+    item.explanation = String(req.body.explanation || '').trim()
+    item.reason = String(req.body.reason || item.reason || '').trim()
+
+    await course.save()
+
+    res.status(200).json({
+      success: true,
+      message: 'Review item updated successfully',
+      item,
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+}
+
 // ==================== SUBMIT CHAPTER ATTEMPT ====================
 exports.submitChapterAttempt = async (req, res) => {
   try {
