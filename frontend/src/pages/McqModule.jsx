@@ -671,7 +671,7 @@ function TeacherMcqEditor({
                 onClick={() => setField('correctAnswer', letter)}
                 aria-pressed={form.correctAnswer === letter}
               >
-                {letter}
+                <span className="teacher-mcq-answer-btn-label">{`Option ${letter}`}</span>
               </button>
             ))}
           </div>
@@ -727,6 +727,11 @@ function McqList() {
 
   const selectedTopic =
     topics.find((topic) => topic.id === selectedTopicId) || null
+  const chapterLevelCount = mcqs.filter((mcq) => !mcq.topicId).length
+  const topicScopedCount = mcqs.filter((mcq) => !!mcq.topicId).length
+  const selectedScopeLabel = selectedTopic
+    ? `Topic: ${selectedTopic.name}`
+    : 'Entire chapter'
 
   const load = async () => {
     setLoading(true)
@@ -874,28 +879,56 @@ function McqList() {
   const formattedTime = `${Math.floor(totalSeconds / 60)}:${String(totalSeconds % 60).padStart(2, '0')}`
 
   return (
-    <div className="workspace-page workspace-page--mcq-list animate-fade-up">
-      <section className="workspace-card">
-        <div className="workspace-card-head">
-          <div>
-            <div className="label-xs" style={{ color: meta.accent }}>
-              {meta.name} &gt; {chapter?.name || 'Chapter'} &gt;{' '}
-              {selectedTopic?.name || 'MCQs'}
+    <div
+      className={`workspace-page workspace-page--mcq-list${isTeacher ? ' teacher-mcq-workspace' : ''} animate-fade-up`}
+    >
+      {isTeacher ? (
+        <section className="workspace-card teacher-mcq-intro-card">
+          <div className="teacher-mcq-intro-grid">
+            <div className="teacher-mcq-intro-copy">
+              <div className="label-xs" style={{ color: meta.accent }}>
+                {meta.name} &gt; {chapter?.name || 'Chapter'} &gt; MCQ Editor
+              </div>
+              <h2 className="workspace-card-title">
+                {chapter?.name || 'Chapter'} Question Bank
+              </h2>
+              <p>
+                Organize chapter-level and topic-specific MCQs, tune answer
+                quality, and upload structured CSV batches without leaving the
+                chapter workspace.
+              </p>
+              <div className="teacher-mcq-focus-row">
+                <span className="teacher-mcq-focus-pill">
+                  Active scope: {selectedScopeLabel}
+                </span>
+                <span className="teacher-mcq-focus-pill teacher-mcq-focus-pill--subtle">
+                  {topics.length} topic{topics.length === 1 ? '' : 's'}
+                </span>
+              </div>
             </div>
-            <h2 className="workspace-card-title">
-              {selectedTopic?.name || chapter?.name || 'Chapter'} MCQs
-            </h2>
-            <p>
-              {isTeacher
-                ? 'Add chapter-level MCQs or select a topic to add topic-specific MCQs and CSV uploads.'
-                : 'Start a quiz when MCQs are available.'}
-            </p>
+            <div className="teacher-mcq-kpis">
+              <div className="teacher-mcq-kpi">
+                <span>Total MCQs</span>
+                <strong>{mcqs.length}</strong>
+                <small>Current scope</small>
+              </div>
+              <div className="teacher-mcq-kpi">
+                <span>Chapter-level</span>
+                <strong>{chapterLevelCount}</strong>
+                <small>Without topic</small>
+              </div>
+              <div className="teacher-mcq-kpi">
+                <span>Topic-linked</span>
+                <strong>{topicScopedCount}</strong>
+                <small>Structured bank</small>
+              </div>
+            </div>
           </div>
-          <div className="inline-actions">
-            <Link className="btn btn-secondary" to={`/mcqs/${subject}`}>
-              Back to Chapters
-            </Link>
-            {isTeacher ? (
+          <div className="teacher-mcq-toolbar">
+            <div className="teacher-mcq-toolbar-left">
+              <Link className="btn btn-secondary" to={`/mcqs/${subject}`}>
+                Back to Chapters
+              </Link>
               <button
                 className="btn btn-secondary"
                 type="button"
@@ -903,17 +936,8 @@ function McqList() {
               >
                 Add Topic
               </button>
-            ) : null}
-            {isTeacher ? (
-              <button
-                className="btn btn-primary"
-                type="button"
-                onClick={() => setModal({ type: 'mcq' })}
-              >
-                Add MCQ
-              </button>
-            ) : null}
-            {isTeacher ? (
+            </div>
+            <div className="teacher-mcq-toolbar-right">
               <button
                 className="btn btn-secondary"
                 type="button"
@@ -921,15 +945,14 @@ function McqList() {
               >
                 Upload CSV
               </button>
-            ) : null}
-            {!isTeacher ? (
-              <Link
+              <button
                 className="btn btn-primary"
-                to={`/mcqs/${subject}/${chapterId}/attempt`}
+                type="button"
+                onClick={() => setModal({ type: 'mcq' })}
               >
-                Start Quiz
-              </Link>
-            ) : null}
+                Add MCQ
+              </button>
+            </div>
           </div>
           <input
             ref={fileRef}
@@ -938,8 +961,34 @@ function McqList() {
             hidden
             onChange={uploadCsv}
           />
-        </div>
-      </section>
+        </section>
+      ) : (
+        <section className="workspace-card">
+          <div className="workspace-card-head">
+            <div>
+              <div className="label-xs" style={{ color: meta.accent }}>
+                {meta.name} &gt; {chapter?.name || 'Chapter'} &gt;{' '}
+                {selectedTopic?.name || 'MCQs'}
+              </div>
+              <h2 className="workspace-card-title">
+                {selectedTopic?.name || chapter?.name || 'Chapter'} MCQs
+              </h2>
+              <p>Start a quiz when MCQs are available.</p>
+            </div>
+            <div className="inline-actions">
+              <Link className="btn btn-secondary" to={`/mcqs/${subject}`}>
+                Back to Chapters
+              </Link>
+              <Link
+                className="btn btn-primary"
+                to={`/mcqs/${subject}/${chapterId}/attempt`}
+              >
+                Start Quiz
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {loading ? <LoadingCard label="Loading MCQs..." /> : null}
       {isTeacher && topics.length > 0 ? (
@@ -1017,7 +1066,24 @@ function McqList() {
           </div>
         </section>
       ) : null}
-      <div className="workspace-card">
+      <div className={`workspace-card${isTeacher ? ' teacher-mcq-board-card' : ''}`}>
+        {isTeacher ? (
+          <div className="workspace-card-head teacher-mcq-board-head">
+            <div>
+              <div className="label-xs">Question Bank</div>
+              <h3 className="workspace-card-title">
+                {selectedTopic?.name || chapter?.name || 'Chapter'} MCQs
+              </h3>
+              <p>
+                Review wording, mark the correct option clearly, and keep
+                explanations concise and exam-ready.
+              </p>
+            </div>
+            <span className="teacher-mcq-board-count">
+              {mcqs.length} question{mcqs.length === 1 ? '' : 's'}
+            </span>
+          </div>
+        ) : null}
         <div className="workspace-card-body">
           {isTeacher ? (
             <div className="teacher-mcq-list teacher-mcq-list--editable">
