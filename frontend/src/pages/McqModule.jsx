@@ -149,6 +149,19 @@ function ChapterForm({ initial, onSubmit }) {
   )
 }
 
+function TopicForm({ initial, onSubmit }) {
+  const [name, setName] = useState(initial?.name || '')
+  const [description, setDescription] = useState(initial?.description || '')
+
+  return (
+    <form className="form-shell" onSubmit={(event) => { event.preventDefault(); onSubmit({ name, description }) }}>
+      <div className="floating-field"><label htmlFor="topic-name">Topic Name</label><input id="topic-name" value={name} onChange={(event) => setName(event.target.value)} placeholder="Membrane Transport" /></div>
+      <div className="floating-field"><label htmlFor="topic-description">Description</label><textarea id="topic-description" rows="4" value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Optional topic description for teacher organization." /></div>
+      <button className="btn btn-primary" type="submit">Save Topic</button>
+    </form>
+  )
+}
+
 function ChapterList() {
   const { subject } = useParams()
   const { isTeacher } = useAuth()
@@ -303,9 +316,10 @@ function TeacherMcqEditor({ mcq, index, chapter, chapterId, meta, onSaved, onDel
         options,
         explanation: form.explanation,
         correctAnswer: form.correctAnswer,
-        topic: chapter?.name,
+        topic: mcq.topic || chapter?.name,
         chapterName: chapter?.name,
         chapterId,
+        topicId: mcq.topicId || null,
         subject: meta?.name,
         isPublished: true,
       })
@@ -322,6 +336,7 @@ function TeacherMcqEditor({ mcq, index, chapter, chapterId, meta, onSaved, onDel
     <article className="teacher-mcq-row teacher-mcq-row--editor">
       <div className="teacher-mcq-editor-head">
         <span className="state-chip state-chip--neutral">Q{index + 1}</span>
+        <span className="teacher-mcq-status">{mcq.topicId ? `Topic: ${mcq.topic}` : 'Chapter-level MCQ'}</span>
       </div>
       <div className="floating-field teacher-mcq-question-field">
         <label htmlFor={`mcq-question-${mcq._id}`}>Question statement</label>
@@ -360,16 +375,22 @@ function McqList() {
   const { isTeacher } = useAuth()
   const meta = subjectById(subject)
   const [chapter, setChapter] = useState(null)
+  const [topics, setTopics] = useState([])
   const [mcqs, setMcqs] = useState([])
   const [loading, setLoading] = useState(true)
   const [modal, setModal] = useState(null)
+  const [selectedTopicId, setSelectedTopicId] = useState('')
   const fileRef = useRef(null)
+
+  const selectedTopic = topics.find((topic) => topic.id === selectedTopicId) || null
 
   const load = async () => {
     setLoading(true)
     try {
-      const res = await API.get(`/mcqs/${subject}/${chapterId}`)
+      const query = selectedTopicId ? `?topicId=${encodeURIComponent(selectedTopicId)}` : ''
+      const res = await API.get(`/mcqs/${subject}/${chapterId}${query}`)
       setChapter(res.data.chapter)
+      setTopics(res.data.topics || [])
       setMcqs(res.data.mcqs || [])
     } catch (error) {
       toast.error(error.response?.data?.error || 'Unable to load MCQs')
@@ -378,7 +399,35 @@ function McqList() {
     }
   }
 
-  useEffect(() => { load() }, [subject, chapterId]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { load() }, [subject, chapterId, selectedTopicId]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const saveTopic = async (payload) => {
+    try {
+      if (modal?.topic) {
+        await API.put(`/mcqs/${subject}/chapters/${chapterId}/topics/${modal.topic.id}`, payload)
+        toast.success('Topic updated')
+      } else {
+        await API.post(`/mcqs/${subject}/chapters/${chapterId}/topics`, payload)
+        toast.success('Topic added')
+      }
+      setModal(null)
+      load()
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Unable to save topic')
+    }
+  }
+
+  const deleteTopic = async (topic) => {
+    if (!window.confirm(`Delete topic "${topic.name}"? This only works when the topic has no MCQs.`)) return
+    try {
+      await API.delete(`/mcqs/${subject}/chapters/${chapterId}/topics/${topic.id}`)
+      if (selectedTopicId === topic.id) setSelectedTopicId('')
+      toast.success('Topic deleted')
+      load()
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Unable to delete topic')
+    }
+  }
 
   const saveMcq = async (payload) => {
     try {
@@ -392,15 +441,19 @@ function McqList() {
           options,
           explanation: payload.explanation,
           correctAnswer: payload.correctAnswer,
-          topic: chapter?.name,
+          topic: modal.mcq.topic || chapter?.name,
           chapterName: chapter?.name,
           chapterId,
+          topicId: modal.mcq.topicId || null,
           subject: meta?.name,
           isPublished: true,
         })
         toast.success('MCQ updated')
       } else {
-        await API.post(`/mcqs/${subject}/${chapterId}`, payload)
+        await API.post(`/mcqs/${subject}/${chapterId}`, {
+          ...payload,
+          topicId: selectedTopicId || null,
+        })
         toast.success('MCQ added')
       }
       setModal(null)
@@ -426,7 +479,10 @@ function McqList() {
     if (!file) return
     try {
       const csvText = await file.text()
-      const res = await API.post(`/mcqs/${subject}/${chapterId}/upload-csv`, { csvText })
+      const res = await API.post(`/mcqs/${subject}/${chapterId}/upload-csv`, {
+        csvText,
+        topicId: selectedTopicId || null,
+      })
       toast.success(res.data.message)
       if (res.data.skipped?.length) {
         toast.error(res.data.skipped.map((row) => `Row ${row.row}: ${row.reason}`).join('\n'), { duration: 8000 })
@@ -448,12 +504,13 @@ function McqList() {
       <section className="workspace-card">
         <div className="workspace-card-head">
           <div>
-            <div className="label-xs" style={{ color: meta.accent }}>{meta.name} &gt; {chapter?.name || 'Chapter'} &gt; MCQs</div>
-            <h2 className="workspace-card-title">{chapter?.name || 'Chapter'} MCQs</h2>
-            <p>{isTeacher ? 'Manage questions, answers, explanations, or upload a CSV.' : 'Start a quiz when MCQs are available.'}</p>
+            <div className="label-xs" style={{ color: meta.accent }}>{meta.name} &gt; {chapter?.name || 'Chapter'} &gt; {selectedTopic?.name || 'MCQs'}</div>
+            <h2 className="workspace-card-title">{selectedTopic?.name || chapter?.name || 'Chapter'} MCQs</h2>
+            <p>{isTeacher ? 'Add chapter-level MCQs or select a topic to add topic-specific MCQs and CSV uploads.' : 'Start a quiz when MCQs are available.'}</p>
           </div>
           <div className="inline-actions">
             <Link className="btn btn-secondary" to={`/mcqs/${subject}`}>Back to Chapters</Link>
+            {isTeacher ? <button className="btn btn-secondary" type="button" onClick={() => setModal({ type: 'topic' })}>Add Topic</button> : null}
             {isTeacher ? <button className="btn btn-primary" type="button" onClick={() => setModal({ type: 'mcq' })}>Add MCQ</button> : null}
             {isTeacher ? <button className="btn btn-secondary" type="button" onClick={() => fileRef.current?.click()}>Upload CSV</button> : null}
             {!isTeacher ? <Link className="btn btn-primary" to={`/mcqs/${subject}/${chapterId}/attempt`}>Start Quiz</Link> : null}
@@ -463,6 +520,33 @@ function McqList() {
       </section>
 
       {loading ? <LoadingCard label="Loading MCQs..." /> : null}
+      {isTeacher ? (
+        <section className="workspace-card">
+          <div className="workspace-card-body">
+            <div className="floating-field">
+              <label htmlFor="topic-filter">Topic target</label>
+              <select id="topic-filter" value={selectedTopicId} onChange={(event) => setSelectedTopicId(event.target.value)}>
+                <option value="">Entire chapter (no topic)</option>
+                {topics.map((topic) => (
+                  <option key={topic.id} value={topic.id}>{topic.name}</option>
+                ))}
+              </select>
+            </div>
+            <p>{selectedTopic ? `New MCQs and CSV uploads will go into topic "${selectedTopic.name}".` : 'New MCQs and CSV uploads will be saved directly under the chapter without a topic.'}</p>
+            {topics.length > 0 ? (
+              <div className="inline-actions">
+                {topics.map((topic) => (
+                  <span key={topic.id} className="state-chip state-chip--neutral">
+                    {topic.name} ({topic.mcqCount || 0})
+                    <button className="btn btn-ghost btn-sm" type="button" onClick={() => setModal({ type: 'topic', topic })}>Edit</button>
+                    <button className="btn btn-ghost btn-sm" type="button" onClick={() => deleteTopic(topic)}>Delete</button>
+                  </span>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        </section>
+      ) : null}
       <div className="workspace-card">
         <div className="workspace-card-body">
           {isTeacher ? (
@@ -509,13 +593,22 @@ function McqList() {
           {!loading && mcqs.length === 0 ? (
             <EmptyState
               title="No MCQs in this chapter yet"
-              text="Teachers will add real questions with correct answers and explanations."
+              text={isTeacher && selectedTopic ? `No MCQs in topic "${selectedTopic.name}" yet.` : 'Teachers will add real questions with correct answers and explanations.'}
               action={isTeacher ? <button className="btn btn-primary" type="button" onClick={() => setModal({ type: 'mcq' })}>Add First MCQ</button> : null}
             />
           ) : null}
         </div>
       </div>
-      {modal ? <Modal title={modal.mcq ? 'Edit MCQ' : 'Add MCQ'} onClose={() => setModal(null)}><McqForm initial={modal.mcq} onSubmit={saveMcq} /></Modal> : null}
+      {modal ? (
+        <Modal
+          title={modal.type === 'topic' ? (modal.topic ? 'Edit Topic' : 'Add Topic') : (modal.mcq ? 'Edit MCQ' : 'Add MCQ')}
+          onClose={() => setModal(null)}
+        >
+          {modal.type === 'topic'
+            ? <TopicForm initial={modal.topic} onSubmit={saveTopic} />
+            : <McqForm initial={modal.mcq} onSubmit={saveMcq} />}
+        </Modal>
+      ) : null}
     </div>
   )
 }

@@ -56,6 +56,16 @@ const courseSchema = new mongoose.Schema(
           required: true,
         },
         description: String,
+        topics: [
+          {
+            id: String,
+            name: {
+              type: String,
+              required: true,
+            },
+            description: String,
+          },
+        ],
       },
     ],
     price: {

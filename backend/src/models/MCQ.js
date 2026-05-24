@@ -42,6 +42,11 @@ const mcqSchema = new mongoose.Schema(
       default: null,
       trim: true,
     },
+    topicId: {
+      type: String,
+      default: null,
+      trim: true,
+    },
     question: {
       type: String,
       required: [true, 'Please provide question'],
@@ -94,6 +99,7 @@ mcqSchema.index({ courseId: 1, topic: 1, isPublished: 1 })
 mcqSchema.index({ courseId: 1, difficulty: 1 })
 mcqSchema.index({ courseId: 1, isPastPaper: 1, year: 1 })
 mcqSchema.index({ courseId: 1, subject: 1, chapterId: 1, isPublished: 1 })
+mcqSchema.index({ courseId: 1, chapterId: 1, topicId: 1, isPublished: 1 })
 mcqSchema.index({ subject: 1 })
 
 module.exports = mongoose.model('MCQ', mcqSchema)

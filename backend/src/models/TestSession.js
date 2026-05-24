@@ -39,6 +39,10 @@ const testSessionSchema = new mongoose.Schema(
       type: String,
       default: null, // null means all topics
     },
+    topicId: {
+      type: String,
+      default: null,
+    },
     subject: {
       type: String,
       enum: ['Biology', 'Chemistry', 'Physics', 'English'],
