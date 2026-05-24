@@ -1200,38 +1200,12 @@ function McqList() {
         <section className="workspace-card teacher-topic-panel">
           <div className="workspace-card-head teacher-topic-panel-head">
             <div>
-              <div className="label-xs">Chapter &amp; Topics</div>
-              <h3 className="workspace-card-title">MCQ Scope</h3>
-              <p className="teacher-topic-panel-copy">
-                Select the main chapter first, then switch to a topic to view only its related MCQs.
-              </p>
+              <h3 className="teacher-topic-panel-title">
+                {chapter?.name || 'Chapter'}
+              </h3>
             </div>
           </div>
           <div className="workspace-card-body teacher-topic-panel-body">
-            <div className="teacher-topic-current-scope">
-              <div className="teacher-topic-current-card teacher-topic-current-card--chapter">
-                <span className="teacher-topic-current-label">Main chapter</span>
-                <strong>{chapter?.name || 'Chapter'}</strong>
-                <small>Use this to show every MCQ inside the chapter.</small>
-              </div>
-              <div className="teacher-topic-current-card teacher-topic-current-card--selection">
-                <span className="teacher-topic-current-label">
-                  {isTeacher ? 'Current target' : 'Current view'}
-                </span>
-                <strong>
-                  {selectedTopic ? selectedTopic.name : `${chapter?.name || 'Chapter'} (All MCQs)`}
-                </strong>
-                <small>
-                  {isTeacher
-                    ? selectedTopic
-                      ? `New MCQs and CSV uploads will go into topic "${selectedTopic.name}".`
-                      : 'New MCQs and CSV uploads will be saved directly under the chapter without a topic.'
-                    : selectedTopic
-                      ? `Showing only MCQs linked to topic "${selectedTopic.name}".`
-                      : 'Showing all MCQs available in this chapter.'}
-                </small>
-              </div>
-            </div>
             <div className="teacher-topic-chips">
               {topics.map((topic) => (
                 <div
@@ -1271,80 +1245,48 @@ function McqList() {
                 </div>
               ))}
             </div>
-            <div className="teacher-topic-scope-grid-shell">
-              <div className="teacher-topic-current-scope">
-                <div className="teacher-topic-current-card teacher-topic-current-card--chapter">
-                  <span className="teacher-topic-current-label">Main chapter</span>
-                  <strong>{chapter?.name || 'Chapter'}</strong>
-                  <small>Use this to show every MCQ inside the chapter.</small>
-                </div>
-                <div className="teacher-topic-current-card teacher-topic-current-card--selection">
-                  <span className="teacher-topic-current-label">
-                    {isTeacher ? 'Current target' : 'Current view'}
-                  </span>
-                  <strong>
-                    {selectedTopic ? selectedTopic.name : `${chapter?.name || 'Chapter'} (All MCQs)`}
-                  </strong>
-                  <small>
-                    {isTeacher
-                      ? selectedTopic
-                        ? `New MCQs and CSV uploads will go into topic "${selectedTopic.name}".`
-                        : 'New MCQs and CSV uploads will be saved directly under the chapter without a topic.'
-                      : selectedTopic
-                        ? `Showing only MCQs linked to topic "${selectedTopic.name}".`
-                        : 'Showing all MCQs available in this chapter.'}
-                  </small>
-                </div>
-              </div>
-              <div className="teacher-topic-scope-grid">
-                <button
-                  type="button"
-                  className={`teacher-topic-scope-card${selectedTopicId ? '' : ' teacher-topic-scope-card--active'}`}
-                  onClick={() => setSelectedTopicId('')}
+            <div className="teacher-topic-scope-grid">
+              <button
+                type="button"
+                className={`teacher-topic-scope-card${selectedTopicId ? '' : ' teacher-topic-scope-card--active'}`}
+                onClick={() => setSelectedTopicId('')}
+              >
+                <strong>{chapter?.name || 'Entire chapter'}</strong>
+              </button>
+              {topics.map((topic) => (
+                <div
+                  key={`scope-${topic.id}`}
+                  className={`teacher-topic-scope-card${selectedTopicId === topic.id ? ' teacher-topic-scope-card--active' : ''}`}
                 >
-                  <span className="teacher-topic-scope-eyebrow">Chapter</span>
-                  <strong>{chapter?.name || 'Entire chapter'}</strong>
-                  <span className="teacher-topic-scope-meta">Show all MCQs</span>
-                </button>
-                {topics.map((topic) => (
-                  <div
-                    key={`scope-${topic.id}`}
-                    className={`teacher-topic-scope-card${selectedTopicId === topic.id ? ' teacher-topic-scope-card--active' : ''}`}
+                  <button
+                    type="button"
+                    className="teacher-topic-scope-main"
+                    onClick={() => setSelectedTopicId(topic.id)}
                   >
-                    <button
-                      type="button"
-                      className="teacher-topic-scope-main"
-                      onClick={() => setSelectedTopicId(topic.id)}
-                    >
-                      <span className="teacher-topic-scope-eyebrow">Topic</span>
-                      <strong>{topic.name}</strong>
-                      <span className="teacher-topic-scope-meta">
-                        {topic.mcqCount || 0} MCQs
-                      </span>
-                    </button>
-                    {isTeacher ? (
-                      <div className="teacher-topic-scope-actions">
-                        <button
-                          className="teacher-topic-scope-edit"
-                          type="button"
-                          onClick={() => setModal({ type: 'topic', topic })}
-                          aria-label={`Edit ${topic.name}`}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="teacher-topic-scope-delete"
-                          type="button"
-                          onClick={() => deleteTopic(topic)}
-                          aria-label={`Delete ${topic.name}`}
-                        >
-                          x
-                        </button>
-                      </div>
-                    ) : null}
-                  </div>
-                ))}
-              </div>
+                    <strong>{topic.name}</strong>
+                  </button>
+                  {isTeacher ? (
+                    <div className="teacher-topic-scope-actions">
+                      <button
+                        className="teacher-topic-scope-edit"
+                        type="button"
+                        onClick={() => setModal({ type: 'topic', topic })}
+                        aria-label={`Edit ${topic.name}`}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="teacher-topic-scope-delete"
+                        type="button"
+                        onClick={() => deleteTopic(topic)}
+                        aria-label={`Delete ${topic.name}`}
+                      >
+                        x
+                      </button>
+                    </div>
+                  ) : null}
+                </div>
+              ))}
             </div>
           </div>
         </section>
