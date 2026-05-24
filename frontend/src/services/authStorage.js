@@ -43,20 +43,19 @@ export const setStoredUser = (user) => {
 }
 
 export const getRememberedCredentials = () => {
-  const fromLocal = localStorage.getItem(REMEMBER_EMAIL_KEY)
-  const store = fromLocal ? localStorage : sessionStorage
-  const email = store.getItem(REMEMBER_EMAIL_KEY) || ''
-  return { email, remember: !!fromLocal }
+  const email = localStorage.getItem(REMEMBER_EMAIL_KEY) || ''
+  return { email, remember: !!email }
 }
 
 // Security note: we intentionally do NOT store plaintext passwords in browser storage.
 // Rely on the browser password manager via `autocomplete="current-password"` instead.
 export const setRememberedCredentials = ({ email, remember }) => {
-  const store = remember ? localStorage : sessionStorage
   for (const s of [localStorage, sessionStorage]) {
     s.removeItem(REMEMBER_EMAIL_KEY)
   }
-  store.setItem(REMEMBER_EMAIL_KEY, email)
+  if (remember) {
+    localStorage.setItem(REMEMBER_EMAIL_KEY, email)
+  }
 }
 
 export const clearRememberedCredentials = () => {

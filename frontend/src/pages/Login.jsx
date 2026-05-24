@@ -207,7 +207,7 @@ export default function Login() {
                   <label htmlFor="email">Email</label>
                   <input
                     id="email"
-                    name="email"
+                    name="mdcat_login_email"
                     type="email"
                     value={formData.email}
                     onChange={(event) =>
@@ -223,7 +223,7 @@ export default function Login() {
                       setEditableFields((current) => ({ ...current, email: true }))
                     }
                     placeholder="admin@mdcat.pk"
-                    autoComplete="email"
+                    autoComplete="off"
                     readOnly={!editableFields.email}
                     required
                   />
@@ -239,7 +239,7 @@ export default function Login() {
                   <label htmlFor="password">Password</label>
                   <input
                     id="password"
-                    name="password"
+                    name="mdcat_login_password"
                     type={showPassword ? 'text' : 'password'}
                     value={formData.password}
                     onChange={(event) =>
@@ -255,7 +255,7 @@ export default function Login() {
                       setEditableFields((current) => ({ ...current, password: true }))
                     }
                     placeholder="Enter your password"
-                    autoComplete="current-password"
+                    autoComplete="off"
                     readOnly={!editableFields.password}
                     required
                   />

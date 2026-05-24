@@ -12,7 +12,8 @@
     "seed": "node seed.js",
     "clear-demo-data": "node scripts/clearDemoData.js",
     "set-role": "node scripts/setUserRole.js",
-    "set-password": "node scripts/setUserPassword.js"
+    "set-password": "node scripts/setUserPassword.js",
+    "reset-staff-access": "node scripts/resetStaffAccess.js"
   },
   "keywords": [
     "lms",
