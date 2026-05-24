@@ -4060,7 +4060,7 @@
 
   .teacher-mcq-action-row {
     display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
+    grid-template-columns: 1fr !important;
     gap: 10px !important;
     justify-content: stretch !important;
   }
