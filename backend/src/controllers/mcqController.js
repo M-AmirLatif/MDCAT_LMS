@@ -73,6 +73,7 @@ const parseCsv = (csvText) => {
   let current = ''
   let row = []
   let quoted = false
+  let atCellStart = true
 
   for (let i = 0; i < csvText.length; i += 1) {
     const char = csvText[i]
@@ -81,25 +82,43 @@ const parseCsv = (csvText) => {
     if (char === '"' && quoted && next === '"') {
       current += '"'
       i += 1
-    } else if (char === '"') {
+    } else if (char === '"' && quoted) {
       quoted = !quoted
+    } else if (char === '"' && atCellStart) {
+      quoted = true
     } else if (char === ',' && !quoted) {
       row.push(current)
       current = ''
+      atCellStart = true
     } else if ((char === '\n' || char === '\r') && !quoted) {
       if (char === '\r' && next === '\n') i += 1
       row.push(current)
       if (row.some((cell) => String(cell).trim() !== '')) rows.push(row)
       row = []
       current = ''
+      atCellStart = true
     } else {
       current += char
+      atCellStart = false
     }
   }
 
   row.push(current)
   if (row.some((cell) => String(cell).trim() !== '')) rows.push(row)
   return rows
+}
+
+const normalizeCsvRowToHeaders = (row, headers) => {
+  if (!Array.isArray(row)) return []
+  if (!Array.isArray(headers) || !headers.length) return row
+  if (row.length <= headers.length) return row
+
+  const questionIndex = headers.indexOf('question')
+  if (questionIndex !== 0) return row
+
+  const overflowCount = row.length - headers.length
+  const mergedQuestion = row.slice(0, overflowCount + 1).join(',')
+  return [mergedQuestion, ...row.slice(overflowCount + 1)]
 }
 
 const hasCorrectOption = (options) => {
@@ -674,8 +693,9 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
         .map((item) => item.question.trim().toLowerCase()),
     )
 
-    rows.forEach((row, index) => {
+    rows.forEach((rawRow, index) => {
       const rowNumber = index + 2
+      const row = normalizeCsvRowToHeaders(rawRow, headers)
       const question = String(row[indexOf('question')] || '').trim()
       const optionA = String(row[indexOf('option_a')] || '').trim()
       const optionB = String(row[indexOf('option_b')] || '').trim()
@@ -714,7 +734,7 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
       })
     })
 
-    const inserted = docs.length ? await MCQ.insertMany(docs) : []
+    const inserted = docs.length ? await MCQ.insertMany(docs, { ordered: false }) : []
     res.status(200).json({
       success: true,
       message: `${inserted.length} MCQs uploaded successfully, ${skipped.length} rows skipped`,
