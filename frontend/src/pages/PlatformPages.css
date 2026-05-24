@@ -3908,9 +3908,9 @@
 }
 
 .workspace-page--mcq-list .workspace-card:first-of-type .workspace-card-head {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) auto !important;
-  align-items: center !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
   gap: 22px !important;
   padding: 28px !important;
 }
@@ -3920,7 +3920,7 @@
   .workspace-card-head
   > div:first-child {
   min-width: 0 !important;
-  max-width: 680px !important;
+  max-width: none !important;
 }
 
 .workspace-page--mcq-list .workspace-card:first-of-type .workspace-card-title {
@@ -3929,8 +3929,13 @@
 }
 
 .workspace-page--mcq-list .workspace-card:first-of-type .workspace-card-head p {
-  max-width: 560px !important;
+  max-width: 900px !important;
   line-height: 1.45 !important;
+}
+
+.workspace-page--mcq-list .workspace-card:first-of-type .workspace-card-head .inline-actions {
+  width: 100% !important;
+  justify-content: flex-start !important;
 }
 
 .workspace-page--mcq-list .workspace-card:not(:first-of-type) {
@@ -3953,7 +3958,6 @@
   }
 
   .workspace-page--mcq-list .workspace-card:first-of-type .workspace-card-head {
-    grid-template-columns: 1fr !important;
     gap: 18px !important;
     padding: 20px !important;
   }
