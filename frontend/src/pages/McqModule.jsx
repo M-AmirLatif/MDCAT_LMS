@@ -346,13 +346,18 @@ function ChapterList() {
   const deleteChapter = async (chapter) => {
     if (
       !window.confirm(
-        `Delete "${chapter.name}"? This only works when the chapter has no MCQs.`,
+        `Delete "${chapter.name}"?\n\nThis will permanently delete the whole chapter, all topics inside it, all MCQs inside it, and related test records. This action cannot be undone.`,
       )
     )
       return
     try {
-      await API.delete(`/mcqs/${subject}/chapters/${chapter.id}`)
-      toast.success('Chapter deleted')
+      const res = await API.delete(`/mcqs/${subject}/chapters/${chapter.id}`)
+      const deletedMcqs = Number(res?.data?.deletedMcqs || 0)
+      toast.success(
+        deletedMcqs > 0
+          ? `Chapter deleted with ${deletedMcqs} MCQ${deletedMcqs === 1 ? '' : 's'}`
+          : 'Chapter deleted',
+      )
       load()
     } catch (error) {
       toast.error(getUserFriendlyErrorMessage(error, 'We could not delete the chapter right now.'))
@@ -370,7 +375,7 @@ function ChapterList() {
             <h2 className="workspace-card-title">{meta.name} Chapters</h2>
             <p>
               Open a chapter to view MCQs. Teachers can add, rename, or delete
-              empty chapters.
+              chapters with confirmation before removal.
             </p>
           </div>
           <div className="inline-actions">

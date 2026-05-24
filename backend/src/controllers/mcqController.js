@@ -603,15 +603,21 @@ exports.deleteChapter = async (req, res) => {
     const chapter = getChapter(course, req.params.chapterId)
     if (!chapter) return res.status(404).json({ error: 'Chapter not found' })
 
-    const mcqCount = await MCQ.countDocuments({ courseId: course._id, chapterId: chapter.id })
-    if (mcqCount > 0) {
-      return res.status(400).json({ error: 'Cannot delete chapter while MCQs exist inside it' })
-    }
+    const mcqFilter = { courseId: course._id, chapterId: chapter.id }
+    const mcqCount = await MCQ.countDocuments(mcqFilter)
 
     course.chapters = course.chapters.filter((item) => item.id !== chapter.id)
-    await course.save()
+    await Promise.all([
+      course.save(),
+      MCQ.deleteMany(mcqFilter),
+      TestSession.deleteMany(mcqFilter),
+    ])
 
-    res.status(200).json({ success: true, message: 'Chapter deleted successfully' })
+    res.status(200).json({
+      success: true,
+      message: 'Chapter deleted successfully',
+      deletedMcqs: mcqCount,
+    })
   } catch (error) {
     res.status(500).json({ error: error.message })
   }
