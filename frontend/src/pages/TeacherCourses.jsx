@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import API from '../services/api'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import RoleTabs from '../components/RoleTabs'
 import { getAuthToken, getAuthUser } from '../services/authStorage'
 import './TeacherCourses.css'
@@ -24,7 +24,7 @@ export default function TeacherCourses() {
         const res = await API.get('/courses/teacher/my-courses')
         setCourses(res.data.courses || [])
       } catch (err) {
-        setError('Failed to load your courses')
+        setError(getUserFriendlyErrorMessage(err, 'We could not load your courses right now.'))
       } finally {
         setLoading(false)
       }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import API from '../services/api'
+import toast from 'react-hot-toast'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import RoleTabs from '../components/RoleTabs'
 import { getAuthToken, getAuthUser } from '../services/authStorage'
 import './Courses.css'
@@ -41,7 +42,7 @@ export default function Courses() {
       const res = await API.get('/courses', { params })
       setCourses(res.data.courses)
     } catch (error) {
-      console.error('Error fetching courses:', error)
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not load the courses right now.'))
     } finally {
       setLoading(false)
     }
@@ -65,10 +66,10 @@ export default function Courses() {
       }
 
       await API.post(`/courses/${courseId}/enroll`)
-      alert('Enrolled successfully!')
+      toast.success('Enrolled successfully.')
       navigate(`/course/${courseId}`)
     } catch (error) {
-      alert('Error enrolling: ' + error.response?.data?.error)
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not complete enrollment right now.'))
     }
   }
 

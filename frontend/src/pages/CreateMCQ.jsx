@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import API from '../services/api'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import RoleTabs from '../components/RoleTabs'
 import { getAuthUser } from '../services/authStorage'
 import './CreateMCQ.css'
@@ -32,7 +32,7 @@ export default function CreateMCQ() {
             : await API.get('/courses/teacher/my-courses')
         setCourses(res.data.courses || [])
       } catch (err) {
-        setError('Failed to load courses')
+        setError(getUserFriendlyErrorMessage(err, 'We could not load the courses right now.'))
       }
     }
 
@@ -81,7 +81,7 @@ export default function CreateMCQ() {
         navigate(`/course/${courseId || courseIdParam}`)
       }, 1200)
     } catch (err) {
-      setError(err.response?.data?.error || 'Error creating MCQ')
+      setError(getUserFriendlyErrorMessage(err, 'We could not create the MCQ right now.'))
     } finally {
       setLoading(false)
     }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import API from '../services/api'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import { getAuthToken } from '../services/authStorage'
 import {
   BarChart,
@@ -48,8 +48,8 @@ export default function Performance() {
         setSummary(summaryRes.data)
         setSessions(historyRes.data.sessions || [])
         setSubjects(subjectRes.data.subjects || [])
-      } catch {
-        setError('Failed to load performance data')
+      } catch (error) {
+        setError(getUserFriendlyErrorMessage(error, 'We could not load the performance data right now.'))
       } finally {
         setLoading(false)
       }

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import API from '../services/api'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import RoleTabs from '../components/RoleTabs'
 import { getAuthUser } from '../services/authStorage'
 import './CreateCourse.css'
@@ -57,7 +57,7 @@ export default function CreateCourse() {
       setSuccess('Course created successfully!')
       setTimeout(() => navigate('/teacher/courses'), 1200)
     } catch (err) {
-      setError(err.response?.data?.error || 'Error creating course')
+      setError(getUserFriendlyErrorMessage(err, 'We could not create the course right now.'))
     } finally {
       setLoading(false)
     }

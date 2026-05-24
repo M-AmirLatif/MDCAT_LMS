@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import API from '../services/api'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import RoleTabs from '../components/RoleTabs'
 import { getAuthUser } from '../services/authStorage'
 import './LiveSessions.css'
@@ -21,7 +21,7 @@ export default function LiveSessions() {
         const res = await API.get('/live-sessions')
         setSessions(res.data.sessions || [])
       } catch (err) {
-        setError('Failed to load live sessions')
+        setError(getUserFriendlyErrorMessage(err, 'We could not load the live sessions right now.'))
       } finally {
         setLoading(false)
       }
