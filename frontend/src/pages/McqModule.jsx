@@ -292,7 +292,7 @@ function McqForm({ initial, onSubmit }) {
         <div className="floating-field"><label htmlFor="option-c">Option C</label><input id="option-c" value={form.optionC} onChange={(event) => setField('optionC', event.target.value)} /></div>
         <div className="floating-field"><label htmlFor="option-d">Option D</label><input id="option-d" value={form.optionD} onChange={(event) => setField('optionD', event.target.value)} /></div>
       </div>
-      <div className="floating-field"><label htmlFor="correct-answer">Correct Answer</label><select id="correct-answer" value={form.correctAnswer} onChange={(event) => setField('correctAnswer', event.target.value)}><option>A</option><option>B</option><option>C</option><option>D</option></select></div>
+      <div className="floating-field"><label htmlFor="correct-answer">Correct Answer</label><select id="correct-answer" value={form.correctAnswer} onChange={(event) => setField('correctAnswer', event.target.value)}><option value="A">Option A</option><option value="B">Option B</option><option value="C">Option C</option><option value="D">Option D</option></select></div>
       <div className="floating-field"><label htmlFor="explanation">Explanation / Description</label><textarea id="explanation" rows="5" value={form.explanation} onChange={(event) => setField('explanation', event.target.value)} placeholder="Explanation students see after submission." /></div>
       <button className="btn btn-primary" type="submit">Save MCQ</button>
     </form>
@@ -354,7 +354,10 @@ function TeacherMcqEditor({ mcq, index, chapter, chapterId, meta, onSaved, onDel
         <div className="floating-field">
           <label htmlFor={`mcq-correct-${mcq._id}`}>Correct Answer</label>
           <select id={`mcq-correct-${mcq._id}`} value={form.correctAnswer} onChange={(event) => setField('correctAnswer', event.target.value)}>
-            <option>A</option><option>B</option><option>C</option><option>D</option>
+            <option value="A">Option A</option>
+            <option value="B">Option B</option>
+            <option value="C">Option C</option>
+            <option value="D">Option D</option>
           </select>
         </div>
         <div className="floating-field">
