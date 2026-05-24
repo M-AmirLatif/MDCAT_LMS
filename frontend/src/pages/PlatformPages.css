@@ -4008,15 +4008,18 @@
     flex-direction: column !important;
     justify-content: flex-start !important;
     align-items: stretch !important;
-    gap: 12px !important;
+    gap: 8px !important;
+    padding-bottom: 12px !important;
   }
 
   .review-queue-head .state-chip {
     align-self: flex-start !important;
+    margin-top: 0 !important;
   }
 
   .review-queue-head p {
     max-width: none !important;
+    margin-bottom: 0 !important;
   }
 
   .workspace-page--mcq-list .workspace-hero .inline-actions,
