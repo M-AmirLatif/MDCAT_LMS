@@ -4072,13 +4072,14 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 .teacher-mcq-answer-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-width: 0;
   height: 48px;
   padding: 0 10px;
   border-radius: 12px;
@@ -4117,22 +4118,23 @@
 
 .teacher-mcq-answer-hint {
   display: block;
-  margin-top: 6px;
+  margin-top: 10px;
   font-size: 11px;
   font-weight: 700;
   color: #7c3aed;
   -webkit-text-fill-color: #7c3aed;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
+  line-height: 1.45;
   text-transform: uppercase;
 }
 
 /* ── Editor bottom: answer picker takes less width since it's compact ── */
 .teacher-mcq-editor-bottom {
-  grid-template-columns: minmax(160px, 210px) minmax(0, 1fr) !important;
+  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr) !important;
 }
 
 .teacher-mcq-editor-bottom .floating-field:first-child {
-  gap: 6px !important;
+  gap: 8px !important;
   padding: 16px 18px !important;
   background: #ede9fe !important;
   border-color: #c4b5fd !important;
@@ -4484,6 +4486,10 @@
     height: auto;
     padding: 10px 12px;
     font-size: 12px;
+  }
+
+  .teacher-mcq-answer-hint {
+    font-size: 10px;
   }
 }
 .teacher-mcq-answer-btn-label {
