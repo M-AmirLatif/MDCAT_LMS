@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import API from '../services/api'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import RoleTabs from '../components/RoleTabs'
 import { getAuthUser } from '../services/authStorage'
 import './CreateAssignment.css'
@@ -34,7 +34,7 @@ export default function CreateAssignment() {
             : await API.get('/courses/teacher/my-courses')
         setCourses(res.data.courses || [])
       } catch (err) {
-        setError('Failed to load courses')
+        setError(getUserFriendlyErrorMessage(err, 'We could not load the courses right now.'))
       }
     }
 
@@ -67,7 +67,7 @@ export default function CreateAssignment() {
         ])
       }
     } catch (err) {
-      setError(err.response?.data?.error || 'Upload failed')
+      setError(getUserFriendlyErrorMessage(err, 'We could not upload the attachment right now.'))
     } finally {
       setUploading(false)
       e.target.value = ''
@@ -100,7 +100,7 @@ export default function CreateAssignment() {
         1200,
       )
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to create assignment')
+      setError(getUserFriendlyErrorMessage(err, 'We could not create the assignment right now.'))
     } finally {
       setLoading(false)
     }

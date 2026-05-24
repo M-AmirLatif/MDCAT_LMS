@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import API from '../services/api'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import './PlatformPages.css'
 import './MCQTest.css'
@@ -146,7 +146,7 @@ function CourseSelection() {
         if (alive) setSubjects(res.data.subjects || [])
       })
       .catch((error) =>
-        toast.error(error.response?.data?.error || 'Unable to load subjects'),
+        toast.error(getUserFriendlyErrorMessage(error, 'We could not load the subjects right now.')),
       )
       .finally(() => alive && setLoading(false))
     return () => {
@@ -304,7 +304,7 @@ function ChapterList() {
       const res = await API.get(`/mcqs/${subject}/chapters`)
       setChapters(res.data.chapters || [])
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Unable to load chapters')
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not load the chapters right now.'))
     } finally {
       setLoading(false)
     }
@@ -339,7 +339,7 @@ function ChapterList() {
       setModal(null)
       load()
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Unable to save chapter')
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not save the chapter right now.'))
     }
   }
 
@@ -355,7 +355,7 @@ function ChapterList() {
       toast.success('Chapter deleted')
       load()
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Unable to delete chapter')
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not delete the chapter right now.'))
     }
   }
 
@@ -614,7 +614,7 @@ function TeacherMcqEditor({
       toast.success(`Q${index + 1} saved`)
       onSaved()
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Unable to save MCQ')
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not save the MCQ right now.'))
     } finally {
       setSaving(false)
     }
@@ -739,7 +739,7 @@ function McqList() {
       setTopics(res.data.topics || [])
       setMcqs(res.data.mcqs || [])
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Unable to load MCQs')
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not load the MCQs right now.'))
     } finally {
       setLoading(false)
     }
@@ -764,7 +764,7 @@ function McqList() {
       setModal(null)
       load()
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Unable to save topic')
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not save the topic right now.'))
     }
   }
 
@@ -783,7 +783,7 @@ function McqList() {
       toast.success('Topic deleted')
       load()
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Unable to delete topic')
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not delete the topic right now.'))
     }
   }
 
@@ -817,7 +817,7 @@ function McqList() {
       setModal(null)
       load()
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Unable to save MCQ')
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not save the MCQ right now.'))
     }
   }
 
@@ -828,7 +828,7 @@ function McqList() {
       toast.success('MCQ deleted')
       load()
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Unable to delete MCQ')
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not delete the MCQ right now.'))
     }
   }
 
@@ -852,7 +852,7 @@ function McqList() {
       }
       load()
     } catch (error) {
-      toast.error(error.response?.data?.error || 'CSV upload failed')
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not upload the CSV right now.'))
     } finally {
       event.target.value = ''
     }
@@ -1276,7 +1276,7 @@ function QuizAttempt() {
         )
       } catch (error) {
         if (alive)
-          toast.error(error.response?.data?.error || 'Unable to load quiz')
+          toast.error(getUserFriendlyErrorMessage(error, 'We could not load the quiz right now.'))
       } finally {
         if (alive) setLoading(false)
       }
@@ -1334,7 +1334,7 @@ function QuizAttempt() {
         state: { result: res.data },
       })
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Unable to submit quiz')
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not submit the quiz right now.'))
     } finally {
       setSubmitting(false)
     }

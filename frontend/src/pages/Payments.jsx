@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import API from '../services/api'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import RoleTabs from '../components/RoleTabs'
 import { getAuthUser } from '../services/authStorage'
 import './Payments.css'
@@ -23,7 +23,7 @@ export default function Payments() {
       const res = await API.get('/payments/my')
       setPayments(res.data.payments || [])
     } catch (err) {
-      setError('Failed to load payments')
+      setError(getUserFriendlyErrorMessage(err, 'We could not load the payments right now.'))
     } finally {
       setLoading(false)
     }
@@ -34,7 +34,7 @@ export default function Payments() {
       const res = await API.get('/courses')
       setCourses(res.data.courses || [])
     } catch (err) {
-      setError('Failed to load courses')
+      setError(getUserFriendlyErrorMessage(err, 'We could not load the courses right now.'))
     }
   }
 
@@ -58,7 +58,7 @@ export default function Payments() {
       setFormData({ courseId: '', amount: '', currency: 'PKR' })
       fetchPayments()
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to create payment')
+      setError(getUserFriendlyErrorMessage(err, 'We could not create the payment right now.'))
     }
   }
 

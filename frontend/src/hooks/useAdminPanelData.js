@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import API from '../services/api'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 
 const DEFAULT_OVERVIEW = {
   totalStudents: 0,
@@ -33,7 +33,7 @@ export default function useAdminPanelData({ includeStudents = false, search = ''
       setRecentStudents(res.data?.recentStudents || [])
       setError('')
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to load admin overview')
+      setError(getUserFriendlyErrorMessage(err, 'We could not load the admin overview right now.'))
     } finally {
       setLoadingOverview(false)
     }
@@ -54,7 +54,7 @@ export default function useAdminPanelData({ includeStudents = false, search = ''
       setStudents(res.data?.users || [])
       setError('')
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to load students')
+      setError(getUserFriendlyErrorMessage(err, 'We could not load the students right now.'))
     } finally {
       setLoadingStudents(false)
     }

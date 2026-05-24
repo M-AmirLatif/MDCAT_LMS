@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import API from '../services/api'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import RoleTabs from '../components/RoleTabs'
 import { getAuthUser } from '../services/authStorage'
 import './CreateLiveSession.css'
@@ -32,7 +32,7 @@ export default function CreateLiveSession() {
           setCourses(res.data.courses || [])
         }
       } catch (err) {
-        setError('Failed to load courses')
+        setError(getUserFriendlyErrorMessage(err, 'We could not load the courses right now.'))
       }
     }
 
@@ -54,7 +54,7 @@ export default function CreateLiveSession() {
       setSuccess('Live session scheduled')
       setTimeout(() => navigate('/live-sessions'), 1200)
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to create live session')
+      setError(getUserFriendlyErrorMessage(err, 'We could not create the live session right now.'))
     } finally {
       setLoading(false)
     }

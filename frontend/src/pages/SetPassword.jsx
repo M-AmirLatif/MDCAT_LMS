@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import API from '../services/api'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import ThemeToggle from '../components/ThemeToggle'
 import { useAuth } from '../context/AuthContext'
 import './Auth.css'
@@ -48,7 +48,7 @@ export default function SetPassword() {
       toast.success('Password set! You can now log in with email and password.')
       navigate('/dashboard', { replace: true })
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Failed to set password')
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not set your password right now.'))
     } finally {
       setLoading(false)
     }

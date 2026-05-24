@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import API from '../services/api'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import RoleTabs from '../components/RoleTabs'
 import { getAuthToken } from '../services/authStorage'
 import './EditProfile.css'
@@ -59,7 +59,7 @@ export default function EditProfile() {
       localStorage.setItem('user', JSON.stringify(res.data.user))
       setSuccess('Profile updated successfully!')
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to update profile')
+      setError(getUserFriendlyErrorMessage(err, 'We could not update the profile right now.'))
     } finally {
       setSaving(false)
     }

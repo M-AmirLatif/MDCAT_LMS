@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
-import API from '../services/api'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import './PlatformPages.css'
 
 function CameraIcon() {
@@ -67,7 +67,7 @@ export default function PlatformProfile() {
       setForm((current) => ({ ...current, profilePicture }))
       toast.success('Profile photo updated.')
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Photo upload failed')
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not update the profile photo right now.'))
     } finally {
       setUploading(false)
       event.target.value = ''
@@ -86,7 +86,7 @@ export default function PlatformProfile() {
       updateUser(res.data.user)
       toast.success('Profile updated successfully.')
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Failed to update profile')
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not update the profile right now.'))
     } finally {
       setSaving(false)
     }

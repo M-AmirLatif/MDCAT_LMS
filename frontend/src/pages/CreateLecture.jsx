@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import API from '../services/api'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import RoleTabs from '../components/RoleTabs'
 import { getAuthUser } from '../services/authStorage'
 import './CreateLecture.css'
@@ -35,7 +35,7 @@ export default function CreateLecture() {
             : await API.get('/courses/teacher/my-courses')
         setCourses(res.data.courses || [])
       } catch (err) {
-        setError('Failed to load courses')
+        setError(getUserFriendlyErrorMessage(err, 'We could not load the courses right now.'))
       }
     }
 
@@ -64,7 +64,7 @@ export default function CreateLecture() {
       const uploaded = await uploadFile(file)
       setFormData((prev) => ({ ...prev, videoUrl: uploaded.fileUrl }))
     } catch (err) {
-      setError(err.response?.data?.error || 'Video upload failed')
+      setError(getUserFriendlyErrorMessage(err, 'We could not upload the video right now.'))
     } finally {
       setUploading(false)
     }
@@ -84,7 +84,7 @@ export default function CreateLecture() {
         ])
       }
     } catch (err) {
-      setError(err.response?.data?.error || 'Attachment upload failed')
+      setError(getUserFriendlyErrorMessage(err, 'We could not upload the attachment right now.'))
     } finally {
       setUploading(false)
       e.target.value = ''
@@ -124,7 +124,7 @@ export default function CreateLecture() {
         navigate(`/course/${formData.courseId || courseIdParam}`)
       }, 1500)
     } catch (err) {
-      setError(err.response?.data?.error || 'Error creating lecture')
+      setError(getUserFriendlyErrorMessage(err, 'We could not create the lecture right now.'))
     } finally {
       setLoading(false)
     }

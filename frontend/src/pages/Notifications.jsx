@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import API from '../services/api'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import RoleTabs from '../components/RoleTabs'
 import { getAuthUser } from '../services/authStorage'
 import toast, { Toaster } from 'react-hot-toast'
@@ -29,7 +29,7 @@ export default function Notifications() {
       const res = await API.get('/notifications')
       setNotifications(res.data.notifications || [])
     } catch (err) {
-      setError('Failed to load notifications')
+      setError(getUserFriendlyErrorMessage(err, 'We could not load notifications right now.'))
     } finally {
       setLoading(false)
     }
@@ -46,7 +46,7 @@ export default function Notifications() {
         setCourses(res.data.courses || [])
       }
     } catch (err) {
-      setError('Failed to load courses')
+      setError(getUserFriendlyErrorMessage(err, 'We could not load courses right now.'))
     }
   }
 
@@ -60,7 +60,7 @@ export default function Notifications() {
       await API.post('/notifications/mark-as-read', { notificationId })
       fetchNotifications()
     } catch (err) {
-      setError('Failed to update notification')
+      setError(getUserFriendlyErrorMessage(err, 'We could not update the notification right now.'))
     }
   }
 
@@ -104,8 +104,9 @@ export default function Notifications() {
       setFormData({ ...formData, title: '', message: '', sendAt: '' })
       fetchNotifications()
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Failed to send notification')
-      setError(err.response?.data?.error || 'Failed to send notification')
+      const message = getUserFriendlyErrorMessage(err, 'We could not send the announcement right now.')
+      toast.error(message)
+      setError(message)
     }
   }
 

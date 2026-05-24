@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import API from '../services/api'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import RoleTabs from '../components/RoleTabs'
 import { getAuthToken, getAuthUser } from '../services/authStorage'
 import './AdminDashboard.css'
@@ -37,7 +37,7 @@ export default function AdminDashboard() {
       setUsers(usersRes.data.users || [])
       setCourses(coursesRes.data.courses || [])
     } catch (err) {
-      setError('Failed to load admin data')
+      setError(getUserFriendlyErrorMessage(err, 'We could not load the admin data right now.'))
     } finally {
       setLoading(false)
     }
@@ -52,7 +52,7 @@ export default function AdminDashboard() {
       await API.put(`/admin/users/${userId}`, payload)
       await fetchData()
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to update user')
+      setError(getUserFriendlyErrorMessage(err, 'We could not update the user right now.'))
     }
   }
 
@@ -77,7 +77,7 @@ export default function AdminDashboard() {
       })
       await fetchData()
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to create user')
+      setError(getUserFriendlyErrorMessage(err, 'We could not create the user right now.'))
     }
   }
 
@@ -96,7 +96,7 @@ export default function AdminDashboard() {
       })
       await fetchData()
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to update course')
+      setError(getUserFriendlyErrorMessage(err, 'We could not update the course right now.'))
     }
   }
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import API from '../services/api'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import RoleTabs from '../components/RoleTabs'
 import { getAuthUser } from '../services/authStorage'
 import './EditCourse.css'
@@ -35,7 +35,7 @@ export default function EditCourse() {
           topics: course.topics || [],
         })
       } catch (err) {
-        setError('Failed to load course')
+        setError(getUserFriendlyErrorMessage(err, 'We could not load the course right now.'))
       } finally {
         setLoading(false)
       }
@@ -81,7 +81,7 @@ export default function EditCourse() {
       setSuccess('Course updated successfully!')
       setTimeout(() => navigate('/teacher/courses'), 1200)
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to update course')
+      setError(getUserFriendlyErrorMessage(err, 'We could not update the course right now.'))
     }
   }
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import API from '../services/api'
+import toast from 'react-hot-toast'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import RoleTabs from '../components/RoleTabs'
 import { getAuthUser } from '../services/authStorage'
 import './Assignments.css'
@@ -24,7 +25,7 @@ export default function Assignments() {
         const res = await API.get(`/assignments/course/${courseId}`)
         setAssignments(res.data.assignments || [])
       } catch (err) {
-        setError('Failed to load assignments')
+        setError(getUserFriendlyErrorMessage(err, 'We could not load assignments right now.'))
       } finally {
         setLoading(false)
       }
@@ -60,7 +61,7 @@ export default function Assignments() {
       handleInputChange(assignmentId, 'fileUrl', uploaded.fileUrl)
       handleInputChange(assignmentId, 'fileName', uploaded.fileName)
     } catch (err) {
-      alert('Upload failed')
+      toast.error(getUserFriendlyErrorMessage(err, 'We could not upload the file right now.'))
     } finally {
       setUploadingId(null)
     }
@@ -70,11 +71,11 @@ export default function Assignments() {
     try {
       const payload = submissions[assignmentId] || {}
       await API.post(`/assignments/${assignmentId}/submit`, payload)
-      alert('Assignment submitted')
+      toast.success('Assignment submitted successfully.')
       const res = await API.get(`/assignments/course/${courseId}`)
       setAssignments(res.data.assignments || [])
     } catch (err) {
-      alert(err.response?.data?.error || 'Failed to submit assignment')
+      toast.error(getUserFriendlyErrorMessage(err, 'We could not submit the assignment right now.'))
     }
   }
 

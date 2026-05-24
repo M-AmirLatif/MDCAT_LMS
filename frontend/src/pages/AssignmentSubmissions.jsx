@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import API from '../services/api'
+import toast from 'react-hot-toast'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import RoleTabs from '../components/RoleTabs'
 import { getAuthUser } from '../services/authStorage'
 import './AssignmentSubmissions.css'
@@ -20,7 +21,7 @@ export default function AssignmentSubmissions() {
         const res = await API.get(`/assignments/${assignmentId}/submissions`)
         setAssignment(res.data.assignment)
       } catch (err) {
-        setError('Failed to load submissions')
+        setError(getUserFriendlyErrorMessage(err, 'We could not load the submissions right now.'))
       } finally {
         setLoading(false)
       }
@@ -50,7 +51,7 @@ export default function AssignmentSubmissions() {
       const res = await API.get(`/assignments/${assignmentId}/submissions`)
       setAssignment(res.data.assignment)
     } catch (err) {
-      alert(err.response?.data?.error || 'Failed to grade submission')
+      toast.error(getUserFriendlyErrorMessage(err, 'We could not save the grade right now.'))
     }
   }
 
