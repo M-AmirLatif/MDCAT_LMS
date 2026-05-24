@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import API from '../services/api'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import { getDefaultRouteForRole, getRoleLabel } from '../lib/platform'
 import { useGoogleSignIn } from '../hooks/useGoogleSignIn'
@@ -21,13 +21,7 @@ const loginRoles = [
 
 function MailIcon() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      width="20"
-      height="20"
-      fill="none"
-      aria-hidden="true"
-    >
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
       <path
         d="M4 7h16v10H4V7Zm0 0 8 6 8-6"
         stroke="currentColor"
@@ -41,28 +35,14 @@ function MailIcon() {
 
 function LockIcon() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      width="20"
-      height="20"
-      fill="none"
-      aria-hidden="true"
-    >
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
       <path
         d="M7 10V8a5 5 0 1 1 10 0v2"
         stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
       />
-      <rect
-        x="5"
-        y="10"
-        width="14"
-        height="10"
-        rx="3"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
+      <rect x="5" y="10" width="14" height="10" rx="3" stroke="currentColor" strokeWidth="2" />
       <circle cx="12" cy="15" r="1.4" fill="currentColor" />
     </svg>
   )
@@ -86,8 +66,6 @@ export default function Login() {
   })
   const navigate = useNavigate()
   const { login } = useAuth()
-
-  // mode:'signin' — existing Google user → login; new Google user → toast + /register
   const googleSignIn = useGoogleSignIn({ remember, nextPath, mode: 'signin' })
 
   const accentClass = useMemo(() => {
@@ -102,11 +80,8 @@ export default function Login() {
 
   const switchRole = (role) => {
     const params = new URLSearchParams(searchParams)
-    if (role === 'student') {
-      params.delete('role')
-    } else {
-      params.set('role', role)
-    }
+    if (role === 'student') params.delete('role')
+    else params.set('role', role)
     const query = params.toString()
     navigate(`/login${query ? `?${query}` : ''}`, { replace: true })
   }
@@ -119,35 +94,23 @@ export default function Login() {
       const response = await API.post('/auth/login', formData)
       const user = response.data.user
 
-      // Role mismatch check
-      if (
-        requestedRole !== 'student' &&
-        user?.role !== requestedRole
-      ) {
-        toast.error(
-          `This account is a ${getRoleLabel(user?.role)} account, not ${roleLabel}.`,
-        )
+      if (requestedRole !== 'student' && user?.role !== requestedRole) {
+        toast.error(`This account is a ${getRoleLabel(user?.role)} account, not ${roleLabel}.`)
         setLoading(false)
         return
       }
 
-      // If account needs password setup (shouldn't happen via email login, but guard anyway)
       if (user?.needsPasswordSetup) {
-        if (remember || formData.email) {
-          setRememberedCredentials({ email: formData.email, remember })
-        } else {
-          clearRememberedCredentials()
-        }
+        if (remember && formData.email) setRememberedCredentials({ email: formData.email, remember })
+        else clearRememberedCredentials()
         login(response.data.token, user, remember)
         navigate('/set-password', { replace: true })
         return
       }
 
-      if (remember || formData.email) {
-        setRememberedCredentials({ email: formData.email, remember })
-      } else {
-        clearRememberedCredentials()
-      }
+      if (remember && formData.email) setRememberedCredentials({ email: formData.email, remember })
+      else clearRememberedCredentials()
+
       login(response.data.token, user, remember)
       navigate(nextPath || getDefaultRouteForRole(user?.role || requestedRole))
     } catch (error) {
@@ -155,17 +118,9 @@ export default function Login() {
       const message = error.response?.data?.error
 
       if (status === 403 && message?.includes('Google sign-in')) {
-        // Google-only account trying email login
         toast.error(message)
       } else {
-        toast.error(
-          message ||
-            (error.code === 'ECONNABORTED'
-              ? 'Backend request timed out. Check Railway deployment.'
-              : error.message === 'Network Error'
-                ? 'Cannot reach backend API. Check Vercel API URL and Railway CORS.'
-                : 'Login failed'),
-        )
+        toast.error(getUserFriendlyErrorMessage(error, 'Unable to sign you in right now. Please try again.'))
       }
     } finally {
       setLoading(false)
@@ -186,9 +141,7 @@ export default function Login() {
             MDCAT Prep
           </div>
           <div className="auth-brand-content">
-            <div className="label-xs auth-kicker">
-              Your MDCAT Prep Companion
-            </div>
+            <div className="label-xs auth-kicker">Your MDCAT Prep Companion</div>
             <h1>Sign in to continue</h1>
             <p>
               Access your prep workspace, progress metrics, and role-specific
@@ -244,11 +197,7 @@ export default function Login() {
                 tools.
               </p>
 
-              <form
-                className="auth-form"
-                onSubmit={handleSubmit}
-                autoComplete="off"
-              >
+              <form className="auth-form" onSubmit={handleSubmit} autoComplete="off">
                 <div
                   className={`floating-field auth-input-shell ${formData.email ? 'auth-input-shell--filled' : ''} ${emailValid ? 'auth-input-shell--valid' : ''}`}
                 >
@@ -262,37 +211,23 @@ export default function Login() {
                     type="email"
                     value={formData.email}
                     onChange={(event) =>
-                      setFormData((current) => ({
-                        ...current,
-                        email: event.target.value,
-                      }))
+                      setFormData((current) => ({ ...current, email: event.target.value }))
                     }
                     onMouseDown={() =>
-                      setEditableFields((current) => ({
-                        ...current,
-                        email: true,
-                      }))
+                      setEditableFields((current) => ({ ...current, email: true }))
                     }
                     onTouchStart={() =>
-                      setEditableFields((current) => ({
-                        ...current,
-                        email: true,
-                      }))
+                      setEditableFields((current) => ({ ...current, email: true }))
                     }
                     onFocus={() =>
-                      setEditableFields((current) => ({
-                        ...current,
-                        email: true,
-                      }))
+                      setEditableFields((current) => ({ ...current, email: true }))
                     }
                     placeholder="admin@mdcat.pk"
                     autoComplete="email"
                     readOnly={!editableFields.email}
                     required
                   />
-                  {emailValid ? (
-                    <span className="auth-valid-dot" aria-hidden="true" />
-                  ) : null}
+                  {emailValid ? <span className="auth-valid-dot" aria-hidden="true" /> : null}
                 </div>
 
                 <div
@@ -308,28 +243,16 @@ export default function Login() {
                     type={showPassword ? 'text' : 'password'}
                     value={formData.password}
                     onChange={(event) =>
-                      setFormData((current) => ({
-                        ...current,
-                        password: event.target.value,
-                      }))
+                      setFormData((current) => ({ ...current, password: event.target.value }))
                     }
                     onMouseDown={() =>
-                      setEditableFields((current) => ({
-                        ...current,
-                        password: true,
-                      }))
+                      setEditableFields((current) => ({ ...current, password: true }))
                     }
                     onTouchStart={() =>
-                      setEditableFields((current) => ({
-                        ...current,
-                        password: true,
-                      }))
+                      setEditableFields((current) => ({ ...current, password: true }))
                     }
                     onFocus={() =>
-                      setEditableFields((current) => ({
-                        ...current,
-                        password: true,
-                      }))
+                      setEditableFields((current) => ({ ...current, password: true }))
                     }
                     placeholder="Enter your password"
                     autoComplete="current-password"
@@ -344,10 +267,7 @@ export default function Login() {
                     {showPassword ? 'Hide' : 'Show'}
                   </button>
                   {passwordValid ? (
-                    <span
-                      className="auth-valid-dot auth-valid-dot--password"
-                      aria-hidden="true"
-                    />
+                    <span className="auth-valid-dot auth-valid-dot--password" aria-hidden="true" />
                   ) : null}
                 </div>
 
@@ -365,37 +285,33 @@ export default function Login() {
                   </Link>
                 </div>
 
-                <button
-                  className="auth-primary"
-                  type="submit"
-                  disabled={loading}
-                >
+                <button className="auth-primary" type="submit" disabled={loading}>
                   {loading ? 'Signing in...' : 'Sign In'}
                 </button>
 
-                {/* Show Google button for student role on all screen sizes */}
                 {requestedRole === 'student' && (
                   <div className="auth-google-block">
                     {googleSignIn.configured ? (
                       <>
-                        {/* key forces remount if loading state changes */}
-                        <div
-                          ref={googleSignIn.buttonRef}
-                          className="auth-google-rendered"
-                          style={{ minHeight: '44px' }}
-                        />
-                        {!googleSignIn.ready && (
+                        <div ref={googleSignIn.buttonRef} className="auth-google-rendered" />
+                        {!googleSignIn.ready ? (
                           <span className="auth-google-loading">
-                            Loading Google sign-in…
+                            {googleSignIn.error || 'Loading Google sign-in...'}
                           </span>
-                        )}
+                        ) : null}
+                        {googleSignIn.error ? (
+                          <button
+                            className="auth-secondary auth-google-retry"
+                            type="button"
+                            onClick={googleSignIn.retry}
+                            disabled={googleSignIn.loading}
+                          >
+                            Retry Google sign-in
+                          </button>
+                        ) : null}
                       </>
                     ) : (
-                      <button
-                        className="auth-secondary auth-google-pill"
-                        type="button"
-                        disabled
-                      >
+                      <button className="auth-secondary auth-google-pill" type="button" disabled>
                         Google sign-in is not configured
                       </button>
                     )}

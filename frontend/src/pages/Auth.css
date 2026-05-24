@@ -549,15 +549,17 @@
 
 .auth-google-block {
   width: 100%;
-  min-height: 52px;
+  min-height: 56px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 10px;
 }
 
 .auth-google-rendered {
-  width: 100%;
-  min-height: 50px;
+  width: min(100%, 376px);
+  min-height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -565,6 +567,7 @@
 }
 
 .auth-google-rendered > div {
+  width: 100% !important;
   max-width: 100% !important;
   margin: 0 auto !important;
   display: flex !important;
@@ -574,6 +577,7 @@
 .auth-google-rendered iframe {
   display: block !important;
   margin: 0 auto !important;
+  width: 100% !important;
   max-width: 100% !important;
 }
 
@@ -581,9 +585,15 @@
   color: #6b6b8a;
   font-size: 12px;
   font-weight: 800;
+  text-align: center;
 }
 
 .auth-google-cta {
+  justify-content: center;
+}
+
+.auth-google-retry {
+  width: min(100%, 376px);
   justify-content: center;
 }
 
@@ -1217,58 +1227,32 @@ html[data-theme="dark"] .auth-form .floating-field {
 
 .auth-google-rendered,
 html[data-theme="dark"] .auth-google-rendered {
-  position: relative !important;
   width: min(100%, 376px) !important;
-  height: 52px !important;
-  min-height: 52px !important;
+  height: 56px !important;
+  min-height: 56px !important;
   margin: 0 auto !important;
-  overflow: hidden !important;
-  border: 1.5px solid rgba(108, 71, 255, 0.28) !important;
+  overflow: visible !important;
+  border: none !important;
   border-radius: 999px !important;
-  background: #ffffff !important;
+  background: transparent !important;
   box-shadow: none !important;
-}
-
-.auth-google-rendered::before,
-html[data-theme="dark"] .auth-google-rendered::before {
-  content: "G  Continue with Google";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #1a1a2e;
-  -webkit-text-fill-color: #1a1a2e;
-  font-size: 14px;
-  font-weight: 800;
-  pointer-events: none;
 }
 
 .auth-google-rendered > div,
 .auth-google-rendered iframe,
 html[data-theme="dark"] .auth-google-rendered > div,
 html[data-theme="dark"] .auth-google-rendered iframe {
-  position: absolute !important;
-  inset: 0 !important;
-  z-index: 2 !important;
   width: 100% !important;
   max-width: none !important;
-  height: 52px !important;
+  height: 56px !important;
   margin: 0 !important;
-  opacity: 0.01 !important;
+  opacity: 1 !important;
   border-radius: 999px !important;
   background: transparent !important;
 }
 
 html[data-theme="dark"] .auth-google-rendered {
-  border-color: rgba(165, 144, 255, 0.42) !important;
-  background: rgba(139, 111, 255, 0.16) !important;
-}
-
-html[data-theme="dark"] .auth-google-rendered::before {
-  color: #f0eeff;
-  -webkit-text-fill-color: #f0eeff;
+  background: transparent !important;
 }
 
 @media (max-width: 768px) {
@@ -1494,4 +1478,3 @@ html[data-theme="dark"] .auth-google-rendered::before {
     color: #A590FF;
   }
 }
-

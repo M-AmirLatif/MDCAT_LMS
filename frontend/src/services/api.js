@@ -9,6 +9,26 @@ const API = axios.create({
   timeout: Number(import.meta.env.VITE_API_TIMEOUT_MS || 15000),
 })
 
+export const getUserFriendlyErrorMessage = (error, fallback = 'Something went wrong. Please try again.') => {
+  const status = error?.response?.status
+  const message = String(error?.response?.data?.error || '').trim()
+
+  if (error?.code === 'ECONNABORTED') {
+    return 'The server took too long to respond. Please try again.'
+  }
+
+  if (error?.message === 'Network Error' || !error?.response) {
+    return 'The server is temporarily unavailable. Please try again in a moment.'
+  }
+
+  if (status >= 500) {
+    return 'A server error occurred. Please try again shortly.'
+  }
+
+  if (message) return message
+  return fallback
+}
+
 // Add token to requests
 API.interceptors.request.use((config) => {
   const token = getAuthToken()
@@ -54,6 +74,16 @@ API.interceptors.response.use(
         window.location.href = '/login'
       }
     }
+
+    const friendlyMessage = getUserFriendlyErrorMessage(error)
+    if (!error.response) {
+      error.response = { data: { error: friendlyMessage }, status: 0 }
+    } else if (!error.response.data || typeof error.response.data !== 'object') {
+      error.response.data = { error: friendlyMessage }
+    } else if (error.response.status >= 500) {
+      error.response.data.error = friendlyMessage
+    }
+
     return Promise.reject(error)
   },
 )

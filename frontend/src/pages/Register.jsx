@@ -1,6 +1,6 @@
+import { Link } from 'react-router-dom'
 import { useGoogleSignIn } from '../hooks/useGoogleSignIn'
 import ThemeToggle from '../components/ThemeToggle'
-import { Link } from 'react-router-dom'
 import './Auth.css'
 
 export default function Register() {
@@ -29,21 +29,9 @@ export default function Register() {
 
             <div className="auth-register-steps">
               {[
-                [
-                  '1',
-                  'Continue with Google',
-                  'Fast signup — no OTP email, instant access.',
-                ],
-                [
-                  '2',
-                  'Set Your Password',
-                  'One-time setup, then log in with Gmail + password.',
-                ],
-                [
-                  '3',
-                  'Start Practicing',
-                  'MCQs, live classes, tests, and performance tracking.',
-                ],
+                ['1', 'Continue with Google', 'Fast signup, instant access, and no email OTP delay.'],
+                ['2', 'Set Your Password', 'One-time setup, then log in with Gmail and password.'],
+                ['3', 'Start Practicing', 'MCQs, live classes, tests, and performance tracking.'],
               ].map(([number, title, body]) => (
                 <div className="auth-register-step" key={title}>
                   <span className="auth-register-step-number">{number}</span>
@@ -63,7 +51,7 @@ export default function Register() {
               <span>Live Classes</span>
             </div>
             <p className="auth-bottom-quote">
-              Helping MDCAT aspirants achieve their dream of becoming doctors —
+              Helping MDCAT aspirants achieve their dream of becoming doctors,
               one chapter at a time.
             </p>
           </div>
@@ -76,30 +64,32 @@ export default function Register() {
               <h1 className="auth-title">Create your student account</h1>
               <p className="auth-subtitle">
                 Sign up with Google to get started. You&apos;ll set a password
-                right after to enable email + password login too.
+                right after to enable email and password login too.
               </p>
 
               <div className="auth-form">
                 <div className="auth-google-block auth-google-block--register">
                   {googleSignIn.configured ? (
                     <>
-                      <div
-                        ref={googleSignIn.buttonRef}
-                        className="auth-google-rendered"
-                        style={{ minHeight: '44px' }}
-                      />
-                      {!googleSignIn.ready && (
+                      <div ref={googleSignIn.buttonRef} className="auth-google-rendered" />
+                      {!googleSignIn.ready ? (
                         <span className="auth-google-loading">
-                          Loading Google sign-up…
+                          {googleSignIn.error || 'Loading Google sign-up...'}
                         </span>
-                      )}
+                      ) : null}
+                      {googleSignIn.error ? (
+                        <button
+                          className="auth-secondary auth-google-retry"
+                          type="button"
+                          onClick={googleSignIn.retry}
+                          disabled={googleSignIn.loading}
+                        >
+                          Retry Google sign-up
+                        </button>
+                      ) : null}
                     </>
                   ) : (
-                    <button
-                      className="auth-secondary auth-google-cta"
-                      type="button"
-                      disabled
-                    >
+                    <button className="auth-secondary auth-google-cta" type="button" disabled>
                       Continue with Google is not configured
                     </button>
                   )}
