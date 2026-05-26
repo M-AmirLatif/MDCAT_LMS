@@ -1467,10 +1467,8 @@ html[data-theme="dark"] .theme-toggle--auth svg {
 
 html[data-theme="dark"] .auth-primary,
 html[data-theme="dark"] .auth-primary *,
-html[data-theme="dark"] .auth-google-pill,
-html[data-theme="dark"] .auth-google-cta,
-html[data-theme="dark"] .auth-google-pill *,
-html[data-theme="dark"] .auth-google-cta * {
+html[data-theme="dark"] .auth-google-custom-btn,
+html[data-theme="dark"] .auth-google-custom-btn * {
   opacity: 1 !important;
 }
 
@@ -1479,35 +1477,16 @@ html[data-theme="dark"] .auth-primary {
   -webkit-text-fill-color: #FFFFFF !important;
 }
 
-html[data-theme="dark"] .auth-google-pill,
-html[data-theme="dark"] .auth-google-cta {
+html[data-theme="dark"] .auth-google-custom-btn {
   background: rgba(139,111,255,0.12) !important;
   color: #F0EEFF !important;
   -webkit-text-fill-color: #F0EEFF !important;
   border-color: rgba(165,144,255,0.28) !important;
 }
 
-html[data-theme="dark"] .auth-google-rendered,
-html[data-theme="dark"] .auth-google-rendered > div {
-  background: transparent !important;
-}
-
-html[data-theme="dark"] .auth-google-rendered {
-  height: 56px !important;
-  min-height: 56px !important;
-  overflow: visible !important;
-  border-radius: 999px !important;
-  background: transparent !important;
-  border: none !important;
-}
-
-html[data-theme="dark"] .auth-google-rendered iframe {
-  width: 100% !important;
-  height: 56px !important;
-  max-width: none !important;
-  border-radius: 999px !important;
-  opacity: 1 !important;
-  filter: none !important;
+html[data-theme="dark"] .auth-google-custom-btn:hover {
+  background: rgba(139,111,255,0.20) !important;
+  border-color: rgba(165,144,255,0.42) !important;
 }
 
 html[data-theme="light"] .auth-card--platform {

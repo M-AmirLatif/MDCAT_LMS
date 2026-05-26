@@ -18,6 +18,7 @@ const notificationRoutes = require('./routes/notifications')
 const liveSessionRoutes = require('./routes/liveSessions')
 const paymentRoutes = require('./routes/payments')
 const uploadRoutes = require('./routes/uploads')
+const publicRoutes = require('./routes/public')
 const NotificationJob = require('./models/NotificationJob')
 const Notification = require('./models/Notification')
 const { getEmailStatus } = require('./utils/email')
@@ -191,6 +192,7 @@ app.use('/api/notifications', notificationRoutes)
 app.use('/api/live-sessions', liveSessionRoutes)
 app.use('/api/payments', paymentRoutes)
 app.use('/api/uploads', uploadRoutes)
+app.use('/api/public', publicRoutes)
 
 // ==================== NOTIFICATION SCHEDULER ====================
 // Hardened scheduler: uses lean() for read efficiency, atomic findOneAndUpdate

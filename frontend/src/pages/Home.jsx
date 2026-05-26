@@ -1,14 +1,9 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ThemeToggle from '../components/ThemeToggle'
 import { getAuthUser } from '../services/authStorage'
+import API from '../services/api'
 import './Home.css'
-
-const stats = [
-  ['4', 'MDCAT Subjects', 'people'],
-  ['0', 'Published Chapters', 'chart'],
-  ['0', 'Published MCQs', 'medical'],
-  ['0', 'Student Attempts', 'trophy'],
-]
 
 function Icon({ name }) {
   const common = { viewBox: '0 0 24 24', fill: 'none', 'aria-hidden': true }
@@ -21,8 +16,36 @@ function Icon({ name }) {
   return <svg {...common}>{paths[name]}</svg>
 }
 
+function formatStat(value) {
+  if (value === null || value === undefined) return '—'
+  if (value >= 1000) return `${(value / 1000).toFixed(1)}K`
+  return String(value)
+}
+
 export default function Home() {
   const user = getAuthUser()
+  const [stats, setStats] = useState(null)
+
+  useEffect(() => {
+    let alive = true
+    API.get('/public/stats')
+      .then((res) => {
+        if (alive && res.data?.success) setStats(res.data)
+      })
+      .catch(() => {
+        // Silently fail — stats section will show fallback
+      })
+    return () => { alive = false }
+  }, [])
+
+  const statItems = [
+    [String(stats?.subjects ?? 4), 'MDCAT Subjects', 'people'],
+    [formatStat(stats?.totalChapters ?? null), 'Published Chapters', 'chart'],
+    [formatStat(stats?.totalMcqs ?? null), 'Published MCQs', 'medical'],
+    [formatStat(stats?.totalAttempts ?? null), 'Student Attempts', 'trophy'],
+  ]
+
+  const hasContent = stats && (stats.totalChapters > 0 || stats.totalMcqs > 0)
 
   return (
     <main className="landing">
@@ -55,17 +78,17 @@ export default function Home() {
         <div className="lp-grid-bg" />
         <div className="lp-float-card lp-float-card-one">
           <span>MDCAT BATCH 2026</span>
-          <strong>0%</strong>
-          <small>Weekly progress after launch</small>
+          <strong>{hasContent ? `${stats.totalChapters} Chapters` : 'Building Content'}</strong>
+          <small>{hasContent ? 'Chapters published and growing' : 'Content being added by teachers'}</small>
         </div>
         <div className="lp-float-card lp-float-card-two">
-          <span><i /> Next Class</span>
-          <strong>Coming soon</strong>
-          <small>Real live classes</small>
+          <span><i /> MCQ Bank</span>
+          <strong>{hasContent ? formatStat(stats.totalMcqs) : 'Coming soon'}</strong>
+          <small>{hasContent ? 'Practice questions available' : 'MCQs being added daily'}</small>
         </div>
         <div className="lp-float-card lp-float-card-three">
           <div className="lp-avatars"><b>A</b><b>S</b><b>H</b></div>
-          <strong>Real learners after launch</strong>
+          <strong>{stats?.totalStudents > 0 ? `${formatStat(stats.totalStudents)} learners registered` : 'Join the first batch'}</strong>
         </div>
 
         <div className="lp-hero-content reveal">
@@ -75,7 +98,7 @@ export default function Home() {
             <span className="lp-gradient-text">Faster, Smarter</span>
             <span>Preparation at Home</span>
           </h1>
-          <p>Focused MDCAT preparation from the comfort of your home. Real chapters, MCQs, and analytics will be added by your teaching team.</p>
+          <p>Focused MDCAT preparation from the comfort of your home. Real chapters, MCQs, and analytics — all in one platform.</p>
           <div className="lp-hero-ctas">
             <Link className="lp-btn lp-btn-primary" to="/register">Start Your Preparation Now</Link>
             <Link className="lp-btn lp-btn-ghost" to="/login">I Already Have an Account</Link>
@@ -93,7 +116,7 @@ export default function Home() {
             <p className="lp-copy">Specially designed for F.Sc pre-medical 2nd year, 1st year, and repeater students who want chapter-wise MCQ practice at home.</p>
             <div className="lp-row-actions">
               <Link className="lp-btn lp-btn-primary" to="/register">Yes I Want To Join</Link>
-              <span className="lp-green-pill"><i /> New session starting soon | Limited slots</span>
+              <span className="lp-green-pill"><i /> {hasContent ? `${stats.totalChapters} chapters live | Enroll now` : 'New session starting soon | Limited slots'}</span>
             </div>
           </div>
           <div className="lp-video-card">
@@ -111,7 +134,7 @@ export default function Home() {
         <div className="lp-container reveal">
           <h2 className="lp-section-title lp-section-title-dark">Built for Focused MDCAT Prep</h2>
           <div className="lp-stat-grid">
-            {stats.map(([value, label, icon], index) => (
+            {statItems.map(([value, label, icon], index) => (
               <article className={`lp-stat lp-stat-${index % 4}`} key={label}>
                 <Icon name={icon} />
                 <strong>{value}</strong>

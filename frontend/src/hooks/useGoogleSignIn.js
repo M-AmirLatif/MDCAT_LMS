@@ -46,13 +46,6 @@ function loadGoogleScript() {
   return scriptLoadPromise
 }
 
-function getGoogleTheme() {
-  if (typeof document === 'undefined') return 'outline'
-  return document.documentElement.getAttribute('data-theme') === 'dark'
-    ? 'filled_black'
-    : 'outline'
-}
-
 export function useGoogleSignIn({
   remember = true,
   nextPath = null,
@@ -64,6 +57,7 @@ export function useGoogleSignIn({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const containerRef = useRef(null)
+  const initializedRef = useRef(false)
 
   const configured = !!GOOGLE_CLIENT_ID
 
@@ -117,15 +111,15 @@ export function useGoogleSignIn({
     [login, mode, navigate, nextPath, remember],
   )
 
-  const renderButton = useCallback(async () => {
-    if (!configured || !containerRef.current) return
+  const initializeGoogle = useCallback(async () => {
+    if (!configured) return
 
     setLoading(true)
     setError('')
 
     try {
       await loadGoogleScript()
-      if (!containerRef.current || !window.google?.accounts?.id) {
+      if (!window.google?.accounts?.id) {
         throw new Error('Google sign-in is unavailable right now.')
       }
 
@@ -136,17 +130,7 @@ export function useGoogleSignIn({
         cancel_on_tap_outside: true,
       })
 
-      containerRef.current.replaceChildren()
-      window.google.accounts.id.renderButton(containerRef.current, {
-        type: 'standard',
-        theme: getGoogleTheme(),
-        size: 'large',
-        text: mode === 'signup' ? 'signup_with' : 'continue_with',
-        shape: 'pill',
-        width: Math.min(containerRef.current.offsetWidth || 340, 400),
-        logo_alignment: 'left',
-      })
-
+      initializedRef.current = true
       setReady(true)
     } catch (renderError) {
       console.error('Google Sign-In init error:', renderError)
@@ -155,25 +139,48 @@ export function useGoogleSignIn({
     } finally {
       setLoading(false)
     }
-  }, [configured, handleCredentialResponse, mode])
+  }, [configured, handleCredentialResponse])
+
+  const triggerGoogleSignIn = useCallback(() => {
+    if (!initializedRef.current || !window.google?.accounts?.id) return
+
+    // Use the programmatic prompt for a cleaner, more controlled UX
+    window.google.accounts.id.prompt((notification) => {
+      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+        // Fallback: render the button in the container if prompt is blocked
+        if (containerRef.current) {
+          containerRef.current.replaceChildren()
+          window.google.accounts.id.renderButton(containerRef.current, {
+            type: 'standard',
+            theme: document.documentElement.getAttribute('data-theme') === 'dark'
+              ? 'filled_black'
+              : 'outline',
+            size: 'large',
+            text: mode === 'signup' ? 'signup_with' : 'continue_with',
+            shape: 'rectangular',
+            width: Math.min(containerRef.current.offsetWidth || 340, 400),
+            logo_alignment: 'left',
+          })
+        }
+      }
+    })
+  }, [mode])
 
   const buttonRef = useCallback((node) => {
     containerRef.current = node
-    if (node && configured) {
-      renderButton()
-    }
-  }, [configured, renderButton])
+  }, [])
 
   const retry = useCallback(() => {
+    initializedRef.current = false
     setReady(false)
     setError('')
-    renderButton()
-  }, [renderButton])
+    initializeGoogle()
+  }, [initializeGoogle])
 
   useEffect(() => {
-    if (!configured || !containerRef.current) return
-    renderButton()
-  }, [configured, renderButton])
+    if (!configured) return
+    initializeGoogle()
+  }, [configured, initializeGoogle])
 
-  return { buttonRef, ready, loading, configured, error, retry }
+  return { buttonRef, ready, loading, configured, error, retry, triggerGoogleSignIn }
 }
