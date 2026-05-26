@@ -39,7 +39,6 @@ export default function Register() {
             MDCAT Prep
           </div>
           <div className="auth-brand-content">
-            <div className="label-xs auth-kicker">New to MDCAT LMS?</div>
             <h1>Create Your Account</h1>
             <p>
               Join Pakistan&apos;s focused MDCAT prep platform. Practice
