@@ -263,7 +263,7 @@
 
 .lp-float-card {
   position: absolute;
-  z-index: 2;
+  z-index: 1;
   width: 220px;
   padding: 18px;
   border-radius: 18px;
