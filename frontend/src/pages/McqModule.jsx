@@ -694,24 +694,26 @@ function TeacherMcqTableRow({ mcq, index, chapter, chapterId, meta, onEdit, onDe
         {mcq.topicId ? mcq.topic : chapter?.name || 'Chapter'}
       </td>
       <td className="teacher-mcq-table-actions">
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={() => onEdit(mcq)}
-          title="Edit MCQ"
-          aria-label={`Edit question ${index + 1}`}
-        >
-          Edit
-        </button>
-        <button
-          type="button"
-          className="btn btn-danger"
-          onClick={() => onDelete(mcq)}
-          title="Delete MCQ"
-          aria-label={`Delete question ${index + 1}`}
-        >
-          Delete
-        </button>
+        <div className="teacher-mcq-table-actions-inner">
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => onEdit(mcq)}
+            title="Edit MCQ"
+            aria-label={`Edit question ${index + 1}`}
+          >
+            Edit
+          </button>
+          <button
+            type="button"
+            className="btn btn-danger"
+            onClick={() => onDelete(mcq)}
+            title="Delete MCQ"
+            aria-label={`Delete question ${index + 1}`}
+          >
+            Delete
+          </button>
+        </div>
       </td>
     </tr>
   )

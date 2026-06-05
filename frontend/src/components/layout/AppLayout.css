@@ -2,6 +2,9 @@
   display: flex;
   min-height: 100vh;
   background: var(--bg-page);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
 }
 
 [data-theme="dark"] .app-layout {
@@ -21,6 +24,9 @@
   flex-direction: column;
   margin-left: var(--sidebar-width);
   transition: margin-left var(--ease);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
 }
 
 .app-layout .navbar,
@@ -67,10 +73,22 @@
 }
 
 /* ═══ Accessibility ═══ */
-.skip-to-main {
+.skip-to-main:not(:focus) {
   position: absolute;
-  top: -40px;
-  left: -40px;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-to-main:focus {
+  position: fixed;
+  top: 12px;
+  left: 12px;
   padding: 12px 16px;
   background: var(--purple);
   color: #fff;
@@ -78,12 +96,9 @@
   border-radius: 6px;
   font-size: 14px;
   font-weight: 600;
-  z-index: 100;
-}
-
-.skip-to-main:focus {
-  top: 10px;
-  left: 10px;
+  z-index: 9999;
+  outline: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 /* Focus rings for all interactive elements */

@@ -386,23 +386,7 @@
   color: var(--text-muted);
 }
 
-.teacher-mcq-table-row {
-  display: grid;
-  grid-template-columns: 40px 1fr 60px 100px 100px;
-  gap: 12px;
-  align-items: center;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border-default);
-  transition: background var(--ease);
-}
 
-.teacher-mcq-table-row:last-child {
-  border-bottom: none;
-}
-
-.teacher-mcq-table-row:hover {
-  background: var(--bg-surface-2);
-}
 
 .teacher-mcq-table-cell {
   display: flex;
@@ -495,13 +479,7 @@
   color: rgba(255, 255, 255, 0.45);
 }
 
-[data-theme="dark"] .teacher-mcq-table-row {
-  border-bottom-color: rgba(255, 255, 255, 0.06);
-}
 
-[data-theme="dark"] .teacher-mcq-table-row:hover {
-  background: rgba(255, 255, 255, 0.07);
-}
 
 [data-theme="dark"] .teacher-mcq-table-cell {
   color: #F0EEFF;
@@ -696,6 +674,7 @@
 /* Phase 3: Table-based MCQ Layout */
 .teacher-mcq-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   background: var(--bg-surface, #fff);
   border: 0.5px solid var(--border-default, rgba(108, 71, 255, 0.12));
@@ -775,10 +754,13 @@
 }
 
 .teacher-mcq-table-actions {
+  width: 140px;
+}
+
+.teacher-mcq-table-actions-inner {
   display: flex;
   align-items: center;
   gap: 8px;
-  width: 140px;
 }
 
 .teacher-mcq-table-actions button {
