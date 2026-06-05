@@ -34,6 +34,9 @@ export default function AppLayout() {
 
   return (
     <div className={layoutClass}>
+      <a href="#app-content" className="skip-to-main">
+        Skip to main content
+      </a>
       <Sidebar
         isOpen={sidebarOpen}
         onClose={closeSidebar}
@@ -49,7 +52,7 @@ export default function AppLayout() {
 
       <div className="app-main">
         <Topbar onMenuClick={toggleSidebar} />
-        <main className="app-content">
+        <main className="app-content" id="app-content">
           <Outlet />
         </main>
       </div>

@@ -680,6 +680,52 @@ function ReviewQueueForm({ initial, onSubmit }) {
   )
 }
 
+function TeacherMcqTableRow({ mcq, index, chapter, chapterId, meta, onEdit, onDelete, onCopy }) {
+  const questionPreview = mcq.question ? mcq.question.substring(0, 60) + (mcq.question.length > 60 ? '...' : '') : 'No question'
+
+  return (
+    <tr className="teacher-mcq-table-row">
+      <td className="teacher-mcq-table-number">Q{index + 1}</td>
+      <td className="teacher-mcq-table-question-col">
+        <span title={mcq.question}>{questionPreview}</span>
+      </td>
+      <td className="teacher-mcq-table-answer-col">{mcq.correctAnswer || 'N/A'}</td>
+      <td className="teacher-mcq-table-topic-col">
+        {mcq.topicId ? mcq.topic : chapter?.name || 'Chapter'}
+      </td>
+      <td className="teacher-mcq-table-actions">
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={() => onEdit(mcq)}
+          title="Edit MCQ"
+          aria-label={`Edit question ${index + 1}`}
+        >
+          Edit
+        </button>
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={() => onCopy(mcq)}
+          title="Copy MCQ"
+          aria-label={`Copy question ${index + 1}`}
+        >
+          Copy
+        </button>
+        <button
+          type="button"
+          className="btn btn-danger"
+          onClick={() => onDelete(mcq)}
+          title="Delete MCQ"
+          aria-label={`Delete question ${index + 1}`}
+        >
+          Delete
+        </button>
+      </td>
+    </tr>
+  )
+}
+
 function TeacherMcqEditor({
   mcq,
   index,
@@ -1344,20 +1390,56 @@ function McqList() {
       <div className="workspace-card">
         <div className="workspace-card-body">
           {isTeacher ? (
-            <div className="teacher-mcq-list teacher-mcq-list--editable">
-              {mcqs.map((mcq, index) => (
-                <TeacherMcqEditor
-                  key={mcq._id}
-                  mcq={mcq}
-                  index={index}
-                  chapter={chapter}
-                  chapterId={chapterId}
-                  meta={meta}
-                  onSaved={load}
-                  onDelete={deleteMcq}
-                />
-              ))}
-            </div>
+            mcqs.length > 0 ? (
+              <table className="teacher-mcq-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: '50px' }}>No.</th>
+                    <th>Question (first 60 chars)</th>
+                    <th style={{ width: '60px' }}>Answer</th>
+                    <th style={{ width: '150px' }}>Topic/Chapter</th>
+                    <th style={{ width: '140px' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {mcqs.map((mcq, index) => (
+                    <TeacherMcqTableRow
+                      key={mcq._id}
+                      mcq={mcq}
+                      index={index}
+                      chapter={chapter}
+                      chapterId={chapterId}
+                      meta={meta}
+                      onEdit={(mcqToEdit) => setModal({ type: 'mcq', mcq: mcqToEdit })}
+                      onDelete={deleteMcq}
+                      onCopy={() => {
+                        const newMcq = { ...mcq }
+                        delete newMcq._id
+                        setModal({ type: 'mcq', mcq: newMcq })
+                      }}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <EmptyState
+                title="No MCQs in this chapter yet"
+                text={
+                  selectedTopic
+                    ? `No MCQs in topic "${selectedTopic.name}" yet.`
+                    : 'Teachers will add real questions with correct answers and explanations.'
+                }
+                action={
+                  <button
+                    className="btn btn-primary"
+                    type="button"
+                    onClick={() => setModal({ type: 'mcq' })}
+                  >
+                    Add First MCQ
+                  </button>
+                }
+              />
+            )
           ) : (
             <>
               <div className="student-quiz-summary-grid">
@@ -1446,27 +1528,6 @@ function McqList() {
               ) : null}
             </>
           )}
-          {!loading && mcqs.length === 0 ? (
-            <EmptyState
-              title="No MCQs in this chapter yet"
-              text={
-                isTeacher && selectedTopic
-                  ? `No MCQs in topic "${selectedTopic.name}" yet.`
-                  : 'Teachers will add real questions with correct answers and explanations.'
-              }
-              action={
-                isTeacher ? (
-                  <button
-                    className="btn btn-primary"
-                    type="button"
-                    onClick={() => setModal({ type: 'mcq' })}
-                  >
-                    Add First MCQ
-                  </button>
-                ) : null
-              }
-            />
-          ) : null}
         </div>
       </div>
       ) : null}
