@@ -352,7 +352,7 @@ img{max-width:100%;display:block}
   background: linear-gradient(135deg, #FFFFFF 0%, #E8E5FF 100%);
   color: #6C47FF;
   border: 2px solid rgba(108,71,255,0.38);
-  box-shadow: 0 8px 28px rgba(0,0,0,0.34), 0 0 0 4px rgba(108,71,255,0.14);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .theme-toggle:hover {

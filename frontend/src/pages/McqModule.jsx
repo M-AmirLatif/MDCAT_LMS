@@ -684,60 +684,22 @@ function ReviewQueueForm({ initial, onSubmit }) {
   )
 }
 
-function TeacherMcqTableRow({ mcq, index, chapter, chapterId, meta, onEdit, onDelete }) {
-  const questionPreview = mcq.question ? mcq.question.substring(0, 60) + (mcq.question.length > 60 ? '...' : '') : 'No question'
-
-  return (
-    <tr className="teacher-mcq-table-row">
-      <td className="teacher-mcq-table-number">Q{index + 1}</td>
-      <td className="teacher-mcq-table-question-col">
-        <span title={mcq.question}>{questionPreview}</span>
-      </td>
-      <td className="teacher-mcq-table-answer-col">{mcq.correctAnswer || 'N/A'}</td>
-      <td className="teacher-mcq-table-topic-col">
-        {mcq.topicId ? mcq.topic : chapter?.name || 'Chapter'}
-      </td>
-      <td className="teacher-mcq-table-actions">
-        <div className="teacher-mcq-table-actions-inner">
-          <button
-            type="button"
-            className="btn btn-primary btn-mcq-edit"
-            onClick={() => onEdit(mcq)}
-            title="Edit MCQ"
-            aria-label={`Edit question ${index + 1}`}
-          >
-            Edit
-          </button>
-          <button
-            type="button"
-            className="btn btn-danger btn-mcq-delete"
-            onClick={() => onDelete(mcq)}
-            title="Delete MCQ"
-            aria-label={`Delete question ${index + 1}`}
-          >
-            Delete
-          </button>
-        </div>
-      </td>
-    </tr>
-  )
-}
-
-function TeacherMcqEditor({
-  mcq,
-  index,
-  chapter,
-  chapterId,
-  meta,
-  onSaved,
-  onDelete,
-}) {
+function TeacherInlineMcqCard({ mcq, index, chapterId, meta, onSaved, onDelete }) {
   const [form, setForm] = useState(() => mcqToForm(mcq))
   const [saving, setSaving] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+
   const setField = (field, value) =>
     setForm((current) => ({ ...current, [field]: value }))
 
-  const saveInline = async () => {
+  const handleReset = () => {
+    if (window.confirm("Reset this question's changes to the last saved state?")) {
+      setForm(mcqToForm(mcq))
+    }
+  }
+
+  const handleSave = async (event) => {
+    event.preventDefault()
     setSaving(true)
     try {
       const options = ['A', 'B', 'C', 'D'].map((letter) => ({
@@ -749,112 +711,112 @@ function TeacherMcqEditor({
         options,
         explanation: form.explanation,
         correctAnswer: form.correctAnswer,
-        topic: mcq.topic || chapter?.name,
-        chapterName: chapter?.name,
+        topic: mcq.topic || 'General',
+        chapterName: mcq.chapterName,
         chapterId,
         topicId: mcq.topicId || null,
         subject: meta?.name,
         isPublished: true,
       })
-      toast.success(`Q${index + 1} saved`)
+      toast.success(`Question ${index + 1} saved successfully`)
       onSaved()
     } catch (error) {
-      toast.error(getUserFriendlyErrorMessage(error, 'We could not save the MCQ right now.'))
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not save the MCQ.'))
     } finally {
       setSaving(false)
     }
   }
 
+  const handleDeleteLocal = async () => {
+    await onDelete(mcq)
+  }
+
   return (
-    <article className="teacher-mcq-row teacher-mcq-row--editor">
-      <div className="teacher-mcq-editor-head">
-        <span className="state-chip state-chip--neutral">Q{index + 1}</span>
-        <span className="teacher-mcq-status">
-          {mcq.topicId ? `Topic: ${mcq.topic}` : 'Chapter-level MCQ'}
-        </span>
+    <article className="workspace-card mcq-inline-card animate-fade-up">
+      <div className="mcq-inline-card-header">
+        <span className="mcq-inline-card-number">Question {index + 1}</span>
+        {saving && <span className="mcq-inline-card-status">Saving...</span>}
       </div>
-      <div className="floating-field teacher-mcq-question-field">
-        <label htmlFor={`mcq-question-${mcq._id}`}>Question statement</label>
-        <textarea
-          id={`mcq-question-${mcq._id}`}
-          rows="2"
-          value={form.question}
-          onChange={(event) => setField('question', event.target.value)}
-        />
-      </div>
-      <div className="teacher-mcq-option-grid">
-        {['A', 'B', 'C', 'D'].map((letter) => (
-          <div
-            className={`teacher-mcq-option-field ${form.correctAnswer === letter ? 'teacher-mcq-option-field--correct' : ''}`}
-            key={letter}
-          >
-            <label htmlFor={`mcq-${mcq._id}-${letter}`}>Option {letter}</label>
-            <textarea
-              id={`mcq-${mcq._id}-${letter}`}
-              rows="2"
-              value={form[`option${letter}`]}
-              onChange={(event) =>
-                setField(`option${letter}`, event.target.value)
-              }
-            />
-          </div>
-        ))}
-      </div>
-      <div className="teacher-mcq-editor-bottom">
+
+      <form onSubmit={handleSave} className="mcq-inline-card-form">
         <div className="floating-field">
-          <label>Correct Answer</label>
-          <div
-            className="teacher-mcq-answer-picker"
-            role="group"
-            aria-label="Select correct answer"
-          >
-            {['A', 'B', 'C', 'D'].map((letter) => (
-              <button
-                key={letter}
-                type="button"
-                className={`teacher-mcq-answer-btn${form.correctAnswer === letter ? ' teacher-mcq-answer-btn--active' : ''}`}
-                onClick={() => setField('correctAnswer', letter)}
-                aria-pressed={form.correctAnswer === letter}
-                aria-label={`Mark option ${letter} as correct`}
-              >
-                {letter}
-              </button>
-            ))}
-          </div>
-          <span className="teacher-mcq-answer-hint">
-            Option {form.correctAnswer} is marked correct
-          </span>
-        </div>
-        <div className="floating-field">
-          <label htmlFor={`mcq-explanation-${mcq._id}`}>
-            Explanation / Description
-          </label>
+          <label htmlFor={`question-${mcq._id}`}>Question Statement</label>
           <textarea
-            id={`mcq-explanation-${mcq._id}`}
-            rows="2"
-            value={form.explanation}
-            onChange={(event) => setField('explanation', event.target.value)}
-            placeholder="Add explanation for students."
+            id={`question-${mcq._id}`}
+            rows="3"
+            value={form.question}
+            onChange={(event) => setField('question', event.target.value)}
+            placeholder="Type question statement here..."
           />
         </div>
-      </div>
-      <div className="teacher-mcq-action-row">
-        <button
-          className="btn btn-primary btn-sm"
-          type="button"
-          onClick={saveInline}
-          disabled={saving}
-        >
-          {saving ? 'Saving...' : 'Save Changes'}
-        </button>
-        <button
-          className="btn btn-ghost btn-sm"
-          type="button"
-          onClick={() => onDelete(mcq)}
-        >
-          Delete MCQ
-        </button>
-      </div>
+
+        <div className="mcq-inline-options-list">
+          {['A', 'B', 'C', 'D'].map((letter) => (
+            <div className="floating-field mcq-inline-option-field" key={letter}>
+              <label htmlFor={`option-${letter.toLowerCase()}-${mcq._id}`}>Option {letter}</label>
+              <input
+                id={`option-${letter.toLowerCase()}-${mcq._id}`}
+                value={form[`option${letter}`]}
+                onChange={(event) => setField(`option${letter}`, event.target.value)}
+                placeholder={`Type Option ${letter}...`}
+              />
+            </div>
+          ))}
+        </div>
+
+        <div className="mcq-inline-meta-row">
+          <div className="floating-field mcq-inline-correct-select">
+            <label htmlFor={`correct-answer-${mcq._id}`}>Correct Option</label>
+            <select
+              id={`correct-answer-${mcq._id}`}
+              value={form.correctAnswer}
+              onChange={(event) => setField('correctAnswer', event.target.value)}
+            >
+              <option value="A">Option A</option>
+              <option value="B">Option B</option>
+              <option value="C">Option C</option>
+              <option value="D">Option D</option>
+            </select>
+          </div>
+
+          <div className="floating-field mcq-inline-explanation">
+            <label htmlFor={`explanation-${mcq._id}`}>Explanation</label>
+            <textarea
+              id={`explanation-${mcq._id}`}
+              rows="2"
+              value={form.explanation}
+              onChange={(event) => setField('explanation', event.target.value)}
+              placeholder="Provide correct explanation..."
+            />
+          </div>
+        </div>
+
+        <div className="mcq-inline-card-actions">
+          <button
+            type="submit"
+            className="btn btn-primary btn-sm btn-mcq-edit"
+            disabled={saving}
+          >
+            {saving ? 'Saving...' : 'Save'}
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm btn-mcq-reset"
+            onClick={handleReset}
+            disabled={saving}
+          >
+            Reset
+          </button>
+          <button
+            type="button"
+            className="btn btn-danger btn-sm btn-mcq-delete"
+            onClick={handleDeleteLocal}
+            disabled={deleting || saving}
+          >
+            {deleting ? 'Deleting...' : 'Delete'}
+          </button>
+        </div>
+      </form>
     </article>
   )
 }
@@ -865,9 +827,6 @@ function ReviewQueueReadonlyCard({ item, index, onEdit, onApprove, onDelete }) {
       <div className="teacher-mcq-editor-head">
         <span className="state-chip state-chip--neutral">
           MCQ {item.row || index + 1}
-        </span>
-        <span className="teacher-mcq-status">
-          {item.topicName ? `Topic: ${item.topicName}` : 'Chapter review item'}
         </span>
       </div>
       <div className="floating-field teacher-mcq-question-field">
@@ -1164,18 +1123,27 @@ function McqList() {
   return (
     <div className="workspace-page workspace-page--mcq-list animate-fade-up">
       <section className="workspace-card">
-        <div className="workspace-card-head">
-          <div>
+        <div className="workspace-card-head workspace-card-head--aligned">
+          <div className="workspace-card-head-left">
             <div className="label-xs" style={{ color: meta.accent }}>
-              {meta.name} &gt; {chapter?.name || 'Chapter'} &gt;{' '}
-              {selectedTopic?.name || 'MCQs'}
+              {meta.name} MCQ BANK
             </div>
-            <h2 className="workspace-card-title">
-              {selectedTopic?.name || chapter?.name || 'Chapter'} MCQs
-            </h2>
-            <p>
+            <div className="workspace-title-date-row">
+              <h2 className="workspace-card-title">
+                {chapter?.name || `${meta.name} MCQ Workspace`}
+              </h2>
+              <span className="workspace-header-date">
+                {new Date().toLocaleDateString('en-US', {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric'
+                })}
+              </span>
+            </div>
+            <p className="workspace-card-subtitle">
               {isTeacher
-                ? 'Add chapter-level MCQs or select a topic to add topic-specific MCQs and CSV uploads.'
+                ? 'Manage and edit course questions, correct answers, and explanations directly on this page.'
                 : 'Start a quiz when MCQs are available.'}
             </p>
           </div>
@@ -1183,15 +1151,6 @@ function McqList() {
             <Link className="btn btn-secondary" to={`/mcqs/${subject}`}>
               Back to Chapters
             </Link>
-            {isTeacher ? (
-              <button
-                className="btn btn-secondary"
-                type="button"
-                onClick={() => setModal({ type: 'topic' })}
-              >
-                Add Topic
-              </button>
-            ) : null}
             {isTeacher ? (
               <button
                 className={`btn ${viewMode === 'review' ? 'btn-primary' : 'btn-secondary'}`}
@@ -1239,101 +1198,7 @@ function McqList() {
       </section>
 
       {loading ? <LoadingCard label="Loading MCQs..." /> : null}
-      {topics.length > 0 ? (
-        <section className="workspace-card teacher-topic-panel">
-          <div className="workspace-card-head teacher-topic-panel-head">
-            <div>
-              <h3 className="teacher-topic-panel-title">
-                {chapter?.name || 'Chapter'}
-              </h3>
-            </div>
-          </div>
-          <div className="workspace-card-body teacher-topic-panel-body">
-            <div className="teacher-topic-chips">
-              {topics.map((topic) => (
-                <div
-                  key={topic.id}
-                  className={`teacher-topic-chip${selectedTopicId === topic.id ? ' teacher-topic-chip--active' : ''}`}
-                >
-                  <button
-                    type="button"
-                    className="teacher-topic-chip-name"
-                    onClick={() =>
-                      setSelectedTopicId(
-                        selectedTopicId === topic.id ? '' : topic.id,
-                      )
-                    }
-                  >
-                    {topic.name}
-                    <span className="teacher-topic-chip-count">
-                      {topic.mcqCount || 0}
-                    </span>
-                  </button>
-                  <button
-                    className="teacher-topic-chip-edit"
-                    type="button"
-                    onClick={() => setModal({ type: 'topic', topic })}
-                    aria-label={`Edit ${topic.name}`}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="teacher-topic-chip-delete"
-                    type="button"
-                    onClick={() => deleteTopic(topic)}
-                    aria-label={`Delete ${topic.name}`}
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-            <div className="teacher-topic-scope-grid">
-              <button
-                type="button"
-                className={`teacher-topic-scope-card${selectedTopicId ? '' : ' teacher-topic-scope-card--active'}`}
-                onClick={() => setSelectedTopicId('')}
-              >
-                <strong>{chapter?.name || 'Entire chapter'}</strong>
-              </button>
-              {topics.map((topic) => (
-                <div
-                  key={`scope-${topic.id}`}
-                  className={`teacher-topic-scope-card${selectedTopicId === topic.id ? ' teacher-topic-scope-card--active' : ''}`}
-                >
-                  <button
-                    type="button"
-                    className="teacher-topic-scope-main"
-                    onClick={() => setSelectedTopicId(topic.id)}
-                  >
-                    <strong>{topic.name}</strong>
-                  </button>
-                  {isTeacher ? (
-                    <div className="teacher-topic-scope-actions">
-                      <button
-                        className="teacher-topic-scope-edit"
-                        type="button"
-                        onClick={() => setModal({ type: 'topic', topic })}
-                        aria-label={`Edit ${topic.name}`}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="teacher-topic-scope-delete"
-                        type="button"
-                        onClick={() => deleteTopic(topic)}
-                        aria-label={`Delete ${topic.name}`}
-                      >
-                        x
-                      </button>
-                    </div>
-                  ) : null}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      ) : null}
+
       {isTeacher && viewMode === 'review' ? (
         <section className="workspace-card review-queue-card">
           <div className="workspace-card-head review-queue-head">
@@ -1383,57 +1248,45 @@ function McqList() {
           </div>
         </section>
       ) : null}
+
       {viewMode !== 'review' ? (
-      <div className="workspace-card">
-        <div className="workspace-card-body">
-          {isTeacher ? (
-            mcqs.length > 0 ? (
-              <table className="teacher-mcq-table">
-                <thead>
-                  <tr>
-                    <th style={{ width: '50px' }}>No.</th>
-                    <th>Question (first 60 chars)</th>
-                    <th style={{ width: '60px' }}>Answer</th>
-                    <th style={{ width: '150px' }}>Topic/Chapter</th>
-                    <th style={{ width: '140px' }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {mcqs.map((mcq, index) => (
-                    <TeacherMcqTableRow
-                      key={mcq._id}
-                      mcq={mcq}
-                      index={index}
-                      chapter={chapter}
-                      chapterId={chapterId}
-                      meta={meta}
-                      onEdit={(mcqToEdit) => setModal({ type: 'mcq', mcq: mcqToEdit })}
-                      onDelete={deleteMcq}
-                    />
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <EmptyState
-                title="No MCQs in this chapter yet"
-                text={
-                  selectedTopic
-                    ? `No MCQs in topic "${selectedTopic.name}" yet.`
-                    : 'Teachers will add real questions with correct answers and explanations.'
-                }
-                action={
-                  <button
-                    className="btn btn-primary"
-                    type="button"
-                    onClick={() => setModal({ type: 'mcq' })}
-                  >
-                    Add First MCQ
-                  </button>
-                }
-              />
-            )
+        isTeacher ? (
+          mcqs.length > 0 ? (
+            <div className="mcq-inline-list">
+              {mcqs.map((mcq, index) => (
+                <TeacherInlineMcqCard
+                  key={mcq._id}
+                  mcq={mcq}
+                  index={index}
+                  chapterId={chapterId}
+                  meta={meta}
+                  onSaved={load}
+                  onDelete={deleteMcq}
+                />
+              ))}
+            </div>
           ) : (
-            <>
+            <div className="workspace-card">
+              <div className="workspace-card-body">
+                <EmptyState
+                  title="No MCQs in this chapter yet"
+                  text="Teachers will add real questions with correct answers and explanations."
+                  action={
+                    <button
+                      className="btn btn-primary"
+                      type="button"
+                      onClick={() => setModal({ type: 'mcq' })}
+                    >
+                      Add First MCQ
+                    </button>
+                  }
+                />
+              </div>
+            </div>
+          )
+        ) : (
+          <div className="workspace-card">
+            <div className="workspace-card-body">
               <div className="student-quiz-summary-grid">
                 <div className="student-quiz-summary-card">
                   <span className="student-quiz-summary-icon">?</span>
@@ -1518,10 +1371,9 @@ function McqList() {
                   </Link>
                 </div>
               ) : null}
-            </>
-          )}
-        </div>
-      </div>
+            </div>
+          </div>
+        )
       ) : null}
       {modal ? (
         <Modal
