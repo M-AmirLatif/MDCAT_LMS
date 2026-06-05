@@ -88,7 +88,7 @@ export default function Home() {
         </div>
         <div className="lp-float-card lp-float-card-three">
           <div className="lp-avatars"><b>A</b><b>S</b><b>H</b></div>
-          <strong>{stats?.totalStudents > 0 ? `${formatStat(stats.totalStudents)} learners registered` : 'Join the first batch'}</strong>
+          <strong>Join the batch first</strong>
         </div>
 
         <div className="lp-hero-content reveal">

@@ -71,10 +71,6 @@ export default function Login() {
   const [remember, setRemember] = useState(rememberedCredentials.remember)
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const [editableFields, setEditableFields] = useState({
-    email: !!rememberedCredentials.email,
-    password: false,
-  })
   const navigate = useNavigate()
   const { login } = useAuth()
   const googleSignIn = useGoogleSignIn({ remember, nextPath, mode: 'signin' })
@@ -230,7 +226,7 @@ export default function Login() {
                 tools.
               </p>
 
-              <form className="auth-form" onSubmit={handleSubmit} autoComplete="off">
+              <form className="auth-form" onSubmit={handleSubmit}>
                 <div
                   className={`floating-field auth-input-shell ${formData.email ? 'auth-input-shell--filled' : ''} ${emailValid ? 'auth-input-shell--valid' : ''}`}
                 >
@@ -240,24 +236,14 @@ export default function Login() {
                   <label htmlFor="email">Email</label>
                   <input
                     id="email"
-                    name="mdcat_login_email"
+                    name="email"
                     type="email"
                     value={formData.email}
                     onChange={(event) =>
                       setFormData((current) => ({ ...current, email: event.target.value }))
                     }
-                    onMouseDown={() =>
-                      setEditableFields((current) => ({ ...current, email: true }))
-                    }
-                    onTouchStart={() =>
-                      setEditableFields((current) => ({ ...current, email: true }))
-                    }
-                    onFocus={() =>
-                      setEditableFields((current) => ({ ...current, email: true }))
-                    }
-                    placeholder="admin@mdcat.pk"
-                    autoComplete="off"
-                    readOnly={!editableFields.email}
+                    placeholder="Enter your email"
+                    autoComplete="email"
                     required
                   />
                   {emailValid ? <span className="auth-valid-dot" aria-hidden="true" /> : null}
@@ -272,24 +258,14 @@ export default function Login() {
                   <label htmlFor="password">Password</label>
                   <input
                     id="password"
-                    name="mdcat_login_password"
+                    name="password"
                     type={showPassword ? 'text' : 'password'}
                     value={formData.password}
                     onChange={(event) =>
                       setFormData((current) => ({ ...current, password: event.target.value }))
                     }
-                    onMouseDown={() =>
-                      setEditableFields((current) => ({ ...current, password: true }))
-                    }
-                    onTouchStart={() =>
-                      setEditableFields((current) => ({ ...current, password: true }))
-                    }
-                    onFocus={() =>
-                      setEditableFields((current) => ({ ...current, password: true }))
-                    }
                     placeholder="Enter your password"
-                    autoComplete="off"
-                    readOnly={!editableFields.password}
+                    autoComplete="current-password"
                     required
                   />
                   <button

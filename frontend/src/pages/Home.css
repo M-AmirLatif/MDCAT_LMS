@@ -292,17 +292,17 @@
 
 .lp-float-card-one {
   top: 18%;
-  right: 7%;
+  right: 4%;
 }
 
 .lp-float-card-two {
-  left: 7%;
-  bottom: 16%;
+  left: 4%;
+  bottom: 18%;
 }
 
 .lp-float-card-three {
-  right: 8%;
-  bottom: 13%;
+  right: 4%;
+  bottom: 15%;
 }
 
 .lp-avatars {
@@ -771,9 +771,14 @@
   }
 }
 
-@media (max-width: 1020px) {
-  .lp-links,
+@media (max-width: 1280px) {
   .lp-float-card {
+    display: none;
+  }
+}
+
+@media (max-width: 1020px) {
+  .lp-links {
     display: none;
   }
 
