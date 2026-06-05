@@ -680,7 +680,7 @@ function ReviewQueueForm({ initial, onSubmit }) {
   )
 }
 
-function TeacherMcqTableRow({ mcq, index, chapter, chapterId, meta, onEdit, onDelete, onCopy }) {
+function TeacherMcqTableRow({ mcq, index, chapter, chapterId, meta, onEdit, onDelete }) {
   const questionPreview = mcq.question ? mcq.question.substring(0, 60) + (mcq.question.length > 60 ? '...' : '') : 'No question'
 
   return (
@@ -702,15 +702,6 @@ function TeacherMcqTableRow({ mcq, index, chapter, chapterId, meta, onEdit, onDe
           aria-label={`Edit question ${index + 1}`}
         >
           Edit
-        </button>
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={() => onCopy(mcq)}
-          title="Copy MCQ"
-          aria-label={`Copy question ${index + 1}`}
-        >
-          Copy
         </button>
         <button
           type="button"
@@ -1412,11 +1403,6 @@ function McqList() {
                       meta={meta}
                       onEdit={(mcqToEdit) => setModal({ type: 'mcq', mcq: mcqToEdit })}
                       onDelete={deleteMcq}
-                      onCopy={() => {
-                        const newMcq = { ...mcq }
-                        delete newMcq._id
-                        setModal({ type: 'mcq', mcq: newMcq })
-                      }}
                     />
                   ))}
                 </tbody>
