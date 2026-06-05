@@ -43,8 +43,10 @@ const getJwtExpire = () => {
   return DEFAULT_JWT_EXPIRE
 }
 
-const signAuthToken = (userId) => {
-  return jwt.sign({ id: userId }, getJwtSecret(), {
+const signAuthToken = (userId, sessionId) => {
+  const payload = { id: userId }
+  if (sessionId) payload.sessionId = sessionId
+  return jwt.sign(payload, getJwtSecret(), {
     expiresIn: getJwtExpire(),
   })
 }
@@ -172,7 +174,15 @@ exports.login = async (req, res) => {
       })
     }
 
-    const token = signAuthToken(user._id)
+    // Single-device enforcement for students
+    let sessionId = null
+    const roleName = normalizeRoleName(roleDoc.name)
+    if (roleName === 'student') {
+      sessionId = crypto.randomUUID()
+      await User.findByIdAndUpdate(user._id, { activeSessionId: sessionId })
+    }
+
+    const token = signAuthToken(user._id, sessionId)
 
     res.status(200).json({
       success: true,
@@ -369,7 +379,15 @@ exports.googleLogin = async (req, res) => {
       })
     }
 
-    const token = signAuthToken(existingUser._id)
+    // Single-device enforcement for students
+    let sessionId = null
+    const roleName = normalizeRoleName(roleDoc.name)
+    if (roleName === 'student') {
+      sessionId = crypto.randomUUID()
+      await User.findByIdAndUpdate(existingUser._id, { activeSessionId: sessionId })
+    }
+
+    const token = signAuthToken(existingUser._id, sessionId)
 
     res.status(200).json({
       success: true,
@@ -419,7 +437,15 @@ exports.setPassword = async (req, res) => {
       })
     }
 
-    const token = signAuthToken(user._id)
+    // Single-device enforcement for students
+    let sessionId = null
+    const roleName = normalizeRoleName(roleDoc.name)
+    if (roleName === 'student') {
+      sessionId = crypto.randomUUID()
+      await User.findByIdAndUpdate(user._id, { activeSessionId: sessionId })
+    }
+
+    const token = signAuthToken(user._id, sessionId)
 
     res.status(200).json({
       success: true,

@@ -3,6 +3,7 @@ const Course = require('../models/Course')
 const MCQ = require('../models/MCQ')
 const TestSession = require('../models/TestSession')
 const User = require('../models/User')
+const Role = require('../models/Role')
 
 const router = express.Router()
 
@@ -32,7 +33,9 @@ router.get('/stats', async (req, res) => {
     const [totalMcqs, totalAttempts, totalStudents] = await Promise.all([
       MCQ.countDocuments({ isPublished: true }),
       TestSession.countDocuments({}),
-      User.countDocuments({}),
+      Role.findOne({ name: 'student' }).then(studentRole =>
+        studentRole ? User.countDocuments({ role: studentRole._id }) : 0
+      ),
     ])
 
     const result = {

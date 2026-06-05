@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { clearAuth, getAuthToken } from './authStorage'
+import toast from 'react-hot-toast'
 
 const FALLBACK_API_BASE_URL = 'https://mdcatlms-production-4d20.up.railway.app/api'
 const configuredApiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').trim()
@@ -67,10 +68,14 @@ API.interceptors.response.use(
     }
 
     if (error.response?.status === 401) {
+      const isSessionSuperseded = error.response?.data?.error === 'SESSION_SUPERSEDED'
       clearAuth()
-      // Only redirect if not already on login/register pages
       const path = window.location.pathname
       if (path !== '/login' && path !== '/register' && path !== '/verify-email') {
+        if (isSessionSuperseded) {
+          // Small delay so the toast appears after redirect
+          sessionStorage.setItem('session_superseded', '1')
+        }
         window.location.href = '/login'
       }
     }

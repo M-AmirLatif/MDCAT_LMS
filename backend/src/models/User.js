@@ -35,6 +35,7 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    activeSessionId: { type: String, default: null, select: false },
     role: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Role',

@@ -119,13 +119,28 @@ export default function Home() {
               <span className="lp-green-pill"><i /> {hasContent ? `${stats.totalChapters} chapters live | Enroll now` : 'New session starting soon | Limited slots'}</span>
             </div>
           </div>
-          <div className="lp-video-card">
-            <div className="lp-video-thumb">
-              <button className="lp-play" aria-label="Play preview"><span /></button>
-              <div className="lp-quote lp-quote-one">You will not need any academy</div>
-              <div className="lp-quote lp-quote-two">Practice daily</div>
+          <div className="lp-features-grid">
+            <div className="lp-feature-item">
+              <div className="lp-feature-icon lp-feature-icon--purple">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 3h6v5h5v6h-5v7H9v-7H4V8h5V3Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" /></svg>
+              </div>
+              <strong>Chapter-wise MCQs</strong>
+              <p>Practice from a curated bank of MCQs organized by chapter and topic for focused preparation.</p>
             </div>
-            <p>We will make your exam prep easier and enjoyable</p>
+            <div className="lp-feature-item">
+              <div className="lp-feature-icon lp-feature-icon--teal">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M4 19h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="m7 15 3-4 3 2 4-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </div>
+              <strong>Performance Analytics</strong>
+              <p>Track your progress with detailed analytics — see your strengths and areas that need improvement.</p>
+            </div>
+            <div className="lp-feature-item">
+              <div className="lp-feature-icon lp-feature-icon--amber">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 10l-4 4M8 4h8v5a4 4 0 0 1-8 0V4Z" stroke="currentColor" strokeWidth="2" /><path d="M8 6H4v2a4 4 0 0 0 4 4M16 6h4v2a4 4 0 0 1-4 4M12 13v5M8 21h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+              </div>
+              <strong>Daily Practice Habit</strong>
+              <p>Build consistency with timed test sessions and track your daily streaks to stay on top of your prep.</p>
+            </div>
           </div>
         </div>
       </section>

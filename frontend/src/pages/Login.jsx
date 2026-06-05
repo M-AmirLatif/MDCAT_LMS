@@ -79,6 +79,20 @@ export default function Login() {
   const { login } = useAuth()
   const googleSignIn = useGoogleSignIn({ remember, nextPath, mode: 'signin' })
 
+  // Show toast if user was forcibly logged out from another device
+  useMemo(() => {
+    if (sessionStorage.getItem('session_superseded')) {
+      sessionStorage.removeItem('session_superseded')
+      setTimeout(() => {
+        toast('Your account was signed in on another device. Please log in again.', {
+          icon: '🔒',
+          duration: 6000,
+          style: { background: '#1a1640', color: '#f0eeff', border: '1px solid rgba(139, 111, 255, 0.3)' },
+        })
+      }, 300)
+    }
+  }, [])
+
   const accentClass = useMemo(() => {
     if (requestedRole === 'teacher') return 'auth-shell--teal'
     if (requestedRole === 'admin') return 'auth-shell--amber'

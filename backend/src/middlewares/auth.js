@@ -26,6 +26,18 @@ exports.protect = async (req, res, next) => {
        return res.status(403).json({ error: 'Account is deactivated' })
     }
 
+    // Single-device enforcement: students only
+    const roleName = user.role?.name === 'superadmin' ? 'admin' : user.role?.name
+    if (roleName === 'student' && decoded.sessionId) {
+      const freshUser = await User.findById(decoded.id).select('activeSessionId')
+      if (freshUser && freshUser.activeSessionId && freshUser.activeSessionId !== decoded.sessionId) {
+        return res.status(401).json({
+          error: 'SESSION_SUPERSEDED',
+          message: 'Your account was signed in on another device. Please log in again.'
+        })
+      }
+    }
+
     req.user = user
     next()
   } catch (error) {
@@ -59,6 +71,18 @@ exports.protectWithPermissions = async (req, res, next) => {
     }
     if (user.isActive === false) {
        return res.status(403).json({ error: 'Account is deactivated' })
+    }
+
+    // Single-device enforcement: students only
+    const roleName = user.role?.name === 'superadmin' ? 'admin' : user.role?.name
+    if (roleName === 'student' && decoded.sessionId) {
+      const freshUser = await User.findById(decoded.id).select('activeSessionId')
+      if (freshUser && freshUser.activeSessionId && freshUser.activeSessionId !== decoded.sessionId) {
+        return res.status(401).json({
+          error: 'SESSION_SUPERSEDED',
+          message: 'Your account was signed in on another device. Please log in again.'
+        })
+      }
     }
 
     req.user = user

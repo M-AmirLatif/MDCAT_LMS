@@ -1422,8 +1422,22 @@ html[data-theme="dark"] .auth-form .floating-field {
 
 [data-theme="dark"] .checkbox input,
 [data-theme="dark"] .auth-page input[type="checkbox"] {
-  background: var(--bg-surface-2, #1A1640) !important;
-  border-color: rgba(139, 111, 255, 0.22) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(139, 111, 255, 0.45) !important;
+  transition: background 200ms ease, border-color 200ms ease, box-shadow 200ms ease !important;
+}
+
+[data-theme="dark"] .checkbox input:hover,
+[data-theme="dark"] .auth-page input[type="checkbox"]:hover {
+  background: rgba(139, 111, 255, 0.12) !important;
+  border-color: rgba(139, 111, 255, 0.65) !important;
+  box-shadow: 0 0 0 3px rgba(139, 111, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .checkbox input:checked,
+[data-theme="dark"] .auth-page input[type="checkbox"]:checked {
+  background-color: #6c47ff !important;
+  border-color: #6c47ff !important;
 }
 
 [data-theme="dark"] .auth-brand-name {
