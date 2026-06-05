@@ -198,7 +198,10 @@ export default function Sidebar({
                 {section.items.map((item) => {
                   const active =
                     currentPath === item.path ||
-                    (item.path !== '/dashboard' && currentPath.startsWith(item.path))
+                    (item.path !== '/dashboard' && currentPath.startsWith(item.path)) ||
+                    (item.path === '/teacher/mcqs' && currentPath.startsWith('/mcqs')) ||
+                    (item.path === '/teacher/students' && currentPath.startsWith('/test-review')) ||
+                    (item.path === '/performance' && currentPath.startsWith('/test-review'))
 
                   return (
                     <button

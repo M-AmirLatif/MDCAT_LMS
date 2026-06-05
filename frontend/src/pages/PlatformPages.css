@@ -787,22 +787,25 @@
 }
 
 .teacher-mcq-table-actions .btn-primary {
-  background: rgba(108, 71, 255, 0.12);
-  color: var(--purple, #6C47FF);
+  background: var(--purple, #6C47FF);
+  color: #ffffff;
+  border: none;
 }
 
 .teacher-mcq-table-actions .btn-primary:hover {
-  background: rgba(108, 71, 255, 0.20);
+  background: var(--purple-light, #8B6FFF);
+  color: #ffffff;
 }
 
 .teacher-mcq-table-actions .btn-danger {
-  color: #FF6B6B;
-  border-color: rgba(255, 107, 107, 0.20);
+  background: #DC2626;
+  color: #ffffff;
+  border: none;
 }
 
 .teacher-mcq-table-actions .btn-danger:hover {
-  background: rgba(255, 107, 107, 0.08);
-  border-color: rgba(255, 107, 107, 0.30);
+  background: #EF4444;
+  color: #ffffff;
 }
 
 .teacher-mcq-table-number {
@@ -846,34 +849,26 @@
   color: rgba(240, 238, 255, 0.60);
 }
 
-[data-theme='dark'] .teacher-mcq-table-actions button {
-  color: rgba(240, 238, 255, 0.80);
-  border-color: rgba(139, 111, 255, 0.18);
-  background: transparent;
-}
-
-[data-theme='dark'] .teacher-mcq-table-actions button:hover {
-  background: rgba(139, 111, 255, 0.12);
-  border-color: rgba(139, 111, 255, 0.28);
-}
-
 [data-theme='dark'] .teacher-mcq-table-actions .btn-primary {
-  color: #A590FF;
-  background: rgba(139, 111, 255, 0.14);
+  background: var(--color-purple, #8B6FFF);
+  color: #0f0f1a;
+  border: none;
 }
 
 [data-theme='dark'] .teacher-mcq-table-actions .btn-primary:hover {
-  background: rgba(139, 111, 255, 0.22);
+  background: var(--purple-light, #A590FF);
+  color: #0f0f1a;
 }
 
 [data-theme='dark'] .teacher-mcq-table-actions .btn-danger {
-  color: #FF9494;
-  border-color: rgba(255, 148, 148, 0.20);
+  background: #FF6B6B;
+  color: #ffffff;
+  border: none;
 }
 
 [data-theme='dark'] .teacher-mcq-table-actions .btn-danger:hover {
-  background: rgba(255, 148, 148, 0.10);
-  border-color: rgba(255, 148, 148, 0.30);
+  background: #FF8A8A;
+  color: #ffffff;
 }
 
 .student-quiz-summary-grid {
@@ -5467,4 +5462,61 @@ select:focus,
 [data-theme='dark'] [role="button"]:focus {
   outline-color: #A590FF;
 }
+
+/* Flattened and Highlighted MCQ Edit/Delete buttons */
+.btn-mcq-edit,
+.btn-mcq-delete {
+  box-shadow: none !important;
+  border: none !important;
+  text-shadow: none !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  transition: background-color 0.15s ease !important;
+  height: 32px !important;
+  padding: 0 14px !important;
+  font-size: 11px !important;
+  border-radius: 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.btn-mcq-edit {
+  background-color: var(--purple, #6c47ff) !important;
+  color: #ffffff !important;
+}
+
+.btn-mcq-edit:hover {
+  background-color: #5532eb !important; /* Flattened solid hover */
+  color: #ffffff !important;
+}
+
+.btn-mcq-delete {
+  background-color: #dc2626 !important;
+  color: #ffffff !important;
+}
+
+.btn-mcq-delete:hover {
+  background-color: #b91c1c !important; /* Flattened solid hover */
+  color: #ffffff !important;
+}
+
+/* Dark mode variations if needed */
+[data-theme='dark'] .btn-mcq-edit {
+  background-color: #7c5dfa !important;
+}
+
+[data-theme='dark'] .btn-mcq-edit:hover {
+  background-color: #6546eb !important;
+}
+
+[data-theme='dark'] .btn-mcq-delete {
+  background-color: #e83f3f !important;
+}
+
+[data-theme='dark'] .btn-mcq-delete:hover {
+  background-color: #cf2929 !important;
+}
+
 

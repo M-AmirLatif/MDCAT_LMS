@@ -474,7 +474,7 @@ function ChapterList() {
           title={modal.chapter ? 'Edit Chapter' : 'Add Chapter'}
           onClose={() => setModal(null)}
         >
-          <ChapterForm initial={modal.chapter} onSubmit={saveChapter} />
+          <ChapterForm key={modal.chapter?.id || 'new'} initial={modal.chapter} onSubmit={saveChapter} />
         </Modal>
       ) : null}
     </div>
@@ -483,33 +483,28 @@ function ChapterList() {
 
 function mcqToForm(mcq) {
   if (!mcq) return { ...emptyMcqForm }
-  if (
-    Object.prototype.hasOwnProperty.call(mcq, 'optionA') ||
-    Object.prototype.hasOwnProperty.call(mcq, 'optionB') ||
-    Object.prototype.hasOwnProperty.call(mcq, 'optionC') ||
-    Object.prototype.hasOwnProperty.call(mcq, 'optionD')
-  ) {
+  if (Array.isArray(mcq.options) && mcq.options.length > 0) {
+    const byLetter = ['A', 'B', 'C', 'D'].map((letter, index) => ({
+      letter,
+      text: mcq.options?.[index]?.text || '',
+    }))
     return {
       question: mcq.question || '',
-      optionA: mcq.optionA || '',
-      optionB: mcq.optionB || '',
-      optionC: mcq.optionC || '',
-      optionD: mcq.optionD || '',
+      optionA: byLetter[0].text,
+      optionB: byLetter[1].text,
+      optionC: byLetter[2].text,
+      optionD: byLetter[3].text,
       correctAnswer: mcq.correctAnswer || 'A',
       explanation: mcq.explanation || '',
     }
   }
 
-  const byLetter = ['A', 'B', 'C', 'D'].map((letter, index) => ({
-    letter,
-    text: mcq.options?.[index]?.text || '',
-  }))
   return {
     question: mcq.question || '',
-    optionA: byLetter[0].text,
-    optionB: byLetter[1].text,
-    optionC: byLetter[2].text,
-    optionD: byLetter[3].text,
+    optionA: mcq.optionA || '',
+    optionB: mcq.optionB || '',
+    optionC: mcq.optionC || '',
+    optionD: mcq.optionD || '',
     correctAnswer: mcq.correctAnswer || 'A',
     explanation: mcq.explanation || '',
   }
@@ -519,6 +514,10 @@ function McqForm({ initial, onSubmit }) {
   const [form, setForm] = useState(initial ? mcqToForm(initial) : emptyMcqForm)
   const setField = (field, value) =>
     setForm((current) => ({ ...current, [field]: value }))
+
+  useEffect(() => {
+    setForm(initial ? mcqToForm(initial) : emptyMcqForm)
+  }, [initial])
 
   return (
     <form
@@ -607,6 +606,11 @@ function ReviewQueueForm({ initial, onSubmit }) {
   const [reason, setReason] = useState(initial?.reason || '')
   const setField = (field, value) =>
     setForm((current) => ({ ...current, [field]: value }))
+
+  useEffect(() => {
+    setForm(initial ? mcqToForm(initial) : emptyMcqForm)
+    setReason(initial?.reason || '')
+  }, [initial])
 
   return (
     <form
@@ -697,7 +701,7 @@ function TeacherMcqTableRow({ mcq, index, chapter, chapterId, meta, onEdit, onDe
         <div className="teacher-mcq-table-actions-inner">
           <button
             type="button"
-            className="btn btn-primary"
+            className="btn btn-primary btn-mcq-edit"
             onClick={() => onEdit(mcq)}
             title="Edit MCQ"
             aria-label={`Edit question ${index + 1}`}
@@ -706,7 +710,7 @@ function TeacherMcqTableRow({ mcq, index, chapter, chapterId, meta, onEdit, onDe
           </button>
           <button
             type="button"
-            className="btn btn-danger"
+            className="btn btn-danger btn-mcq-delete"
             onClick={() => onDelete(mcq)}
             title="Delete MCQ"
             aria-label={`Delete question ${index + 1}`}
@@ -902,7 +906,7 @@ function ReviewQueueReadonlyCard({ item, index, onEdit, onApprove, onDelete }) {
       </div>
       <div className="teacher-mcq-action-row review-queue-action-row">
         <button
-          className="btn btn-secondary btn-sm"
+          className="btn btn-primary btn-sm btn-mcq-edit"
           type="button"
           onClick={onEdit}
         >
@@ -916,7 +920,7 @@ function ReviewQueueReadonlyCard({ item, index, onEdit, onApprove, onDelete }) {
           Push To Main MCQs
         </button>
         <button
-          className="btn btn-ghost btn-sm"
+          className="btn btn-danger btn-sm btn-mcq-delete"
           type="button"
           onClick={onDelete}
         >
@@ -1537,14 +1541,19 @@ function McqList() {
           onClose={() => setModal(null)}
         >
           {modal.type === 'topic' ? (
-            <TopicForm initial={modal.topic} onSubmit={saveTopic} />
+            <TopicForm key={modal.topic?.id || 'new'} initial={modal.topic} onSubmit={saveTopic} />
           ) : modal.type === 'review' ? (
             <ReviewQueueForm
+              key={modal.reviewItem?.id || 'new'}
               initial={modal.reviewItem}
               onSubmit={saveReviewItem}
             />
           ) : (
-            <McqForm initial={modal.mcq || modal.reviewItem} onSubmit={saveMcq} />
+            <McqForm
+              key={modal.mcq?._id || modal.reviewItem?.id || 'new'}
+              initial={modal.mcq || modal.reviewItem}
+              onSubmit={saveMcq}
+            />
           )}
         </Modal>
       ) : null}
