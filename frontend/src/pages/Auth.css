@@ -1422,14 +1422,14 @@ html[data-theme="dark"] .auth-form .floating-field {
 
 [data-theme="dark"] .checkbox input,
 [data-theme="dark"] .auth-page input[type="checkbox"] {
-  background: rgba(255, 255, 255, 0.06) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
   border-color: rgba(139, 111, 255, 0.45) !important;
   transition: background 200ms ease, border-color 200ms ease, box-shadow 200ms ease !important;
 }
 
 [data-theme="dark"] .checkbox input:hover,
 [data-theme="dark"] .auth-page input[type="checkbox"]:hover {
-  background: rgba(139, 111, 255, 0.12) !important;
+  background-color: rgba(139, 111, 255, 0.12) !important;
   border-color: rgba(139, 111, 255, 0.65) !important;
   box-shadow: 0 0 0 3px rgba(139, 111, 255, 0.1) !important;
 }

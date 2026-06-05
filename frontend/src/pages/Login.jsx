@@ -65,7 +65,7 @@ export default function Login() {
   const requestedRole = searchParams.get('role') || 'student'
   const nextPath = searchParams.get('next')
   const [formData, setFormData] = useState({
-    email: rememberedCredentials.email || '',
+    email: '',
     password: '',
   })
   const [remember, setRemember] = useState(rememberedCredentials.remember)
