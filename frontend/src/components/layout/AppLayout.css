@@ -65,3 +65,50 @@
     padding: 14px 10px 96px;
   }
 }
+
+/* ═══ Accessibility ═══ */
+.skip-to-main {
+  position: absolute;
+  top: -40px;
+  left: -40px;
+  padding: 12px 16px;
+  background: var(--purple);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 100;
+}
+
+.skip-to-main:focus {
+  top: 10px;
+  left: 10px;
+}
+
+/* Focus rings for all interactive elements */
+button:focus,
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--purple);
+  outline-offset: 2px;
+}
+
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

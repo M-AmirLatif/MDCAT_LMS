@@ -344,3 +344,15 @@
   color: #A590FF;
 }
 
+/* ═══ Accessibility: Focus Rings ═══ */
+.topbar button:focus,
+.topbar input:focus {
+  outline: 2px solid var(--purple);
+  outline-offset: 2px;
+}
+
+.topbar button:focus:not(:focus-visible),
+.topbar input:focus:not(:focus-visible) {
+  outline: none;
+}
+
