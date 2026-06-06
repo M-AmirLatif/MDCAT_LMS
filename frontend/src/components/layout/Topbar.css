@@ -222,7 +222,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  gap: 4px;
+  gap: 2px;
   min-width: 0;
   flex: 1 1 auto;
 }
@@ -232,7 +232,7 @@
   font-size: 14px;
   font-weight: 700;
   color: var(--text-primary);
-  line-height: 1.05;
+  line-height: 1.1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -243,11 +243,30 @@
 }
 
 .topbar-user .badge {
-  min-width: 92px;
+  min-width: 80px;
   justify-content: center;
-  padding: 6px 12px;
-  font-size: 11px;
-  line-height: 1;
+  padding: 3px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.2;
+  border-radius: 999px;
+}
+
+/* Specific topbar user badge colors for high contrast and readability */
+.topbar-user .badge.badge-purple {
+  background: rgba(108, 71, 255, 0.08) !important;
+  color: #6C47FF !important;
+  border: 1px solid rgba(108, 71, 255, 0.16) !important;
+}
+.topbar-user .badge.badge-teal {
+  background: rgba(29, 184, 132, 0.08) !important;
+  color: #0F6E56 !important;
+  border: 1px solid rgba(29, 184, 132, 0.16) !important;
+}
+.topbar-user .badge.badge-amber {
+  background: rgba(245, 158, 11, 0.08) !important;
+  color: #9A5B00 !important;
+  border: 1px solid rgba(245, 158, 11, 0.16) !important;
 }
 
 .theme-toggle--topbar {

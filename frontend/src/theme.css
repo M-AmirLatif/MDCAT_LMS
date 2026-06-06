@@ -259,10 +259,20 @@ html[data-theme="dark"] .topbar-user-info * {
   box-shadow: none !important;
 }
 
-html[data-theme="dark"] .topbar-user .badge {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
-  color: rgba(240, 238, 255, 0.92) !important;
+html[data-theme="dark"] .topbar-user .badge.badge-purple {
+  background: rgba(139, 111, 255, 0.15) !important;
+  color: #A590FF !important;
+  border: 1px solid rgba(139, 111, 255, 0.25) !important;
+}
+html[data-theme="dark"] .topbar-user .badge.badge-teal {
+  background: rgba(45, 217, 155, 0.15) !important;
+  color: #2DD99B !important;
+  border: 1px solid rgba(45, 217, 155, 0.25) !important;
+}
+html[data-theme="dark"] .topbar-user .badge.badge-amber {
+  background: rgba(251, 176, 64, 0.15) !important;
+  color: #FBB040 !important;
+  border: 1px solid rgba(251, 176, 64, 0.25) !important;
 }
 
 html[data-theme="dark"] .theme-toggle,
@@ -377,6 +387,15 @@ html[data-theme="dark"] select {
   color: #F0EEFF !important;
   background: #1A1640 !important;
   border-color: rgba(255,255,255,0.12) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] input:focus,
+html[data-theme="dark"] textarea:focus,
+html[data-theme="dark"] select:focus {
+  border-color: #8B6FFF !important;
+  box-shadow: 0 0 0 4px rgba(139, 111, 255, 0.25) !important;
+  background: #151138 !important;
 }
 
 html[data-theme="dark"] input::placeholder,
@@ -628,17 +647,23 @@ html[data-theme="dark"] td .btn-icon:hover {
 
 html[data-theme="dark"] .field-wrapper,
 html[data-theme="dark"] .input-wrapper,
-html[data-theme="dark"] .form-field,
-html[data-theme="dark"] .floating-field {
+html[data-theme="dark"] .form-field {
   background: #1A1640 !important;
   border-color: rgba(255,255,255,0.12) !important;
 }
 
 html[data-theme="dark"] .field-wrapper:focus-within,
-html[data-theme="dark"] .input-wrapper:focus-within,
-html[data-theme="dark"] .floating-field:focus-within {
+html[data-theme="dark"] .input-wrapper:focus-within {
   border-color: #8B6FFF !important;
   box-shadow: 0 0 0 4px rgba(139,111,255,0.15) !important;
+}
+
+/* Floating fields are layout wrappers; they must be transparent so input rounded corners render correctly */
+html[data-theme="dark"] .floating-field,
+html[data-theme="dark"] .floating-field:focus-within {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 html[data-theme="dark"] .field-label,
