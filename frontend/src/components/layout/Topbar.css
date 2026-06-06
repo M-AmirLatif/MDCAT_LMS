@@ -20,6 +20,8 @@
 }
 
 .topbar-left {
+  display: flex;
+  align-items: center;
   gap: 16px;
   min-width: 0;
 }
@@ -275,7 +277,9 @@
   }
 
   .topbar-left {
-    gap: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
     overflow: hidden;
   }
 
@@ -320,12 +324,15 @@
   }
 
   .topbar-user {
-    min-width: 56px;
-    width: 56px;
-    height: 46px;
-    padding: 4px;
+    min-width: 42px;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border: none !important;
+    background: transparent !important;
     justify-content: center;
-    flex: 0 0 56px;
+    flex: 0 0 42px;
+    box-shadow: none !important;
   }
 
   .topbar-avatar {
