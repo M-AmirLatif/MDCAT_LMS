@@ -175,17 +175,15 @@
 }
 
 .topbar-user {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 12px;
-  min-width: 220px;
-  height: 56px;
-  padding: 6px 16px 6px 8px;
+  gap: 10px;
+  padding: 6px 14px 6px 6px;
   border-radius: 999px;
   border: 1px solid var(--border-default);
   background: var(--bg-input);
   flex-shrink: 0;
-  overflow: hidden;
+  cursor: pointer;
   transition: background var(--ease), border-color var(--ease);
 }
 
@@ -203,37 +201,43 @@
   background: rgba(139, 111, 255, 0.15);
 }
 
+/* Avatar circle */
+.topbar-user-avatar,
 .topbar-avatar {
-  width: 44px;
-  height: 44px;
-  flex: 0 0 44px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  display: inline-flex;
+  flex-shrink: 0;
+  display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
   background: var(--grad-purple);
   font-weight: 700;
+  font-size: 14px;
   box-shadow: var(--shadow-purple);
 }
 
+/* Text container holding name + badge */
 .topbar-user-info {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: flex-start;
+  justify-content: center;
   gap: 2px;
+  line-height: 1;
   min-width: 0;
   flex: 1 1 auto;
 }
 
+/* Name */
 .topbar-user-name {
-  max-width: 148px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
-  line-height: 1.1;
+  line-height: 1;
   white-space: nowrap;
+  max-width: 148px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -242,14 +246,17 @@
   color: #F0EEFF;
 }
 
+/* Role badge */
+.topbar-user-role,
+.role-pill,
 .topbar-user .badge {
-  min-width: 80px;
-  justify-content: center;
-  padding: 3px 10px;
   font-size: 10px;
   font-weight: 700;
-  line-height: 1.2;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
   border-radius: 999px;
+  line-height: 1.4;
+  display: inline-block;
 }
 
 /* Specific topbar user badge colors for high contrast and readability */

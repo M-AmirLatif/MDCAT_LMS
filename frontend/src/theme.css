@@ -1849,7 +1849,7 @@ html[data-theme="dark"] .subject-stats-grid span {
 }
 
 /* Issue 4 — Prevent Average Score card from sitting alone on Teacher Dashboard */
-.card-grid:has(.stat-tile--teal) {
+.workspace-page:not(.workspace-page--notifications) .card-grid:has(.stat-tile--teal) {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)) !important;
   max-width: 800px !important;
 }
