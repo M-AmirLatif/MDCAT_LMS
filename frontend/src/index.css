@@ -1067,7 +1067,7 @@ table tr:hover {
   display: flex;
   flex-direction: column;
   gap: var(--space-page-y, 28px);
-  padding: var(--space-page-y, 28px) var(--space-page-x, 28px);
+  padding: 0;
   min-width: 0;
   width: 100%;
 }
