@@ -2,9 +2,6 @@
   display: flex;
   min-height: 100vh;
   background: var(--bg-page);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  transform: translate3d(0, 0, 0);
 }
 
 [data-theme="dark"] .app-layout {
