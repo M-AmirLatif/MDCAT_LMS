@@ -177,9 +177,9 @@
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  min-width: 184px;
+  min-width: 220px;
   height: 56px;
-  padding: 6px 12px 6px 7px;
+  padding: 6px 16px 6px 8px;
   border-radius: 999px;
   border: 1px solid var(--border-default);
   background: var(--bg-surface);
@@ -218,14 +218,14 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  gap: 6px;
+  align-items: flex-start;
+  gap: 4px;
   min-width: 0;
   flex: 1 1 auto;
 }
 
 .topbar-user-name {
-  max-width: 112px;
+  max-width: 148px;
   font-size: 14px;
   font-weight: 700;
   color: var(--text-primary);
