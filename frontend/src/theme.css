@@ -1816,17 +1816,29 @@ html[data-theme="dark"] .subject-stats-grid span {
    ────────────────────────────────────────────────────────────────────────── */
 
 /* Issue 1 — Performance Analytics KPI cards colored top borders */
-.workspace-page:has(.heatmap-grid) .stat-tile:nth-child(1) {
-  border-top: 3px solid var(--purple) !important;
+.workspace-page:has(.heatmap-grid) .stat-tile {
+  border-top: none !important;
+  overflow: hidden !important;
+  position: relative !important;
 }
-.workspace-page:has(.heatmap-grid) .stat-tile:nth-child(2) {
-  border-top: 3px solid var(--teal) !important;
+.workspace-page:has(.heatmap-grid) .stat-tile::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  z-index: 1;
 }
-.workspace-page:has(.heatmap-grid) .stat-tile:nth-child(3) {
-  border-top: 3px solid var(--amber) !important;
+.workspace-page:has(.heatmap-grid) .stat-tile:nth-child(1)::before {
+  background: var(--purple) !important;
 }
-.workspace-page:has(.heatmap-grid) .stat-tile:nth-child(4) {
-  border-top: 3px solid var(--coral) !important;
+.workspace-page:has(.heatmap-grid) .stat-tile:nth-child(2)::before {
+  background: var(--teal) !important;
+}
+.workspace-page:has(.heatmap-grid) .stat-tile:nth-child(3)::before {
+  background: var(--amber) !important;
+}
+.workspace-page:has(.heatmap-grid) .stat-tile:nth-child(4)::before {
+  background: var(--coral) !important;
 }
 
 /* Issue 2 — Filter pills on Student Attempts page (inactive background and border) */
@@ -1848,15 +1860,37 @@ html[data-theme="dark"] .subject-stats-grid span {
   border: 1.5px dashed var(--border-color) !important;
 }
 
-/* Issue 4 — Prevent Average Score card from sitting alone on Teacher Dashboard */
-.workspace-page:not(.workspace-page--notifications) .card-grid:has(.stat-tile--teal) {
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)) !important;
-  max-width: 800px !important;
+/* Issue 4 — Prevent Average Score card from sitting alone on Teacher Dashboard & align spacing */
+.workspace-page:not(.workspace-page--notifications) .card-grid:has(.stat-tile) {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  max-width: none !important;
+}
+
+@media (max-width: 1024px) {
+  .workspace-page:not(.workspace-page--notifications) .card-grid:has(.stat-tile) {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .workspace-page:not(.workspace-page--notifications) .card-grid:has(.stat-tile) {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 /* Issue 5 — Analytics cards top border treatment */
 .workspace-page:has(.heatmap-grid) .workspace-card {
-  border-top: 3px solid var(--purple) !important;
+  border-top: none !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+.workspace-page:has(.heatmap-grid) .workspace-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--purple) !important;
+  z-index: 1;
 }
 
 /* ──────────────────────────────────────────────────────────────────────────

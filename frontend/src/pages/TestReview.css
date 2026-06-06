@@ -51,6 +51,16 @@
   border: 1px solid var(--border-card, rgba(108, 71, 255, 0.12));
   box-shadow: var(--shadow-card);
   transition: transform 200ms ease, box-shadow 200ms ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.review-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  z-index: 1;
 }
 
 .review-stat-card:hover {
@@ -75,13 +85,13 @@
   line-height: 1;
 }
 
-.review-stat-card--green { border-top: 4px solid var(--teal, #1DB884); }
+.review-stat-card--green::before { background: var(--teal, #1DB884); }
 .review-stat-card--green strong { color: var(--teal-dark, #15976b); }
 
-.review-stat-card--red { border-top: 4px solid var(--coral, #FF6B6B); }
+.review-stat-card--red::before { background: var(--coral, #FF6B6B); }
 .review-stat-card--red strong { color: var(--coral-dark, #E04E4E); }
 
-.review-stat-card--purple { border-top: 4px solid var(--purple, #6C47FF); }
+.review-stat-card--purple::before { background: var(--purple, #6C47FF); }
 .review-stat-card--purple strong { color: var(--purple, #6C47FF); }
 
 /* ── Question Stack ── */
@@ -241,11 +251,11 @@
   border-color: rgba(255, 255, 255, 0.06);
 }
 
-[data-theme="dark"] .review-stat-card--green { border-top-color: #2DD99B; }
+[data-theme="dark"] .review-stat-card--green::before { background: #2DD99B; }
 [data-theme="dark"] .review-stat-card--green strong { color: #2DD99B; }
-[data-theme="dark"] .review-stat-card--red { border-top-color: #FF8A8A; }
+[data-theme="dark"] .review-stat-card--red::before { background: #FF8A8A; }
 [data-theme="dark"] .review-stat-card--red strong { color: #FF8A8A; }
-[data-theme="dark"] .review-stat-card--purple { border-top-color: #8B6FFF; }
+[data-theme="dark"] .review-stat-card--purple::before { background: #8B6FFF; }
 [data-theme="dark"] .review-stat-card--purple strong { color: #A590FF; }
 
 [data-theme="dark"] .review-option-row {
