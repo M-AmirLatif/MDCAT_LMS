@@ -136,8 +136,9 @@
   justify-content: center;
   border-radius: 14px;
   border: 1px solid var(--border-default);
-  background: var(--bg-surface);
+  background: var(--bg-input);
   color: var(--text-primary);
+  flex-shrink: 0;
   transition: background var(--ease), border-color var(--ease), color var(--ease);
 }
 
@@ -182,12 +183,14 @@
   padding: 6px 16px 6px 8px;
   border-radius: 999px;
   border: 1px solid var(--border-default);
-  background: var(--bg-surface);
+  background: var(--bg-input);
+  flex-shrink: 0;
+  overflow: hidden;
   transition: background var(--ease), border-color var(--ease);
 }
 
 .topbar-user:hover {
-  background: var(--bg-surface-2);
+  background: var(--bg-input-hover, #F5F4F8);
   border-color: var(--border-default);
 }
 
@@ -250,7 +253,7 @@
 .theme-toggle--topbar {
   width: 48px;
   height: 48px;
-  flex-basis: 48px;
+  flex: 0 0 48px;
 }
 
 @media (max-width: 1024px) {

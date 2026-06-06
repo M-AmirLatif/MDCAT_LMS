@@ -283,7 +283,7 @@
   position: relative;
   margin-bottom: 12px;
   border-radius: 14px;
-  background: #fff;
+  background: var(--bg-card);
   border: 1.5px solid #ddd9f7;
   transition: border-color 200ms ease, box-shadow 200ms ease;
 }
@@ -947,7 +947,7 @@ input:focus-visible {
     width: 100%;
     box-sizing: border-box;
     min-height: 64px;
-    background: #fff;
+    background: var(--bg-card);
     border: 1.5px solid #ddd9f7;
     border-radius: 14px;
     padding: 12px 16px 12px 46px;

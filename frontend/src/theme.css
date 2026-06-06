@@ -62,7 +62,6 @@ html[data-theme="dark"] textarea,
 html[data-theme="dark"] select,
 html[data-theme="dark"] .field-wrapper,
 html[data-theme="dark"] .input-field,
-html[data-theme="dark"] .floating-field,
 html[data-theme="dark"] .topbar-search input {
   background-color: var(--bg-input) !important;
   border-color: var(--border-input) !important;

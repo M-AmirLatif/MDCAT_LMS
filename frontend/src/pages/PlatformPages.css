@@ -3782,26 +3782,11 @@
 }
 
 .workspace-header-sticky {
-  position: sticky;
-  top: -28px;
-  z-index: 40;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
 }
 
 .workspace-header-sticky + * {
   margin-top: 24px !important;
-}
-
-@media (max-width: 768px) {
-  .workspace-header-sticky {
-    top: -14px !important;
-  }
-}
-
-@media (max-width: 480px) {
-  .workspace-header-sticky {
-    top: -10px !important;
-  }
 }
 
 @media (max-width: 1200px) {
@@ -4013,7 +3998,7 @@
   padding: 14px 16px !important;
   border: 1.5px solid rgba(108, 71, 255, 0.14) !important;
   border-radius: 10px !important;
-  background: #fff !important;
+  background: var(--bg-card) !important;
 }
 
 .teacher-mcq-editor-bottom .floating-field label {
@@ -4592,26 +4577,18 @@
 
   .workspace-page--mcq-list .workspace-hero .inline-actions,
   .workspace-page--mcq-list .workspace-card-head .inline-actions {
-    display: flex !important;
-    flex-wrap: wrap !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 10px !important;
-    overflow: visible !important;
-    padding-bottom: 0 !important;
     width: 100% !important;
   }
 
-  .workspace-page--mcq-list .workspace-card-head .inline-actions .btn {
-    flex: 1 1 calc(50% - 5px) !important;
-    min-width: 120px !important;
-    width: auto !important;
-    padding-inline: 14px !important;
-  }
-
-  .workspace-page--mcq-list
-    .workspace-card-head
-    .inline-actions
-    .btn:first-child {
-    grid-column: auto !important;
+  .workspace-page--mcq-list .workspace-card-head .inline-actions .btn,
+  .workspace-page--mcq-list .workspace-card-head .inline-actions > * {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    margin: 0 !important;
   }
 
   .teacher-mcq-list--editable {

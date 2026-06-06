@@ -738,7 +738,6 @@ textarea,
 select,
 .field-wrapper,
 .input-field,
-.floating-field,
 .topbar-search input {
   background-color: var(--bg-input) !important;
   border-color: var(--border-input) !important;
@@ -747,7 +746,6 @@ select,
 
 .field-wrapper:hover,
 .input-field:hover,
-.floating-field:hover,
 .topbar-search input:hover {
   background-color: var(--bg-input-hover) !important;
 }
