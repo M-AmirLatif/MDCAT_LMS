@@ -10,8 +10,8 @@ const userSchema = new mongoose.Schema(
     },
     lastName: {
       type: String,
-      required: [true, 'Please provide last name'],
       trim: true,
+      default: '',
     },
     email: {
       type: String,
