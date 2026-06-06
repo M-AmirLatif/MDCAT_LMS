@@ -1,13 +1,13 @@
 /* Final site-wide theme overrides. Imported last by App.jsx. */
 [data-theme="light"] {
-  --bg-page:         #E4E7F0;
-  --bg-card:         #F2F3F8;
-  --bg-surface:      #EAECF3;
-  --bg-surface-2:    #E0E3ED;
+  --bg-page:         #D8DCE8;
+  --bg-card:         #FFFFFF;
+  --bg-surface:      #F0F2F8;
+  --bg-surface-2:    #E8EBF4;
   --bg-input:        #FFFFFF;
-  --border-color:    #C4C8D8;
-  --border-subtle:   #D2D6E4;
-  --shadow-card:     0 2px 8px rgba(0,0,0,0.07);
+  --border-color:    #B8BDD0;
+  --border-subtle:   #C8CCDC;
+  --shadow-card:     0 2px 10px rgba(0,0,0,0.10);
   --text-primary:    #1A1A2E;
   --text-secondary:  #3D3D5C;
   --text-muted:      #6B7280;

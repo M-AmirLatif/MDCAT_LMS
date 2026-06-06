@@ -43,18 +43,18 @@
   --text-inverse: #FFFFFF;
 
   /* ── Backgrounds ── */
-  --bg-page:      #F5F4F8;
-  --bg-card:      #FAFAFC;
-  --bg-elevated:  #FAFAFC;
+  --bg-page:      #D8DCE8;
+  --bg-card:      #FFFFFF;
+  --bg-elevated:  #FFFFFF;
   --bg-sidebar:   #0F0F1A;
-  --bg-topbar:    #FAFAFC;
+  --bg-topbar:    #ECEEF5;
   --bg-input:     #FFFFFF;
-  --bg-hover:     #EEF0F6;
+  --bg-hover:     #E8EBF4;
 
   /* ── Borders ── */
-  --border:       rgba(15, 23, 42, 0.12);
+  --border:       rgba(15, 23, 42, 0.22);
   --border-hover: rgba(15, 23, 42, 0.16);
-  --border-card:  rgba(15, 23, 42, 0.12);
+  --border-card:  rgba(15, 23, 42, 0.18);
 
   /* ── Subject Colors ── */
   --subj-english:   #6C47FF;
@@ -69,7 +69,7 @@
   --grad-coral:     linear-gradient(135deg, #FF6B6B 0%, #FF8A8A 100%);
   --grad-hero:      linear-gradient(135deg, #6C47FF 0%, #4A90E2 100%);
   --grad-navy:      linear-gradient(180deg, #0F0F1A 0%, #1A1A2E 100%);
-  --grad-card:      linear-gradient(145deg, #FFFFFF 0%, #FDFCFF 100%);
+  --grad-card:      linear-gradient(145deg, #FFFFFF 0%, #FAFBFF 100%);
   --grad-text:      linear-gradient(135deg, #6C47FF, #4A90E2);
 
   /* ── Shadows ── */
@@ -80,7 +80,7 @@
   --shadow-xl:  0 16px 48px rgba(108, 71, 255, 0.14);
   --shadow-purple: 0 6px 24px rgba(108, 71, 255, 0.28);
   --shadow-teal:   0 6px 24px rgba(29, 184, 132, 0.25);
-  --shadow-card: 0 2px 12px rgba(108, 71, 255, 0.06);
+  --shadow-card: 0 2px 12px rgba(0,0,0,0.10);
   --shadow-card-hover: 0 8px 24px rgba(108, 71, 255, 0.12);
 
   /* ── Radius ── */
@@ -172,19 +172,19 @@
 }
 
 [data-theme="light"] {
-  --bg-page:          #E4E7F0;
-  --bg-card:          #F2F3F8;
-  --bg-surface:       #EAECF3;
-  --bg-surface-2:     #E0E3ED;
-  --bg-surface-3:     #E2E4EC;
+  --bg-page:          #D8DCE8;
+  --bg-card:          #FFFFFF;
+  --bg-surface:       #F0F2F8;
+  --bg-surface-2:     #E8EBF4;
+  --bg-surface-3:     #E2E5F0;
   --bg-sidebar:       #0F0F1A;
-  --bg-navbar:        #EAECF3;
+  --bg-navbar:        #ECEEF5;
   --bg-input:         #FFFFFF;
-  --bg-input-hover:   #F5F4F8;
-  --border-color:     #C4C8D8;
-  --border-default:   #C4C8D8;
-  --border-input:     #C4C8D8;
-  --border-subtle:    #D2D6E4;
+  --bg-input-hover:   #F8F9FC;
+  --border-color:     #B8BDD0;
+  --border-default:   #B8BDD0;
+  --border-input:     #B8BDD0;
+  --border-subtle:    #C8CCDC;
   --text-primary:     #1A1A2E;
   --text-secondary:   #3D3D5C;
   --text-muted:       #6B7280;
@@ -195,7 +195,7 @@
   --color-teal:       #1DB884;
   --color-amber:      #F59E0B;
   --color-coral:      #FF6B6B;
-  --shadow-card:      0 2px 8px rgba(0,0,0,0.07);
+  --shadow-card:      0 2px 10px rgba(0,0,0,0.10);
   --shadow-button:    0 4px 16px rgba(108, 71, 255, 0.20);
   --shadow-navbar:    0 1px 0 rgba(15, 23, 42, 0.04);
   --navbar-blur:      blur(0px);
@@ -293,6 +293,13 @@
   --chem-bg: rgba(251,176,64,0.14);
   --phys-bg: rgba(106,171,255,0.14);
   --eng-bg: rgba(165,144,255,0.16);
+}
+
+.workspace-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+  border-radius: var(--radius-md);
 }
 
 /* Theme transitions — scoped to elements that actually change during theme switch.

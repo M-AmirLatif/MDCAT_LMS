@@ -217,9 +217,9 @@
 }
 
 .workspace-card {
-  background: var(--bg-surface);
-  border: 0.5px solid var(--border-card, rgba(108, 71, 255, 0.12));
-  border-radius: 14px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-card);
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-card);
   transition:
     transform var(--ease),
@@ -3782,11 +3782,30 @@
 }
 
 .workspace-header-sticky {
+  position: sticky;
+  top: -28px;
+  z-index: 10;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+.workspace-header-sticky:hover {
+  transform: none !important;
 }
 
 .workspace-header-sticky + * {
   margin-top: 24px !important;
+}
+
+@media (max-width: 768px) {
+  .workspace-header-sticky {
+    top: -14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .workspace-header-sticky {
+    top: -10px;
+  }
 }
 
 @media (max-width: 1200px) {
