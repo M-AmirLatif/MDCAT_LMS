@@ -1870,9 +1870,16 @@ html[data-theme="dark"] .subject-stats-grid span {
 .workspace-hero--amber,
 .workspace-hero--coral,
 .hero-banner,
-.workspace-hero-copy,
 .dashboard-hero,
-.hero-section {
+.hero-section,
+html[data-theme="dark"] .workspace-hero,
+html[data-theme="dark"] .notification-hero,
+html[data-theme="dark"] .workspace-hero--teal,
+html[data-theme="dark"] .workspace-hero--amber,
+html[data-theme="dark"] .workspace-hero--coral,
+html[data-theme="dark"] .hero-banner,
+html[data-theme="dark"] .dashboard-hero,
+html[data-theme="dark"] .hero-section {
   background: linear-gradient(135deg, #5535E8 0%, #3D6DB5 60%, #1A9E72 100%) !important;
 }
 
