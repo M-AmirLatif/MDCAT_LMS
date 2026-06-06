@@ -1599,15 +1599,77 @@ html[data-theme="dark"] .landing .lp-nav * {
 }
 
 html[data-theme="dark"] .landing .lp-brand,
-html[data-theme="dark"] .landing .lp-brand span:not(.lp-mark),
+html[data-theme="dark"] .landing .lp-brand span:not(.lp-mark) {
+  color: rgba(255, 255, 255, 0.88) !important;
+  text-shadow: none !important;
+}
+
+/* Fix dark background box showing behind public navigation links in dark mode */
 html[data-theme="dark"] .landing .lp-links a {
-  color: rgba(255,255,255,0.88) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  color: rgba(255, 255, 255, 0.88) !important;
   text-shadow: none !important;
 }
 
 html[data-theme="dark"] .landing .lp-links a:hover {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
   color: #FFFFFF !important;
   -webkit-text-fill-color: #FFFFFF !important;
+}
+
+/* Fix visibility of Login ghost button in light mode and dark mode */
+.lp-nav .lp-btn-ghost,
+.lp-links .lp-btn-ghost {
+  background: rgba(108, 71, 255, 0.07) !important;
+  border-color: rgba(108, 71, 255, 0.22) !important;
+  color: #6C47FF !important;
+}
+
+.lp-nav .lp-btn-ghost:hover,
+.lp-links .lp-btn-ghost:hover {
+  background: rgba(108, 71, 255, 0.12) !important;
+  border-color: rgba(108, 71, 255, 0.36) !important;
+  color: #5835DB !important;
+}
+
+html[data-theme="dark"] .landing .lp-btn-ghost,
+[data-theme="dark"] .lp-nav .lp-btn-ghost,
+[data-theme="dark"] .lp-links .lp-btn-ghost {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.38) !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+html[data-theme="dark"] .landing .lp-btn-ghost:hover,
+[data-theme="dark"] .lp-nav .lp-btn-ghost:hover,
+[data-theme="dark"] .lp-links .lp-btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-color: rgba(255, 255, 255, 0.54) !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+/* Fix landing footer text contrast (footer is always dark #0a0a1a) */
+.lp-footer .lp-footer-brand strong {
+  color: #FFFFFF !important;
+}
+
+.lp-footer .lp-footer-brand small,
+.lp-footer nav a {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+
+.lp-footer nav a:hover {
+  color: #FFFFFF !important;
+}
+
+.lp-footer p {
+  color: rgba(255, 255, 255, 0.45) !important;
 }
 
 html[data-theme="dark"] .landing .lp-btn,
@@ -1624,12 +1686,6 @@ html[data-theme="dark"] .landing .lp-btn-primary:hover,
 html[data-theme="dark"] .landing .lp-final-cta .lp-btn-ghost {
   color: #FFFFFF !important;
   text-shadow: none !important;
-}
-
-html[data-theme="dark"] .landing .lp-btn-ghost {
-  color: #FFFFFF !important;
-  -webkit-text-fill-color: #FFFFFF !important;
-  border-color: rgba(255,255,255,0.42) !important;
 }
 
 html[data-theme="dark"] .landing .lp-btn-teal {
