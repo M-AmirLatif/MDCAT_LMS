@@ -71,7 +71,7 @@ function StudentSubjects() {
                   </div>
                 </div>
                 <div className="inline-actions" style={{ marginTop: '16px' }}>
-                  <Link className="btn btn-primary btn-sm" style={{ height: '42px', borderRadius: '12px' }} to={`/course/${subject.id}`}>Open Chapters</Link>
+                  <Link className="btn btn-primary btn-sm" style={{ height: '42px', borderRadius: '12px' }} to={`/mcqs/${subject.id}`}>Open Chapters</Link>
                 </div>
               </div>
             </article>
