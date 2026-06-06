@@ -965,6 +965,11 @@ table tr:hover {
   transition: transform var(--ease), box-shadow var(--ease), border-color var(--ease), background-color var(--ease);
 }
 
+.workspace-card:has(.workspace-card-head),
+.workspace-card:has(.workspace-card-body) {
+  padding: 0;
+}
+
 .workspace-card--elevated {
   box-shadow: var(--shadow-md);
 }

@@ -1873,8 +1873,9 @@
 
 .mcq-question-dots {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(5, 40px);
   gap: 8px;
+  justify-content: center;
 }
 
 .mcq-dot {
@@ -4368,6 +4369,7 @@
   font-weight: 800;
   line-height: 1.4;
   overflow-wrap: anywhere;
+  margin-bottom: 24px;
 }
 
 .mcq-option-text,
