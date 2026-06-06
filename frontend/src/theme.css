@@ -30,16 +30,7 @@ html[data-theme="dark"] .sidebar {
   border-color: var(--border-subtle) !important;
 }
 
-html[data-theme="dark"] .card,
-html[data-theme="dark"] [class*="card"],
-html[data-theme="dark"] .workspace-card,
-html[data-theme="dark"] .summary-card,
-html[data-theme="dark"] .stat-card,
-html[data-theme="dark"] .course-card,
-html[data-theme="dark"] .subject-card,
-html[data-theme="dark"] .chapter-card,
 html[data-theme="dark"] .notification-item,
-html[data-theme="dark"] .notification-card,
 html[data-theme="dark"] .modal,
 html[data-theme="dark"] .drawer,
 html[data-theme="dark"] .dialog,
@@ -171,18 +162,14 @@ html[data-theme="dark"] .auth-checkbox {
 }
 
 html[data-theme="dark"] .chart-container,
-html[data-theme="dark"] .notification-item,
-html[data-theme="dark"] .notification-card,
-html[data-theme="dark"] .workspace-card,
-html[data-theme="dark"] .summary-card {
-  background: #12102A !important;
-  border-color: rgba(255,255,255,0.08) !important;
+html[data-theme="dark"] .notification-item {
+  background: var(--bg-surface) !important;
+  border-color: var(--border-default) !important;
 }
 
 html[data-theme="dark"] .notification-item:hover,
-html[data-theme="dark"] .notification-card:hover,
 html[data-theme="dark"] table tr:hover {
-  background: #1A1640 !important;
+  background: var(--bg-surface-2) !important;
 }
 
 html[data-theme="dark"] table tr:nth-child(even) {
@@ -263,7 +250,6 @@ html[data-theme="dark"] .topbar-user .badge {
   background: rgba(255, 255, 255, 0.08) !important;
   border-color: rgba(255, 255, 255, 0.12) !important;
   color: rgba(240, 238, 255, 0.92) !important;
-  -webkit-text-fill-color: rgba(240, 238, 255, 0.92) !important;
 }
 
 html[data-theme="dark"] .theme-toggle,
@@ -385,9 +371,7 @@ html[data-theme="dark"] textarea::placeholder {
   color: rgba(255,255,255,0.35) !important;
 }
 
-html[data-theme="dark"] *:not(.hero-gradient-text):not(.lp-gradient-text):not(.gradient-text) {
-  -webkit-text-fill-color: unset !important;
-}
+
 
 html[data-theme="dark"] .hero-gradient-text,
 html[data-theme="dark"] .lp-gradient-text,
@@ -399,19 +383,7 @@ html[data-theme="dark"] .landing-hero h1 span.gradient {
   background-clip: text !important;
 }
 
-html[data-theme="dark"] .card *,
-html[data-theme="dark"] .notification-item *,
-html[data-theme="dark"] .stat-card *,
-html[data-theme="dark"] .course-card *,
-html[data-theme="dark"] .chapter-card *,
-html[data-theme="dark"] .mcq-card *,
-html[data-theme="dark"] .result-card *,
-html[data-theme="dark"] table * {
-  background-image: none !important;
-  -webkit-background-clip: unset !important;
-  -webkit-text-fill-color: unset !important;
-  background-clip: unset !important;
-}
+
 
 html[data-theme="dark"] .stat-number,
 html[data-theme="dark"] .score-number,
@@ -421,32 +393,23 @@ html[data-theme="dark"] .accuracy-number {
   -webkit-text-fill-color: unset !important;
 }
 
-html[data-theme="dark"] .card,
-html[data-theme="dark"] [class*="card"],
-html[data-theme="dark"] [class*="-card"],
 html[data-theme="dark"] .panel,
 html[data-theme="dark"] .box,
 html[data-theme="dark"] .tile,
 html[data-theme="dark"] .widget,
 html[data-theme="dark"] .block {
-  background: #12102A !important;
-  border-color: rgba(255,255,255,0.08) !important;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.35) !important;
+  background: var(--bg-surface) !important;
+  border-color: var(--border-default) !important;
+  box-shadow: var(--shadow-card) !important;
 }
 
-html[data-theme="dark"] .card .card,
-html[data-theme="dark"] [class*="card"] [class*="card"],
 html[data-theme="dark"] .inner-card,
 html[data-theme="dark"] .sub-card {
-  background: #1A1640 !important;
-  border-color: rgba(255,255,255,0.06) !important;
+  background: var(--bg-surface-2) !important;
+  border-color: var(--border-subtle) !important;
 }
 
-html[data-theme="dark"] .card:hover,
-html[data-theme="dark"] [class*="card"]:hover {
-  background: #1A1640 !important;
-  border-color: rgba(108,71,255,0.30) !important;
-}
+
 
 html[data-theme="dark"] .empty-state,
 html[data-theme="dark"] .empty-illustration,
@@ -785,10 +748,9 @@ html[data-theme="dark"] .inbox-stat-card .count {
 }
 
 html[data-theme="dark"] .notification-item,
-html[data-theme="dark"] .notification-card,
 html[data-theme="dark"] [class*="notification-item"] {
-  background: #12102A !important;
-  border-color: rgba(255,255,255,0.07) !important;
+  background: var(--bg-surface) !important;
+  border-color: var(--border-default) !important;
   background-image: none !important;
 }
 
@@ -1132,10 +1094,9 @@ html[data-theme="dark"] .subject-stats-grid strong,
 html[data-theme="dark"] .subject-focus-card .workspace-card-title,
 html[data-theme="dark"] .teacher-subject-bank h4 {
   color: #F0EEFF !important;
-  -webkit-text-fill-color: #F0EEFF !important;
   background: transparent !important;
   background-image: none !important;
-  text-shadow: 0 1px 0 rgba(0,0,0,0.15);
+  text-shadow: none !important;
 }
 
 html[data-theme="dark"] .subject-accuracy-chip,
@@ -1361,7 +1322,7 @@ html[data-theme="dark"] .auth-form-panel:hover {
 
 html[data-theme="dark"] .auth-title {
   line-height: 1.08 !important;
-  text-shadow: 0 1px 0 rgba(0,0,0,0.22);
+  text-shadow: none !important;
 }
 
 html[data-theme="dark"] .auth-subtitle {
@@ -1628,8 +1589,7 @@ html[data-theme="dark"] .landing .lp-brand,
 html[data-theme="dark"] .landing .lp-brand span:not(.lp-mark),
 html[data-theme="dark"] .landing .lp-links a {
   color: rgba(255,255,255,0.88) !important;
-  -webkit-text-fill-color: rgba(255,255,255,0.88) !important;
-  text-shadow: 0 1px 0 rgba(0,0,0,0.24);
+  text-shadow: none !important;
 }
 
 html[data-theme="dark"] .landing .lp-links a:hover {
@@ -1650,8 +1610,7 @@ html[data-theme="dark"] .landing .lp-btn-primary:visited,
 html[data-theme="dark"] .landing .lp-btn-primary:hover,
 html[data-theme="dark"] .landing .lp-final-cta .lp-btn-ghost {
   color: #FFFFFF !important;
-  -webkit-text-fill-color: #FFFFFF !important;
-  text-shadow: 0 1px 0 rgba(0,0,0,0.16) !important;
+  text-shadow: none !important;
 }
 
 html[data-theme="dark"] .landing .lp-btn-ghost {

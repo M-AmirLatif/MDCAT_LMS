@@ -933,15 +933,390 @@ table tr:hover {
   border-color: var(--border-default);
 }
 
-[data-theme="dark"] .topbar-action,
-[data-theme="dark"] .topbar-user,
-[data-theme="dark"] .topbar-toggle {
-  background: var(--bg-surface-2);
-  border-color: var(--border-default);
-  color: var(--text-primary);
-}
-
 [data-theme="dark"] .topbar-action:hover,
 [data-theme="dark"] .topbar-user:hover {
   background: var(--bg-surface-3);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MDCAT LMS — Redesign Design System Components & Primitives
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Workspace Page Layout ── */
+.workspace-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-page-y, 28px);
+  padding: var(--space-page-y, 28px) var(--space-page-x, 28px);
+  min-width: 0;
+  width: 100%;
+}
+
+/* ── Token-Driven Cards ── */
+.workspace-card,
+.subject-card,
+.mcq-subject-card,
+.summary-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+  position: relative;
+  transition: transform var(--ease), box-shadow var(--ease), border-color var(--ease), background-color var(--ease);
+}
+
+.workspace-card--elevated {
+  box-shadow: var(--shadow-md);
+}
+
+.workspace-card--flat {
+  box-shadow: none;
+  border-color: var(--border-subtle);
+}
+
+.workspace-card--interactive {
+  cursor: pointer;
+}
+
+.workspace-card--interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-hover);
+  background: var(--bg-hover);
+}
+
+/* ── Button Loading States ── */
+.btn--loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+
+.btn--loading::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  top: 50%;
+  left: 50%;
+  margin-top: -9px;
+  margin-left: -9px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: btn-spinner 0.6s linear infinite;
+}
+
+@keyframes btn-spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Simple Table ── */
+.simple-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+}
+
+.simple-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+}
+
+.simple-table th,
+.simple-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.simple-table th {
+  background: var(--bg-surface-2);
+  color: var(--text-primary);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.simple-table tbody tr:hover {
+  background: var(--bg-hover);
+}
+
+.simple-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ── MCQ Modal ── */
+.mcq-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 15, 26, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.mcq-modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mcq-modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mcq-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.mcq-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background: var(--bg-surface-2);
+}
+
+/* ── Floating Field ── */
+.floating-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.floating-field input,
+.floating-field textarea,
+.floating-field select {
+  width: 100%;
+  height: 52px;
+  padding: 16px 16px 4px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-input);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 15px;
+  transition: border-color var(--ease), background var(--ease), box-shadow var(--ease);
+}
+
+.floating-field label {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  font-size: 15px;
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: transform 0.2s ease, font-size 0.2s ease, color 0.2s ease;
+  transform-origin: left top;
+}
+
+.floating-field input:focus ~ label,
+.floating-field input:not(:placeholder-shown) ~ label,
+.floating-field textarea:focus ~ label,
+.floating-field textarea:not(:placeholder-shown) ~ label,
+.floating-field select:focus ~ label,
+.floating-field select:valid ~ label {
+  transform: translateY(-10px) scale(0.75);
+  color: var(--purple);
+}
+
+.floating-field input:focus,
+.floating-field textarea:focus,
+.floating-field select:focus {
+  border-color: var(--purple);
+  background: var(--bg-card);
+  box-shadow: 0 0 0 4px var(--purple-glow);
+  outline: none;
+}
+
+/* ── Badges ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  border: 1px solid transparent;
+}
+
+.badge--purple {
+  background: var(--purple-subtle);
+  color: var(--purple);
+  border-color: rgba(108, 71, 255, 0.15);
+}
+
+.badge--teal {
+  background: var(--teal-subtle);
+  color: var(--teal);
+  border-color: rgba(29, 184, 132, 0.15);
+}
+
+.badge--amber {
+  background: var(--amber-subtle);
+  color: var(--amber);
+  border-color: rgba(245, 158, 11, 0.15);
+}
+
+.badge--coral {
+  background: var(--coral-subtle);
+  color: var(--coral);
+  border-color: rgba(255, 107, 107, 0.15);
+}
+
+/* ── Empty & Loading States ── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 24px;
+  background: var(--bg-card);
+  border: 1.5px dashed var(--border-default);
+  border-radius: var(--radius-xl);
+  color: var(--text-muted);
+}
+
+.empty-state-icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  color: var(--text-muted);
+}
+
+.loading-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border-default);
+  border-right-color: var(--purple);
+  border-radius: 50%;
+  animation: spinner 0.8s linear infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes spinner {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Responsive CSS Primitives ── */
+
+/* 1. Stack on Mobile */
+@media (max-width: 768px) {
+  .stack-on-mobile {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+}
+
+/* 2. Scroll X Mobile */
+@media (max-width: 768px) {
+  .scroll-x-mobile {
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+}
+
+/* 3. Hide / Show Mobile */
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+  .show-mobile-only {
+    display: block !important;
+  }
+}
+@media (min-width: 769px) {
+  .show-mobile-only {
+    display: none !important;
+  }
+}
+
+/* 4. Responsive Card Grid */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: var(--space-page-x, 28px);
+  width: 100%;
+}
+
+/* 5. Inline Actions List */
+.inline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .inline-actions {
+    flex-direction: column !important;
+    width: 100% !important;
+    align-items: stretch !important;
+  }
+  .inline-actions > * {
+    width: 100% !important;
+  }
+}
+
+/* 6. Workspace Card Head */
+.workspace-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .workspace-card-head {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+}
+
+/* 7. Truncate Safe */
+.truncate-safe {
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
