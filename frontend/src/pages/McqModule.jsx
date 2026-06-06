@@ -734,15 +734,18 @@ function TeacherInlineMcqCard({ mcq, index, chapterId, meta, onSaved, onDelete }
   return (
     <article className="workspace-card mcq-inline-card animate-fade-up">
       <div className="mcq-inline-card-header">
-        <span className="mcq-inline-card-number">Question {index + 1}</span>
+        <span className="mcq-inline-card-number">QUESTION {index + 1}</span>
         {saving && <span className="mcq-inline-card-status">Saving...</span>}
       </div>
 
       <form onSubmit={handleSave} className="mcq-inline-card-form">
-        <div className="floating-field">
-          <label htmlFor={`question-${mcq._id}`}>Question Statement</label>
+        <div className="mcq-section-container">
+          <label className="mcq-section-label" htmlFor={`question-${mcq._id}`}>
+            QUESTION STATEMENT
+          </label>
           <textarea
             id={`question-${mcq._id}`}
+            className="mcq-inline-statement-textarea"
             rows="3"
             value={form.question}
             onChange={(event) => setField('question', event.target.value)}
@@ -750,39 +753,60 @@ function TeacherInlineMcqCard({ mcq, index, chapterId, meta, onSaved, onDelete }
           />
         </div>
 
-        <div className="mcq-inline-options-list">
-          {['A', 'B', 'C', 'D'].map((letter) => (
-            <div className="floating-field mcq-inline-option-field" key={letter}>
-              <label htmlFor={`option-${letter.toLowerCase()}-${mcq._id}`}>Option {letter}</label>
-              <input
-                id={`option-${letter.toLowerCase()}-${mcq._id}`}
-                value={form[`option${letter}`]}
-                onChange={(event) => setField(`option${letter}`, event.target.value)}
-                placeholder={`Type Option ${letter}...`}
-              />
-            </div>
-          ))}
+        <div className="mcq-options-section">
+          <span className="mcq-section-label">OPTIONS</span>
+          <div className="mcq-inline-options-list">
+            {['A', 'B', 'C', 'D'].map((letter) => {
+              const isCorrect = form.correctAnswer === letter
+              return (
+                <div
+                  className={`mcq-inline-option-row ${
+                    isCorrect ? 'mcq-inline-option-row--correct' : ''
+                  }`}
+                  key={letter}
+                >
+                  <span className="mcq-option-badge">{letter}</span>
+                  <input
+                    id={`option-${letter.toLowerCase()}-${mcq._id}`}
+                    className="mcq-inline-option-input"
+                    value={form[`option${letter}`]}
+                    onChange={(event) => setField(`option${letter}`, event.target.value)}
+                    placeholder={`Type Option ${letter}...`}
+                    aria-label={`Option ${letter}`}
+                  />
+                </div>
+              )
+            })}
+          </div>
         </div>
 
-        <div className="mcq-inline-meta-row">
-          <div className="floating-field mcq-inline-correct-select">
-            <label htmlFor={`correct-answer-${mcq._id}`}>Correct Option</label>
-            <select
-              id={`correct-answer-${mcq._id}`}
-              value={form.correctAnswer}
-              onChange={(event) => setField('correctAnswer', event.target.value)}
-            >
-              <option value="A">Option A</option>
-              <option value="B">Option B</option>
-              <option value="C">Option C</option>
-              <option value="D">Option D</option>
-            </select>
+        <div className="mcq-inline-meta-grid">
+          <div className="mcq-meta-box mcq-correct-box">
+            <label className="mcq-section-label" htmlFor={`correct-answer-${mcq._id}`}>
+              CORRECT OPTION
+            </label>
+            <div className="mcq-correct-select-wrapper">
+              <select
+                id={`correct-answer-${mcq._id}`}
+                className="mcq-inline-select"
+                value={form.correctAnswer}
+                onChange={(event) => setField('correctAnswer', event.target.value)}
+              >
+                <option value="A">Option A</option>
+                <option value="B">Option B</option>
+                <option value="C">Option C</option>
+                <option value="D">Option D</option>
+              </select>
+            </div>
           </div>
 
-          <div className="floating-field mcq-inline-explanation">
-            <label htmlFor={`explanation-${mcq._id}`}>Explanation</label>
+          <div className="mcq-meta-box mcq-explanation-box">
+            <label className="mcq-section-label" htmlFor={`explanation-${mcq._id}`}>
+              EXPLANATION
+            </label>
             <textarea
               id={`explanation-${mcq._id}`}
+              className="mcq-inline-explanation-textarea"
               rows="2"
               value={form.explanation}
               onChange={(event) => setField('explanation', event.target.value)}
@@ -794,14 +818,14 @@ function TeacherInlineMcqCard({ mcq, index, chapterId, meta, onSaved, onDelete }
         <div className="mcq-inline-card-actions">
           <button
             type="submit"
-            className="btn btn-primary btn-sm btn-mcq-edit"
+            className="btn btn-mcq-save"
             disabled={saving}
           >
             {saving ? 'Saving...' : 'Save'}
           </button>
           <button
             type="button"
-            className="btn btn-secondary btn-sm btn-mcq-reset"
+            className="btn btn-mcq-reset"
             onClick={handleReset}
             disabled={saving}
           >
@@ -809,7 +833,7 @@ function TeacherInlineMcqCard({ mcq, index, chapterId, meta, onSaved, onDelete }
           </button>
           <button
             type="button"
-            className="btn btn-danger btn-sm btn-mcq-delete"
+            className="btn btn-mcq-delete"
             onClick={handleDeleteLocal}
             disabled={deleting || saving}
           >
