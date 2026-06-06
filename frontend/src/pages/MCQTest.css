@@ -144,11 +144,19 @@
 /* ── Navigation Actions ── */
 .mcq-nav-actions {
   display: flex;
-  justify-content: space-between;
+  flex-direction: row;
+  align-items: center;
   gap: 12px;
   margin-top: 24px;
   padding-top: 20px;
   border-top: 1px solid var(--border-card, rgba(108, 71, 255, 0.08));
+}
+
+.mcq-nav-actions .btn {
+  flex: 1;
+  min-width: 0;
+  justify-content: center;
+  text-align: center;
 }
 
 /* ── Result Card ── */
@@ -268,13 +276,16 @@
   }
 
   .mcq-nav-actions {
-    flex-direction: column;
-    gap: 10px;
+    flex-direction: row;
+    gap: 8px;
   }
 
   .mcq-nav-actions .btn {
-    width: 100%;
+    flex: 1;
+    min-width: 0;
     justify-content: center;
+    padding-inline: 4px;
+    font-size: 13px;
   }
 
   .mcq-result-card {

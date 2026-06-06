@@ -1992,16 +1992,18 @@
   }
 
   .mcq-nav-actions {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
   }
 
   .mcq-nav-actions .btn {
-    width: 100%;
+    flex: 1;
     min-width: 0;
-    height: 48px;
-    padding-inline: 10px;
+    height: 44px;
+    padding-inline: 4px;
+    font-size: 13px;
+    justify-content: center;
   }
 
   .mcq-question-backdrop {
