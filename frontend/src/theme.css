@@ -1811,3 +1811,51 @@ html[data-theme="dark"] .subject-stats-grid span {
   -webkit-text-fill-color: var(--purple-light, #A590FF) !important;
 }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   TEACHER DASHBOARD & PERFORMANCE ANALYTICS VISUAL POLISH
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Issue 1 — Performance Analytics KPI cards colored top borders */
+.workspace-page:has(.heatmap-grid) .stat-tile:nth-child(1) {
+  border-top: 3px solid var(--purple) !important;
+}
+.workspace-page:has(.heatmap-grid) .stat-tile:nth-child(2) {
+  border-top: 3px solid var(--teal) !important;
+}
+.workspace-page:has(.heatmap-grid) .stat-tile:nth-child(3) {
+  border-top: 3px solid var(--amber) !important;
+}
+.workspace-page:has(.heatmap-grid) .stat-tile:nth-child(4) {
+  border-top: 3px solid var(--coral) !important;
+}
+
+/* Issue 2 — Filter pills on Student Attempts page (inactive background and border) */
+.filter-pill {
+  background: var(--bg-surface-2) !important;
+  border: 1.5px solid var(--border-color) !important;
+  color: var(--purple) !important;
+  font-weight: 600 !important;
+}
+.filter-pill--active {
+  color: #fff !important;
+  background: var(--grad-purple) !important;
+  border-color: transparent !important;
+}
+
+/* Issue 3 — Empty state inner dashed boxes contrast */
+.empty-state {
+  background: var(--bg-surface-2) !important;
+  border: 1.5px dashed var(--border-color) !important;
+}
+
+/* Issue 4 — Prevent Average Score card from sitting alone on Teacher Dashboard */
+.card-grid:has(.stat-tile--teal) {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)) !important;
+  max-width: 800px !important;
+}
+
+/* Issue 5 — Analytics cards top border treatment */
+.workspace-page:has(.heatmap-grid) .workspace-card {
+  border-top: 3px solid var(--purple) !important;
+}
+
