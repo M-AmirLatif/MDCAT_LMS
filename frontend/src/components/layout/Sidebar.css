@@ -274,28 +274,28 @@
 }
 
 .sidebar-item--logout {
-  background: var(--coral, #FF6B6B) !important;
-  color: #ffffff !important;
-  border-radius: 14px;
-  margin-top: 12px;
+  background: transparent !important;
+  color: var(--coral, #FF6B6B) !important;
+  border-radius: 24px;
+  margin-top: 4px;
   font-weight: 700;
-  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.20);
-  transition: background var(--ease), transform var(--ease), color var(--ease) !important;
+  box-shadow: none !important;
+  transition: background var(--ease), color var(--ease) !important;
 }
 
 .sidebar-item--logout:hover {
-  background: var(--coral-dark, #E04E4E) !important;
-  color: #ffffff !important;
-  transform: translateY(-1px);
-}
-
-.sidebar-item--logout:active {
-  transform: translateY(1px);
+  background: rgba(255, 107, 107, 0.12) !important;
+  color: #ff8a8a !important;
 }
 
 .sidebar-item--logout .sidebar-item-label,
 .sidebar-item--logout .sidebar-item-icon {
-  color: #ffffff !important;
+  color: var(--coral, #FF6B6B) !important;
+}
+
+.sidebar-item--logout:hover .sidebar-item-label,
+.sidebar-item--logout:hover .sidebar-item-icon {
+  color: #ff8a8a !important;
 }
 
 .mobile-bottom-nav {
