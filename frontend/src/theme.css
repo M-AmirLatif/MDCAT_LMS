@@ -363,7 +363,7 @@ html[data-theme="dark"] b {
   opacity: 1 !important;
 }
 
-html[data-theme="dark"] a:not(.btn):not(.button) {
+html[data-theme="dark"] a:not(.btn):not(.button):not(.lp-btn) {
   color: #A590FF !important;
 }
 

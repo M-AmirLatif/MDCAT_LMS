@@ -90,6 +90,22 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.24);
 }
 
+.workspace-hero-actions .btn-secondary {
+  background: transparent !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.45) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.workspace-hero-actions .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.7) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  transform: translateY(-1px);
+}
+
 .notification-hero .workspace-hero-actions .btn-primary {
   background:
     linear-gradient(135deg, rgba(108, 71, 255, 0.82), rgba(74, 144, 226, 0.92))
