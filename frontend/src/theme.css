@@ -1105,8 +1105,7 @@ svg,
 video,
 .progress-bar-fill,
 [class*="animate"],
-[class*="transition-none"],
-.theme-toggle-ripple {
+[class*="transition-none"] {
   transition: none !important;
 }
 

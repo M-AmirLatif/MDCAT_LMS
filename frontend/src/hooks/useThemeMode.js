@@ -6,11 +6,11 @@ export function getChartTheme(theme = getTheme()) {
   const isDark = theme === 'dark'
   return {
     isDark,
-    gridColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(108,71,255,0.06)',
-    axisColor: isDark ? '#6B6B8A' : '#9B8FCC',
-    tooltipBg: isDark ? '#1A1640' : '#0F0F1A',
-    tooltipText: '#FFFFFF',
-    legendColor: isDark ? '#9B8FCC' : '#6B6B8A',
+    gridColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(15, 23, 42, 0.08)',
+    axisColor: isDark ? '#9B8FCC' : '#6B7280',
+    tooltipBg: isDark ? '#12102A' : '#FAFAFC',
+    tooltipText: isDark ? '#F0EEFF' : '#1A1A2E',
+    legendColor: isDark ? '#9B8FCC' : '#6B7280',
   }
 }
 

@@ -31,22 +31,21 @@ export default function ThemeToggle({ className = '' }) {
     return () => window.removeEventListener('mdcat-theme-change', syncTheme)
   }, [])
 
-  const toggleTheme = (event) => {
+  const toggleTheme = () => {
     const html = document.documentElement
     const current = html.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
     const next = current === 'dark' ? 'light' : 'dark'
 
-    const ripple = document.createElement('div')
-    ripple.className = 'theme-toggle-ripple'
-    ripple.style.left = `${event.clientX}px`
-    ripple.style.top = `${event.clientY}px`
-    document.body.appendChild(ripple)
-    window.setTimeout(() => ripple.remove(), 500)
+    html.classList.add('theme-switching')
 
     html.setAttribute('data-theme', next)
     localStorage.setItem('mdcat-theme', next)
     setTheme(next)
     window.dispatchEvent(new CustomEvent('mdcat-theme-change', { detail: { theme: next } }))
+
+    setTimeout(() => {
+      html.classList.remove('theme-switching')
+    }, 50)
   }
 
   const isDark = theme === 'dark'
