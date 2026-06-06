@@ -603,10 +603,119 @@ tr:hover td{background:var(--bg-hover)}
 .skeleton-card{height:180px;border-radius:var(--radius-md)}
 .skeleton-avatar{width:40px;height:40px;border-radius:50%}
 
-/* ══ Spinner ══ */
-.spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--purple);border-radius:50%;animation:spin 0.6s linear infinite}
-.loading-screen{display:flex;align-items:center;justify-content:center;min-height:400px;flex-direction:column;gap:var(--space-md)}
-.loading-screen p{font-size:14px;color:var(--text-muted)}
+/* ══ Spinner & Horizontal Loading Bar ══ */
+.spinner {
+  display: none !important; /* Hide circular spinners */
+}
+
+.loading-screen {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 320px !important;
+  width: 100% !important;
+  position: relative !important;
+}
+
+.loading-screen p,
+.loading-screen span {
+  display: none !important; /* Hide all "Loading..." text strings */
+}
+
+/* Progress bar track */
+.loading-screen::before {
+  content: '' !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: 280px !important;
+  height: 4px !important;
+  background: var(--bg-surface-2, #E0E3ED) !important;
+  border-radius: 999px !important;
+  position: absolute !important;
+}
+
+/* Sliding progress bar indicator */
+.loading-screen::after {
+  content: '' !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: 280px !important;
+  height: 4px !important;
+  position: absolute !important;
+  border-radius: 999px !important;
+  background: var(--purple, #6c47ff) !important;
+  animation: loading-bar-slide 1.5s infinite ease-in-out !important;
+  transform-origin: left !important;
+}
+
+/* Fixed-top slim loading bar for route loads */
+.route-loading {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 4px !important;
+  background: var(--bg-surface-2, #E0E3ED) !important;
+  z-index: 9999 !important;
+  font-size: 0 !important;
+  color: transparent !important;
+  text-indent: -9999px !important;
+  overflow: hidden !important;
+}
+
+.route-loading::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  height: 100% !important;
+  width: 35% !important;
+  background: var(--purple, #6C47FF) !important;
+  animation: loading-bar-slide 1.5s infinite ease-in-out !important;
+}
+
+/* Inline Loading Spinner for table rows / inline components */
+.loading-spinner {
+  width: 100% !important;
+  max-width: 160px !important;
+  height: 4px !important;
+  background: var(--bg-surface-2, #E0E3ED) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border: none !important;
+  border-radius: 999px !important;
+  animation: none !important;
+}
+
+.loading-spinner::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  height: 100% !important;
+  width: 35% !important;
+  background: var(--purple, #6C47FF) !important;
+  animation: loading-bar-slide 1.5s infinite ease-in-out !important;
+  border-radius: 999px !important;
+}
+
+.loading-spinner + p {
+  display: none !important; /* Hide inline loading text */
+}
+
+@keyframes loading-bar-slide {
+  0% {
+    left: -40%;
+    transform: scaleX(0.7);
+  }
+  50% {
+    transform: scaleX(1.3);
+  }
+  100% {
+    left: 100%;
+    transform: scaleX(0.7);
+  }
+}
 
 /* ══ Utilities ══ */
 .text-brand{color:var(--purple)}.text-accent{color:var(--teal)}.text-success{color:var(--teal)}.text-warning{color:var(--amber)}.text-danger{color:var(--coral)}.text-muted{color:var(--text-muted)}.text-secondary{color:var(--text-secondary)}
