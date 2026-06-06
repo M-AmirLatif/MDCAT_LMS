@@ -75,6 +75,9 @@
 
 .lp-links a,
 .lp-footer a {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
   color: var(--text-secondary);
   font-size: 15px;
   font-weight: 600;
@@ -84,6 +87,9 @@
 
 .lp-links a:hover,
 .lp-footer a:hover {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
   color: var(--text-primary);
 }
 
@@ -909,6 +915,9 @@
   }
 
   .lp-links a {
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
     font-size: 18px;
     font-weight: 700;
     padding: 12px 0;

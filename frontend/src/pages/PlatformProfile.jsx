@@ -18,6 +18,20 @@ export default function PlatformProfile() {
   const fileInputRef = useRef(null)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [preferences, setPreferences] = useState({
+    pushReminders: true,
+    emailSummaries: true,
+    profileVisibility: false,
+  })
+
+  const togglePreference = (key) => {
+    setPreferences((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }))
+    toast.success('Preference updated successfully.')
+  }
+
   const [form, setForm] = useState({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
@@ -174,9 +188,27 @@ export default function PlatformProfile() {
             </div>
           </div>
           <div className="workspace-card-body">
-            <div className="toggle-row"><div><strong>Push reminders</strong><p>Get live class alerts and test nudges.</p></div><span className="toggle toggle--on" /></div>
-            <div className="toggle-row"><div><strong>Email summaries</strong><p>Weekly progress and invoice summaries.</p></div><span className="toggle toggle--on" /></div>
-            <div className="toggle-row"><div><strong>Profile visibility</strong><p>Show your progress to assigned teachers.</p></div><span className="toggle" /></div>
+            <div className="toggle-row" onClick={() => togglePreference('pushReminders')} style={{ cursor: 'pointer' }}>
+              <div>
+                <strong>Push reminders</strong>
+                <p>Get live class alerts and test nudges.</p>
+              </div>
+              <span className={`toggle ${preferences.pushReminders ? 'toggle--on' : ''}`} />
+            </div>
+            <div className="toggle-row" onClick={() => togglePreference('emailSummaries')} style={{ cursor: 'pointer' }}>
+              <div>
+                <strong>Email summaries</strong>
+                <p>Weekly progress and invoice summaries.</p>
+              </div>
+              <span className={`toggle ${preferences.emailSummaries ? 'toggle--on' : ''}`} />
+            </div>
+            <div className="toggle-row" onClick={() => togglePreference('profileVisibility')} style={{ cursor: 'pointer' }}>
+              <div>
+                <strong>Profile visibility</strong>
+                <p>Show your progress to assigned teachers.</p>
+              </div>
+              <span className={`toggle ${preferences.profileVisibility ? 'toggle--on' : ''}`} />
+            </div>
           </div>
         </aside>
       </div>

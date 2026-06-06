@@ -84,9 +84,8 @@ function SubjectIcon({ subject }) {
 function LoadingCard({ label = 'Loading...' }) {
   return (
     <div className="workspace-card">
-      <div className="workspace-card-body">
-        <div className="skeleton-line" />
-        <p>{label}</p>
+      <div className="workspace-card-body" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 24px' }}>
+        <div className="loading-spinner"></div>
       </div>
     </div>
   )

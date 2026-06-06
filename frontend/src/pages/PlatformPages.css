@@ -2701,6 +2701,8 @@
   height: 30px;
   border-radius: 999px;
   background: rgba(108, 71, 255, 0.18);
+  cursor: pointer;
+  transition: background 200ms ease;
 }
 
 .toggle::after {
