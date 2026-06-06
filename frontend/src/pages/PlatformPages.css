@@ -3061,6 +3061,37 @@
   height: 280px;
 }
 
+.chart-panel .empty-state,
+.chart-panel .empty-state--compact {
+  height: 100%;
+  min-height: 0 !important;
+  padding: 20px 24px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 8px !important;
+  box-sizing: border-box !important;
+}
+
+.chart-panel .empty-orb {
+  width: 64px !important;
+  height: 64px !important;
+  margin: 0 0 4px !important;
+}
+
+.chart-panel .empty-state h3,
+.chart-panel .empty-state h4 {
+  font-size: 18px !important;
+  margin: 0 !important;
+}
+
+.chart-panel .empty-state p {
+  font-size: 13px !important;
+  margin: 0 !important;
+  max-width: 320px !important;
+}
+
 .metric-row {
   display: flex;
   align-items: center;
@@ -5760,14 +5791,17 @@ select:focus,
 }
 
 .mcq-inline-option-input {
-  border: none;
-  background: transparent;
+  border: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  height: auto !important;
   flex: 1;
-  padding: 10px 0;
-  color: var(--mcq-text);
-  font-size: 14px;
+  padding: 10px 0 !important;
+  color: var(--mcq-text) !important;
+  font-size: 14px !important;
   font-family: inherit;
-  outline: none;
+  outline: none !important;
 }
 
 /* Meta Grid (Correct select & explanation side-by-side) */
@@ -5845,11 +5879,11 @@ select:focus,
   line-height: 1.5;
 }
 
-/* Action Buttons Container (Bottom-left alignment) */
+/* Action Buttons Container (Centered alignment) */
 .mcq-inline-card-actions {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center !important;
   gap: 12px;
   margin-top: 8px;
   border-top: 1px solid var(--mcq-border);
@@ -5987,14 +6021,19 @@ select:focus,
     font-size: 13px;
   }
   .mcq-inline-card-actions {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
     gap: 10px;
   }
   .mcq-inline-card-actions .btn-mcq-save,
   .mcq-inline-card-actions .btn-mcq-reset,
   .mcq-inline-card-actions .btn-mcq-delete {
-    width: 100% !important;
+    width: auto !important;
+    flex: 1;
+    min-width: 0 !important;
+    padding: 0 10px !important;
+    font-size: 11px !important;
   }
 }
 

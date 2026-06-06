@@ -689,6 +689,10 @@ function TeacherInlineMcqCard({ mcq, index, chapterId, meta, onSaved, onDelete }
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
+  useEffect(() => {
+    setForm(mcqToForm(mcq))
+  }, [mcq])
+
   const setField = (field, value) =>
     setForm((current) => ({ ...current, [field]: value }))
 
