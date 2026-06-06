@@ -30,7 +30,7 @@ export default function PlatformPerformance() {
 
   return (
     <div className="workspace-page animate-fade-up">
-      <div className="workspace-columns-4">
+      <div className="card-grid">
         <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Attempted MCQs</span><StatIcon tone="purple" /></div><strong>{summary.totalAttempted}</strong><small>{Math.max(summary.totalMcqs - summary.totalAttempted, 0)} still unattempted</small></div>
         <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Overall Accuracy</span><StatIcon tone="teal" /></div><strong>{summary.overallAccuracy}%</strong><small>Live average across all attempts</small></div>
         <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Best Subject</span><StatIcon tone="amber" /></div><strong>{summary.bestSubject}</strong><small>Highest current subject accuracy</small></div>

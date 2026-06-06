@@ -69,7 +69,7 @@ export default function PlatformNotifications() {
         </div>
       </section>
 
-      <div className="workspace-columns-4">
+      <div className="card-grid">
         <div className="stat-tile stat-tile--purple">
           <div className="stat-tile-top"><span>Total inbox</span><span className="badge badge-purple">Today</span></div>
           <strong>{String(inboxItems.length).padStart(2, '0')}</strong>

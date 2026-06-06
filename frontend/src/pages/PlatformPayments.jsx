@@ -101,7 +101,7 @@ function StudentPayments() {
 function AdminPayments() {
   return (
     <div className="workspace-page workspace-page--payments animate-fade-up">
-      <div className="workspace-columns-4">
+      <div className="card-grid">
         <div className="stat-tile"><span>Monthly Revenue</span><strong>Rs 0</strong><small>No transactions yet</small></div>
         <div className="stat-tile"><span>Refund Requests</span><strong>0</strong><small>No refund activity</small></div>
         <div className="stat-tile"><span>JazzCash Share</span><strong>0%</strong><small>No gateway data</small></div>

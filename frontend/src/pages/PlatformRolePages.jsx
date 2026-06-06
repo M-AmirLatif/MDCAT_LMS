@@ -186,7 +186,7 @@ export function TeacherAnalyticsPage() {
 
   return (
     <div className="workspace-page animate-fade-up">
-      <div className="workspace-columns-4">
+      <div className="card-grid">
         <div className="stat-tile"><span>Class Average</span><strong>{summary.classAverage}%</strong></div>
         <div className="stat-tile"><span>Submission Rate</span><strong>{summary.submissionRate}%</strong></div>
         <div className="stat-tile"><span>Live Attendance</span><strong>{summary.liveAttendance}%</strong></div>
@@ -314,7 +314,7 @@ export function AdminStudentsPage() {
 
   return (
     <div className="workspace-page animate-fade-up">
-      <div className="workspace-columns-4">
+      <div className="card-grid">
         <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Total Students</span><span className="badge badge-purple">Live</span></div><strong>{overview.totalStudents}</strong><small>{overview.activeStudents} active accounts</small></div>
         <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Paid Access</span><span className="badge badge-teal">Plans</span></div><strong>{overview.activeSubscriptions}</strong><small>Current active subscriptions</small></div>
         <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Expiring Soon</span><span className="badge badge-amber">7 Days</span></div><strong>{overview.expiringSoon}</strong><small>Students needing renewal follow-up</small></div>

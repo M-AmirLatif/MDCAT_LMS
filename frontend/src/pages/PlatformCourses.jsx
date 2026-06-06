@@ -140,7 +140,7 @@ function TeacherMcqManagement() {
         </div>
       </section>
 
-      <div className="workspace-columns-4">
+      <div className="card-grid">
         {mdcatSubjects.map((subject) => {
           const style = SUBJECT_STYLES[subject.name]
           const active = selectedSubjectId === subject.id

@@ -77,7 +77,7 @@ function StudentDashboard({ firstName }) {
         </div>
       </section>
 
-      <div className="workspace-columns-4">
+      <div className="card-grid">
         {visibleSubjects.map((subject) => (
           <article key={subject.id} className={`workspace-card subject-focus-card ${SUBJECT_STYLES[subject.name].className}`}>
             <div className="workspace-card-head subject-focus-topline">
@@ -206,7 +206,7 @@ function TeacherDashboard() {
         </div>
       </section>
 
-      <div className="workspace-columns-4">
+      <div className="card-grid">
         <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Total MCQs</span><span className="badge badge-teal">Bank</span></div><strong>{totalMcqs}</strong><small>Live count from uploaded subject banks</small></div>
         <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Total Chapters</span><span className="badge badge-purple">Coverage</span></div><strong>{totalChapters}</strong><small>Chapter count across MDCAT subjects</small></div>
         <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Student Attempts</span><span className="badge badge-amber">Active</span></div><strong>0</strong><small>Attempts will appear after launch</small></div>
@@ -222,7 +222,7 @@ function TeacherDashboard() {
           </div>
         </div>
         <div className="workspace-card-body">
-          <div className="workspace-columns-4">
+          <div className="card-grid">
             {subjects.map((subject) => {
               const style = SUBJECT_STYLES[subject.name]
               return (
@@ -317,7 +317,7 @@ function AdminDashboard() {
         </div>
       </section>
 
-      <div className="workspace-columns-4">
+      <div className="card-grid">
         <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Total Students</span><span className="badge badge-purple">Live</span></div><strong>{overview.totalStudents}</strong><small>{overview.activeStudents} active accounts</small></div>
         <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Active Subscriptions</span><span className="badge badge-teal">Billing</span></div><strong>{overview.activeSubscriptions}</strong><small>{overview.expiringSoon} expiring within 7 days</small></div>
         <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Total Attempts</span><span className="badge badge-amber">Usage</span></div><strong>{overview.totalAttempts}</strong><small>Real chapter submissions from students</small></div>

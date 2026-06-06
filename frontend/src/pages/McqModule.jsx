@@ -178,7 +178,7 @@ function CourseSelection() {
       </section>
 
       {loading ? <LoadingCard label="Loading subject bank..." /> : null}
-      <div className="workspace-columns-4 mcq-subject-grid">
+      <div className="card-grid mcq-subject-grid">
         {merged.map((subject) => (
           <Link
             key={subject.id}

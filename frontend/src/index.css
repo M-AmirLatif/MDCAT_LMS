@@ -698,7 +698,6 @@ main {
 }
 
 .card,
-[class*="card"],
 .workspace-card,
 .summary-card,
 .stat-card,
