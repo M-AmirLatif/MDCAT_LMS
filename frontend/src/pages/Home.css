@@ -841,6 +841,11 @@
     border-radius: 22px;
     width: 100%;
     padding: 0 14px;
+    white-space: nowrap;
+  }
+
+  .lp-actions .lp-btn:only-of-type {
+    grid-column: 1 / 3;
   }
 
   .lp-hero {
