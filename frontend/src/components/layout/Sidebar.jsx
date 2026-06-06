@@ -240,6 +240,29 @@ export default function Sidebar({
           </button>
         </div>
       </aside>
+
+      <nav className="mobile-bottom-nav" aria-label="Mobile navigation">
+        <div className="mobile-bottom-nav-inner">
+          {mobileItems.slice(0, 4).map((item) => {
+            const active =
+              currentPath === item.path ||
+              (item.path !== '/dashboard' && currentPath.startsWith(item.path))
+
+            return (
+              <button
+                key={item.key}
+                className={`mobile-nav-item ${active ? 'mobile-nav-item--active' : ''}`}
+                type="button"
+                onClick={() => go(item.path)}
+              >
+                <span className="mobile-nav-item-icon">{getIcon(item.icon)}</span>
+                <span className="mobile-nav-item-label">{item.label}</span>
+              </button>
+            )
+          })}
+          <ThemeToggle className="theme-toggle--mobile-nav" />
+        </div>
+      </nav>
     </>
   )
 }

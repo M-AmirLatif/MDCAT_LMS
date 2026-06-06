@@ -2,6 +2,7 @@
   display: flex;
   min-height: 100vh;
   background: var(--bg-page);
+  overflow-x: hidden;
 }
 
 [data-theme="dark"] .app-layout {
@@ -33,6 +34,7 @@
 
 .app-content {
   flex: 1;
+  min-width: 0;
   min-height: calc(100vh - var(--topbar-height));
   padding: 28px;
   overflow-y: auto;
@@ -59,13 +61,13 @@
 
 @media (max-width: 768px) {
   .app-content {
-    padding: 18px 14px 24px;
+    padding: var(--space-page-y, 14px) var(--space-page-x, 14px) calc(76px + env(safe-area-inset-bottom));
   }
 }
 
 @media (max-width: 480px) {
   .app-content {
-    padding: 14px 10px 20px;
+    padding: var(--space-page-y, 10px) var(--space-page-x, 10px) calc(72px + env(safe-area-inset-bottom));
   }
 }
 

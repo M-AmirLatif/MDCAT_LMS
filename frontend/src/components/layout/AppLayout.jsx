@@ -27,6 +27,10 @@ export default function AppLayout() {
     }
   }, [sidebarCollapsed])
 
+  useEffect(() => {
+    closeSidebar()
+  }, [location.pathname])
+
   const layoutClass = useMemo(
     () => `app-layout ${sidebarCollapsed ? 'app-layout--collapsed' : ''}`.trim(),
     [sidebarCollapsed],

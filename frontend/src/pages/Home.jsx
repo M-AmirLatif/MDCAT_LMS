@@ -25,6 +25,7 @@ function formatStat(value) {
 export default function Home() {
   const user = getAuthUser()
   const [stats, setStats] = useState(null)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     let alive = true
@@ -54,10 +55,20 @@ export default function Home() {
           <span className="lp-mark">M</span>
           <span>MDCAT LMS</span>
         </Link>
-        <nav className="lp-links" aria-label="Public navigation">
-          <a href="#home">Home</a>
-          <a href="#courses">Courses</a>
-          <a href="#reviews">About</a>
+        <nav className={`lp-links ${menuOpen ? 'lp-links--open' : ''}`} aria-label="Public navigation">
+          <a href="#home" onClick={() => setMenuOpen(false)}>Home</a>
+          <a href="#courses" onClick={() => setMenuOpen(false)}>Courses</a>
+          <a href="#reviews" onClick={() => setMenuOpen(false)}>About</a>
+          <div className="lp-mobile-actions">
+            {user ? (
+              <Link className="lp-btn lp-btn-primary" to="/dashboard" onClick={() => setMenuOpen(false)}>Go to Dashboard</Link>
+            ) : (
+              <>
+                <Link className="lp-btn lp-btn-ghost" to="/login" onClick={() => setMenuOpen(false)}>Login</Link>
+                <Link className="lp-btn lp-btn-primary" to="/register" onClick={() => setMenuOpen(false)}>Join Now</Link>
+              </>
+            )}
+          </div>
         </nav>
         <div className="lp-actions">
           <ThemeToggle className="theme-toggle--public" />
@@ -70,6 +81,16 @@ export default function Home() {
             </>
           )}
         </div>
+        <button
+          className={`lp-menu-toggle ${menuOpen ? 'lp-menu-toggle--active' : ''}`}
+          onClick={() => setMenuOpen(!menuOpen)}
+          type="button"
+          aria-label="Toggle navigation menu"
+        >
+          <span className="lp-menu-bar"></span>
+          <span className="lp-menu-bar"></span>
+          <span className="lp-menu-bar"></span>
+        </button>
       </header>
 
       <section id="home" className="lp-hero">

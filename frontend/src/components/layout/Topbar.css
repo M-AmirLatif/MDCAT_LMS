@@ -14,9 +14,9 @@
 }
 
 [data-theme="dark"] .topbar {
-  background: rgba(12, 10, 30, 0.92);
+  background: var(--bg-page);
   border-bottom-color: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(20px);
+  backdrop-filter: none;
 }
 
 .topbar-left {
@@ -286,9 +286,9 @@
   .topbar-toggle,
   .topbar-action,
   .theme-toggle--topbar {
-    width: 42px;
-    height: 42px;
-    flex: 0 0 42px;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
     border-radius: 14px;
   }
 
@@ -317,6 +317,9 @@
   .topbar-page-title {
     font-size: 18px;
     line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .topbar-user-info {
@@ -324,21 +327,21 @@
   }
 
   .topbar-user {
-    min-width: 42px;
-    width: 42px;
-    height: 42px;
+    min-width: 44px;
+    width: 44px;
+    height: 44px;
     padding: 0;
     border: none !important;
     background: transparent !important;
     justify-content: center;
-    flex: 0 0 42px;
+    flex: 0 0 44px;
     box-shadow: none !important;
   }
 
   .topbar-avatar {
-    width: 42px;
-    height: 42px;
-    flex-basis: 42px;
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
   }
 }
 
@@ -361,5 +364,10 @@
 .topbar button:focus:not(:focus-visible),
 .topbar input:focus:not(:focus-visible) {
   outline: none;
+}
+
+.theme-switching .topbar {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
