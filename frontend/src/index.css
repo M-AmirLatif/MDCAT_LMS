@@ -172,19 +172,21 @@
 }
 
 [data-theme="light"] {
-  --bg-page:          #F5F4F8;
-  --bg-surface:       #FAFAFC;
-  --bg-surface-2:     #EEF0F6;
+  --bg-page:          #E4E7F0;
+  --bg-card:          #F2F3F8;
+  --bg-surface:       #EAECF3;
+  --bg-surface-2:     #E0E3ED;
   --bg-surface-3:     #E2E4EC;
   --bg-sidebar:       #0F0F1A;
-  --bg-navbar:        #FAFAFC;
+  --bg-navbar:        #EAECF3;
   --bg-input:         #FFFFFF;
   --bg-input-hover:   #F5F4F8;
-  --border-default:   rgba(15, 23, 42, 0.12);
-  --border-input:     rgba(15, 23, 42, 0.16);
-  --border-subtle:    rgba(15, 23, 42, 0.08);
+  --border-color:     #C4C8D8;
+  --border-default:   #C4C8D8;
+  --border-input:     #C4C8D8;
+  --border-subtle:    #D2D6E4;
   --text-primary:     #1A1A2E;
-  --text-secondary:   #4B5563;
+  --text-secondary:   #3D3D5C;
   --text-muted:       #6B7280;
   --text-on-dark:     #FFFFFF;
   --text-label:       #6C47FF;
@@ -193,7 +195,7 @@
   --color-teal:       #1DB884;
   --color-amber:      #F59E0B;
   --color-coral:      #FF6B6B;
-  --shadow-card:      0 2px 12px rgba(15, 23, 42, 0.06);
+  --shadow-card:      0 2px 8px rgba(0,0,0,0.07);
   --shadow-button:    0 4px 16px rgba(108, 71, 255, 0.20);
   --shadow-navbar:    0 1px 0 rgba(15, 23, 42, 0.04);
   --navbar-blur:      blur(0px);
@@ -326,11 +328,16 @@ input[type="range"],
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{font-size:16px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
 html,body,#root{width:100%;min-height:100vh}
-html,body{
+html, body {
+  background: var(--bg-page);
+  color: var(--text-primary);
   max-width: 100%;
   overflow-x: hidden;
 }
-body{font-family:var(--font-body);color:var(--text-primary);background:var(--bg-page);line-height:1.6}
+body {
+  font-family: var(--font-body);
+  line-height: 1.6;
+}
 button{font:inherit;cursor:pointer}
 img, video{
   max-width: 100%;
@@ -451,7 +458,7 @@ a:hover{color:var(--purple)}
 .btn-primary{background:var(--grad-purple);color:#fff;box-shadow:var(--shadow-purple)}
 .btn-primary:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 8px 28px rgba(108,71,255,0.32)}
 
-.btn-secondary{background:#fff;color:var(--purple);border:1.5px solid var(--purple)}
+.btn-secondary{background: var(--bg-card);color:var(--purple);border:1.5px solid var(--purple)}
 .btn-secondary:hover{background:var(--purple-subtle);transform:translateY(-1px)}
 
 .btn-ghost{background:transparent;color:var(--purple);border:1.5px solid var(--border)}

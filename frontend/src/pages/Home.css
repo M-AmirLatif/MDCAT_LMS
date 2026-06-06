@@ -141,7 +141,7 @@
 }
 
 .lp-btn-white {
-  background: #fff;
+  background: var(--bg-card);
   color: #6c47ff;
 }
 
@@ -400,7 +400,7 @@
 .lp-feature-item {
   padding: 28px 24px;
   border-radius: 18px;
-  background: #fff;
+  background: var(--bg-card);
   border: 1px solid rgba(108, 71, 255, 0.10);
   box-shadow: 0 8px 32px rgba(108, 71, 255, 0.08);
   transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
@@ -574,7 +574,7 @@
   text-align: left;
   text-decoration: none;
   color: #1a1a2e;
-  background: #fff;
+  background: var(--bg-card);
   border: 1px solid rgba(108, 71, 255, 0.12);
   box-shadow: 0 18px 42px rgba(108, 71, 255, 0.08);
   transition: transform 200ms ease, box-shadow 200ms ease;

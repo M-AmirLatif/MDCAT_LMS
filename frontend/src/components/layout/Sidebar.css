@@ -413,7 +413,7 @@
     bottom: 0;
     z-index: 96;
     padding: 8px 10px calc(10px + env(safe-area-inset-bottom));
-    background: #ffffff;
+    background: var(--bg-card);
     border-top: 1px solid rgba(108, 71, 255, 0.12);
     backdrop-filter: blur(12px);
   }

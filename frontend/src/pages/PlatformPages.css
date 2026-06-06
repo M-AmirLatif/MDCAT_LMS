@@ -2711,7 +2711,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--bg-card);
   transition: transform var(--ease);
 }
 
@@ -3783,14 +3783,24 @@
 
 .workspace-header-sticky {
   position: sticky;
-  top: var(--topbar-height, 68px);
+  top: -28px;
   z-index: 40;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
 }
 
+.workspace-header-sticky + * {
+  margin-top: 24px !important;
+}
+
 @media (max-width: 768px) {
   .workspace-header-sticky {
-    top: 66px !important;
+    top: -14px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .workspace-header-sticky {
+    top: -10px !important;
   }
 }
 
@@ -3821,7 +3831,7 @@
   border: 1.5px solid rgba(108, 71, 255, 0.16) !important;
   border-left: 4px solid #7c3aed !important;
   border-radius: 16px !important;
-  background: #fff !important;
+  background: var(--bg-card) !important;
   box-shadow: 0 2px 16px rgba(108, 71, 255, 0.08) !important;
   transition:
     box-shadow 0.2s ease,
@@ -4445,7 +4455,7 @@
   padding: 16px 18px;
   border: 1.5px solid rgba(124, 58, 237, 0.16);
   border-radius: 12px;
-  background: #fff;
+  background: var(--bg-card);
 }
 
 .teacher-review-render-label {

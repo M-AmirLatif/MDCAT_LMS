@@ -75,18 +75,36 @@ export function TeacherStudentsPage() {
                 <tr><th>Name</th><th>City</th><th>Score</th><th>Streak</th><th>Risk</th></tr>
               </thead>
               <tbody>
-                {studentRows.map((student) => (
-                  <tr key={student.name}>
-                    <td>{student.name}</td>
-                    <td>{student.city}</td>
-                    <td>{student.score}%</td>
-                    <td>{student.streak}</td>
-                    <td>{student.risk}</td>
+                {loading ? (
+                  <tr>
+                    <td colSpan="5">
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 24px' }}>
+                        <div className="loading-spinner"></div>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '14px', fontWeight: '500', margin: 0 }}>Loading student rows...</p>
+                      </div>
+                    </td>
                   </tr>
-                ))}
-                {!loading && studentRows.length === 0 ? (
-                  <tr><td colSpan="5"><div className="empty-state empty-state--compact"><div className="empty-orb" /><h3>No students yet</h3><p>Student rows will appear after real learners start practicing.</p></div></td></tr>
-                ) : null}
+                ) : studentRows.length > 0 ? (
+                  studentRows.map((student) => (
+                    <tr key={student.name}>
+                      <td>{student.name}</td>
+                      <td>{student.city}</td>
+                      <td>{student.score}%</td>
+                      <td>{student.streak}</td>
+                      <td>{student.risk}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5">
+                      <div className="empty-state empty-state--compact">
+                        <div className="empty-orb" />
+                        <h3>No students yet</h3>
+                        <p>Student rows will appear after real learners start practicing.</p>
+                      </div>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

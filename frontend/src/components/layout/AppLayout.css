@@ -1,8 +1,9 @@
 .app-layout {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  max-height: 100vh;
   background: var(--bg-page);
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 [data-theme="dark"] .app-layout {
@@ -22,6 +23,10 @@
   flex-direction: column;
   margin-left: var(--sidebar-width);
   transition: margin-left var(--ease);
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  background: var(--bg-page);
 }
 
 .app-layout .navbar,
@@ -35,6 +40,7 @@
   min-height: calc(100vh - var(--topbar-height));
   padding: 28px;
   overflow-y: auto;
+  background: var(--bg-page);
 }
 
 .sidebar-overlay {

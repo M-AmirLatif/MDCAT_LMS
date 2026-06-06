@@ -543,7 +543,7 @@
 
 .auth-secondary {
   border: 1.5px solid #ddd9f7;
-  background: #fff;
+  background: var(--bg-card);
   color: #6c47ff;
 }
 
@@ -578,7 +578,7 @@
   padding: 0 24px;
   border: 1.5px solid #ddd9f7;
   border-radius: 14px;
-  background: #fff;
+  background: var(--bg-card);
   color: #1a1a2e;
   font-size: 15px;
   font-weight: 700;
