@@ -24,7 +24,7 @@ export const PLATFORM_NAV = {
         { key: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
         { key: 'courses', label: 'Practice Subjects', path: '/mcqs', icon: 'courses' },
         { key: 'performance', label: 'Performance', path: '/performance', icon: 'performance' },
-        { key: 'notifications', label: 'Notifications', path: '/notifications', icon: 'notifications', badge: '3' },
+        { key: 'notifications', label: 'Notifications', path: '/notifications', icon: 'notifications' },
       ],
     },
     {

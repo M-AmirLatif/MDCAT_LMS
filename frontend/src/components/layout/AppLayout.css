@@ -62,13 +62,13 @@
 
 @media (max-width: 768px) {
   .app-content {
-    padding: 18px 14px 96px;
+    padding: 18px 14px 24px;
   }
 }
 
 @media (max-width: 480px) {
   .app-content {
-    padding: 14px 10px 96px;
+    padding: 14px 10px 20px;
   }
 }
 

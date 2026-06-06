@@ -1,6 +1,9 @@
 .sidebar {
   position: fixed;
   inset: 0 auto 0 0;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
   width: var(--sidebar-width);
   display: flex;
   flex-direction: column;
