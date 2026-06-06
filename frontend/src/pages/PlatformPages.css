@@ -142,6 +142,8 @@
   background: rgba(15, 15, 26, 0.16);
   border: 1px solid rgba(255, 255, 255, 0.16);
   backdrop-filter: blur(8px);
+  overflow: hidden;
+  transform: translateZ(0);
 }
 
 .hero-mini-card p,
@@ -1318,7 +1320,7 @@
   font-weight: 800;
   letter-spacing: 0.045em;
   text-transform: uppercase;
-  color: #7a69d6;
+  color: #5A45C2;
   line-height: 1.35;
   word-break: normal;
   overflow-wrap: normal;
@@ -2314,6 +2316,8 @@
   background: rgba(255, 255, 255, 0.12);
   border: 1px solid rgba(255, 255, 255, 0.16);
   backdrop-filter: blur(10px);
+  overflow: hidden;
+  transform: translateZ(0);
 }
 
 .notification-hero-panel-row {
@@ -3574,6 +3578,10 @@
 
   .workspace-page {
     gap: 18px;
+  }
+
+  .floating-grid {
+    grid-template-columns: 1fr;
   }
 
   .workspace-hero {

@@ -1605,6 +1605,12 @@ html[data-theme="dark"] .landing .lp-brand span:not(.lp-mark) {
 }
 
 /* Fix dark background box showing behind public navigation links in dark mode */
+html[data-theme="dark"] .landing .lp-links {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
 html[data-theme="dark"] .landing .lp-links a {
   background: transparent !important;
   background-color: transparent !important;
@@ -1760,3 +1766,23 @@ html:not([data-theme="dark"]) .insight-card .insight-badge {
   color: #6C47FF !important;
   -webkit-text-fill-color: #6C47FF !important;
 }
+
+/* Disabled inputs global visibility polish */
+input:disabled,
+textarea:disabled,
+select:disabled {
+  background: var(--bg-surface) !important;
+  color: var(--text-muted) !important;
+  border-color: var(--border-default) !important;
+  cursor: not-allowed !important;
+  opacity: 0.75 !important;
+  -webkit-text-fill-color: var(--text-muted) !important;
+}
+
+/* Fix subject focus cards metrics labels visibility in dark mode */
+html[data-theme="dark"] .subject-focus-metrics span,
+html[data-theme="dark"] .subject-stats-grid span {
+  color: var(--purple-light, #A590FF) !important;
+  -webkit-text-fill-color: var(--purple-light, #A590FF) !important;
+}
+
