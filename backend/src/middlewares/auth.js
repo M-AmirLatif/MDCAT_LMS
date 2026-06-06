@@ -15,25 +15,33 @@ exports.protect = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    
+
     // Lightweight: populate role name only (covers role-based authorize checks)
     const user = await User.findById(decoded.id).populate('role', 'name')
-    
+
     if (!user) {
       return res.status(401).json({ error: 'User no longer exists' })
     }
     if (user.isActive === false) {
-       return res.status(403).json({ error: 'Account is deactivated' })
+      return res.status(403).json({ error: 'Account is deactivated' })
     }
 
     // Single-device enforcement: students only
-    const roleName = user.role?.name === 'superadmin' ? 'admin' : user.role?.name
+    const roleName =
+      user.role?.name === 'superadmin' ? 'admin' : user.role?.name
     if (roleName === 'student' && decoded.sessionId) {
-      const freshUser = await User.findById(decoded.id).select('activeSessionId')
-      if (freshUser && freshUser.activeSessionId && freshUser.activeSessionId !== decoded.sessionId) {
+      const freshUser = await User.findById(decoded.id).select(
+        'activeSessionId',
+      )
+      if (
+        freshUser &&
+        freshUser.activeSessionId &&
+        freshUser.activeSessionId !== decoded.sessionId
+      ) {
         return res.status(401).json({
           error: 'SESSION_SUPERSEDED',
-          message: 'Your account was signed in on another device. Please log in again.'
+          message:
+            'Your account was signed in on another device. Please log in again.',
         })
       }
     }
@@ -59,28 +67,36 @@ exports.protectWithPermissions = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    
+
     // Full hydration: populate role with nested permissions
     const user = await User.findById(decoded.id).populate({
       path: 'role',
-      populate: { path: 'permissions' }
+      populate: { path: 'permissions' },
     })
-    
+
     if (!user) {
       return res.status(401).json({ error: 'User no longer exists' })
     }
     if (user.isActive === false) {
-       return res.status(403).json({ error: 'Account is deactivated' })
+      return res.status(403).json({ error: 'Account is deactivated' })
     }
 
     // Single-device enforcement: students only
-    const roleName = user.role?.name === 'superadmin' ? 'admin' : user.role?.name
+    const roleName =
+      user.role?.name === 'superadmin' ? 'admin' : user.role?.name
     if (roleName === 'student' && decoded.sessionId) {
-      const freshUser = await User.findById(decoded.id).select('activeSessionId')
-      if (freshUser && freshUser.activeSessionId && freshUser.activeSessionId !== decoded.sessionId) {
+      const freshUser = await User.findById(decoded.id).select(
+        'activeSessionId',
+      )
+      if (
+        freshUser &&
+        freshUser.activeSessionId &&
+        freshUser.activeSessionId !== decoded.sessionId
+      ) {
         return res.status(401).json({
           error: 'SESSION_SUPERSEDED',
-          message: 'Your account was signed in on another device. Please log in again.'
+          message:
+            'Your account was signed in on another device. Please log in again.',
         })
       }
     }
@@ -112,7 +128,7 @@ exports.authorize = (...requiredPermissions) => {
       }
       return next()
     }
-    
+
     if (!req.user.role || !req.user.role.permissions) {
       return res
         .status(403)
@@ -120,17 +136,21 @@ exports.authorize = (...requiredPermissions) => {
     }
 
     // Extract all permission names user possesses
-    const userPermissionNames = req.user.role.permissions.map(p => p.name)
+    const userPermissionNames = req.user.role.permissions.map((p) => p.name)
 
     // Check if user has ALL the required permissions
-    const hasAccess = requiredPermissions.every(rp => userPermissionNames.includes(rp))
+    const hasAccess = requiredPermissions.every((rp) =>
+      userPermissionNames.includes(rp),
+    )
 
     if (!hasAccess) {
       return res
         .status(403)
-        .json({ error: `Not authorized. Requires permissions: ${requiredPermissions.join(', ')}` })
+        .json({
+          error: `Not authorized. Requires permissions: ${requiredPermissions.join(', ')}`,
+        })
     }
-    
+
     next()
   }
 }

@@ -364,11 +364,9 @@ exports.googleLogin = async (req, res) => {
     }
 
     if (existingUser.isActive === false) {
-      return res
-        .status(403)
-        .json({
-          error: 'Your account has been deactivated. Please contact support.',
-        })
+      return res.status(403).json({
+        error: 'Your account has been deactivated. Please contact support.',
+      })
     }
 
     const roleDoc = await Role.findById(existingUser.role)
@@ -384,7 +382,9 @@ exports.googleLogin = async (req, res) => {
     const roleName = normalizeRoleName(roleDoc.name)
     if (roleName === 'student') {
       sessionId = crypto.randomUUID()
-      await User.findByIdAndUpdate(existingUser._id, { activeSessionId: sessionId })
+      await User.findByIdAndUpdate(existingUser._id, {
+        activeSessionId: sessionId,
+      })
     }
 
     const token = signAuthToken(existingUser._id, sessionId)
