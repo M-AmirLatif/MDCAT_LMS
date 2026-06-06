@@ -1150,7 +1150,7 @@ function McqList() {
 
   return (
     <div className="workspace-page workspace-page--mcq-list animate-fade-up">
-      <section className="workspace-card">
+      <section className="workspace-card workspace-header-sticky">
         <div className="workspace-card-head workspace-card-head--aligned">
           <div className="workspace-card-head-left">
             <div className="label-xs" style={{ color: meta.accent }}>
