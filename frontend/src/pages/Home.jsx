@@ -17,7 +17,7 @@ function Icon({ name }) {
 }
 
 function formatStat(value) {
-  if (value === null || value === undefined) return '—'
+  if (value === null || value === undefined) return '0'
   if (value >= 1000) return `${(value / 1000).toFixed(1)}K`
   return String(value)
 }
@@ -94,8 +94,6 @@ export default function Home() {
       </header>
 
       <section id="home" className="lp-hero">
-        <div className="lp-orb lp-orb-one" />
-        <div className="lp-orb lp-orb-two" />
         <div className="lp-grid-bg" />
         <div className="lp-float-card lp-float-card-one">
           <span>MDCAT BATCH 2026</span>

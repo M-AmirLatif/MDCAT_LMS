@@ -109,7 +109,7 @@ const buildAnalyticsData = (sessions = [], subjects = []) => {
       const risk = averageScore < 50 ? 'High' : averageScore < 70 ? 'Medium' : 'Low'
       return {
         name,
-        city: '—',
+        city: 'N/A',
         score: averageScore,
         streak: `${scores.length} attempts`,
         risk,
