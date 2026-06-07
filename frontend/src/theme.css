@@ -2039,3 +2039,69 @@ html[data-theme="dark"] .hero-section {
   -webkit-text-fill-color: #FFFFFF !important;
 }
 
+/* MCQ Bank / Editor Hierarchy styling overrides (Light Mode only) */
+html:not([data-theme="dark"]) .mcq-editor-card,
+html:not([data-theme="dark"]) .question-card,
+html:not([data-theme="dark"]) .mcq-bank-card,
+html:not([data-theme="dark"]) .teacher-mcq-card,
+html:not([data-theme="dark"]) .mcq-inline-card {
+  background: #F8F9FC !important;
+  border: 1.5px solid #C8CCDA !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+  border-radius: 14px !important;
+}
+
+html:not([data-theme="dark"]) .question-statement-box,
+html:not([data-theme="dark"]) .mcq-question-box,
+html:not([data-theme="dark"]) [class*="question-statement"],
+html:not([data-theme="dark"]) .mcq-inline-statement-textarea {
+  background: #EEF0F8 !important;
+  border: 1px solid #C8CCDA !important;
+  border-radius: 10px !important;
+}
+
+html:not([data-theme="dark"]) .mcq-option-row:not(.mcq-inline-option-row--correct),
+html:not([data-theme="dark"]) .option-row:not(.mcq-inline-option-row--correct),
+html:not([data-theme="dark"]) [class*="option-item"]:not(.mcq-inline-option-row--correct):not([class*="correct"]),
+html:not([data-theme="dark"]) [class*="mcq-option"]:not(.mcq-inline-option-row--correct):not([class*="correct"]),
+html:not([data-theme="dark"]) .mcq-inline-option-row:not(.mcq-inline-option-row--correct) {
+  background: #F4F5FA !important;
+  border: 1px solid #D0D4E4 !important;
+  border-radius: 10px !important;
+}
+
+html:not([data-theme="dark"]) .correct-option-box,
+html:not([data-theme="dark"]) [class*="correct-option"],
+html:not([data-theme="dark"]) .mcq-correct-box,
+html:not([data-theme="dark"]) .mcq-inline-option-row--correct {
+  background: #EDFAF4 !important;
+  border: 2px solid #1DB884 !important;
+  border-radius: 12px !important;
+}
+
+html:not([data-theme="dark"]) .explanation-box,
+html:not([data-theme="dark"]) [class*="explanation"],
+html:not([data-theme="dark"]) .mcq-explanation-box {
+  background: #F0F2FC !important;
+  border: 1px solid #C8CCDA !important;
+  border-radius: 12px !important;
+}
+
+html:not([data-theme="dark"]) .mcq-bank-header,
+html:not([data-theme="dark"]) .chapter-header-card,
+html:not([data-theme="dark"]) .workspace-header-sticky {
+  background: #F4F5FA !important;
+  border: 1.5px solid #C8CCDA !important;
+  border-radius: 14px !important;
+}
+
+html:not([data-theme="dark"]) .mcq-section-label,
+html:not([data-theme="dark"]) [class*="section-label"],
+html:not([data-theme="dark"]) .field-label {
+  color: #6B7280 !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+}
+
