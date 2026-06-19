@@ -3263,7 +3263,19 @@
     text-transform: uppercase;
   }
 
+  .teacher-students-table td[colspan] {
+    display: block;
+    width: 100%;
+  }
+
+  .teacher-students-table td[colspan]::before {
+    display: none;
+    content: none;
+  }
+
   .teacher-students-list-card .empty-state--compact {
+    width: 100% !important;
+    max-width: 100% !important;
     min-height: 0 !important;
     padding: 24px 16px !important;
   }
@@ -4160,17 +4172,17 @@
 .teacher-mcq-option-grid {
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 14px !important;
-  padding: 18px 22px !important;
+  gap: 16px !important;
+  padding: 22px 26px !important;
   border-bottom: 1.5px solid rgba(108, 71, 255, 0.09) !important;
   background: #f3f0ff !important;
 }
 
 .teacher-mcq-option-field {
   display: grid !important;
-  gap: 10px !important;
+  gap: 12px !important;
   min-width: 0 !important;
-  padding: 16px !important;
+  padding: 18px !important;
   border: 1.5px solid rgba(124, 58, 237, 0.18) !important;
   border-radius: 10px !important;
   background: #f6f4ff !important;
@@ -4871,6 +4883,7 @@
   .teacher-mcq-option-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 10px !important;
+    padding: 16px 18px !important;
   }
 
   .teacher-mcq-editor-bottom {
@@ -4879,7 +4892,7 @@
 
   .teacher-mcq-option-field {
     gap: 8px !important;
-    padding: 12px !important;
+    padding: 14px !important;
   }
 
   .teacher-mcq-option-field textarea,
