@@ -6053,10 +6053,11 @@ select:focus,
 }
 
 .mcq-inline-option-row--correct .mcq-option-badge {
-  background: var(--mcq-success) !important;
-  color: #FFFFFF !important;
-  border-color: var(--mcq-success) !important;
-  border: none !important;
+  background: #10b981 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  border: 1px solid #059669 !important;
+  box-shadow: 0 6px 14px rgba(16, 185, 129, 0.22) !important;
 }
 
 .mcq-inline-option-input {
@@ -6071,6 +6072,12 @@ select:focus,
   font-size: 16px !important;
   font-family: inherit;
   outline: none !important;
+}
+
+[data-theme="dark"] .mcq-inline-option-input {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
 }
 
 /* Meta Grid (Correct select & explanation side-by-side) */
