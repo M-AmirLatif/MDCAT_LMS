@@ -12,7 +12,12 @@ const SUBJECT_SLUGS = {
   english: 'English',
 }
 
-const normalizeSubject = (value) => SUBJECT_SLUGS[String(value || '').trim().toLowerCase()] || null
+const normalizeSubject = (value) =>
+  SUBJECT_SLUGS[
+    String(value || '')
+      .trim()
+      .toLowerCase()
+  ] || null
 const slugifyChapter = (name) =>
   String(name || '')
     .trim()
@@ -58,13 +63,19 @@ const ensureSubjectCourse = async (subject, user) => {
 }
 
 const getChapter = (course, chapterId) =>
-  (course.chapters || []).find((chapter) => String(chapter.id) === String(chapterId))
+  (course.chapters || []).find(
+    (chapter) => String(chapter.id) === String(chapterId),
+  )
 
-const getChapterTopics = (chapter) => Array.isArray(chapter?.topics) ? chapter.topics : []
-const getChapterReviewQueue = (chapter) => Array.isArray(chapter?.reviewQueue) ? chapter.reviewQueue : []
+const getChapterTopics = (chapter) =>
+  Array.isArray(chapter?.topics) ? chapter.topics : []
+const getChapterReviewQueue = (chapter) =>
+  Array.isArray(chapter?.reviewQueue) ? chapter.reviewQueue : []
 
 const getTopic = (chapter, topicId) =>
-  getChapterTopics(chapter).find((topic) => String(topic.id) === String(topicId))
+  getChapterTopics(chapter).find(
+    (topic) => String(topic.id) === String(topicId),
+  )
 
 const createReviewQueueItemId = () =>
   `review-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
@@ -91,17 +102,27 @@ const normalizeMediaMarkup = (value) =>
     .replace(MARKDOWN_IMAGE_REGEX, (_, alt, url) =>
       encodeImageToken({ url, alt }),
     )
-    .replace(STANDALONE_IMAGE_URL_REGEX, (_, prefix, url) =>
-      `${prefix}${encodeImageToken({ url })}`,
+    .replace(
+      STANDALONE_IMAGE_URL_REGEX,
+      (_, prefix, url) => `${prefix}${encodeImageToken({ url })}`,
     )
 
 const sanitizeCsvCell = (value) =>
-  DOMPurify.sanitize(normalizeMediaMarkup(String(value || '').trim()), { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })
+  DOMPurify.sanitize(normalizeMediaMarkup(String(value || '').trim()), {
+    ALLOWED_TAGS: [],
+    ALLOWED_ATTR: [],
+  })
 
-const hasLatex = (text) => /(\$\$[\s\S]+?\$\$|\$[^$]+?\$)/.test(String(text || ''))
+const hasLatex = (text) =>
+  /(\$\$[\s\S]+?\$\$|\$[^$]+?\$)/.test(String(text || ''))
 const hasDiagram = (text) => /\[DIAGRAM:\s*.*?\]/i.test(String(text || ''))
-const hasImageReference = (text) => /\[IMAGE:\s*.*?\]/i.test(String(text || ''))
-const hasUnavailableDiagram = (text) => /\[DIAGRAM:\s*unavailable\s*\]/i.test(String(text || ''))
+// mcqController.js — line 103
+const hasImageReference = (text) =>
+  /\[(?:IMAGE|IMG|PIC|PICTURE|FIGURE|SCREENSHOT|SS):\s*.*?\]/i.test(
+    String(text || ''),
+  )
+const hasUnavailableDiagram = (text) =>
+  /\[DIAGRAM:\s*unavailable\s*\]/i.test(String(text || ''))
 
 const stripWrappedMath = (text) =>
   String(text || '').replace(/(\$\$[\s\S]+?\$\$|\$[^$]+?\$)/g, ' ')
@@ -112,7 +133,9 @@ const hasRawLatexLikeText = (text) => {
 }
 
 const normalizeCsvCorrectAnswer = (value) => {
-  const normalized = String(value || '').trim().toLowerCase()
+  const normalized = String(value || '')
+    .trim()
+    .toLowerCase()
   if (!normalized) return ''
   if (['a', 'b', 'c', 'd'].includes(normalized)) return normalized
   const first = normalized[0]
@@ -141,7 +164,8 @@ const determineReviewReasons = ({
     reasons.push('correct_answer must be a, b, c, or d')
   }
   if (!explanation) reasons.push('Explanation is empty')
-  if (hasUnavailableDiagram(question)) reasons.push('Diagram description unavailable')
+  if (hasUnavailableDiagram(question))
+    reasons.push('Diagram description unavailable')
 
   const cells = [question, optionA, optionB, optionC, optionD, explanation]
   if (cells.some((cell) => hasRawLatexLikeText(cell))) {
@@ -217,14 +241,24 @@ const createMcqDocFromRow = ({
   hasDiagram: [question, optionA, optionB, optionC, optionD, explanation].some(
     (value) => hasDiagram(value) || hasImageReference(value),
   ),
-  hasLatex: [question, optionA, optionB, optionC, optionD, explanation].some(hasLatex),
+  hasLatex: [question, optionA, optionB, optionC, optionD, explanation].some(
+    hasLatex,
+  ),
   reviewReason,
 })
 
-const normalizeOptionsFromLetters = ({ optionA, optionB, optionC, optionD, correctAnswer }) => {
+const normalizeOptionsFromLetters = ({
+  optionA,
+  optionB,
+  optionC,
+  optionD,
+  correctAnswer,
+}) => {
   const letters = ['A', 'B', 'C', 'D']
   const values = [optionA, optionB, optionC, optionD]
-  const normalizedAnswer = String(correctAnswer || '').trim().toUpperCase()
+  const normalizedAnswer = String(correctAnswer || '')
+    .trim()
+    .toUpperCase()
   return values.map((text, index) => ({
     text: String(text || '').trim(),
     isCorrect: letters[index] === normalizedAnswer,
@@ -309,9 +343,9 @@ exports.createMcq = async (req, res) => {
     const sanitizedQuestion = sanitizeCsvCell(question)
     const sanitizedOptions = Array.isArray(options)
       ? options.map((option) => ({
-        ...option,
-        text: sanitizeCsvCell(option?.text),
-      }))
+          ...option,
+          text: sanitizeCsvCell(option?.text),
+        }))
       : options
     const sanitizedExplanation = sanitizeCsvCell(explanation)
 
@@ -357,11 +391,19 @@ exports.createMcq = async (req, res) => {
       createdBy: req.user.id,
       isPublished: typeof isPublished === 'boolean' ? isPublished : false,
       correctAnswer:
-        ['A', 'B', 'C', 'D'][sanitizedOptions.findIndex((option) => option.isCorrect)] || null,
-      hasDiagram: [sanitizedQuestion, ...sanitizedOptions.map((option) => option?.text), sanitizedExplanation].some(
-        (value) => hasDiagram(value) || hasImageReference(value),
-      ),
-      hasLatex: [sanitizedQuestion, ...sanitizedOptions.map((option) => option?.text), sanitizedExplanation].some(hasLatex),
+        ['A', 'B', 'C', 'D'][
+          sanitizedOptions.findIndex((option) => option.isCorrect)
+        ] || null,
+      hasDiagram: [
+        sanitizedQuestion,
+        ...sanitizedOptions.map((option) => option?.text),
+        sanitizedExplanation,
+      ].some((value) => hasDiagram(value) || hasImageReference(value)),
+      hasLatex: [
+        sanitizedQuestion,
+        ...sanitizedOptions.map((option) => option?.text),
+        sanitizedExplanation,
+      ].some(hasLatex),
     })
 
     res.status(201).json({
@@ -467,7 +509,10 @@ exports.getMcqsByCourseFull = async (req, res) => {
     const filter = { courseId: req.params.courseId }
 
     const page = Math.max(1, parseInt(req.query.page, 10) || 1)
-    const limit = Math.min(200, Math.max(1, parseInt(req.query.limit, 10) || 50))
+    const limit = Math.min(
+      200,
+      Math.max(1, parseInt(req.query.limit, 10) || 50),
+    )
     const skip = (page - 1) * limit
 
     const [mcqs, total] = await Promise.all([
@@ -515,14 +560,16 @@ exports.updateMcq = async (req, res) => {
       hasLatex: incomingHasLatex,
       reviewReason,
     } = req.body
-    const sanitizedQuestion = question === undefined ? undefined : sanitizeCsvCell(question)
+    const sanitizedQuestion =
+      question === undefined ? undefined : sanitizeCsvCell(question)
     const sanitizedOptions = Array.isArray(options)
       ? options.map((option) => ({
-        ...option,
-        text: sanitizeCsvCell(option?.text),
-      }))
+          ...option,
+          text: sanitizeCsvCell(option?.text),
+        }))
       : options
-    const sanitizedExplanation = explanation === undefined ? undefined : sanitizeCsvCell(explanation)
+    const sanitizedExplanation =
+      explanation === undefined ? undefined : sanitizeCsvCell(explanation)
 
     let mcq = await MCQ.findById(req.params.mcqId)
 
@@ -561,16 +608,28 @@ exports.updateMcq = async (req, res) => {
         isPastPaper,
         isPublished,
         needsReview,
-        hasDiagram: typeof incomingHasDiagram === 'boolean'
-          ? incomingHasDiagram
-          : [sanitizedQuestion, ...(sanitizedOptions || []).map((option) => option?.text), sanitizedExplanation].some(
-            (value) => hasDiagram(value) || hasImageReference(value),
-          ),
-        hasLatex: typeof incomingHasLatex === 'boolean'
-          ? incomingHasLatex
-          : [sanitizedQuestion, ...(sanitizedOptions || []).map((option) => option?.text), sanitizedExplanation].some(hasLatex),
+        hasDiagram:
+          typeof incomingHasDiagram === 'boolean'
+            ? incomingHasDiagram
+            : [
+                sanitizedQuestion,
+                ...(sanitizedOptions || []).map((option) => option?.text),
+                sanitizedExplanation,
+              ].some((value) => hasDiagram(value) || hasImageReference(value)),
+        hasLatex:
+          typeof incomingHasLatex === 'boolean'
+            ? incomingHasLatex
+            : [
+                sanitizedQuestion,
+                ...(sanitizedOptions || []).map((option) => option?.text),
+                sanitizedExplanation,
+              ].some(hasLatex),
         reviewReason: reviewReason || null,
-        correctAnswer: sanitizedOptions ? ['A', 'B', 'C', 'D'][sanitizedOptions.findIndex((option) => option.isCorrect)] || null : mcq.correctAnswer,
+        correctAnswer: sanitizedOptions
+          ? ['A', 'B', 'C', 'D'][
+              sanitizedOptions.findIndex((option) => option.isCorrect)
+            ] || null
+          : mcq.correctAnswer,
       },
       { new: true, runValidators: true },
     )
@@ -620,7 +679,9 @@ exports.getSubjectSummary = async (req, res) => {
     const courses = await Course.find({ category: { $in: SUBJECTS } })
       .select('_id category chapters')
       .lean()
-    const courseBySubject = new Map(courses.map((course) => [course.category, course]))
+    const courseBySubject = new Map(
+      courses.map((course) => [course.category, course]),
+    )
     const courseIds = courses.map((course) => course._id)
 
     const mcqCounts = await MCQ.aggregate([
@@ -632,7 +693,9 @@ exports.getSubjectSummary = async (req, res) => {
         },
       },
     ])
-    const mcqCountBySubject = new Map(mcqCounts.map((item) => [item._id, item.totalMcqs]))
+    const mcqCountBySubject = new Map(
+      mcqCounts.map((item) => [item._id, item.totalMcqs]),
+    )
 
     const subjects = SUBJECTS.map((subject) => {
       const course = courseBySubject.get(subject)
@@ -659,14 +722,18 @@ exports.getChaptersBySubject = async (req, res) => {
 
     const course = await getSubjectCourse(subject)
     if (!course) {
-      return res.status(200).json({ success: true, subject, courseId: null, chapters: [] })
+      return res
+        .status(200)
+        .json({ success: true, subject, courseId: null, chapters: [] })
     }
 
     const counts = await MCQ.aggregate([
       { $match: { courseId: course._id, subject } },
       { $group: { _id: '$chapterId', totalMcqs: { $sum: 1 } } },
     ])
-    const countByChapter = new Map(counts.map((item) => [item._id, item.totalMcqs]))
+    const countByChapter = new Map(
+      counts.map((item) => [item._id, item.totalMcqs]),
+    )
 
     const topicCounts = await MCQ.aggregate([
       { $match: { courseId: course._id, subject, topicId: { $ne: null } } },
@@ -678,7 +745,10 @@ exports.getChaptersBySubject = async (req, res) => {
       },
     ])
     const topicCountByKey = new Map(
-      topicCounts.map((item) => [`${item._id.chapterId}:${item._id.topicId}`, item.totalMcqs]),
+      topicCounts.map((item) => [
+        `${item._id.chapterId}:${item._id.topicId}`,
+        item.totalMcqs,
+      ]),
     )
 
     const chapters = (course.chapters || []).map((chapter) => ({
@@ -694,7 +764,9 @@ exports.getChaptersBySubject = async (req, res) => {
       })),
     }))
 
-    res.status(200).json({ success: true, subject, courseId: course._id, chapters })
+    res
+      .status(200)
+      .json({ success: true, subject, courseId: course._id, chapters })
   } catch (error) {
     res.status(500).json({ error: error.message })
   }
@@ -708,15 +780,20 @@ exports.createChapter = async (req, res) => {
 
     const name = String(req.body.name || '').trim()
     const description = String(req.body.description || '').trim()
-    if (!name) return res.status(400).json({ error: 'Chapter name is required' })
+    if (!name)
+      return res.status(400).json({ error: 'Chapter name is required' })
 
     const course = await ensureSubjectCourse(subject, req.user)
     if (!canManageCourse(course, req.user)) {
-      return res.status(403).json({ error: 'Not authorized to manage this subject' })
+      return res
+        .status(403)
+        .json({ error: 'Not authorized to manage this subject' })
     }
 
     const baseId = slugifyChapter(name)
-    const existingIds = new Set((course.chapters || []).map((chapter) => chapter.id))
+    const existingIds = new Set(
+      (course.chapters || []).map((chapter) => chapter.id),
+    )
     let chapterId = baseId
     let counter = 2
     while (existingIds.has(chapterId)) {
@@ -745,16 +822,20 @@ exports.updateChapter = async (req, res) => {
     if (!subject) return res.status(400).json({ error: 'Invalid subject' })
 
     const course = await getSubjectCourseFull(subject)
-    if (!course) return res.status(404).json({ error: 'Subject course not found' })
+    if (!course)
+      return res.status(404).json({ error: 'Subject course not found' })
     if (!canManageCourse(course, req.user)) {
-      return res.status(403).json({ error: 'Not authorized to manage this subject' })
+      return res
+        .status(403)
+        .json({ error: 'Not authorized to manage this subject' })
     }
 
     const chapter = getChapter(course, req.params.chapterId)
     if (!chapter) return res.status(404).json({ error: 'Chapter not found' })
 
     const name = String(req.body.name || '').trim()
-    if (!name) return res.status(400).json({ error: 'Chapter name is required' })
+    if (!name)
+      return res.status(400).json({ error: 'Chapter name is required' })
 
     chapter.name = name
     chapter.description = String(req.body.description || '').trim()
@@ -766,14 +847,23 @@ exports.updateChapter = async (req, res) => {
     )
 
     await MCQ.updateMany(
-      { courseId: course._id, chapterId: chapter.id, $or: [{ topicId: null }, { topicId: { $exists: false } }] },
+      {
+        courseId: course._id,
+        chapterId: chapter.id,
+        $or: [{ topicId: null }, { topicId: { $exists: false } }],
+      },
       { topic: chapter.name },
     )
 
     res.status(200).json({
       success: true,
       message: 'Chapter updated successfully',
-      chapter: { id: chapter.id, name: chapter.name, description: chapter.description || '', topics: getChapterTopics(chapter) },
+      chapter: {
+        id: chapter.id,
+        name: chapter.name,
+        description: chapter.description || '',
+        topics: getChapterTopics(chapter),
+      },
     })
   } catch (error) {
     res.status(500).json({ error: error.message })
@@ -787,9 +877,12 @@ exports.deleteChapter = async (req, res) => {
     if (!subject) return res.status(400).json({ error: 'Invalid subject' })
 
     const course = await getSubjectCourseFull(subject)
-    if (!course) return res.status(404).json({ error: 'Subject course not found' })
+    if (!course)
+      return res.status(404).json({ error: 'Subject course not found' })
     if (!canManageCourse(course, req.user)) {
-      return res.status(403).json({ error: 'Not authorized to manage this subject' })
+      return res
+        .status(403)
+        .json({ error: 'Not authorized to manage this subject' })
     }
 
     const chapter = getChapter(course, req.params.chapterId)
@@ -822,9 +915,12 @@ exports.createTopic = async (req, res) => {
     if (!subject) return res.status(400).json({ error: 'Invalid subject' })
 
     const course = await getSubjectCourseFull(subject)
-    if (!course) return res.status(404).json({ error: 'Subject course not found' })
+    if (!course)
+      return res.status(404).json({ error: 'Subject course not found' })
     if (!canManageCourse(course, req.user)) {
-      return res.status(403).json({ error: 'Not authorized to manage this subject' })
+      return res
+        .status(403)
+        .json({ error: 'Not authorized to manage this subject' })
     }
 
     const chapter = getChapter(course, req.params.chapterId)
@@ -835,7 +931,9 @@ exports.createTopic = async (req, res) => {
     if (!name) return res.status(400).json({ error: 'Topic name is required' })
 
     const baseId = slugifyChapter(name)
-    const existingIds = new Set(getChapterTopics(chapter).map((topic) => topic.id))
+    const existingIds = new Set(
+      getChapterTopics(chapter).map((topic) => topic.id),
+    )
     let topicId = baseId
     let counter = 2
     while (existingIds.has(topicId)) {
@@ -864,9 +962,12 @@ exports.updateTopic = async (req, res) => {
     if (!subject) return res.status(400).json({ error: 'Invalid subject' })
 
     const course = await getSubjectCourseFull(subject)
-    if (!course) return res.status(404).json({ error: 'Subject course not found' })
+    if (!course)
+      return res.status(404).json({ error: 'Subject course not found' })
     if (!canManageCourse(course, req.user)) {
-      return res.status(403).json({ error: 'Not authorized to manage this subject' })
+      return res
+        .status(403)
+        .json({ error: 'Not authorized to manage this subject' })
     }
 
     const chapter = getChapter(course, req.params.chapterId)
@@ -891,7 +992,11 @@ exports.updateTopic = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Topic updated successfully',
-      topic: { id: topic.id, name: topic.name, description: topic.description || '' },
+      topic: {
+        id: topic.id,
+        name: topic.name,
+        description: topic.description || '',
+      },
     })
   } catch (error) {
     res.status(500).json({ error: error.message })
@@ -905,9 +1010,12 @@ exports.deleteTopic = async (req, res) => {
     if (!subject) return res.status(400).json({ error: 'Invalid subject' })
 
     const course = await getSubjectCourseFull(subject)
-    if (!course) return res.status(404).json({ error: 'Subject course not found' })
+    if (!course)
+      return res.status(404).json({ error: 'Subject course not found' })
     if (!canManageCourse(course, req.user)) {
-      return res.status(403).json({ error: 'Not authorized to manage this subject' })
+      return res
+        .status(403)
+        .json({ error: 'Not authorized to manage this subject' })
     }
 
     const chapter = getChapter(course, req.params.chapterId)
@@ -916,15 +1024,25 @@ exports.deleteTopic = async (req, res) => {
     const topic = getTopic(chapter, req.params.topicId)
     if (!topic) return res.status(404).json({ error: 'Topic not found' })
 
-    const mcqCount = await MCQ.countDocuments({ courseId: course._id, chapterId: chapter.id, topicId: topic.id })
+    const mcqCount = await MCQ.countDocuments({
+      courseId: course._id,
+      chapterId: chapter.id,
+      topicId: topic.id,
+    })
     if (mcqCount > 0) {
-      return res.status(400).json({ error: 'Cannot delete topic while MCQs exist inside it' })
+      return res
+        .status(400)
+        .json({ error: 'Cannot delete topic while MCQs exist inside it' })
     }
 
-    chapter.topics = getChapterTopics(chapter).filter((item) => item.id !== topic.id)
+    chapter.topics = getChapterTopics(chapter).filter(
+      (item) => item.id !== topic.id,
+    )
     await course.save()
 
-    res.status(200).json({ success: true, message: 'Topic deleted successfully' })
+    res
+      .status(200)
+      .json({ success: true, message: 'Topic deleted successfully' })
   } catch (error) {
     res.status(500).json({ error: error.message })
   }
@@ -940,7 +1058,12 @@ const resolveChapterTopicContext = (chapter, topicId) => {
   return { topic, topicFilter: { topicId: topic.id } }
 }
 
-const buildChapterMcqFilter = async (subjectParam, chapterId, includeUnpublished = false, topicId = null) => {
+const buildChapterMcqFilter = async (
+  subjectParam,
+  chapterId,
+  includeUnpublished = false,
+  topicId = null,
+) => {
   const subject = normalizeSubject(subjectParam)
   if (!subject) return { error: 'Invalid subject' }
 
@@ -953,7 +1076,12 @@ const buildChapterMcqFilter = async (subjectParam, chapterId, includeUnpublished
   const topicContext = resolveChapterTopicContext(chapter, topicId)
   if (topicContext.error) return { error: topicContext.error }
 
-  const filter = { courseId: course._id, subject, chapterId: chapter.id, ...topicContext.topicFilter }
+  const filter = {
+    courseId: course._id,
+    subject,
+    chapterId: chapter.id,
+    ...topicContext.topicFilter,
+  }
   if (!includeUnpublished) filter.isPublished = true
   return { subject, course, chapter, topic: topicContext.topic, filter }
 }
@@ -963,10 +1091,20 @@ exports.getMcqsByChapter = async (req, res) => {
   try {
     const role = req.user?.role?.name
     const includeFull = teacherRoleNames.has(role)
-    const context = await buildChapterMcqFilter(req.params.subject, req.params.chapterId, includeFull, req.query.topicId || null)
+    const context = await buildChapterMcqFilter(
+      req.params.subject,
+      req.params.chapterId,
+      includeFull,
+      req.query.topicId || null,
+    )
     if (context.error) return res.status(400).json({ error: context.error })
     if (!context.course || !context.chapter) {
-      return res.status(200).json({ success: true, subject: context.subject, chapter: null, mcqs: [] })
+      return res.status(200).json({
+        success: true,
+        subject: context.subject,
+        chapter: null,
+        mcqs: [],
+      })
     }
 
     const mcqs = await MCQ.find(context.filter).sort({ createdAt: 1 }).lean()
@@ -984,7 +1122,9 @@ exports.getMcqsByChapter = async (req, res) => {
           if (!req.query.topicId) return true
           return String(item.topicId || '') === String(req.query.topicId)
         })
-        .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)),
+        .sort(
+          (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0),
+        ),
       count: safeMcqs.length,
       mcqs: safeMcqs,
     })
@@ -996,23 +1136,51 @@ exports.getMcqsByChapter = async (req, res) => {
 // ==================== CREATE CHAPTER MCQ ====================
 exports.createChapterMcq = async (req, res) => {
   try {
-    const context = await buildChapterMcqFilter(req.params.subject, req.params.chapterId, true, req.body.topicId || null)
+    const context = await buildChapterMcqFilter(
+      req.params.subject,
+      req.params.chapterId,
+      true,
+      req.body.topicId || null,
+    )
     if (context.error) return res.status(400).json({ error: context.error })
-    if (!context.course || !context.chapter) return res.status(404).json({ error: 'Chapter not found' })
+    if (!context.course || !context.chapter)
+      return res.status(404).json({ error: 'Chapter not found' })
     if (!canManageCourse(context.course, req.user)) {
-      return res.status(403).json({ error: 'Not authorized to manage this subject' })
+      return res
+        .status(403)
+        .json({ error: 'Not authorized to manage this subject' })
     }
 
-    const { question, optionA, optionB, optionC, optionD, correctAnswer, explanation, difficulty } = req.body
-    const normalizedAnswer = String(correctAnswer || '').trim().toUpperCase()
+    const {
+      question,
+      optionA,
+      optionB,
+      optionC,
+      optionD,
+      correctAnswer,
+      explanation,
+      difficulty,
+    } = req.body
+    const normalizedAnswer = String(correctAnswer || '')
+      .trim()
+      .toUpperCase()
     const sanitizedQuestion = sanitizeCsvCell(question)
     const sanitizedOptionA = sanitizeCsvCell(optionA)
     const sanitizedOptionB = sanitizeCsvCell(optionB)
     const sanitizedOptionC = sanitizeCsvCell(optionC)
     const sanitizedOptionD = sanitizeCsvCell(optionD)
     const sanitizedExplanation = sanitizeCsvCell(explanation)
-    if (!sanitizedQuestion || !sanitizedOptionA || !sanitizedOptionB || !sanitizedOptionC || !sanitizedOptionD || !['A', 'B', 'C', 'D'].includes(normalizedAnswer)) {
-      return res.status(400).json({ error: 'Question, all options, and correct answer A-D are required' })
+    if (
+      !sanitizedQuestion ||
+      !sanitizedOptionA ||
+      !sanitizedOptionB ||
+      !sanitizedOptionC ||
+      !sanitizedOptionD ||
+      !['A', 'B', 'C', 'D'].includes(normalizedAnswer)
+    ) {
+      return res.status(400).json({
+        error: 'Question, all options, and correct answer A-D are required',
+      })
     }
 
     const options = normalizeOptionsFromLetters({
@@ -1037,14 +1205,28 @@ exports.createChapterMcq = async (req, res) => {
       isPublished: true,
       correctAnswer: normalizedAnswer,
       needsReview: false,
-      hasDiagram: [sanitizedQuestion, sanitizedOptionA, sanitizedOptionB, sanitizedOptionC, sanitizedOptionD, sanitizedExplanation].some(
-        (value) => hasDiagram(value) || hasImageReference(value),
-      ),
-      hasLatex: [sanitizedQuestion, sanitizedOptionA, sanitizedOptionB, sanitizedOptionC, sanitizedOptionD, sanitizedExplanation].some(hasLatex),
+      hasDiagram: [
+        sanitizedQuestion,
+        sanitizedOptionA,
+        sanitizedOptionB,
+        sanitizedOptionC,
+        sanitizedOptionD,
+        sanitizedExplanation,
+      ].some((value) => hasDiagram(value) || hasImageReference(value)),
+      hasLatex: [
+        sanitizedQuestion,
+        sanitizedOptionA,
+        sanitizedOptionB,
+        sanitizedOptionC,
+        sanitizedOptionD,
+        sanitizedExplanation,
+      ].some(hasLatex),
       reviewReason: null,
     })
 
-    res.status(201).json({ success: true, message: 'MCQ created successfully', mcq })
+    res
+      .status(201)
+      .json({ success: true, message: 'MCQ created successfully', mcq })
   } catch (error) {
     res.status(500).json({ error: error.message })
   }
@@ -1054,17 +1236,26 @@ exports.createChapterMcq = async (req, res) => {
 exports.uploadChapterMcqsCsv = async (req, res) => {
   try {
     const topicIdFromBody = req.body?.topicId || req.query?.topicId || null
-    const context = await buildChapterMcqFilter(req.params.subject, req.params.chapterId, true, topicIdFromBody)
+    const context = await buildChapterMcqFilter(
+      req.params.subject,
+      req.params.chapterId,
+      true,
+      topicIdFromBody,
+    )
     if (context.error) return res.status(400).json({ error: context.error })
-    if (!context.course || !context.chapter) return res.status(404).json({ error: 'Chapter not found' })
+    if (!context.course || !context.chapter)
+      return res.status(404).json({ error: 'Chapter not found' })
     if (!canManageCourse(context.course, req.user)) {
-      return res.status(403).json({ error: 'Not authorized to manage this subject' })
+      return res
+        .status(403)
+        .json({ error: 'Not authorized to manage this subject' })
     }
 
     const csvText = req.file?.buffer
       ? req.file.buffer.toString('utf8')
       : String(req.body.csvText || '')
-    if (!csvText.trim()) return res.status(400).json({ error: 'CSV text is required' })
+    if (!csvText.trim())
+      return res.status(400).json({ error: 'CSV text is required' })
 
     const parsedRows = parse(csvText, {
       columns: false,
@@ -1076,11 +1267,24 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
       return res.status(400).json({ error: 'CSV file is empty' })
     }
 
-    const headers = (parsedRows[0] || []).map((header) => String(header || '').trim().toLowerCase())
-    const required = ['question', 'option_a', 'option_b', 'option_c', 'option_d', 'correct_answer']
+    const headers = (parsedRows[0] || []).map((header) =>
+      String(header || '')
+        .trim()
+        .toLowerCase(),
+    )
+    const required = [
+      'question',
+      'option_a',
+      'option_b',
+      'option_c',
+      'option_d',
+      'correct_answer',
+    ]
     const missing = required.filter((header) => !headers.includes(header))
     if (missing.length) {
-      return res.status(400).json({ error: `Missing required CSV columns: ${missing.join(', ')}` })
+      return res
+        .status(400)
+        .json({ error: `Missing required CSV columns: ${missing.join(', ')}` })
     }
 
     const rows = parsedRows
@@ -1088,19 +1292,27 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
       .map((row) => normalizeCsvRowToHeaders(row, headers))
       .map((row) =>
         Object.fromEntries(
-          headers.map((header, columnIndex) => [header, row[columnIndex] ?? '']),
+          headers.map((header, columnIndex) => [
+            header,
+            row[columnIndex] ?? '',
+          ]),
         ),
       )
 
     const skipped = []
     const reviewItems = []
     const docs = []
-    const duplicateFilter = { courseId: context.course._id, chapterId: context.chapter.id }
+    const duplicateFilter = {
+      courseId: context.course._id,
+      chapterId: context.chapter.id,
+    }
     if (context.topic?.id) duplicateFilter.topicId = context.topic.id
-    else duplicateFilter.$or = [{ topicId: null }, { topicId: { $exists: false } }]
+    else
+      duplicateFilter.$or = [{ topicId: null }, { topicId: { $exists: false } }]
     const existingQuestions = new Set(
-      (await MCQ.find(duplicateFilter).select('question').lean())
-        .map((item) => item.question.trim().toLowerCase()),
+      (await MCQ.find(duplicateFilter).select('question').lean()).map((item) =>
+        item.question.trim().toLowerCase(),
+      ),
     )
 
     rows.forEach((rawRow, index) => {
@@ -1119,7 +1331,10 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
       const optionD = sanitizeCsvCell(row.option_d)
       const correctAnswer = normalizeCsvCorrectAnswer(row.correct_answer)
       const explanation = sanitizeCsvCell(row.explanation)
-      const explicitNeedsReview = String(row.needs_review || '').trim().toLowerCase() === 'true'
+      const explicitNeedsReview =
+        String(row.needs_review || '')
+          .trim()
+          .toLowerCase() === 'true'
       const reviewReasons = determineReviewReasons({
         question,
         optionA,
@@ -1175,13 +1390,20 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
 
     if (reviewItems.length) {
       const courseForReviewQueue = await getSubjectCourseFull(context.subject)
-      const chapterForReviewQueue = getChapter(courseForReviewQueue, context.chapter.id)
-      chapterForReviewQueue.reviewQueue = getChapterReviewQueue(chapterForReviewQueue)
+      const chapterForReviewQueue = getChapter(
+        courseForReviewQueue,
+        context.chapter.id,
+      )
+      chapterForReviewQueue.reviewQueue = getChapterReviewQueue(
+        chapterForReviewQueue,
+      )
       chapterForReviewQueue.reviewQueue.push(...reviewItems)
       await courseForReviewQueue.save()
     }
 
-    const inserted = docs.length ? await MCQ.insertMany(docs, { ordered: false }) : []
+    const inserted = docs.length
+      ? await MCQ.insertMany(docs, { ordered: false })
+      : []
     res.status(200).json({
       success: true,
       imported: inserted.length,
@@ -1204,16 +1426,21 @@ exports.deleteCsvReviewItem = async (req, res) => {
     if (!subject) return res.status(400).json({ error: 'Invalid subject' })
 
     const course = await getSubjectCourseFull(subject)
-    if (!course) return res.status(404).json({ error: 'Subject course not found' })
+    if (!course)
+      return res.status(404).json({ error: 'Subject course not found' })
     if (!canManageCourse(course, req.user)) {
-      return res.status(403).json({ error: 'Not authorized to manage this subject' })
+      return res
+        .status(403)
+        .json({ error: 'Not authorized to manage this subject' })
     }
 
     const chapter = getChapter(course, req.params.chapterId)
     if (!chapter) return res.status(404).json({ error: 'Chapter not found' })
 
     const existingQueue = getChapterReviewQueue(chapter)
-    const nextQueue = existingQueue.filter((item) => item.id !== req.params.itemId)
+    const nextQueue = existingQueue.filter(
+      (item) => item.id !== req.params.itemId,
+    )
     if (nextQueue.length === existingQueue.length) {
       return res.status(404).json({ error: 'Review item not found' })
     }
@@ -1221,7 +1448,9 @@ exports.deleteCsvReviewItem = async (req, res) => {
     chapter.reviewQueue = nextQueue
     await course.save()
 
-    res.status(200).json({ success: true, message: 'Review item removed successfully' })
+    res
+      .status(200)
+      .json({ success: true, message: 'Review item removed successfully' })
   } catch (error) {
     res.status(500).json({ error: error.message })
   }
@@ -1234,16 +1463,21 @@ exports.updateCsvReviewItem = async (req, res) => {
     if (!subject) return res.status(400).json({ error: 'Invalid subject' })
 
     const course = await getSubjectCourseFull(subject)
-    if (!course) return res.status(404).json({ error: 'Subject course not found' })
+    if (!course)
+      return res.status(404).json({ error: 'Subject course not found' })
     if (!canManageCourse(course, req.user)) {
-      return res.status(403).json({ error: 'Not authorized to manage this subject' })
+      return res
+        .status(403)
+        .json({ error: 'Not authorized to manage this subject' })
     }
 
     const chapter = getChapter(course, req.params.chapterId)
     if (!chapter) return res.status(404).json({ error: 'Chapter not found' })
 
     chapter.reviewQueue = getChapterReviewQueue(chapter)
-    const item = chapter.reviewQueue.find((entry) => entry.id === req.params.itemId)
+    const item = chapter.reviewQueue.find(
+      (entry) => entry.id === req.params.itemId,
+    )
     if (!item) return res.status(404).json({ error: 'Review item not found' })
 
     item.question = sanitizeCsvCell(req.body.question)
@@ -1251,7 +1485,9 @@ exports.updateCsvReviewItem = async (req, res) => {
     item.optionB = sanitizeCsvCell(req.body.optionB)
     item.optionC = sanitizeCsvCell(req.body.optionC)
     item.optionD = sanitizeCsvCell(req.body.optionD)
-    item.correctAnswer = String(normalizeCsvCorrectAnswer(req.body.correctAnswer)).toUpperCase()
+    item.correctAnswer = String(
+      normalizeCsvCorrectAnswer(req.body.correctAnswer),
+    ).toUpperCase()
     item.explanation = sanitizeCsvCell(req.body.explanation)
 
     const reviewReasons = determineReviewReasons({
@@ -1265,7 +1501,10 @@ exports.updateCsvReviewItem = async (req, res) => {
       explicitNeedsReview: false,
     })
     item.reason = String(
-      req.body.reason || reviewReasons.join('; ') || item.reason || 'Needs manual review',
+      req.body.reason ||
+        reviewReasons.join('; ') ||
+        item.reason ||
+        'Needs manual review',
     ).trim()
 
     await course.save()
@@ -1287,9 +1526,12 @@ exports.getCsvReviewQueue = async (req, res) => {
     if (!subject) return res.status(400).json({ error: 'Invalid subject' })
 
     const course = await getSubjectCourseFull(subject)
-    if (!course) return res.status(404).json({ error: 'Subject course not found' })
+    if (!course)
+      return res.status(404).json({ error: 'Subject course not found' })
     if (!canManageCourse(course, req.user)) {
-      return res.status(403).json({ error: 'Not authorized to manage this subject' })
+      return res
+        .status(403)
+        .json({ error: 'Not authorized to manage this subject' })
     }
 
     const chapter = getChapter(course, req.params.chapterId)
@@ -1320,16 +1562,21 @@ exports.approveCsvReviewItem = async (req, res) => {
     if (!subject) return res.status(400).json({ error: 'Invalid subject' })
 
     const course = await getSubjectCourseFull(subject)
-    if (!course) return res.status(404).json({ error: 'Subject course not found' })
+    if (!course)
+      return res.status(404).json({ error: 'Subject course not found' })
     if (!canManageCourse(course, req.user)) {
-      return res.status(403).json({ error: 'Not authorized to manage this subject' })
+      return res
+        .status(403)
+        .json({ error: 'Not authorized to manage this subject' })
     }
 
     const chapter = getChapter(course, req.params.chapterId)
     if (!chapter) return res.status(404).json({ error: 'Chapter not found' })
 
     chapter.reviewQueue = getChapterReviewQueue(chapter)
-    const item = chapter.reviewQueue.find((entry) => entry.id === req.params.itemId)
+    const item = chapter.reviewQueue.find(
+      (entry) => entry.id === req.params.itemId,
+    )
     if (!item) return res.status(404).json({ error: 'Review item not found' })
 
     const question = sanitizeCsvCell(req.body.question || item.question)
@@ -1337,8 +1584,12 @@ exports.approveCsvReviewItem = async (req, res) => {
     const optionB = sanitizeCsvCell(req.body.optionB || item.optionB)
     const optionC = sanitizeCsvCell(req.body.optionC || item.optionC)
     const optionD = sanitizeCsvCell(req.body.optionD || item.optionD)
-    const correctAnswer = normalizeCsvCorrectAnswer(req.body.correctAnswer || item.correctAnswer)
-    const explanation = sanitizeCsvCell(req.body.explanation || item.explanation)
+    const correctAnswer = normalizeCsvCorrectAnswer(
+      req.body.correctAnswer || item.correctAnswer,
+    )
+    const explanation = sanitizeCsvCell(
+      req.body.explanation || item.explanation,
+    )
     const reviewReasons = determineReviewReasons({
       question,
       optionA,
@@ -1375,7 +1626,9 @@ exports.approveCsvReviewItem = async (req, res) => {
       }),
     )
 
-    chapter.reviewQueue = chapter.reviewQueue.filter((entry) => entry.id !== item.id)
+    chapter.reviewQueue = chapter.reviewQueue.filter(
+      (entry) => entry.id !== item.id,
+    )
     await course.save()
 
     res.status(200).json({
@@ -1391,17 +1644,27 @@ exports.approveCsvReviewItem = async (req, res) => {
 // ==================== SUBMIT CHAPTER ATTEMPT ====================
 exports.submitChapterAttempt = async (req, res) => {
   try {
-    const context = await buildChapterMcqFilter(req.params.subject, req.params.chapterId, false, req.query.topicId || null)
+    const context = await buildChapterMcqFilter(
+      req.params.subject,
+      req.params.chapterId,
+      false,
+      req.query.topicId || null,
+    )
     if (context.error) return res.status(400).json({ error: context.error })
-    if (!context.course || !context.chapter) return res.status(404).json({ error: 'Chapter not found' })
+    if (!context.course || !context.chapter)
+      return res.status(404).json({ error: 'Chapter not found' })
 
     const answers = req.body.answers || {}
     const mcqs = await MCQ.find(context.filter).sort({ createdAt: 1 }).lean()
-    if (!mcqs.length) return res.status(404).json({ error: 'No MCQs found for this chapter' })
+    if (!mcqs.length)
+      return res.status(404).json({ error: 'No MCQs found for this chapter' })
 
     const detailed = mcqs.map((mcq) => {
       const selectedIndexRaw = answers[String(mcq._id)]
-      const selectedIndex = selectedIndexRaw === null || selectedIndexRaw === undefined ? -1 : Number(selectedIndexRaw)
+      const selectedIndex =
+        selectedIndexRaw === null || selectedIndexRaw === undefined
+          ? -1
+          : Number(selectedIndexRaw)
       const correctIndex = mcq.options.findIndex((option) => option.isCorrect)
       const skipped = selectedIndex < 0
       const isCorrect = !skipped && selectedIndex === correctIndex
