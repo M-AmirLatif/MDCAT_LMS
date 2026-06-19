@@ -2342,11 +2342,21 @@ html:not([data-theme="dark"]) .auth-feature-list span {
   }
 
   .notification-feed-card .workspace-card-head {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-content: flex-start;
+    align-content: start;
     gap: 8px;
     padding-bottom: 12px;
   }
 
+  .notification-feed-card .workspace-card-head > div:first-child {
+    flex: initial;
+  }
+
   .notification-feed-card .workspace-card-head .state-chip {
+    justify-self: flex-start;
+    align-self: flex-start;
     margin-top: 0;
   }
 
