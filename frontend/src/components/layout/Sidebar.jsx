@@ -4,8 +4,6 @@ import { useAuth } from '../../context/AuthContext'
 import {
   getMobileNavForRole,
   getNavigationForRole,
-  getRoleLabel,
-  ROLE_BADGE_CLASSES,
 } from '../../lib/platform'
 import ThemeToggle from '../ThemeToggle'
 import './Sidebar.css'
@@ -142,7 +140,6 @@ export default function Sidebar({
   const role = user?.role || 'student'
   const sections = getNavigationForRole(role)
   const mobileItems = getMobileNavForRole(role)
-  const badgeClass = ROLE_BADGE_CLASSES[role] || ROLE_BADGE_CLASSES.student
   const initials = `${user?.firstName?.[0] || 'U'}${user?.lastName?.[0] || ''}`.toUpperCase()
 
   const sidebarClass = useMemo(() => {
@@ -186,10 +183,6 @@ export default function Sidebar({
           </button>
         </div>
 
-        <div className="sidebar-role-row">
-          <span className={`badge ${badgeClass}`}>{getRoleLabel(role)}</span>
-        </div>
-
         <nav className="sidebar-nav">
           {sections.map((section) => (
             <div key={section.label} className="sidebar-section">
@@ -229,7 +222,6 @@ export default function Sidebar({
               <div className="sidebar-usercard-name">
                 {user?.firstName ? `${user.firstName} ${user?.lastName || ''}`.trim() : 'MDCAT User'}
               </div>
-              <div className="sidebar-usercard-role">{getRoleLabel(role)}</div>
             </div>
           </button>
 

@@ -49,7 +49,6 @@ function StudentDashboard({ firstName }) {
       <section className="workspace-hero">
         <div className="workspace-hero-grid">
           <div className="workspace-hero-copy">
-            <div className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Student Dashboard</div>
             <h1 className="gradient-text" style={{ WebkitTextFillColor: 'unset', color: '#fff' }}>
               Practice MDCAT chapter by chapter, {firstName}
             </h1>

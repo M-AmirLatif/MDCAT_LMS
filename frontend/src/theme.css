@@ -2244,6 +2244,28 @@ html:not([data-theme="dark"]) .auth-feature-list span {
     gap: 14px !important;
   }
 
+  .workspace-page .workspace-hero {
+    border-radius: 24px !important;
+    box-shadow: 0 16px 36px rgba(72, 98, 177, 0.16) !important;
+  }
+
+  .workspace-page .workspace-hero-copy {
+    display: grid;
+    gap: 14px;
+  }
+
+  .workspace-page .workspace-hero-copy h1 {
+    margin: 0;
+    line-height: 1.14 !important;
+    letter-spacing: -0.03em;
+  }
+
+  .workspace-page .workspace-hero-copy p {
+    margin: 0;
+    max-width: 30rem;
+    line-height: 1.5 !important;
+  }
+
   .workspace-page--notifications .workspace-hero-actions {
     width: 100%;
   }
