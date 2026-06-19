@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import API, { getUserFriendlyErrorMessage } from '../services/api'
 import { useAuth } from '../context/AuthContext'
-import MCQRenderer, { containsRichMcqMedia } from '../components/MCQRenderer'
+import MCQRenderer from '../components/MCQRenderer'
 import './PlatformPages.css'
 import './MCQTest.css'
 import './TestReview.css'
@@ -43,20 +43,6 @@ const emptyMcqForm = {
   optionD: '',
   correctAnswer: 'A',
   explanation: '',
-}
-
-function MediaSyntaxHint() {
-  return (
-    <p className="mcq-media-hint">
-      CSV and manual MCQs support image URLs, markdown like
-      {' '}
-      <code>![Figure](https://...)</code>
-      {' '}
-      and tokens like
-      {' '}
-      <code>[IMAGE:https://...]</code>.
-    </p>
-  )
 }
 
 function subjectById(id) {
@@ -549,12 +535,6 @@ function McqForm({ initial, onSubmit }) {
           onChange={(event) => setField('question', event.target.value)}
           placeholder="Type the MDCAT question..."
         />
-        <MediaSyntaxHint />
-        {containsRichMcqMedia(form.question) ? (
-          <div className="mcq-inline-preview">
-            <MCQRenderer text={form.question} />
-          </div>
-        ) : null}
       </div>
       <div className="floating-grid">
         <div className="floating-field">
@@ -564,11 +544,6 @@ function McqForm({ initial, onSubmit }) {
             value={form.optionA}
             onChange={(event) => setField('optionA', event.target.value)}
           />
-          {containsRichMcqMedia(form.optionA) ? (
-            <div className="mcq-inline-preview mcq-inline-preview--compact">
-              <MCQRenderer text={form.optionA} />
-            </div>
-          ) : null}
         </div>
         <div className="floating-field">
           <label htmlFor="option-b">Option B</label>
@@ -577,11 +552,6 @@ function McqForm({ initial, onSubmit }) {
             value={form.optionB}
             onChange={(event) => setField('optionB', event.target.value)}
           />
-          {containsRichMcqMedia(form.optionB) ? (
-            <div className="mcq-inline-preview mcq-inline-preview--compact">
-              <MCQRenderer text={form.optionB} />
-            </div>
-          ) : null}
         </div>
         <div className="floating-field">
           <label htmlFor="option-c">Option C</label>
@@ -590,11 +560,6 @@ function McqForm({ initial, onSubmit }) {
             value={form.optionC}
             onChange={(event) => setField('optionC', event.target.value)}
           />
-          {containsRichMcqMedia(form.optionC) ? (
-            <div className="mcq-inline-preview mcq-inline-preview--compact">
-              <MCQRenderer text={form.optionC} />
-            </div>
-          ) : null}
         </div>
         <div className="floating-field">
           <label htmlFor="option-d">Option D</label>
@@ -603,11 +568,6 @@ function McqForm({ initial, onSubmit }) {
             value={form.optionD}
             onChange={(event) => setField('optionD', event.target.value)}
           />
-          {containsRichMcqMedia(form.optionD) ? (
-            <div className="mcq-inline-preview mcq-inline-preview--compact">
-              <MCQRenderer text={form.optionD} />
-            </div>
-          ) : null}
         </div>
       </div>
       <div className="floating-field">
@@ -632,11 +592,6 @@ function McqForm({ initial, onSubmit }) {
           onChange={(event) => setField('explanation', event.target.value)}
           placeholder="Explanation students see after submission."
         />
-        {containsRichMcqMedia(form.explanation) ? (
-          <div className="mcq-inline-preview">
-            <MCQRenderer text={form.explanation} />
-          </div>
-        ) : null}
       </div>
       <button className="btn btn-primary" type="submit">
         Save MCQ
@@ -682,12 +637,6 @@ function ReviewQueueForm({ initial, onSubmit }) {
           value={form.question}
           onChange={(event) => setField('question', event.target.value)}
         />
-        <MediaSyntaxHint />
-        {containsRichMcqMedia(form.question) ? (
-          <div className="mcq-inline-preview">
-            <MCQRenderer text={form.question} />
-          </div>
-        ) : null}
       </div>
       <div className="floating-grid">
         {['A', 'B', 'C', 'D'].map((letter) => (
@@ -702,11 +651,6 @@ function ReviewQueueForm({ initial, onSubmit }) {
                 setField(`option${letter}`, event.target.value)
               }
             />
-            {containsRichMcqMedia(form[`option${letter}`]) ? (
-              <div className="mcq-inline-preview mcq-inline-preview--compact">
-                <MCQRenderer text={form[`option${letter}`]} />
-              </div>
-            ) : null}
           </div>
         ))}
       </div>
@@ -731,11 +675,6 @@ function ReviewQueueForm({ initial, onSubmit }) {
           value={form.explanation}
           onChange={(event) => setField('explanation', event.target.value)}
         />
-        {containsRichMcqMedia(form.explanation) ? (
-          <div className="mcq-inline-preview">
-            <MCQRenderer text={form.explanation} />
-          </div>
-        ) : null}
       </div>
       <button className="btn btn-primary" type="submit">
         Save Review Item
@@ -815,12 +754,6 @@ function TeacherInlineMcqCard({ mcq, index, chapterId, meta, onSaved, onDelete }
             onChange={(event) => setField('question', event.target.value)}
             placeholder="Type question statement here..."
           />
-          <MediaSyntaxHint />
-          {containsRichMcqMedia(form.question) ? (
-            <div className="mcq-inline-preview">
-              <MCQRenderer text={form.question} />
-            </div>
-          ) : null}
         </div>
 
         <div className="mcq-options-section">
@@ -838,17 +771,12 @@ function TeacherInlineMcqCard({ mcq, index, chapterId, meta, onSaved, onDelete }
                   <span className="mcq-option-badge">{letter}</span>
                   <input
                     id={`option-${letter.toLowerCase()}-${mcq._id}`}
-                  className="mcq-inline-option-input"
-                  value={form[`option${letter}`]}
-                  onChange={(event) => setField(`option${letter}`, event.target.value)}
-                  placeholder={`Type Option ${letter}...`}
-                  aria-label={`Option ${letter}`}
-                />
-                  {containsRichMcqMedia(form[`option${letter}`]) ? (
-                    <div className="mcq-inline-preview mcq-inline-preview--compact">
-                      <MCQRenderer text={form[`option${letter}`]} />
-                    </div>
-                  ) : null}
+                    className="mcq-inline-option-input"
+                    value={form[`option${letter}`]}
+                    onChange={(event) => setField(`option${letter}`, event.target.value)}
+                    placeholder={`Type Option ${letter}...`}
+                    aria-label={`Option ${letter}`}
+                  />
                 </div>
               )
             })}
@@ -882,16 +810,11 @@ function TeacherInlineMcqCard({ mcq, index, chapterId, meta, onSaved, onDelete }
             <textarea
               id={`explanation-${mcq._id}`}
               className="mcq-inline-explanation-textarea"
-            rows="2"
-            value={form.explanation}
-            onChange={(event) => setField('explanation', event.target.value)}
-            placeholder="Provide correct explanation..."
-          />
-            {containsRichMcqMedia(form.explanation) ? (
-              <div className="mcq-inline-preview">
-                <MCQRenderer text={form.explanation} />
-              </div>
-            ) : null}
+              rows="2"
+              value={form.explanation}
+              onChange={(event) => setField('explanation', event.target.value)}
+              placeholder="Provide correct explanation..."
+            />
           </div>
         </div>
 
@@ -1247,7 +1170,7 @@ function McqList() {
             </div>
             <p className="workspace-card-subtitle">
               {isTeacher
-                ? 'Manage and edit course questions, correct answers, explanations, and CSV image references directly on this page.'
+                ? 'Manage and edit course questions, correct answers, and explanations directly on this page.'
                 : 'Start a quiz when MCQs are available.'}
             </p>
           </div>

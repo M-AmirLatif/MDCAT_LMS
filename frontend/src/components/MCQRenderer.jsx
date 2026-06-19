@@ -102,11 +102,6 @@ function renderTextWithMath(text, keyPrefix) {
   })
 }
 
-export function containsRichMcqMedia(text) {
-  const value = normalizeMediaMarkup(text)
-  return /\[IMAGE:\s*.*?\]/i.test(value) || /\[DIAGRAM:\s*.*?\]/i.test(value)
-}
-
 export default function MCQRenderer({ text }) {
   const value = normalizeMediaMarkup(text)
   if (!value) return <div className="mcq-renderer" />
