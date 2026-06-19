@@ -6237,6 +6237,17 @@ select:focus,
   line-height: 1.5;
 }
 
+.mcq-autosize-textarea {
+  overflow: hidden !important;
+  resize: none !important;
+  scrollbar-width: none;
+}
+
+.mcq-autosize-textarea::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
 /* Action Buttons Container (Centered alignment) */
 .mcq-inline-card-actions {
   display: flex;

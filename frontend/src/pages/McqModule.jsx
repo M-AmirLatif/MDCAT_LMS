@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import API, { getUserFriendlyErrorMessage } from '../services/api'
@@ -99,6 +99,34 @@ function EmptyState({ title, text, action }) {
       <p>{text}</p>
       {action}
     </div>
+  )
+}
+
+function AutoSizeTextarea({
+  value,
+  onChange,
+  className = '',
+  minRows = 3,
+  ...props
+}) {
+  const ref = useRef(null)
+
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${el.scrollHeight}px`
+  }, [value])
+
+  return (
+    <textarea
+      ref={ref}
+      className={`${className} mcq-autosize-textarea`.trim()}
+      value={value}
+      onChange={onChange}
+      rows={minRows}
+      {...props}
+    />
   )
 }
 
@@ -526,16 +554,16 @@ function McqForm({ initial, onSubmit }) {
         onSubmit(form)
       }}
     >
-      <div className="floating-field">
-        <label htmlFor="question">Question statement</label>
-        <textarea
-          id="question"
-          rows="4"
-          value={form.question}
-          onChange={(event) => setField('question', event.target.value)}
-          placeholder="Type the MDCAT question..."
-        />
-      </div>
+        <div className="floating-field">
+          <label htmlFor="question">Question statement</label>
+          <AutoSizeTextarea
+            id="question"
+            minRows={4}
+            value={form.question}
+            onChange={(event) => setField('question', event.target.value)}
+            placeholder="Type the MDCAT question..."
+          />
+        </div>
       <div className="floating-grid">
         <div className="floating-field">
           <label htmlFor="option-a">Option A</label>
@@ -619,25 +647,25 @@ function ReviewQueueForm({ initial, onSubmit }) {
         onSubmit({ ...form, reason })
       }}
     >
-      <div className="floating-field">
-        <label htmlFor="review-reason">Review Note</label>
-        <textarea
-          id="review-reason"
-          rows="3"
-          value={reason}
-          onChange={(event) => setReason(event.target.value)}
-          placeholder="Why this CSV row needs review."
-        />
-      </div>
-      <div className="floating-field">
-        <label htmlFor="review-question">Question statement</label>
-        <textarea
-          id="review-question"
-          rows="4"
-          value={form.question}
-          onChange={(event) => setField('question', event.target.value)}
-        />
-      </div>
+        <div className="floating-field">
+          <label htmlFor="review-reason">Review Note</label>
+          <AutoSizeTextarea
+            id="review-reason"
+            minRows={3}
+            value={reason}
+            onChange={(event) => setReason(event.target.value)}
+            placeholder="Why this CSV row needs review."
+          />
+        </div>
+        <div className="floating-field">
+          <label htmlFor="review-question">Question statement</label>
+          <AutoSizeTextarea
+            id="review-question"
+            minRows={4}
+            value={form.question}
+            onChange={(event) => setField('question', event.target.value)}
+          />
+        </div>
       <div className="floating-grid">
         {['A', 'B', 'C', 'D'].map((letter) => (
           <div className="floating-field" key={letter}>
@@ -667,15 +695,15 @@ function ReviewQueueForm({ initial, onSubmit }) {
           <option value="D">Option D</option>
         </select>
       </div>
-      <div className="floating-field">
-        <label htmlFor="review-explanation">Explanation / Description</label>
-        <textarea
-          id="review-explanation"
-          rows="5"
-          value={form.explanation}
-          onChange={(event) => setField('explanation', event.target.value)}
-        />
-      </div>
+        <div className="floating-field">
+          <label htmlFor="review-explanation">Explanation / Description</label>
+          <AutoSizeTextarea
+            id="review-explanation"
+            minRows={5}
+            value={form.explanation}
+            onChange={(event) => setField('explanation', event.target.value)}
+          />
+        </div>
       <button className="btn btn-primary" type="submit">
         Save Review Item
       </button>
@@ -746,10 +774,10 @@ function TeacherInlineMcqCard({ mcq, index, chapterId, meta, onSaved, onDelete }
           <label className="mcq-section-label" htmlFor={`question-${mcq._id}`}>
             QUESTION STATEMENT
           </label>
-          <textarea
+          <AutoSizeTextarea
             id={`question-${mcq._id}`}
             className="mcq-inline-statement-textarea"
-            rows="3"
+            minRows={3}
             value={form.question}
             onChange={(event) => setField('question', event.target.value)}
             placeholder="Type question statement here..."
@@ -807,10 +835,10 @@ function TeacherInlineMcqCard({ mcq, index, chapterId, meta, onSaved, onDelete }
             <label className="mcq-section-label" htmlFor={`explanation-${mcq._id}`}>
               EXPLANATION
             </label>
-            <textarea
+            <AutoSizeTextarea
               id={`explanation-${mcq._id}`}
               className="mcq-inline-explanation-textarea"
-              rows="2"
+              minRows={2}
               value={form.explanation}
               onChange={(event) => setField('explanation', event.target.value)}
               placeholder="Provide correct explanation..."
@@ -858,7 +886,12 @@ function ReviewQueueReadonlyCard({ item, index, onEdit, onApprove, onDelete }) {
       </div>
       <div className="floating-field teacher-mcq-question-field">
         <label>Issue</label>
-        <textarea rows="2" value={item.reason || 'Rejected CSV row'} readOnly />
+        <AutoSizeTextarea
+          minRows={2}
+          value={item.reason || 'Rejected CSV row'}
+          readOnly
+          onChange={() => {}}
+        />
       </div>
       <div className="teacher-review-render-block">
         <div className="teacher-review-render-card">
@@ -881,7 +914,12 @@ function ReviewQueueReadonlyCard({ item, index, onEdit, onApprove, onDelete }) {
       <div className="teacher-mcq-editor-bottom">
         <div className="floating-field">
           <label>Correct Answer</label>
-          <textarea rows="2" value={item.correctAnswer || ''} readOnly />
+          <AutoSizeTextarea
+            minRows={2}
+            value={item.correctAnswer || ''}
+            readOnly
+            onChange={() => {}}
+          />
         </div>
         <div className="floating-field">
           <label>Explanation</label>
