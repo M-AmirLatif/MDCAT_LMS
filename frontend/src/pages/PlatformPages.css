@@ -103,7 +103,7 @@
   border-color: rgba(255, 255, 255, 0.7) !important;
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
-  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(15, 15, 26, 0.12) !important;
 }
 
 .notification-hero .workspace-hero-actions .btn-primary {
@@ -4275,8 +4275,7 @@
   border-radius: 10px !important;
   font-weight: 800 !important;
   transition:
-    filter 0.2s ease,
-    transform 0.2s ease,
+    box-shadow 0.2s ease,
     background 0.2s ease,
     border-color 0.2s ease !important;
 }
@@ -4290,7 +4289,8 @@
 }
 
 .teacher-mcq-action-row .btn-primary:hover {
-  filter: brightness(1.08);
+  background: linear-gradient(135deg, #8b45ff, #5b55ff) !important;
+  box-shadow: 0 12px 26px rgba(124, 58, 237, 0.26) !important;
 }
 
 .teacher-mcq-action-row .btn-ghost {
@@ -4843,7 +4843,6 @@
   background: var(--purple-subtle);
   border-color: #8b5cf6;
   box-shadow: 0 4px 12px rgba(109, 40, 217, 0.14);
-  transform: translateY(-1px);
 }
 
 .teacher-mcq-answer-btn--active {
@@ -4852,7 +4851,6 @@
   color: #fff !important;
   -webkit-text-fill-color: #fff !important;
   box-shadow: 0 8px 20px rgba(124, 58, 237, 0.3) !important;
-  transform: translateY(-1px);
 }
 
 .teacher-mcq-answer-hint {

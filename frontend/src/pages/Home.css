@@ -3,7 +3,7 @@
 }
 
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 3px;
 }
 
 ::-webkit-scrollbar-track {
@@ -11,7 +11,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(108, 71, 255, 0.4);
+  background: rgba(108, 71, 255, 0.24);
   border-radius: 999px;
 }
 
@@ -118,12 +118,11 @@
   border: 1px solid transparent;
   font-weight: 800;
   text-decoration: none;
-  transition: transform 200ms ease, filter 200ms ease, background 200ms ease, border-color 200ms ease;
+  transition: box-shadow 200ms ease, background 200ms ease, border-color 200ms ease, color 200ms ease;
 }
 
 .lp-btn:hover {
-  transform: translateY(-1px) scale(1.02);
-  filter: brightness(1.08);
+  box-shadow: 0 12px 28px rgba(108, 71, 255, 0.16);
 }
 
 .lp-btn-sm {

@@ -2149,7 +2149,17 @@ html:not([data-theme="dark"]) .notification-hero .notification-hero-panel {
 }
 
 html:not([data-theme="dark"]) .workspace-hero .hero-mini-card .label-xs,
-html:not([data-theme="dark"]) .notification-hero .hero-mini-card .label-xs,
+html:not([data-theme="dark"]) .notification-hero .hero-mini-card .label-xs {
+  color: #6d7493 !important;
+  -webkit-text-fill-color: #6d7493 !important;
+}
+
+html:not([data-theme="dark"]) .workspace-hero-copy .label-xs,
+html:not([data-theme="dark"]) .notification-hero .workspace-hero-copy .label-xs {
+  color: #eef2ff !important;
+  -webkit-text-fill-color: #eef2ff !important;
+}
+
 html:not([data-theme="dark"]) .workspace-hero .label-xs,
 html:not([data-theme="dark"]) .notification-hero .label-xs {
   color: #dfe3f0;
@@ -2244,6 +2254,13 @@ html:not([data-theme="dark"]) .auth-feature-list span {
     gap: 14px !important;
   }
 
+  .workspace-page .workspace-hero-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    width: 100%;
+  }
+
   .workspace-page .workspace-hero {
     border-radius: 24px !important;
     box-shadow: 0 16px 36px rgba(72, 98, 177, 0.16) !important;
@@ -2270,16 +2287,25 @@ html:not([data-theme="dark"]) .auth-feature-list span {
     width: 100%;
   }
 
+  .workspace-page .workspace-hero-actions .btn,
   .workspace-page--notifications .workspace-hero-actions .btn {
     width: 100%;
     justify-content: center;
+    min-width: 0;
+    min-height: 48px;
+    padding: 0 12px;
+    font-size: 13px;
+    line-height: 1.1;
+    white-space: nowrap;
   }
 
   .filter-pill,
   .notification-toolbar .filter-pill,
   .notification-summary-panel .filter-pill {
-    min-height: 46px;
-    padding: 0 16px !important;
+    min-height: 44px;
+    padding: 0 14px !important;
+    font-size: 13px;
+    white-space: nowrap;
   }
 
   .notification-toolbar {
@@ -2292,12 +2318,43 @@ html:not([data-theme="dark"]) .auth-feature-list span {
 
   .workspace-page--notifications .notification-toolbar .filter-pills {
     width: 100%;
-    gap: 12px !important;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px !important;
   }
 
   .workspace-page--notifications .notification-toolbar-note {
     width: 100%;
     text-align: left;
+    margin-top: 2px;
+    font-size: 14px;
+  }
+
+  .notification-summary-panel {
+    margin-top: 14px !important;
+    padding: 14px !important;
+  }
+
+  .notification-summary-panel .filter-pills {
+    gap: 10px !important;
+  }
+
+  .notification-feed-card .workspace-card-head {
+    gap: 10px;
+  }
+
+  .notification-feed-card .workspace-card-head .state-chip {
+    margin-top: 0;
+  }
+
+  .notification-feed-card .workspace-card-body {
+    gap: 14px;
+    padding-top: 10px;
+  }
+
+  .notification-feed-card .empty-state--compact {
+    min-height: 190px !important;
+    padding: 24px 16px !important;
   }
 }
 
