@@ -96,34 +96,28 @@
   align-items: center;
   gap: 16px;
   width: 100%;
-  padding: 18px 20px;
+  padding: 16px 18px;
   border-radius: 16px;
   border: none;
-  background: var(--bg-surface, #fff);
+  background: transparent;
   color: var(--text-primary);
   text-align: left;
   font-size: 15px;
   font-weight: 400;
   line-height: 1.5;
   cursor: pointer;
-  transition:
-    transform 200ms ease,
-    box-shadow 200ms ease,
-    background 200ms ease;
+  transition: background 200ms ease, box-shadow 200ms ease;
 }
 
 .mcq-option-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 28px rgba(108, 71, 255, 0.08);
-  background: var(--bg-hover, #F0EDFF);
+  box-shadow: none;
+  background: rgba(108, 71, 255, 0.04);
 }
 
 .mcq-option-card--selected {
   background:
     linear-gradient(135deg, rgba(108, 71, 255, 0.10), rgba(74, 144, 226, 0.06));
-  box-shadow:
-    0 0 0 3px rgba(108, 71, 255, 0.12),
-    0 10px 28px rgba(108, 71, 255, 0.10);
+  box-shadow: 0 0 0 2px rgba(108, 71, 255, 0.10);
 }
 
 .mcq-option-letter {
@@ -174,8 +168,14 @@
 
 .mcq-option-text,
 .mcq-option-text .mcq-renderer {
+  all: unset;
   display: block;
   width: 100%;
+  min-width: 0;
+  flex: 1 1 auto;
+  color: inherit;
+  line-height: 1.55;
+  font-weight: 400;
 }
 
 .mcq-option-text .mcq-renderer *,
@@ -186,19 +186,6 @@
   background: transparent !important;
 }
 
-.mcq-option-text,
-.mcq-option-card > span:last-child {
-  min-width: 0;
-  flex: 1 1 auto;
-}
-
-.mcq-option-text .mcq-renderer,
-.mcq-option-card > span:last-child {
-  color: inherit;
-  line-height: 1.55;
-  font-weight: 400;
-}
-
 .mcq-option-card--selected .mcq-option-letter {
   background: var(--grad-purple, linear-gradient(135deg, #6C47FF, #4A90E2));
   color: #fff;
@@ -206,6 +193,32 @@
 }
 
 /* ── Navigation Actions ── */
+html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card:hover {
+  background: rgba(108, 71, 255, 0.04) !important;
+}
+
+html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card--selected {
+  background:
+    linear-gradient(135deg, rgba(108, 71, 255, 0.10), rgba(74, 144, 226, 0.06)) !important;
+  box-shadow: 0 0 0 2px rgba(108, 71, 255, 0.10) !important;
+}
+
+html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card > span:not(.mcq-option-letter),
+html:not([data-theme="dark"]) .mcq-question-card .mcq-option-text,
+html:not([data-theme="dark"]) .mcq-question-card .mcq-option-text .mcq-renderer,
+html:not([data-theme="dark"]) .mcq-question-card .mcq-option-text .mcq-renderer * {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
 .mcq-nav-actions {
   display: flex;
   flex-direction: row;
