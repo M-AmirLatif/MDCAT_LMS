@@ -16,44 +16,30 @@ This guide helps you demo the current build clearly, and explains what’s alrea
 - Performance: history + analytics views
 - Notifications (and scheduling)
 - Assignments: create + submissions flow (staff/student)
-- Authentication: email/password login (staff) + student registration via OTP
+- Authentication: staff email/password login after account setup + student Google sign-in with one-time password setup
 
-## Demo Accounts (Staff)
-Use these to show the full dashboard features immediately.
+## Account Setup Status
+Current repo state:
 
-- Super Admin
-  - Email: `superadmin@mdcat.com`
-  - Password: `SuperAdmin@123`
-- Admin
-  - Email: `admin@mdcat.com`
-  - Password: `Admin@123`
-- Teacher
-  - Email: `teacher@mdcat.com`
-  - Password: `Teacher@123`
-- Teacher 2
-  - Email: `teacher2@mdcat.com`
-  - Password: `Teacher2@123`
+- `backend/seed.js` creates roles and permissions only.
+- No admin, teacher, or student users are created by the seed script.
+- Students do not use email OTP in the current build.
 
-Important:
-- Students **do not** have pre-made credentials; they register themselves and verify OTP.
-- These demo passwords are for client preview only. Before public launch, we will rotate credentials and enforce stronger policies.
+Staff access:
 
-## Student Registration (OTP)
-Flow:
-1) Student goes to `/register`
-2) Enters name + Gmail + password
-3) Receives OTP by email
-4) Enters OTP on the same page to verify
-5) Logs in and starts learning
+- Admin and teacher accounts must already exist in the connected database, or be created/reset manually.
+- If you want fixed staff logins for a demo, create them first and then document those exact emails here.
 
-Email provider:
-- OTP email sending is configured via Resend (HTTPS email API) to avoid SMTP restrictions on hosting.
+Student access:
+
+- Students sign in with Google from `/register`.
+- After Google sign-in, they complete one-time password setup and then use Gmail + password for later logins.
 
 ## Suggested Demo Script (5–8 minutes)
 1) Open Home → show “highlights” + sample preview
 2) Login as Admin → show user management + publishing controls
 3) Open a course → show lectures, MCQ test, and performance tracking
-4) Show student flow (register/OTP) as the real onboarding experience
+4) Show student flow (Google sign-in + one-time password setup) as the real onboarding experience
 5) Close with roadmap (below) and confirm next phase scope
 
 ## Roadmap (Next Improvements)
@@ -62,7 +48,7 @@ UI/UX
 - Dedicated “Client-ready” landing + feature tour sections
 
 Auth
-- “Continue with Google” for login + signup (OAuth) once client ID is finalized
+- Continue polishing Google sign-in + password setup flow
 
 MCQ Bank & Results
 - Replace remaining placeholder/demo content with full verified MDCAT bank

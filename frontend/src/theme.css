@@ -1399,6 +1399,15 @@ html[data-theme="dark"] .auth-form .floating-field input {
   font-weight: 500 !important;
 }
 
+html[data-theme="dark"] .auth-input-shell--filled input,
+html[data-theme="dark"] .auth-input-shell--filled input:focus,
+html[data-theme="dark"] .auth-input-shell--valid input,
+html[data-theme="dark"] .auth-input-shell--valid input:focus {
+  color: #f4f2ff !important;
+  -webkit-text-fill-color: #f4f2ff !important;
+  font-weight: 700 !important;
+}
+
 html[data-theme="dark"] .auth-form .floating-field input:focus {
   color: rgba(240,238,255,0.78) !important;
   -webkit-text-fill-color: rgba(240,238,255,0.78) !important;
@@ -1428,8 +1437,8 @@ html[data-theme="dark"] .auth-form .floating-field input:-webkit-autofill:focus 
 }
 
 html[data-theme="dark"] .auth-inline-toggle {
-  background: rgba(139,111,255,0.22) !important;
-  color: #CFC6FF !important;
+  background: transparent !important;
+  color: #d7d0ff !important;
   -webkit-text-fill-color: #CFC6FF !important;
 }
 

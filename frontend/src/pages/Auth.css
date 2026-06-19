@@ -311,6 +311,11 @@
   transition: border-color 200ms ease, box-shadow 200ms ease, background 200ms ease;
 }
 
+.auth-form .floating-field input::-ms-reveal,
+.auth-form .floating-field input::-ms-clear {
+  display: none;
+}
+
 .auth-form .floating-field input:-webkit-autofill,
 .auth-form .floating-field input:-webkit-autofill:hover,
 .auth-form .floating-field input:-webkit-autofill:focus {
@@ -320,7 +325,7 @@
 }
 
 .auth-password-field input {
-  padding-right: 122px;
+  padding-right: 96px;
 }
 
 .auth-form .floating-field input::placeholder {
@@ -334,6 +339,15 @@
   color: rgba(107, 107, 138, 0.62);
   font-weight: 500;
   -webkit-text-fill-color: rgba(107, 107, 138, 0.62);
+}
+
+.auth-input-shell--filled input,
+.auth-input-shell--filled input:focus,
+.auth-input-shell--valid input,
+.auth-input-shell--valid input:focus {
+  color: #1a1a2e;
+  -webkit-text-fill-color: #1a1a2e;
+  font-weight: 700;
 }
 
 .auth-form .floating-field input:hover {
@@ -389,22 +403,25 @@
   z-index: 3;
   right: 14px;
   top: 50%;
-  min-width: 74px;
-  height: 32px;
-  padding: 4px 14px;
+  min-width: 52px;
+  height: 28px;
+  padding: 0 2px;
   border: 0;
-  border-radius: 999px;
-  background: rgba(108, 71, 255, 0.1);
+  border-radius: 0;
+  background: transparent;
   color: #6c47ff;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 900;
+  letter-spacing: 0.01em;
+  text-align: right;
   transform: translateY(-50%);
   cursor: pointer;
-  transition: background 200ms ease, transform 200ms ease;
+  transition: color 200ms ease, opacity 200ms ease;
 }
 
 .auth-inline-toggle:hover {
-  background: rgba(108, 71, 255, 0.18);
+  background: transparent;
+  color: #5835db;
 }
 
 .auth-divider {
