@@ -1517,14 +1517,30 @@ html[data-theme="light"] .auth-form .floating-field input {
   background: transparent !important;
   background-color: transparent !important;
   box-shadow: none !important;
-  color: rgba(26,26,46,0.52) !important;
-  -webkit-text-fill-color: rgba(26,26,46,0.52) !important;
-  font-weight: 500 !important;
+  color: #1a1a2e !important;
+  -webkit-text-fill-color: #1a1a2e !important;
+  font-weight: 600 !important;
 }
 
 html[data-theme="light"] .auth-form .floating-field input:focus {
-  color: rgba(26,26,46,0.84) !important;
-  -webkit-text-fill-color: rgba(26,26,46,0.84) !important;
+  color: #171a2f !important;
+  -webkit-text-fill-color: #171a2f !important;
+}
+
+html[data-theme="light"] .auth-form .floating-field input:placeholder-shown {
+  color: rgba(74, 80, 107, 0.78) !important;
+  -webkit-text-fill-color: rgba(74, 80, 107, 0.78) !important;
+  font-weight: 500 !important;
+}
+
+html[data-theme="light"] .auth-form .floating-field input:not(:placeholder-shown),
+html[data-theme="light"] .auth-input-shell--filled input,
+html[data-theme="light"] .auth-input-shell--filled input:focus,
+html[data-theme="light"] .auth-input-shell--valid input,
+html[data-theme="light"] .auth-input-shell--valid input:focus {
+  color: #171a2f !important;
+  -webkit-text-fill-color: #171a2f !important;
+  font-weight: 700 !important;
 }
 
 html[data-theme="light"] .auth-form .floating-field input:-webkit-autofill,
@@ -2264,6 +2280,45 @@ html:not([data-theme="dark"]) .auth-register-step,
 html:not([data-theme="dark"]) .auth-feature-list span {
   background: rgba(255, 255, 255, 0.72) !important;
   border: 1px solid rgba(161, 173, 205, 0.7) !important;
+}
+
+html:not([data-theme="dark"]) .auth-role-option {
+  background: rgba(255, 255, 255, 0.74) !important;
+  border: 1.5px solid rgba(176, 186, 216, 0.9) !important;
+  box-shadow: 0 10px 24px rgba(63, 77, 122, 0.08) !important;
+  color: #1c213c !important;
+}
+
+html:not([data-theme="dark"]) .auth-role-option strong {
+  color: #1a1f39 !important;
+  -webkit-text-fill-color: #1a1f39 !important;
+}
+
+html:not([data-theme="dark"]) .auth-role-option span {
+  color: #5a6283 !important;
+  -webkit-text-fill-color: #5a6283 !important;
+}
+
+html:not([data-theme="dark"]) .auth-role-option:hover {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border-color: rgba(122, 105, 229, 0.42) !important;
+}
+
+html:not([data-theme="dark"]) .auth-role-option--active {
+  background: linear-gradient(180deg, rgba(237, 233, 255, 0.98), rgba(228, 235, 255, 0.94)) !important;
+  border: 2px solid #6c47ff !important;
+  box-shadow: 0 0 0 3px rgba(108, 71, 255, 0.14), 0 16px 36px rgba(108, 71, 255, 0.14) !important;
+}
+
+html:not([data-theme="dark"]) .auth-stat-row div {
+  background: rgba(255, 255, 255, 0.72) !important;
+  border: 1.5px solid rgba(184, 193, 220, 0.85) !important;
+  box-shadow: 0 10px 24px rgba(63, 77, 122, 0.07) !important;
+}
+
+html:not([data-theme="dark"]) .auth-stat-row span {
+  color: #6a728f !important;
+  -webkit-text-fill-color: #6a728f !important;
 }
 
 @media (max-width: 768px) {
