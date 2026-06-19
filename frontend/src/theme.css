@@ -1408,6 +1408,15 @@ html[data-theme="dark"] .auth-input-shell--valid input:focus {
   font-weight: 700 !important;
 }
 
+html[data-theme="dark"] .auth-form .floating-field input:not(:placeholder-shown),
+html[data-theme="dark"] .auth-password-field input,
+html[data-theme="dark"] .auth-password-field input:focus {
+  color: #f4f2ff !important;
+  -webkit-text-fill-color: #f4f2ff !important;
+  opacity: 1 !important;
+  font-weight: 700 !important;
+}
+
 html[data-theme="dark"] .auth-form .floating-field input:focus {
   color: rgba(240,238,255,0.78) !important;
   -webkit-text-fill-color: rgba(240,238,255,0.78) !important;
@@ -1430,10 +1439,11 @@ html[data-theme="dark"] .auth-form .floating-field input:placeholder-shown {
 html[data-theme="dark"] .auth-form .floating-field input:-webkit-autofill,
 html[data-theme="dark"] .auth-form .floating-field input:-webkit-autofill:hover,
 html[data-theme="dark"] .auth-form .floating-field input:-webkit-autofill:focus {
-  -webkit-text-fill-color: #FFFFFF !important;
-  caret-color: #FFFFFF !important;
+  -webkit-text-fill-color: #f4f2ff !important;
+  caret-color: #f4f2ff !important;
   -webkit-box-shadow: 0 0 0 1000px #24224E inset !important;
   box-shadow: 0 0 0 1000px #24224E inset !important;
+  font-weight: 700 !important;
 }
 
 html[data-theme="dark"] .auth-inline-toggle {
