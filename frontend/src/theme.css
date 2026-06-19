@@ -2368,14 +2368,31 @@ html:not([data-theme="dark"]) .auth-feature-list span {
   }
 
   html:not([data-theme="dark"]) .workspace-page--notifications .notification-toolbar .filter-pill {
-    background: rgba(255, 255, 255, 0.92) !important;
-    border-color: rgba(188, 196, 220, 0.95) !important;
+    background: rgba(255, 255, 255, 0.16) !important;
+    border-color: rgba(255, 255, 255, 0.28) !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    box-shadow: none !important;
   }
 
   html:not([data-theme="dark"]) .workspace-page--notifications .notification-toolbar-note {
-    color: #414867 !important;
-    -webkit-text-fill-color: #414867 !important;
+    color: rgba(255, 255, 255, 0.92) !important;
+    -webkit-text-fill-color: rgba(255, 255, 255, 0.92) !important;
   }
+}
+
+html:not([data-theme="dark"]) .workspace-page--notifications .notification-toolbar .filter-pill:hover {
+  background: rgba(255, 255, 255, 0.22) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+html:not([data-theme="dark"]) .workspace-page--notifications .notification-toolbar .filter-pill--active {
+  background: linear-gradient(135deg, rgba(108, 71, 255, 0.9), rgba(74, 144, 226, 0.92)) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
 }
 
 html[data-theme="dark"] .notification-summary-card,
