@@ -5,7 +5,6 @@ const optionSchema = new mongoose.Schema(
     text: {
       type: String,
       required: [true, 'Option text is required'],
-      trim: true,
     },
     isCorrect: {
       type: Boolean,
@@ -50,7 +49,6 @@ const mcqSchema = new mongoose.Schema(
     question: {
       type: String,
       required: [true, 'Please provide question'],
-      trim: true,
     },
     options: {
       type: [optionSchema],

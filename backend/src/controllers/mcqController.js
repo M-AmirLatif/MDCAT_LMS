@@ -2,7 +2,6 @@ const MCQ = require('../models/MCQ')
 const Course = require('../models/Course')
 const TestSession = require('../models/TestSession')
 const { parse } = require('csv-parse/sync')
-const createDOMPurify = require('isomorphic-dompurify')
 
 const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English']
 const SUBJECT_SLUGS = {
@@ -79,8 +78,6 @@ const getTopic = (chapter, topicId) =>
 
 const createReviewQueueItemId = () =>
   `review-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
-
-const DOMPurify = createDOMPurify
 const IMAGE_TAG_REGEX = /<img\b[^>]*>/gi
 const IMAGE_SOURCE_REGEX = /\bsrc\s*=\s*["']([^"']+)["']/i
 const IMAGE_ALT_REGEX = /\balt\s*=\s*["']([^"']*)["']/i
@@ -104,17 +101,63 @@ const normalizeMediaMarkup = (value) =>
     )
     .replace(IMAGE_URL_REGEX, (url) => encodeImageToken({ url }))
 
-const sanitizeCsvCell = (value) =>
-  DOMPurify.sanitize(normalizeMediaMarkup(String(value || '').trim()), {
-    ALLOWED_TAGS: [],
-    ALLOWED_ATTR: [],
-  })
+const normalizeCsvCell = (value) => String(value ?? '')
+
+const isRenderableImageUrl = (value) => {
+  const url = String(value || '').trim()
+  if (!/^https?:\/\//i.test(url)) return false
+
+  try {
+    const parsed = new URL(url)
+    const pathname = String(parsed.pathname || '').toLowerCase()
+    const search = String(parsed.search || '').toLowerCase()
+    const host = parsed.hostname.toLowerCase()
+    const extMatch = pathname.match(
+      /\.(png|jpe?g|gif|webp|svg|bmp|avif)(?:$|[?#])/i,
+    )
+    if (extMatch) return true
+    if (host.includes('cloudinary.com') && pathname.includes('/image/upload/')) {
+      return true
+    }
+    if (search.includes('format=png') || search.includes('format=jpg') || search.includes('format=jpeg') || search.includes('format=webp')) {
+      return true
+    }
+    return false
+  } catch {
+    return false
+  }
+}
+
+const extractImageUrlFromField = (value) => {
+  const raw = String(value || '').trim()
+  if (!raw) return null
+
+  const markerMatch = raw.match(
+    /\[(?:IMAGE|IMG|PIC|PICTURE|FIGURE|SCREENSHOT|SS):\s*([\s\S]*?)\]/i,
+  )
+  if (markerMatch?.[1]) {
+    const candidate = markerMatch[1].split('|')[0].trim()
+    return isRenderableImageUrl(candidate) ? candidate : null
+  }
+
+  if (isRenderableImageUrl(raw)) return raw
+  return null
+}
+
+const appendImageReference = (text, imageUrl, alt = '') => {
+  const base = normalizeCsvCell(text)
+  const existing = extractImageUrlFromField(base)
+  if (existing || !imageUrl) return base
+
+  const token = encodeImageToken({ url: imageUrl, alt })
+  return base ? `${base}\n${token}` : token
+}
 
 const hasLatex = (text) =>
   /(\$\$[\s\S]+?\$\$|\$[^$]+?\$)/.test(String(text || ''))
 const hasDiagram = (text) => /\[DIAGRAM:\s*.*?\]/i.test(String(text || ''))
-// mcqController.js — line 103
 const hasImageReference = (text) =>
+  Boolean(extractImageUrlFromField(text)) ||
   /\[(?:IMAGE|IMG|PIC|PICTURE|FIGURE|SCREENSHOT|SS):\s*.*?\]/i.test(
     String(text || ''),
   )
@@ -257,7 +300,7 @@ const normalizeOptionsFromLetters = ({
     .trim()
     .toUpperCase()
   return values.map((text, index) => ({
-    text: String(text || '').trim(),
+    text: String(text ?? ''),
     isCorrect: letters[index] === normalizedAnswer,
   }))
 }
@@ -337,14 +380,14 @@ exports.createMcq = async (req, res) => {
       isPastPaper,
       isPublished,
     } = req.body
-    const sanitizedQuestion = sanitizeCsvCell(question)
+    const sanitizedQuestion = normalizeCsvCell(question)
     const sanitizedOptions = Array.isArray(options)
       ? options.map((option) => ({
           ...option,
-          text: sanitizeCsvCell(option?.text),
+          text: normalizeCsvCell(option?.text),
         }))
       : options
-    const sanitizedExplanation = sanitizeCsvCell(explanation)
+    const sanitizedExplanation = normalizeCsvCell(explanation)
 
     if (!courseId || !topic || !sanitizedQuestion || !sanitizedOptions) {
       return res
@@ -558,15 +601,15 @@ exports.updateMcq = async (req, res) => {
       reviewReason,
     } = req.body
     const sanitizedQuestion =
-      question === undefined ? undefined : sanitizeCsvCell(question)
+      question === undefined ? undefined : normalizeCsvCell(question)
     const sanitizedOptions = Array.isArray(options)
       ? options.map((option) => ({
           ...option,
-          text: sanitizeCsvCell(option?.text),
+          text: normalizeCsvCell(option?.text),
         }))
       : options
     const sanitizedExplanation =
-      explanation === undefined ? undefined : sanitizeCsvCell(explanation)
+      explanation === undefined ? undefined : normalizeCsvCell(explanation)
 
     let mcq = await MCQ.findById(req.params.mcqId)
 
@@ -1157,16 +1200,83 @@ exports.createChapterMcq = async (req, res) => {
       correctAnswer,
       explanation,
       difficulty,
+      questionImageUrl: rawQuestionImageUrl,
+      question_image_url: rawQuestionImageUrlAlt,
+      questionImageAlt,
+      question_image_alt: rawQuestionImageAlt,
+      optionAImageUrl: rawOptionAImageUrl,
+      option_a_image_url: rawOptionAImageUrlAlt,
+      optionAImageAlt,
+      option_a_image_alt: rawOptionAImageAlt,
+      optionBImageUrl: rawOptionBImageUrl,
+      option_b_image_url: rawOptionBImageUrlAlt,
+      optionBImageAlt,
+      option_b_image_alt: rawOptionBImageAlt,
+      optionCImageUrl: rawOptionCImageUrl,
+      option_c_image_url: rawOptionCImageUrlAlt,
+      optionCImageAlt,
+      option_c_image_alt: rawOptionCImageAlt,
+      optionDImageUrl: rawOptionDImageUrl,
+      option_d_image_url: rawOptionDImageUrlAlt,
+      optionDImageAlt,
+      option_d_image_alt: rawOptionDImageAlt,
+      explanationImageUrl: rawExplanationImageUrl,
+      explanation_image_url: rawExplanationImageUrlAlt,
+      explanationImageAlt,
+      explanation_image_alt: rawExplanationImageAlt,
     } = req.body
     const normalizedAnswer = String(correctAnswer || '')
       .trim()
       .toUpperCase()
-    const sanitizedQuestion = sanitizeCsvCell(question)
-    const sanitizedOptionA = sanitizeCsvCell(optionA)
-    const sanitizedOptionB = sanitizeCsvCell(optionB)
-    const sanitizedOptionC = sanitizeCsvCell(optionC)
-    const sanitizedOptionD = sanitizeCsvCell(optionD)
-    const sanitizedExplanation = sanitizeCsvCell(explanation)
+    const questionImageUrl = extractImageUrlFromField(
+      rawQuestionImageUrl || rawQuestionImageUrlAlt,
+    )
+    const optionAImageUrl = extractImageUrlFromField(
+      rawOptionAImageUrl || rawOptionAImageUrlAlt,
+    )
+    const optionBImageUrl = extractImageUrlFromField(
+      rawOptionBImageUrl || rawOptionBImageUrlAlt,
+    )
+    const optionCImageUrl = extractImageUrlFromField(
+      rawOptionCImageUrl || rawOptionCImageUrlAlt,
+    )
+    const optionDImageUrl = extractImageUrlFromField(
+      rawOptionDImageUrl || rawOptionDImageUrlAlt,
+    )
+    const explanationImageUrl = extractImageUrlFromField(
+      rawExplanationImageUrl || rawExplanationImageUrlAlt,
+    )
+
+    const sanitizedQuestion = appendImageReference(
+      normalizeCsvCell(question),
+      questionImageUrl,
+      rawQuestionImageAlt || questionImageAlt || '',
+    )
+    const sanitizedOptionA = appendImageReference(
+      normalizeCsvCell(optionA),
+      optionAImageUrl,
+      rawOptionAImageAlt || optionAImageAlt || '',
+    )
+    const sanitizedOptionB = appendImageReference(
+      normalizeCsvCell(optionB),
+      optionBImageUrl,
+      rawOptionBImageAlt || optionBImageAlt || '',
+    )
+    const sanitizedOptionC = appendImageReference(
+      normalizeCsvCell(optionC),
+      optionCImageUrl,
+      rawOptionCImageAlt || optionCImageAlt || '',
+    )
+    const sanitizedOptionD = appendImageReference(
+      normalizeCsvCell(optionD),
+      optionDImageUrl,
+      rawOptionDImageAlt || optionDImageAlt || '',
+    )
+    const sanitizedExplanation = appendImageReference(
+      normalizeCsvCell(explanation),
+      explanationImageUrl,
+      rawExplanationImageAlt || explanationImageAlt || '',
+    )
     if (
       !sanitizedQuestion ||
       !sanitizedOptionA ||
@@ -1321,13 +1431,13 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
         ]),
       )
 
-      const question = sanitizeCsvCell(row.question)
-      const optionA = sanitizeCsvCell(row.option_a)
-      const optionB = sanitizeCsvCell(row.option_b)
-      const optionC = sanitizeCsvCell(row.option_c)
-      const optionD = sanitizeCsvCell(row.option_d)
+      const question = normalizeCsvCell(row.question)
+      const optionA = normalizeCsvCell(row.option_a)
+      const optionB = normalizeCsvCell(row.option_b)
+      const optionC = normalizeCsvCell(row.option_c)
+      const optionD = normalizeCsvCell(row.option_d)
       const correctAnswer = normalizeCsvCorrectAnswer(row.correct_answer)
-      const explanation = sanitizeCsvCell(row.explanation)
+      const explanation = normalizeCsvCell(row.explanation)
       const explicitNeedsReview =
         String(row.needs_review || '')
           .trim()
@@ -1477,15 +1587,15 @@ exports.updateCsvReviewItem = async (req, res) => {
     )
     if (!item) return res.status(404).json({ error: 'Review item not found' })
 
-    item.question = sanitizeCsvCell(req.body.question)
-    item.optionA = sanitizeCsvCell(req.body.optionA)
-    item.optionB = sanitizeCsvCell(req.body.optionB)
-    item.optionC = sanitizeCsvCell(req.body.optionC)
-    item.optionD = sanitizeCsvCell(req.body.optionD)
+    item.question = normalizeCsvCell(req.body.question)
+    item.optionA = normalizeCsvCell(req.body.optionA)
+    item.optionB = normalizeCsvCell(req.body.optionB)
+    item.optionC = normalizeCsvCell(req.body.optionC)
+    item.optionD = normalizeCsvCell(req.body.optionD)
     item.correctAnswer = String(
       normalizeCsvCorrectAnswer(req.body.correctAnswer),
     ).toUpperCase()
-    item.explanation = sanitizeCsvCell(req.body.explanation)
+    item.explanation = normalizeCsvCell(req.body.explanation)
 
     const reviewReasons = determineReviewReasons({
       question: item.question,
@@ -1576,15 +1686,15 @@ exports.approveCsvReviewItem = async (req, res) => {
     )
     if (!item) return res.status(404).json({ error: 'Review item not found' })
 
-    const question = sanitizeCsvCell(req.body.question || item.question)
-    const optionA = sanitizeCsvCell(req.body.optionA || item.optionA)
-    const optionB = sanitizeCsvCell(req.body.optionB || item.optionB)
-    const optionC = sanitizeCsvCell(req.body.optionC || item.optionC)
-    const optionD = sanitizeCsvCell(req.body.optionD || item.optionD)
+    const question = normalizeCsvCell(req.body.question || item.question)
+    const optionA = normalizeCsvCell(req.body.optionA || item.optionA)
+    const optionB = normalizeCsvCell(req.body.optionB || item.optionB)
+    const optionC = normalizeCsvCell(req.body.optionC || item.optionC)
+    const optionD = normalizeCsvCell(req.body.optionD || item.optionD)
     const correctAnswer = normalizeCsvCorrectAnswer(
       req.body.correctAnswer || item.correctAnswer,
     )
-    const explanation = sanitizeCsvCell(
+    const explanation = normalizeCsvCell(
       req.body.explanation || item.explanation,
     )
     const reviewReasons = determineReviewReasons({
@@ -1725,3 +1835,4 @@ exports.submitChapterAttempt = async (req, res) => {
     res.status(500).json({ error: error.message })
   }
 }
+

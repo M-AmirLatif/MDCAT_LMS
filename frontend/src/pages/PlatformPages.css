@@ -4617,6 +4617,8 @@
 .mcq-renderer {
   display: block;
   color: inherit;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .mcq-renderer-block-math {
