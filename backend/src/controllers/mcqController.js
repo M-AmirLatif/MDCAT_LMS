@@ -85,8 +85,8 @@ const IMAGE_TAG_REGEX = /<img\b[^>]*>/gi
 const IMAGE_SOURCE_REGEX = /\bsrc\s*=\s*["']([^"']+)["']/i
 const IMAGE_ALT_REGEX = /\balt\s*=\s*["']([^"']*)["']/i
 const MARKDOWN_IMAGE_REGEX = /!\[([\s\S]*?)\]\(([\s\S]*?)\)/gi
-const STANDALONE_IMAGE_URL_REGEX =
-  /(^|\n)\s*((?:(?:https?:\/\/|\/uploads\/)[^\s]+?\.(?:png|jpe?g|gif|webp|svg|bmp|avif)(?:\?[^\s]*)?)|(?:data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+))\s*(?=\n|$)/gim
+const IMAGE_URL_REGEX =
+  /((?:(?:https?:\/\/)[^\s<>"']+?\.(?:png|jpe?g|gif|webp|svg|bmp|avif)(?:\?[^\s<>"']*)?)|(?:\/uploads\/[^\s<>"']+?\.(?:png|jpe?g|gif|webp|svg|bmp|avif)(?:\?[^\s<>"']*)?)|(?:data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+))/gi
 
 const encodeImageToken = ({ url, alt = '' }) =>
   `[IMAGE:${String(url || '').trim()}|alt=${String(alt || '').trim()}]`
@@ -102,10 +102,7 @@ const normalizeMediaMarkup = (value) =>
     .replace(MARKDOWN_IMAGE_REGEX, (_, alt, url) =>
       encodeImageToken({ url, alt }),
     )
-    .replace(
-      STANDALONE_IMAGE_URL_REGEX,
-      (_, prefix, url) => `${prefix}${encodeImageToken({ url })}`,
-    )
+    .replace(IMAGE_URL_REGEX, (url) => encodeImageToken({ url }))
 
 const sanitizeCsvCell = (value) =>
   DOMPurify.sanitize(normalizeMediaMarkup(String(value || '').trim()), {

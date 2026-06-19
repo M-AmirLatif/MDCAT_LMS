@@ -2062,8 +2062,8 @@
     right: 12px;
     bottom: 88px;
     z-index: 140;
-    max-height: min(72vh, 560px);
-    overflow: auto;
+    max-height: none;
+    overflow: visible;
     transform: translateY(calc(100% + 120px));
     opacity: 0;
     pointer-events: none;
