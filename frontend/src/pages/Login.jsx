@@ -149,14 +149,6 @@ export default function Login() {
     }
   }
 
-  const handleGoogleClick = () => {
-    if (googleSignIn.ready) {
-      googleSignIn.triggerGoogleSignIn()
-    } else if (googleSignIn.error) {
-      googleSignIn.retry()
-    }
-  }
-
   return (
     <div className="auth-page">
       <div className={`auth-shell ${accentClass}`}>
@@ -308,17 +300,14 @@ export default function Login() {
                     <div className="auth-divider">or</div>
                     {googleSignIn.configured ? (
                       <>
-                        <button
-                          className="auth-google-custom-btn"
-                          type="button"
-                          onClick={handleGoogleClick}
-                          disabled={googleSignIn.loading}
-                        >
-                          <GoogleIcon />
-                          <span>Continue with Google</span>
-                        </button>
-                        {/* Hidden container for fallback GIS rendered button */}
-                        <div ref={googleSignIn.buttonRef} className="auth-google-rendered-hidden" />
+                        {googleSignIn.loading ? (
+                          <span className="auth-google-loading">Loading Google sign-in...</span>
+                        ) : null}
+                        <div
+                          ref={googleSignIn.buttonRef}
+                          className="auth-google-rendered-button"
+                          aria-label="Continue with Google"
+                        />
                         {googleSignIn.error ? (
                           <button
                             className="auth-secondary auth-google-retry"

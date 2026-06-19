@@ -573,15 +573,16 @@
   gap: 10px;
 }
 
-.auth-google-rendered-hidden {
-  position: absolute;
-  left: -9999px;
-  top: -9999px;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  pointer-events: none;
-  opacity: 0;
+.auth-google-rendered-button {
+  width: 100%;
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-google-rendered-button--large {
+  min-height: 58px;
 }
 
 .auth-google-custom-btn {

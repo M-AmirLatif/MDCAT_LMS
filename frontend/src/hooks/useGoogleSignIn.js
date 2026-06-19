@@ -61,6 +61,30 @@ export function useGoogleSignIn({
 
   const configured = !!GOOGLE_CLIENT_ID
 
+  const renderGoogleButton = useCallback(() => {
+    if (!initializedRef.current || !window.google?.accounts?.id) return
+    if (!containerRef.current) return
+
+    const width = Math.min(
+      Math.max(containerRef.current.getBoundingClientRect().width || 0, 260),
+      400,
+    )
+
+    containerRef.current.replaceChildren()
+    window.google.accounts.id.renderButton(containerRef.current, {
+      type: 'standard',
+      theme:
+        document.documentElement.getAttribute('data-theme') === 'dark'
+          ? 'filled_black'
+          : 'outline',
+      size: 'large',
+      text: mode === 'signup' ? 'signup_with' : 'continue_with',
+      shape: 'rectangular',
+      width,
+      logo_alignment: 'left',
+    })
+  }, [mode])
+
   const handleCredentialResponse = useCallback(
     async (response) => {
       if (!response?.credential) {
@@ -132,6 +156,7 @@ export function useGoogleSignIn({
 
       initializedRef.current = true
       setReady(true)
+      requestAnimationFrame(() => renderGoogleButton())
     } catch (renderError) {
       console.error('Google Sign-In init error:', renderError)
       setReady(false)
@@ -139,32 +164,7 @@ export function useGoogleSignIn({
     } finally {
       setLoading(false)
     }
-  }, [configured, handleCredentialResponse])
-
-  const triggerGoogleSignIn = useCallback(() => {
-    if (!initializedRef.current || !window.google?.accounts?.id) return
-
-    // Use the programmatic prompt for a cleaner, more controlled UX
-    window.google.accounts.id.prompt((notification) => {
-      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-        // Fallback: render the button in the container if prompt is blocked
-        if (containerRef.current) {
-          containerRef.current.replaceChildren()
-          window.google.accounts.id.renderButton(containerRef.current, {
-            type: 'standard',
-            theme: document.documentElement.getAttribute('data-theme') === 'dark'
-              ? 'filled_black'
-              : 'outline',
-            size: 'large',
-            text: mode === 'signup' ? 'signup_with' : 'continue_with',
-            shape: 'rectangular',
-            width: Math.min(containerRef.current.offsetWidth || 340, 400),
-            logo_alignment: 'left',
-          })
-        }
-      }
-    })
-  }, [mode])
+  }, [configured, handleCredentialResponse, renderGoogleButton])
 
   const buttonRef = useCallback((node) => {
     containerRef.current = node
@@ -178,9 +178,14 @@ export function useGoogleSignIn({
   }, [initializeGoogle])
 
   useEffect(() => {
+    if (!configured || !ready) return
+    renderGoogleButton()
+  }, [configured, ready, renderGoogleButton])
+
+  useEffect(() => {
     if (!configured) return
     initializeGoogle()
   }, [configured, initializeGoogle])
 
-  return { buttonRef, ready, loading, configured, error, retry, triggerGoogleSignIn }
+  return { buttonRef, ready, loading, configured, error, retry }
 }

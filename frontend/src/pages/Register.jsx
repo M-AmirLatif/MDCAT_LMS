@@ -17,14 +17,6 @@ function GoogleIcon() {
 export default function Register() {
   const googleSignIn = useGoogleSignIn({ remember: true, mode: 'signup' })
 
-  const handleGoogleClick = () => {
-    if (googleSignIn.ready) {
-      googleSignIn.triggerGoogleSignIn()
-    } else if (googleSignIn.error) {
-      googleSignIn.retry()
-    }
-  }
-
   return (
     <div className="auth-page">
       <div className="auth-shell auth-shell--register">
@@ -89,17 +81,14 @@ export default function Register() {
                 <div className="auth-google-block auth-google-block--register">
                   {googleSignIn.configured ? (
                     <>
-                      <button
-                        className="auth-google-custom-btn auth-google-custom-btn--large"
-                        type="button"
-                        onClick={handleGoogleClick}
-                        disabled={googleSignIn.loading}
-                      >
-                        <GoogleIcon />
-                        <span>{googleSignIn.loading ? 'Loading...' : 'Sign up with Google'}</span>
-                      </button>
-                      {/* Hidden container for fallback GIS rendered button */}
-                      <div ref={googleSignIn.buttonRef} className="auth-google-rendered-hidden" />
+                      {googleSignIn.loading ? (
+                        <span className="auth-google-loading">Loading Google sign-in...</span>
+                      ) : null}
+                      <div
+                        ref={googleSignIn.buttonRef}
+                        className="auth-google-rendered-button auth-google-rendered-button--large"
+                        aria-label="Sign up with Google"
+                      />
                       {googleSignIn.error ? (
                         <span className="auth-google-error-text">{googleSignIn.error}</span>
                       ) : null}
