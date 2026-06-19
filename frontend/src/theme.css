@@ -2292,18 +2292,19 @@ html:not([data-theme="dark"]) .auth-feature-list span {
     width: 100%;
     justify-content: center;
     min-width: 0;
-    min-height: 48px;
-    padding: 0 12px;
-    font-size: 13px;
+    min-height: 46px;
+    padding: 0 10px;
+    font-size: 12px;
     line-height: 1.1;
     white-space: nowrap;
+    border-width: 1.25px !important;
   }
 
   .filter-pill,
   .notification-toolbar .filter-pill,
   .notification-summary-panel .filter-pill {
-    min-height: 44px;
-    padding: 0 14px !important;
+    min-height: 42px;
+    padding: 0 12px !important;
     font-size: 13px;
     white-space: nowrap;
   }
@@ -2320,27 +2321,29 @@ html:not([data-theme="dark"]) .auth-feature-list span {
     width: 100%;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px !important;
+    gap: 8px !important;
   }
 
   .workspace-page--notifications .notification-toolbar-note {
     width: 100%;
     text-align: left;
-    margin-top: 2px;
+    margin-top: 0;
     font-size: 14px;
+    padding-left: 2px;
   }
 
   .notification-summary-panel {
-    margin-top: 14px !important;
-    padding: 14px !important;
+    margin-top: 12px !important;
+    padding: 12px !important;
   }
 
   .notification-summary-panel .filter-pills {
-    gap: 10px !important;
+    gap: 8px !important;
   }
 
   .notification-feed-card .workspace-card-head {
-    gap: 10px;
+    gap: 8px;
+    padding-bottom: 12px;
   }
 
   .notification-feed-card .workspace-card-head .state-chip {
@@ -2348,13 +2351,69 @@ html:not([data-theme="dark"]) .auth-feature-list span {
   }
 
   .notification-feed-card .workspace-card-body {
-    gap: 14px;
-    padding-top: 10px;
+    gap: 12px;
+    padding-top: 0;
   }
 
   .notification-feed-card .empty-state--compact {
-    min-height: 190px !important;
-    padding: 24px 16px !important;
+    min-height: 170px !important;
+    padding: 18px 16px !important;
   }
+
+  .workspace-page--notifications .notification-toolbar .filter-pill,
+  .workspace-page--notifications .notification-summary-panel .filter-pill {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  html:not([data-theme="dark"]) .workspace-page--notifications .notification-toolbar .filter-pill {
+    background: rgba(255, 255, 255, 0.92) !important;
+    border-color: rgba(188, 196, 220, 0.95) !important;
+  }
+
+  html:not([data-theme="dark"]) .workspace-page--notifications .notification-toolbar-note {
+    color: #414867 !important;
+    -webkit-text-fill-color: #414867 !important;
+  }
+}
+
+html[data-theme="dark"] .notification-summary-card,
+html[data-theme="dark"] .notification-summary-panel,
+html[data-theme="dark"] .notification-showcase,
+html[data-theme="dark"] .empty-state--compact {
+  background: #171433 !important;
+  border: 1px solid rgba(134, 118, 214, 0.2) !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24) !important;
+}
+
+html[data-theme="dark"] .notification-summary-panel .filter-pill,
+html[data-theme="dark"] .notification-toolbar .filter-pill {
+  background: #241f4d !important;
+  border: 1px solid rgba(134, 118, 214, 0.22) !important;
+  color: #9f8dff !important;
+  -webkit-text-fill-color: #9f8dff !important;
+}
+
+html[data-theme="dark"] .notification-summary-panel .filter-pill--active,
+html[data-theme="dark"] .notification-toolbar .filter-pill--active {
+  background: linear-gradient(135deg, #6c47ff 0%, #4a90e2 100%) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+html[data-theme="dark"] .notification-summary-panel p,
+html[data-theme="dark"] .notification-toolbar-note,
+html[data-theme="dark"] .notification-showcase-body p {
+  color: rgba(240, 238, 255, 0.72) !important;
+  -webkit-text-fill-color: rgba(240, 238, 255, 0.72) !important;
+}
+
+html[data-theme="dark"] .notification-summary-card .workspace-card-title,
+html[data-theme="dark"] .notification-showcase-body strong,
+html[data-theme="dark"] .notification-summary-card strong {
+  color: #f0eeff !important;
+  -webkit-text-fill-color: #f0eeff !important;
 }
 
