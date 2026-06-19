@@ -125,6 +125,10 @@ function AutoSizeTextarea({
       value={value}
       onChange={onChange}
       rows={minRows}
+      spellCheck={false}
+      autoComplete="off"
+      autoCorrect="off"
+      autoCapitalize="off"
       {...props}
     />
   )

@@ -173,6 +173,20 @@
 }
 
 .mcq-option-text,
+.mcq-option-text .mcq-renderer {
+  display: block;
+  width: 100%;
+}
+
+.mcq-option-text .mcq-renderer *,
+.mcq-option-card > span:last-child * {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.mcq-option-text,
 .mcq-option-card > span:last-child {
   min-width: 0;
   flex: 1 1 auto;
