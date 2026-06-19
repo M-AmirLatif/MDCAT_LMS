@@ -2098,11 +2098,18 @@ html:not([data-theme="dark"]) .mcq-inline-statement-textarea {
 html:not([data-theme="dark"]) .mcq-option-row:not(.mcq-inline-option-row--correct),
 html:not([data-theme="dark"]) .option-row:not(.mcq-inline-option-row--correct),
 html:not([data-theme="dark"]) [class*="option-item"]:not(.mcq-inline-option-row--correct):not([class*="correct"]),
-html:not([data-theme="dark"]) [class*="mcq-option"]:not(.mcq-inline-option-row--correct):not([class*="correct"]),
+html:not([data-theme="dark"]) [class*="mcq-option"]:not(.mcq-option-card):not(.mcq-option-letter):not(.mcq-option-text):not(.mcq-inline-option-row--correct):not([class*="correct"]),
 html:not([data-theme="dark"]) .mcq-inline-option-row:not(.mcq-inline-option-row--correct) {
   background: #F4F5FA !important;
   border: 1px solid #D0D4E4 !important;
   border-radius: 10px !important;
+}
+
+html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card,
+html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card > span:not(.mcq-option-letter) {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 
 html:not([data-theme="dark"]) .correct-option-box,
