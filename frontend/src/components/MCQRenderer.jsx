@@ -6,6 +6,10 @@ const DIAGRAM_REGEX = /\[DIAGRAM:\s*([\s\S]*?)\]/gi
 const IMAGE_TOKEN_REGEX =
   /\[(?:IMAGE|IMG|PIC|PICTURE|FIGURE|SCREENSHOT|SS):\s*([\s\S]*?)\]/gi
 const MARKDOWN_IMAGE_REGEX = /!\[([\s\S]*?)\]\(([\s\S]*?)\)/gi
+const EXISTING_IMAGE_TOKEN_SPLIT_REGEX =
+  /(\[(?:IMAGE|IMG|PIC|PICTURE|FIGURE|SCREENSHOT|SS):[\s\S]*?\])/gi
+const EXISTING_IMAGE_TOKEN_TEST_REGEX =
+  /^\[(?:IMAGE|IMG|PIC|PICTURE|FIGURE|SCREENSHOT|SS):[\s\S]*?\]$/i
 const IMAGE_URL_REGEX =
   /((?:(?:https?:\/\/)[^\s<>"']+?\.(?:png|jpe?g|gif|webp|svg|bmp|avif)(?:\?[^\s<>"']*)?)|(?:https?:\/\/res\.cloudinary\.com\/[^\s<>"']*?\/image\/upload\/[^\s<>"']+)|(?:\/uploads\/[^\s<>"']+?\.(?:png|jpe?g|gif|webp|svg|bmp|avif)(?:\?[^\s<>"']*)?)|(?:data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+))/gi
 const HTML_IMAGE_TAG_REGEX = /<img\b[^>]*>/gi
@@ -20,7 +24,7 @@ function normalizeMediaMarkup(text) {
   const value = String(text || '')
   if (!value) return ''
 
-  return value
+  const normalized = value
     .replace(HTML_IMAGE_TAG_REGEX, (tag) => {
       const srcMatch = tag.match(IMAGE_SOURCE_REGEX)
       if (!srcMatch?.[1]) return ''
@@ -30,7 +34,14 @@ function normalizeMediaMarkup(text) {
     .replace(MARKDOWN_IMAGE_REGEX, (_, alt, url) =>
       encodeImageToken({ url, alt }),
     )
-    .replace(IMAGE_URL_REGEX, (url) => encodeImageToken({ url }))
+
+  return normalized
+    .split(EXISTING_IMAGE_TOKEN_SPLIT_REGEX)
+    .map((segment) => {
+      if (EXISTING_IMAGE_TOKEN_TEST_REGEX.test(segment)) return segment
+      return segment.replace(IMAGE_URL_REGEX, (url) => encodeImageToken({ url }))
+    })
+    .join('')
 }
 
 function parseImageTokenBody(body) {
