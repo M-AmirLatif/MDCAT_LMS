@@ -185,7 +185,7 @@ function TeacherDashboard() {
             <div className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Teacher Dashboard</div>
             <h1 style={{ color: '#fff' }}>Manage MDCAT chapters, MCQs, and explanations from one focused workspace</h1>
             <p>Track uploads by subject, monitor student attempts, and keep the Biology, Chemistry, Physics, and English bank clean and exam-relevant.</p>
-            <div className="workspace-hero-actions">
+            <div className="workspace-hero-actions teacher-hero-actions">
               <Link className="btn btn-primary" to="/teacher/mcqs">Open MCQ Management</Link>
               <Link className="btn btn-secondary" to="/teacher/analytics">View Analytics</Link>
             </div>

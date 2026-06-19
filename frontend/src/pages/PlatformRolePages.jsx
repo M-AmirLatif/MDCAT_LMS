@@ -49,8 +49,8 @@ export function TeacherStudentsPage() {
   const selectedStudent = studentRows[0] || null
 
   return (
-    <div className="workspace-page animate-fade-up">
-      <section className="workspace-card">
+    <div className="workspace-page workspace-page--teacher-students animate-fade-up">
+      <section className="workspace-card teacher-students-hero-card">
         <div className="workspace-card-head">
           <div>
             <div className="label-xs">Student Attempts</div>
@@ -58,7 +58,7 @@ export function TeacherStudentsPage() {
           </div>
         </div>
         <div className="workspace-card-body">
-          <div className="filter-pills">
+          <div className="filter-pills teacher-students-filter-pills">
             <button className="filter-pill filter-pill--active" type="button">All</button>
             <button className="filter-pill" type="button">At Risk</button>
             <button className="filter-pill" type="button">Top Performers</button>
@@ -68,9 +68,9 @@ export function TeacherStudentsPage() {
       </section>
 
       <div className="split-layout">
-        <div className="workspace-card">
+        <div className="workspace-card teacher-students-list-card">
           <div className="workspace-card-body">
-            <table className="simple-table">
+            <table className="simple-table teacher-students-table">
               <thead>
                 <tr><th>Name</th><th>City</th><th>Score</th><th>Streak</th><th>Risk</th></tr>
               </thead>
@@ -87,11 +87,11 @@ export function TeacherStudentsPage() {
                 ) : studentRows.length > 0 ? (
                   studentRows.map((student) => (
                     <tr key={student.name}>
-                      <td>{student.name}</td>
-                      <td>{student.city}</td>
-                      <td>{student.score}%</td>
-                      <td>{student.streak}</td>
-                      <td>{student.risk}</td>
+                      <td data-label="Name">{student.name}</td>
+                      <td data-label="City">{student.city}</td>
+                      <td data-label="Score">{student.score}%</td>
+                      <td data-label="Streak">{student.streak}</td>
+                      <td data-label="Risk">{student.risk}</td>
                     </tr>
                   ))
                 ) : (
@@ -110,7 +110,7 @@ export function TeacherStudentsPage() {
           </div>
         </div>
 
-        <aside className="workspace-card drawer-card">
+        <aside className="workspace-card drawer-card teacher-students-detail-card">
           <div className="workspace-card-head">
             <div>
               <div className="label-xs">Student Detail</div>
