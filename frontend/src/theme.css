@@ -2138,6 +2138,49 @@ html:not([data-theme="dark"]) .hero-mini-card span {
   -webkit-text-fill-color: #4a4f68 !important;
 }
 
+html:not([data-theme="dark"]) .workspace-hero .hero-mini-card,
+html:not([data-theme="dark"]) .workspace-hero .notification-hero-card,
+html:not([data-theme="dark"]) .workspace-hero .notification-hero-panel,
+html:not([data-theme="dark"]) .notification-hero .hero-mini-card,
+html:not([data-theme="dark"]) .notification-hero .notification-hero-panel {
+  background: #f8f9fd !important;
+  border: 1.5px solid #c7cde0 !important;
+  box-shadow: 0 12px 30px rgba(25, 32, 61, 0.08) !important;
+}
+
+html:not([data-theme="dark"]) .workspace-hero .hero-mini-card .label-xs,
+html:not([data-theme="dark"]) .notification-hero .hero-mini-card .label-xs,
+html:not([data-theme="dark"]) .workspace-hero .label-xs,
+html:not([data-theme="dark"]) .notification-hero .label-xs {
+  color: #dfe3f0;
+  -webkit-text-fill-color: #dfe3f0;
+}
+
+html:not([data-theme="dark"]) .workspace-hero .hero-mini-card p,
+html:not([data-theme="dark"]) .workspace-hero .hero-mini-card small,
+html:not([data-theme="dark"]) .workspace-hero .hero-mini-card span,
+html:not([data-theme="dark"]) .notification-hero .notification-hero-panel-row span,
+html:not([data-theme="dark"]) .notification-hero .notification-toolbar-note {
+  color: #4a4f68 !important;
+  -webkit-text-fill-color: #4a4f68 !important;
+}
+
+html:not([data-theme="dark"]) .workspace-hero .hero-mini-card strong,
+html:not([data-theme="dark"]) .notification-hero .notification-hero-panel strong {
+  color: #171a2f !important;
+  -webkit-text-fill-color: #171a2f !important;
+}
+
+html:not([data-theme="dark"]) .topbar-user {
+  background: #ffffff !important;
+  border-color: #b7bfd8 !important;
+}
+
+html:not([data-theme="dark"]) .topbar-user-name {
+  color: #171a2f !important;
+  -webkit-text-fill-color: #171a2f !important;
+}
+
 html:not([data-theme="dark"]) .notification-toolbar .filter-pill,
 html:not([data-theme="dark"]) .notification-summary-panel .filter-pill,
 html:not([data-theme="dark"]) .filter-pill {
@@ -2201,6 +2244,15 @@ html:not([data-theme="dark"]) .auth-feature-list span {
     gap: 14px !important;
   }
 
+  .workspace-page--notifications .workspace-hero-actions {
+    width: 100%;
+  }
+
+  .workspace-page--notifications .workspace-hero-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
   .filter-pill,
   .notification-toolbar .filter-pill,
   .notification-summary-panel .filter-pill {
@@ -2210,6 +2262,20 @@ html:not([data-theme="dark"]) .auth-feature-list span {
 
   .notification-toolbar {
     gap: 18px !important;
+  }
+
+  .workspace-page--notifications .notification-toolbar {
+    align-items: stretch;
+  }
+
+  .workspace-page--notifications .notification-toolbar .filter-pills {
+    width: 100%;
+    gap: 12px !important;
+  }
+
+  .workspace-page--notifications .notification-toolbar-note {
+    width: 100%;
+    text-align: left;
   }
 }
 

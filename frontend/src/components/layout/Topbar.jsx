@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { getPageTitle, getRoleLabel, ROLE_BADGE_CLASSES } from '../../lib/platform'
+import { getPageTitle } from '../../lib/platform'
 import ThemeToggle from '../ThemeToggle'
 import './Topbar.css'
 
@@ -42,8 +42,6 @@ export default function Topbar({ onMenuClick }) {
   )
 
   const initials = `${user?.firstName?.[0] || 'U'}${user?.lastName?.[0] || ''}`.toUpperCase()
-  const badgeClass = ROLE_BADGE_CLASSES[user?.role] || ROLE_BADGE_CLASSES.student
-
   return (
     <header className="topbar">
       <div className="topbar-left">
@@ -90,7 +88,6 @@ export default function Topbar({ onMenuClick }) {
             <span className="topbar-user-name">
               {user?.firstName ? `${user.firstName} ${user?.lastName || ''}`.trim() : 'Guest User'}
             </span>
-            <span className={`badge ${badgeClass}`}>{getRoleLabel(user?.role)}</span>
           </div>
         </button>
       </div>

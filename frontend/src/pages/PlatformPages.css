@@ -3743,6 +3743,10 @@
     grid-template-columns: 1fr;
   }
 
+  .notification-feed-card .workspace-card-head .state-chip {
+    align-self: flex-start;
+  }
+
   .avatar-editor--profile {
     flex-direction: column;
     align-items: center;
@@ -3801,6 +3805,14 @@
   .workspace-card-head {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .workspace-page--notifications .workspace-card-head {
+    gap: 10px;
+  }
+
+  .workspace-page--notifications .workspace-card-title {
+    line-height: 1.2;
   }
 
   .avatar-stack {
