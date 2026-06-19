@@ -70,11 +70,37 @@ const createReviewQueueItemId = () =>
   `review-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
 
 const DOMPurify = createDOMPurify
+const IMAGE_TAG_REGEX = /<img\b[^>]*>/gi
+const IMAGE_SOURCE_REGEX = /\bsrc\s*=\s*["']([^"']+)["']/i
+const IMAGE_ALT_REGEX = /\balt\s*=\s*["']([^"']*)["']/i
+const MARKDOWN_IMAGE_REGEX = /!\[([\s\S]*?)\]\(([\s\S]*?)\)/gi
+const STANDALONE_IMAGE_URL_REGEX =
+  /(^|\n)\s*((?:(?:https?:\/\/|\/uploads\/)[^\s]+?\.(?:png|jpe?g|gif|webp|svg|bmp|avif)(?:\?[^\s]*)?)|(?:data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+))\s*(?=\n|$)/gim
+
+const encodeImageToken = ({ url, alt = '' }) =>
+  `[IMAGE:${String(url || '').trim()}|alt=${String(alt || '').trim()}]`
+
+const normalizeMediaMarkup = (value) =>
+  String(value || '')
+    .replace(IMAGE_TAG_REGEX, (tag) => {
+      const srcMatch = tag.match(IMAGE_SOURCE_REGEX)
+      if (!srcMatch?.[1]) return ''
+      const altMatch = tag.match(IMAGE_ALT_REGEX)
+      return encodeImageToken({ url: srcMatch[1], alt: altMatch?.[1] || '' })
+    })
+    .replace(MARKDOWN_IMAGE_REGEX, (_, alt, url) =>
+      encodeImageToken({ url, alt }),
+    )
+    .replace(STANDALONE_IMAGE_URL_REGEX, (_, prefix, url) =>
+      `${prefix}${encodeImageToken({ url })}`,
+    )
+
 const sanitizeCsvCell = (value) =>
-  DOMPurify.sanitize(String(value || '').trim(), { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })
+  DOMPurify.sanitize(normalizeMediaMarkup(String(value || '').trim()), { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })
 
 const hasLatex = (text) => /(\$\$[\s\S]+?\$\$|\$[^$]+?\$)/.test(String(text || ''))
 const hasDiagram = (text) => /\[DIAGRAM:\s*.*?\]/i.test(String(text || ''))
+const hasImageReference = (text) => /\[IMAGE:\s*.*?\]/i.test(String(text || ''))
 const hasUnavailableDiagram = (text) => /\[DIAGRAM:\s*unavailable\s*\]/i.test(String(text || ''))
 
 const stripWrappedMath = (text) =>
@@ -188,7 +214,9 @@ const createMcqDocFromRow = ({
   isPublished: true,
   correctAnswer: String(correctAnswer || '').toUpperCase(),
   needsReview: false,
-  hasDiagram: [question, optionA, optionB, optionC, optionD, explanation].some(hasDiagram),
+  hasDiagram: [question, optionA, optionB, optionC, optionD, explanation].some(
+    (value) => hasDiagram(value) || hasImageReference(value),
+  ),
   hasLatex: [question, optionA, optionB, optionC, optionD, explanation].some(hasLatex),
   reviewReason,
 })
@@ -278,14 +306,22 @@ exports.createMcq = async (req, res) => {
       isPastPaper,
       isPublished,
     } = req.body
+    const sanitizedQuestion = sanitizeCsvCell(question)
+    const sanitizedOptions = Array.isArray(options)
+      ? options.map((option) => ({
+        ...option,
+        text: sanitizeCsvCell(option?.text),
+      }))
+      : options
+    const sanitizedExplanation = sanitizeCsvCell(explanation)
 
-    if (!courseId || !topic || !question || !options) {
+    if (!courseId || !topic || !sanitizedQuestion || !sanitizedOptions) {
       return res
         .status(400)
         .json({ error: 'Please provide all required fields' })
     }
 
-    if (!hasCorrectOption(options)) {
+    if (!hasCorrectOption(sanitizedOptions)) {
       return res
         .status(400)
         .json({ error: 'At least one option must be correct' })
@@ -308,9 +344,9 @@ exports.createMcq = async (req, res) => {
     const mcq = await MCQ.create({
       courseId,
       topic,
-      question,
-      options,
-      explanation: explanation || null,
+      question: sanitizedQuestion,
+      options: sanitizedOptions,
+      explanation: sanitizedExplanation || null,
       subject: subject || course.category,
       chapterId: chapterId || null,
       chapterName: chapterName || topic,
@@ -321,7 +357,11 @@ exports.createMcq = async (req, res) => {
       createdBy: req.user.id,
       isPublished: typeof isPublished === 'boolean' ? isPublished : false,
       correctAnswer:
-        ['A', 'B', 'C', 'D'][options.findIndex((option) => option.isCorrect)] || null,
+        ['A', 'B', 'C', 'D'][sanitizedOptions.findIndex((option) => option.isCorrect)] || null,
+      hasDiagram: [sanitizedQuestion, ...sanitizedOptions.map((option) => option?.text), sanitizedExplanation].some(
+        (value) => hasDiagram(value) || hasImageReference(value),
+      ),
+      hasLatex: [sanitizedQuestion, ...sanitizedOptions.map((option) => option?.text), sanitizedExplanation].some(hasLatex),
     })
 
     res.status(201).json({
@@ -475,6 +515,14 @@ exports.updateMcq = async (req, res) => {
       hasLatex: incomingHasLatex,
       reviewReason,
     } = req.body
+    const sanitizedQuestion = question === undefined ? undefined : sanitizeCsvCell(question)
+    const sanitizedOptions = Array.isArray(options)
+      ? options.map((option) => ({
+        ...option,
+        text: sanitizeCsvCell(option?.text),
+      }))
+      : options
+    const sanitizedExplanation = explanation === undefined ? undefined : sanitizeCsvCell(explanation)
 
     let mcq = await MCQ.findById(req.params.mcqId)
 
@@ -491,7 +539,7 @@ exports.updateMcq = async (req, res) => {
         .json({ error: 'Not authorized to update this MCQ' })
     }
 
-    if (options && !hasCorrectOption(options)) {
+    if (sanitizedOptions && !hasCorrectOption(sanitizedOptions)) {
       return res
         .status(400)
         .json({ error: 'At least one option must be correct' })
@@ -505,18 +553,24 @@ exports.updateMcq = async (req, res) => {
         chapterId,
         chapterName,
         topicId,
-        question,
-        options,
-        explanation,
+        question: sanitizedQuestion,
+        options: sanitizedOptions,
+        explanation: sanitizedExplanation,
         difficulty,
         year,
         isPastPaper,
         isPublished,
         needsReview,
-        hasDiagram: typeof incomingHasDiagram === 'boolean' ? incomingHasDiagram : [question, ...(options || []).map((option) => option?.text), explanation].some(hasDiagram),
-        hasLatex: typeof incomingHasLatex === 'boolean' ? incomingHasLatex : [question, ...(options || []).map((option) => option?.text), explanation].some(hasLatex),
+        hasDiagram: typeof incomingHasDiagram === 'boolean'
+          ? incomingHasDiagram
+          : [sanitizedQuestion, ...(sanitizedOptions || []).map((option) => option?.text), sanitizedExplanation].some(
+            (value) => hasDiagram(value) || hasImageReference(value),
+          ),
+        hasLatex: typeof incomingHasLatex === 'boolean'
+          ? incomingHasLatex
+          : [sanitizedQuestion, ...(sanitizedOptions || []).map((option) => option?.text), sanitizedExplanation].some(hasLatex),
         reviewReason: reviewReason || null,
-        correctAnswer: options ? ['A', 'B', 'C', 'D'][options.findIndex((option) => option.isCorrect)] || null : mcq.correctAnswer,
+        correctAnswer: sanitizedOptions ? ['A', 'B', 'C', 'D'][sanitizedOptions.findIndex((option) => option.isCorrect)] || null : mcq.correctAnswer,
       },
       { new: true, runValidators: true },
     )
@@ -951,11 +1005,23 @@ exports.createChapterMcq = async (req, res) => {
 
     const { question, optionA, optionB, optionC, optionD, correctAnswer, explanation, difficulty } = req.body
     const normalizedAnswer = String(correctAnswer || '').trim().toUpperCase()
-    if (!question || !optionA || !optionB || !optionC || !optionD || !['A', 'B', 'C', 'D'].includes(normalizedAnswer)) {
+    const sanitizedQuestion = sanitizeCsvCell(question)
+    const sanitizedOptionA = sanitizeCsvCell(optionA)
+    const sanitizedOptionB = sanitizeCsvCell(optionB)
+    const sanitizedOptionC = sanitizeCsvCell(optionC)
+    const sanitizedOptionD = sanitizeCsvCell(optionD)
+    const sanitizedExplanation = sanitizeCsvCell(explanation)
+    if (!sanitizedQuestion || !sanitizedOptionA || !sanitizedOptionB || !sanitizedOptionC || !sanitizedOptionD || !['A', 'B', 'C', 'D'].includes(normalizedAnswer)) {
       return res.status(400).json({ error: 'Question, all options, and correct answer A-D are required' })
     }
 
-    const options = normalizeOptionsFromLetters({ optionA, optionB, optionC, optionD, correctAnswer: normalizedAnswer })
+    const options = normalizeOptionsFromLetters({
+      optionA: sanitizedOptionA,
+      optionB: sanitizedOptionB,
+      optionC: sanitizedOptionC,
+      optionD: sanitizedOptionD,
+      correctAnswer: normalizedAnswer,
+    })
     const mcq = await MCQ.create({
       courseId: context.course._id,
       topic: context.topic?.name || context.chapter.name,
@@ -963,16 +1029,18 @@ exports.createChapterMcq = async (req, res) => {
       chapterId: context.chapter.id,
       chapterName: context.chapter.name,
       topicId: context.topic?.id || null,
-      question: String(question).trim(),
+      question: sanitizedQuestion,
       options,
-      explanation: explanation || null,
+      explanation: sanitizedExplanation || null,
       difficulty: String(difficulty || 'medium').toLowerCase(),
       createdBy: req.user.id,
       isPublished: true,
       correctAnswer: normalizedAnswer,
       needsReview: false,
-      hasDiagram: [question, optionA, optionB, optionC, optionD, explanation].some(hasDiagram),
-      hasLatex: [question, optionA, optionB, optionC, optionD, explanation].some(hasLatex),
+      hasDiagram: [sanitizedQuestion, sanitizedOptionA, sanitizedOptionB, sanitizedOptionC, sanitizedOptionD, sanitizedExplanation].some(
+        (value) => hasDiagram(value) || hasImageReference(value),
+      ),
+      hasLatex: [sanitizedQuestion, sanitizedOptionA, sanitizedOptionB, sanitizedOptionC, sanitizedOptionD, sanitizedExplanation].some(hasLatex),
       reviewReason: null,
     })
 

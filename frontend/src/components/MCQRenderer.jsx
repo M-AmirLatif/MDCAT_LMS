@@ -3,6 +3,65 @@ import { BlockMath, InlineMath } from 'react-katex'
 import 'katex/dist/katex.min.css'
 
 const DIAGRAM_REGEX = /\[DIAGRAM:\s*([\s\S]*?)\]/gi
+const IMAGE_TOKEN_REGEX =
+  /\[(?:IMAGE|IMG|PIC|PICTURE|FIGURE|SCREENSHOT|SS):\s*([\s\S]*?)\]/gi
+const MARKDOWN_IMAGE_REGEX = /!\[([\s\S]*?)\]\(([\s\S]*?)\)/gi
+const STANDALONE_IMAGE_URL_REGEX =
+  /(^|\n)\s*((?:(?:https?:\/\/|\/uploads\/)[^\s]+?\.(?:png|jpe?g|gif|webp|svg|bmp|avif)(?:\?[^\s]*)?)|(?:data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+))\s*(?=\n|$)/gim
+const HTML_IMAGE_TAG_REGEX = /<img\b[^>]*>/gi
+const IMAGE_SOURCE_REGEX = /\bsrc\s*=\s*["']([^"']+)["']/i
+const IMAGE_ALT_REGEX = /\balt\s*=\s*["']([^"']*)["']/i
+
+function encodeImageToken({ url, alt = '' }) {
+  return `[IMAGE:${String(url || '').trim()}|alt=${String(alt || '').trim()}]`
+}
+
+function normalizeMediaMarkup(text) {
+  const value = String(text || '')
+  if (!value) return ''
+
+  return value
+    .replace(HTML_IMAGE_TAG_REGEX, (tag) => {
+      const srcMatch = tag.match(IMAGE_SOURCE_REGEX)
+      if (!srcMatch?.[1]) return ''
+      const altMatch = tag.match(IMAGE_ALT_REGEX)
+      return encodeImageToken({ url: srcMatch[1], alt: altMatch?.[1] || '' })
+    })
+    .replace(MARKDOWN_IMAGE_REGEX, (_, alt, url) =>
+      encodeImageToken({ url, alt }),
+    )
+    .replace(STANDALONE_IMAGE_URL_REGEX, (_, prefix, url) =>
+      `${prefix}${encodeImageToken({ url })}`,
+    )
+}
+
+function parseImageTokenBody(body) {
+  const value = String(body || '').trim()
+  if (!value) return { url: '', alt: '' }
+
+  const parts = value.split('|').map((part) => part.trim()).filter(Boolean)
+  const url = parts[0] || ''
+  const altPart = parts.find((part) => /^alt\s*=/i.test(part))
+  const alt = altPart ? altPart.replace(/^alt\s*=/i, '').trim() : ''
+  return { url, alt }
+}
+
+function renderImageBlock(body, key) {
+  const { url, alt } = parseImageTokenBody(body)
+  if (!url) return null
+
+  return (
+    <figure key={key} className="mcq-image-block">
+      <img
+        className="mcq-image-block-media"
+        src={url}
+        alt={alt || 'MCQ figure'}
+        loading="lazy"
+      />
+      {alt ? <figcaption className="mcq-image-block-caption">{alt}</figcaption> : null}
+    </figure>
+  )
+}
 
 export function parseLatexText(text) {
   if (!text) return [{ type: 'text', content: '' }]
@@ -43,46 +102,79 @@ function renderTextWithMath(text, keyPrefix) {
   })
 }
 
+export function containsRichMcqMedia(text) {
+  const value = normalizeMediaMarkup(text)
+  return /\[IMAGE:\s*.*?\]/i.test(value) || /\[DIAGRAM:\s*.*?\]/i.test(value)
+}
+
 export default function MCQRenderer({ text }) {
-  const value = String(text || '')
+  const value = normalizeMediaMarkup(text)
   if (!value) return <div className="mcq-renderer" />
 
   const nodes = []
   let lastIndex = 0
-  let match
-  let diagramIndex = 0
+  let blockIndex = 0
+  const blocks = []
+  const diagramRegex = new RegExp(DIAGRAM_REGEX)
+  const imageRegex = new RegExp(IMAGE_TOKEN_REGEX)
+  let diagramMatch
+  let imageMatch
 
-  while ((match = DIAGRAM_REGEX.exec(value)) !== null) {
+  while ((diagramMatch = diagramRegex.exec(value)) !== null) {
+    blocks.push({
+      type: 'diagram',
+      match: diagramMatch,
+      index: diagramMatch.index,
+    })
+  }
+
+  while ((imageMatch = imageRegex.exec(value)) !== null) {
+    blocks.push({
+      type: 'image',
+      match: imageMatch,
+      index: imageMatch.index,
+    })
+  }
+
+  blocks.sort((a, b) => a.index - b.index)
+
+  blocks.forEach((block) => {
+    const match = block.match
     if (match.index > lastIndex) {
       nodes.push(
-        <span key={`text-${diagramIndex}`}>
-          {renderTextWithMath(value.slice(lastIndex, match.index), `text-${diagramIndex}`)}
+        <span key={`text-${blockIndex}`}>
+          {renderTextWithMath(value.slice(lastIndex, match.index), `text-${blockIndex}`)}
         </span>,
       )
     }
 
-    nodes.push(
-      <div key={`diagram-${diagramIndex}`} className="mcq-diagram-callout">
-        <div className="mcq-diagram-callout-head">
-          <span className="mcq-diagram-callout-icon" aria-hidden="true">
-            DIAG
-          </span>
-          <strong>Diagram</strong>
+    if (block.type === 'diagram') {
+      nodes.push(
+        <div key={`diagram-${blockIndex}`} className="mcq-diagram-callout">
+          <div className="mcq-diagram-callout-head">
+            <span className="mcq-diagram-callout-icon" aria-hidden="true">
+              DIAG
+            </span>
+            <strong>Diagram</strong>
+          </div>
+          <div className="mcq-diagram-callout-body">
+            {renderTextWithMath(match[1] || '', `diagram-${blockIndex}`)}
+          </div>
         </div>
-        <div className="mcq-diagram-callout-body">
-          {renderTextWithMath(match[1] || '', `diagram-${diagramIndex}`)}
-        </div>
-      </div>,
-    )
+      )
+    } else {
+      const imageNode = renderImageBlock(match[1] || '', `image-${blockIndex}`)
+      if (imageNode) nodes.push(imageNode)
+    }
 
     lastIndex = match.index + match[0].length
-    diagramIndex += 1
-  }
+    blockIndex += 1
+  })
 
   if (lastIndex < value.length) {
     nodes.push(
-      <span key={`tail-${diagramIndex}`}>
-        {renderTextWithMath(value.slice(lastIndex), `tail-${diagramIndex}`)}
+      <span key={`tail-${blockIndex}`}>
+        {renderTextWithMath(value.slice(lastIndex), `tail-${blockIndex}`)}
       </span>,
     )
   }
