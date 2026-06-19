@@ -5,28 +5,28 @@
       "name": "Biology",
       "theme": "green",
       "icon": "dna",
-      "description": "Chapter-wise Biology MCQ practice will appear here after teachers add real MDCAT content."
+      "description": "Chapter based Biology MCQ practice will appear here after teachers add real MDCAT content."
     },
     {
       "id": "chemistry",
       "name": "Chemistry",
       "theme": "purple",
       "icon": "flask",
-      "description": "Chapter-wise Chemistry MCQ practice will appear here after teachers add real MDCAT content."
+      "description": "Chapter based Chemistry MCQ practice will appear here after teachers add real MDCAT content."
     },
     {
       "id": "physics",
       "name": "Physics",
       "theme": "blue",
       "icon": "atom",
-      "description": "Chapter-wise Physics MCQ practice will appear here after teachers add real MDCAT content."
+      "description": "Chapter based Physics MCQ practice will appear here after teachers add real MDCAT content."
     },
     {
       "id": "english",
       "name": "English",
       "theme": "orange",
       "icon": "book",
-      "description": "Chapter-wise English MCQ practice will appear here after teachers add real MDCAT content."
+      "description": "Chapter based English MCQ practice will appear here after teachers add real MDCAT content."
     }
   ],
   "chapters": [],

@@ -42,7 +42,7 @@ export default function Register() {
             <h1>Create Your Account</h1>
             <p>
               Join Pakistan&apos;s focused MDCAT prep platform. Practice
-              chapter-wise MCQs at home.
+              chapter based MCQs at home.
             </p>
 
             <div className="auth-register-steps">
@@ -62,7 +62,7 @@ export default function Register() {
             </div>
 
             <div className="auth-feature-list">
-              <span>Chapter-wise MCQs</span>
+              <span>Chapter Based MCQs</span>
               <span>No OTP Email</span>
               <span>Mobile Friendly</span>
               <span>Growing Community</span>

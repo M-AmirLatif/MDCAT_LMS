@@ -54,7 +54,7 @@ function StudentDashboard({ firstName }) {
               Practice MDCAT chapter by chapter, {firstName}
             </h1>
             <p>
-              Focus only on Biology, Chemistry, Physics, and English with chapter-wise MCQ sets, clean explanations, and subject-wise tracking after every attempt.
+              Focus on Biology, Chemistry, Physics, and English with chapter based MCQ sets, clear explanations, and progress tracking after every attempt.
             </p>
             <div className="workspace-hero-actions">
               <Link className="btn btn-primary" to="/mcqs">Open Subjects</Link>
@@ -111,7 +111,7 @@ function StudentDashboard({ firstName }) {
           <div className="workspace-card-head">
             <div>
               <div className="label-xs">Progress</div>
-              <h3 className="workspace-card-title">Subject-wise momentum</h3>
+              <h3 className="workspace-card-title">Subject momentum</h3>
             </div>
           </div>
           <div className="workspace-card-body chart-panel">
@@ -135,7 +135,7 @@ function StudentDashboard({ firstName }) {
               <div className="empty-state empty-state--compact">
                 <div className="empty-orb" />
                 <h3>No performance data yet</h3>
-                <p>Subject-wise graphs will appear after students attempt real MCQs.</p>
+                <p>Subject graphs will appear after students attempt real MCQs.</p>
               </div>
             )}
           </div>
@@ -195,7 +195,7 @@ function TeacherDashboard() {
             <div className="hero-mini-card">
               <span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Total Uploaded MCQs</span>
               <strong>{totalMcqs}</strong>
-              <p>Live chapter-wise bank count</p>
+              <p>Live chapter bank count</p>
             </div>
             <div className="hero-mini-card">
               <span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Student Attempts</span>
@@ -215,11 +215,11 @@ function TeacherDashboard() {
 
       <section className="workspace-card">
         <div className="workspace-card-head">
-          <div>
-            <div className="label-xs">All MDCAT Subject Banks</div>
-            <h3 className="workspace-card-title">Teacher access covers Biology, Chemistry, Physics, and English</h3>
-            <p>Each subject is organized into chapter-wise MCQ banks with explanations and difficulty labels.</p>
-          </div>
+            <div>
+              <div className="label-xs">All MDCAT Subject Banks</div>
+              <h3 className="workspace-card-title">Teacher access covers Biology, Chemistry, Physics, and English</h3>
+            <p>Each subject is organized into chapter based MCQ banks with explanations and difficulty labels.</p>
+            </div>
         </div>
         <div className="workspace-card-body">
           <div className="card-grid">

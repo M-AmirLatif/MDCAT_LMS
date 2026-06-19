@@ -130,7 +130,7 @@ export default function Dashboard() {
                       </div>
                       <div className="filler-title">Begin your MDCAT journey today</div>
                       <div className="filler-subtitle">
-                        Explore courses, practice MDCAT MCQs, and keep track of your progress — all in one place.
+                        Explore courses, practice MDCAT MCQs, and keep track of your progress, all in one place.
                       </div>
                     </div>
 

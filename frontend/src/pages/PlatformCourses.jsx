@@ -33,7 +33,7 @@ function StudentSubjects() {
           <div>
             <div className="label-xs">MDCAT MCQ Bank</div>
             <h2 className="workspace-card-title">Choose a subject, open chapters, then attempt MCQs</h2>
-            <p>Biology, Chemistry, Physics, and English are separated into chapter-wise practice banks with scoring and explanations.</p>
+            <p>Biology, Chemistry, Physics, and English are separated into chapter based practice banks with scoring and explanations.</p>
           </div>
         </div>
       </section>

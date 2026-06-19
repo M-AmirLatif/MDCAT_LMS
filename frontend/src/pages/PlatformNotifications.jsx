@@ -23,10 +23,10 @@ export default function PlatformNotifications() {
           <div className="workspace-hero-copy">
             <div className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Inbox</div>
             <h1 className="gradient-text" style={{ WebkitTextFillColor: 'unset', color: '#fff' }}>
-              Notifications that feel part of the platform
+              Notifications built into your platform
             </h1>
             <p>
-              Track live classes, billing reminders, and study updates from one colored workspace instead of a flat white list.
+              Track live classes, billing reminders, and study updates from one clear workspace instead of a plain list.
             </p>
             <div className="workspace-hero-actions">
               <button className="btn btn-primary" type="button">Mark all as read</button>

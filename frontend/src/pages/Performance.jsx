@@ -145,7 +145,7 @@ export default function Performance() {
 
         {subjectData.length > 0 && (
           <div className="chart-section">
-            <h3>Subject-wise Performance</h3>
+            <h3>Subject Performance</h3>
             <div className="chart-wrapper">
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={subjectData} barGap={6}>

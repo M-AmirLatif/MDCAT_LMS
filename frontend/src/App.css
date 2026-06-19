@@ -1,5 +1,10 @@
 /* App-level styles intentionally minimal. */
 
+.route-loading,
+.route-loading::after {
+  display: none !important;
+}
+
 
 
 

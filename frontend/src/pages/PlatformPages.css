@@ -2738,6 +2738,21 @@
   padding: 16px 0;
 }
 
+.toggle-row > div:first-child {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.toggle-row strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.toggle-row p {
+  margin: 0;
+  line-height: 1.5;
+}
+
 .toggle {
   position: relative;
   width: 54px;
@@ -3730,7 +3745,9 @@
 
   .avatar-editor--profile {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    text-align: center;
+    gap: 18px;
   }
 
   .profile-upload-btn {
@@ -3740,17 +3757,74 @@
 
   .profile-hero-actions {
     width: 100%;
-    align-items: flex-start;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .profile-hero-copy {
+    justify-items: center;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .profile-hero-copy .workspace-card-title {
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .profile-hero-copy p {
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  .workspace-card-head {
+    gap: 14px;
+  }
+
+  .workspace-card-head > div:first-child {
+    min-width: 0;
   }
 
   .sync-pill {
-    max-width: 190px;
+    width: 100%;
+    max-width: none;
     padding: 10px 12px;
     border-radius: 18px;
     line-height: 1.25;
     white-space: normal;
     text-align: center;
     justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .workspace-card-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .avatar-stack {
+    width: 88px;
+    height: 88px;
+    flex-basis: 88px;
+  }
+
+  .avatar-circle {
+    font-size: 24px;
+  }
+
+  .profile-upload-btn {
+    min-height: 46px;
+  }
+
+  .toggle-row {
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .toggle {
+    margin-left: auto;
+    flex: 0 0 54px;
   }
 }
 

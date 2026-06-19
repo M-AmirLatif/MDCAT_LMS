@@ -409,7 +409,7 @@ function ChapterList() {
                 </div>
                 <h3 className="workspace-card-title">{chapter.name}</h3>
                 <p>
-                  {chapter.description || 'Chapter-wise MCQ practice bank.'}
+                  {chapter.description || 'Chapter based MCQ practice bank.'}
                 </p>
               </div>
               <span className="state-chip state-chip--neutral">
@@ -1866,7 +1866,7 @@ function QuizResult() {
       ? 'Excellent performance! Keep it up.'
       : pct >= 60
         ? 'Good effort. Review the mistakes below to improve.'
-        : 'Keep practicing — review every explanation carefully.'
+        : 'Keep practicing, and review every explanation carefully.'
 
   return (
     <div className="mcq-review-page animate-fade-up">

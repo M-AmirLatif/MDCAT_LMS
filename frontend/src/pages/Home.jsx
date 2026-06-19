@@ -117,7 +117,7 @@ export default function Home() {
             <span className="lp-gradient-text">Faster, Smarter</span>
             <span>Preparation at Home</span>
           </h1>
-          <p>Focused MDCAT preparation from the comfort of your home. Real chapters, MCQs, and analytics — all in one platform.</p>
+          <p>Focused MDCAT preparation from the comfort of your home. Real chapters, MCQs, and analytics, all in one platform.</p>
           <div className="lp-hero-ctas">
             <Link className="lp-btn lp-btn-primary" to="/register">Start Your Preparation Now</Link>
             <Link className="lp-btn lp-btn-ghost" to="/login">I Already Have an Account</Link>
@@ -132,7 +132,7 @@ export default function Home() {
           <div>
             <p className="lp-label">Stress-free MDCAT prep</p>
             <h2>Join Our Stress-Free MDCAT Course for Guaranteed Admission in <span>Your Dream Medical College</span></h2>
-            <p className="lp-copy">Specially designed for F.Sc pre-medical 2nd year, 1st year, and repeater students who want chapter-wise MCQ practice at home.</p>
+            <p className="lp-copy">Designed for F.Sc. students in 1st year, 2nd year, and repeat batches who want chapter based MCQ practice at home.</p>
             <div className="lp-row-actions">
               <Link className="lp-btn lp-btn-primary" to="/register">Yes I Want To Join</Link>
               <span className="lp-green-pill"><i /> {hasContent ? `${stats.totalChapters} chapters live | Enroll now` : 'New session starting soon | Limited slots'}</span>
@@ -143,7 +143,7 @@ export default function Home() {
               <div className="lp-feature-icon lp-feature-icon--purple">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 3h6v5h5v6h-5v7H9v-7H4V8h5V3Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" /></svg>
               </div>
-              <strong>Chapter-wise MCQs</strong>
+              <strong>Chapter Based MCQs</strong>
               <p>Practice from a curated bank of MCQs organized by chapter and topic for focused preparation.</p>
             </div>
             <div className="lp-feature-item">
@@ -151,7 +151,7 @@ export default function Home() {
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M4 19h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="m7 15 3-4 3 2 4-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </div>
               <strong>Performance Analytics</strong>
-              <p>Track your progress with detailed analytics — see your strengths and areas that need improvement.</p>
+              <p>Track your progress with detailed analytics, see your strengths, and improve weaker areas.</p>
             </div>
             <div className="lp-feature-item">
               <div className="lp-feature-icon lp-feature-icon--amber">

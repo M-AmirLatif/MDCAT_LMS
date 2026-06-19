@@ -179,6 +179,8 @@
   align-items: center;
   gap: 10px;
   padding: 6px 14px 6px 6px;
+  min-width: 0;
+  max-width: 280px;
   border-radius: 999px;
   border: 1px solid var(--border-default);
   background: var(--bg-input);
@@ -237,7 +239,7 @@
   color: var(--text-primary);
   line-height: 1;
   white-space: nowrap;
-  max-width: 148px;
+  max-width: 210px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -293,6 +295,14 @@
 
   .topbar-center {
     display: none;
+  }
+
+  .topbar-user {
+    max-width: 220px;
+  }
+
+  .topbar-user-name {
+    max-width: 160px;
   }
 }
 
@@ -399,4 +409,3 @@
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
-

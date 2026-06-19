@@ -144,7 +144,7 @@ export function TeacherAssignmentsPage() {
   return (
     <div className="workspace-page animate-fade-up">
       <section className="workspace-card">
-        <div className="workspace-card-head"><div><div className="label-xs">MCQ Builder</div><h2 className="workspace-card-title">Create and review chapter-wise MCQ entries</h2></div></div>
+        <div className="workspace-card-head"><div><div className="label-xs">MCQ Builder</div><h2 className="workspace-card-title">Create and review chapter based MCQ entries</h2></div></div>
         <div className="workspace-card-body">
           <div className="filter-pills">
             <button className="filter-pill filter-pill--active" type="button">Active Bank</button>

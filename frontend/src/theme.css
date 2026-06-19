@@ -2105,3 +2105,111 @@ html:not([data-theme="dark"]) .field-label {
   text-transform: uppercase !important;
 }
 
+/* Light mode cleanup for cards, pills, and auth panels */
+html:not([data-theme="dark"]) .empty-state,
+html:not([data-theme="dark"]) .empty-state--compact,
+html:not([data-theme="dark"]) .summary-card,
+html:not([data-theme="dark"]) .notification-summary-card,
+html:not([data-theme="dark"]) .notification-showcase,
+html:not([data-theme="dark"]) .notification-summary-panel,
+html:not([data-theme="dark"]) .hero-mini-card {
+  background: #f7f8fc !important;
+  border: 1.5px solid #c7cde0 !important;
+  box-shadow: 0 12px 30px rgba(25, 32, 61, 0.08) !important;
+}
+
+html:not([data-theme="dark"]) .empty-state h3,
+html:not([data-theme="dark"]) .empty-state h4,
+html:not([data-theme="dark"]) .summary-card strong,
+html:not([data-theme="dark"]) .notification-showcase-body strong,
+html:not([data-theme="dark"]) .notification-summary-card .workspace-card-title,
+html:not([data-theme="dark"]) .hero-mini-card strong {
+  color: #171a2f !important;
+  -webkit-text-fill-color: #171a2f !important;
+}
+
+html:not([data-theme="dark"]) .empty-state p,
+html:not([data-theme="dark"]) .summary-row span,
+html:not([data-theme="dark"]) .notification-showcase-body p,
+html:not([data-theme="dark"]) .notification-summary-panel p,
+html:not([data-theme="dark"]) .hero-mini-card p,
+html:not([data-theme="dark"]) .hero-mini-card span {
+  color: #4a4f68 !important;
+  -webkit-text-fill-color: #4a4f68 !important;
+}
+
+html:not([data-theme="dark"]) .notification-toolbar .filter-pill,
+html:not([data-theme="dark"]) .notification-summary-panel .filter-pill,
+html:not([data-theme="dark"]) .filter-pill {
+  background: #f4f6fb !important;
+  border: 1.5px solid #bcc4dc !important;
+  color: #24294a !important;
+  -webkit-text-fill-color: #24294a !important;
+}
+
+html:not([data-theme="dark"]) .notification-toolbar .filter-pill--active,
+html:not([data-theme="dark"]) .notification-summary-panel .filter-pill--active,
+html:not([data-theme="dark"]) .filter-pill--active {
+  background: linear-gradient(135deg, #6c47ff 0%, #4a90e2 100%) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+html:not([data-theme="dark"]) .notification-toolbar-note {
+  color: #1f2440 !important;
+  -webkit-text-fill-color: #1f2440 !important;
+}
+
+html:not([data-theme="dark"]) .auth-brand-panel {
+  color: #171a2f !important;
+  background:
+    radial-gradient(320px circle at 86% 12%, rgba(108, 71, 255, 0.14), transparent 68%),
+    radial-gradient(260px circle at 8% 86%, rgba(29, 184, 132, 0.12), transparent 70%),
+    linear-gradient(160deg, #f7f8fd 0%, #edf1fb 56%, #e8edfb 100%) !important;
+}
+
+html:not([data-theme="dark"]) .auth-dark-grid {
+  opacity: 0.35;
+  background-image: radial-gradient(rgba(44, 55, 95, 0.08) 1px, transparent 1px);
+}
+
+html:not([data-theme="dark"]) .auth-brand-panel > .auth-brand .auth-brand-name,
+html:not([data-theme="dark"]) .auth-brand-content h1,
+html:not([data-theme="dark"]) .auth-register-step strong {
+  color: #171a2f !important;
+}
+
+html:not([data-theme="dark"]) .auth-brand-content > p,
+html:not([data-theme="dark"]) .auth-register-step p,
+html:not([data-theme="dark"]) .auth-bottom-quote,
+html:not([data-theme="dark"]) .auth-feature-list span {
+  color: #49506b !important;
+  -webkit-text-fill-color: #49506b !important;
+}
+
+html:not([data-theme="dark"]) .auth-register-step,
+html:not([data-theme="dark"]) .auth-feature-list span {
+  background: rgba(255, 255, 255, 0.72) !important;
+  border: 1px solid rgba(161, 173, 205, 0.7) !important;
+}
+
+@media (max-width: 768px) {
+  .workspace-hero-actions,
+  .filter-pills,
+  .notification-summary-panel .filter-pills {
+    gap: 14px !important;
+  }
+
+  .filter-pill,
+  .notification-toolbar .filter-pill,
+  .notification-summary-panel .filter-pill {
+    min-height: 46px;
+    padding: 0 16px !important;
+  }
+
+  .notification-toolbar {
+    gap: 18px !important;
+  }
+}
+
