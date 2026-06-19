@@ -5987,6 +5987,10 @@ select:focus,
 .mcq-options-section {
   display: flex;
   flex-direction: column;
+  padding: 14px 18px 18px;
+  border: 1px solid var(--mcq-statement-border);
+  border-radius: var(--mcq-statement-radius);
+  background: var(--mcq-card-bg);
 }
 
 .mcq-inline-options-list {
@@ -6039,12 +6043,13 @@ select:focus,
 .mcq-inline-option-row--correct {
   border: 2px solid var(--mcq-success) !important;
   border-left: 4px solid var(--mcq-success) !important;
-  background: var(--mcq-success-bg) !important;
+  background: var(--mcq-success-bg-light) !important;
+  box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.08);
 }
 
 .mcq-inline-option-row--correct:hover,
 .mcq-inline-option-row--correct:focus-within {
-  background: var(--mcq-success-bg) !important;
+  background: var(--mcq-success-bg-light) !important;
 }
 
 .mcq-inline-option-row--correct .mcq-option-badge {
@@ -6262,6 +6267,9 @@ select:focus,
   .mcq-inline-card {
     padding: 16px;
     border-radius: 12px;
+  }
+  .mcq-options-section {
+    padding: 12px 12px 14px;
   }
   .mcq-inline-statement-textarea {
     font-size: 14px;
