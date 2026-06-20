@@ -168,6 +168,7 @@ function Modal({ title, children, onClose }) {
 }
 
 function CourseSelection() {
+  const { user } = useAuth()
   const [subjects, setSubjects] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -186,7 +187,12 @@ function CourseSelection() {
     }
   }, [])
 
-  const merged = SUBJECTS.map((subject) => ({
+  const visibleBaseSubjects =
+    user?.role === 'teacher' && user?.assignedSubject
+      ? SUBJECTS.filter((subject) => subject.name === user.assignedSubject)
+      : SUBJECTS
+
+  const merged = visibleBaseSubjects.map((subject) => ({
     ...subject,
     ...(subjects.find((item) => item.id === subject.id) || {}),
   }))

@@ -5,7 +5,7 @@ const mongoose = require('mongoose')
 const buildTestFilter = async (req) => {
   const role = req.user.role?.name || ''
   if (role === 'teacher') {
-    return {}
+    return req.user.assignedSubject ? { subject: req.user.assignedSubject } : { _id: null }
   } else if (role === 'admin') {
     return {}
   }

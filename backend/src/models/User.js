@@ -81,6 +81,34 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    status: {
+      type: String,
+      enum: ['active', 'pending', 'rejected'],
+      default: 'active',
+    },
+    assignedSubject: {
+      type: String,
+      enum: ['Biology', 'Chemistry', 'Physics', 'English', null],
+      default: null,
+    },
+    approvedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
+    approvedAt: {
+      type: Date,
+      default: null,
+    },
+    rejectedAt: {
+      type: Date,
+      default: null,
+    },
+    rejectionReason: {
+      type: String,
+      default: '',
+      trim: true,
+    },
     accessStatus: {
       type: String,
       enum: ['active', 'restricted', 'expired'],
@@ -139,6 +167,7 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 // ==================== INDEXES ====================
 userSchema.index({ email: 1 })
 userSchema.index({ role: 1, isActive: 1 })
+userSchema.index({ role: 1, status: 1, assignedSubject: 1 })
 userSchema.index({ 'subscriptions.subjectId': 1, 'subscriptions.endDate': 1 })
 
 module.exports = mongoose.model('User', userSchema)

@@ -27,14 +27,27 @@ const slugifyChapter = (name) =>
 
 const teacherRoleNames = new Set(['teacher', 'admin'])
 
+const userRoleName = (user) =>
+  user?.role?.name === 'superadmin' ? 'admin' : user?.role?.name
+
 const canManageCourse = (course, user) => {
-  const roleName = user?.role?.name
-  return teacherRoleNames.has(roleName)
+  const roleName = userRoleName(user)
+  if (roleName === 'admin') return true
+  if (roleName !== 'teacher' || user.status !== 'active') return false
+  return String(user.assignedSubject || '') === String(course?.category || course?.subject || '')
+}
+
+const canManageSubject = (subject, user) => {
+  const roleName = userRoleName(user)
+  if (roleName === 'admin') return true
+  if (roleName !== 'teacher' || user.status !== 'active') return false
+  return String(user.assignedSubject || '') === String(subject || '')
 }
 
 const canAccessSubjectContent = (user, subject, contentIndex = 0) => {
-  const roleName = user?.role?.name
-  if (teacherRoleNames.has(roleName)) return true
+  const roleName = userRoleName(user)
+  if (roleName === 'admin') return true
+  if (roleName === 'teacher') return canManageSubject(subject, user)
   if (roleName !== 'student') return false
   if (contentIndex === 0) return true
   return hasActiveSubscription(user, subject)
@@ -418,14 +431,15 @@ exports.createMcq = async (req, res) => {
       return res.status(404).json({ error: 'Course not found' })
     }
 
-    if (
-      course.createdBy.toString() !== req.user.id &&
-      req.user.role?.name !== 'admin'
-    ) {
+    if (!canManageCourse(course, req.user)) {
       return res
         .status(403)
         .json({ error: 'Not authorized to add MCQs to this course' })
     }
+
+    const nextSubject = userRoleName(req.user) === 'teacher'
+      ? course.category
+      : subject || course.category
 
     const mcq = await MCQ.create({
       courseId,
@@ -433,7 +447,7 @@ exports.createMcq = async (req, res) => {
       question: sanitizedQuestion,
       options: sanitizedOptions,
       explanation: sanitizedExplanation || null,
-      subject: subject || course.category,
+      subject: nextSubject,
       chapterId: chapterId || null,
       chapterName: chapterName || topic,
       topicId: topicId || null,
@@ -558,6 +572,12 @@ exports.getTopicsByCourse = async (req, res) => {
 // ==================== GET MCQS BY COURSE (Teacher/Admin) ====================
 exports.getMcqsByCourseFull = async (req, res) => {
   try {
+    const course = await Course.findById(req.params.courseId).select('category subject')
+    if (!course) return res.status(404).json({ error: 'Course not found' })
+    if (!canManageCourse(course, req.user)) {
+      return res.status(403).json({ error: 'Not authorized to manage this subject' })
+    }
+
     const filter = { courseId: req.params.courseId }
 
     const page = Math.max(1, parseInt(req.query.page, 10) || 1)
@@ -623,16 +643,13 @@ exports.updateMcq = async (req, res) => {
     const sanitizedExplanation =
       explanation === undefined ? undefined : normalizeCsvCell(explanation)
 
-    let mcq = await MCQ.findById(req.params.mcqId)
+    let mcq = await MCQ.findById(req.params.mcqId).populate('courseId', 'category subject')
 
     if (!mcq) {
       return res.status(404).json({ error: 'MCQ not found' })
     }
 
-    if (
-      mcq.createdBy.toString() !== req.user.id &&
-      req.user.role?.name !== 'admin'
-    ) {
+    if (!canManageCourse(mcq.courseId, req.user)) {
       return res
         .status(403)
         .json({ error: 'Not authorized to update this MCQ' })
@@ -644,11 +661,15 @@ exports.updateMcq = async (req, res) => {
         .json({ error: 'At least one option must be correct' })
     }
 
+    const nextSubject = userRoleName(req.user) === 'teacher'
+      ? mcq.subject
+      : subject
+
     mcq = await MCQ.findByIdAndUpdate(
       req.params.mcqId,
       {
         topic,
-        subject,
+        subject: nextSubject,
         chapterId,
         chapterName,
         topicId,
@@ -699,16 +720,13 @@ exports.updateMcq = async (req, res) => {
 // ==================== DELETE MCQ ====================
 exports.deleteMcq = async (req, res) => {
   try {
-    const mcq = await MCQ.findById(req.params.mcqId)
+    const mcq = await MCQ.findById(req.params.mcqId).populate('courseId', 'category subject')
 
     if (!mcq) {
       return res.status(404).json({ error: 'MCQ not found' })
     }
 
-    if (
-      mcq.createdBy.toString() !== req.user.id &&
-      req.user.role?.name !== 'admin'
-    ) {
+    if (!canManageCourse(mcq.courseId, req.user)) {
       return res
         .status(403)
         .json({ error: 'Not authorized to delete this MCQ' })
@@ -728,7 +746,11 @@ exports.deleteMcq = async (req, res) => {
 // ==================== MDCAT SUBJECT SUMMARY ====================
 exports.getSubjectSummary = async (req, res) => {
   try {
-    const courses = await Course.find({ category: { $in: SUBJECTS } })
+    const allowedSubjects =
+      userRoleName(req.user) === 'teacher'
+        ? SUBJECTS.filter((subject) => subject === req.user.assignedSubject)
+        : SUBJECTS
+    const courses = await Course.find({ category: { $in: allowedSubjects } })
       .select('_id category chapters')
       .lean()
     const courseBySubject = new Map(
@@ -749,7 +771,7 @@ exports.getSubjectSummary = async (req, res) => {
       mcqCounts.map((item) => [item._id, item.totalMcqs]),
     )
 
-    const subjects = SUBJECTS.map((subject) => {
+    const subjects = allowedSubjects.map((subject) => {
       const course = courseBySubject.get(subject)
       return {
         id: subject.toLowerCase(),
@@ -771,6 +793,9 @@ exports.getChaptersBySubject = async (req, res) => {
   try {
     const subject = normalizeSubject(req.params.subject)
     if (!subject) return res.status(400).json({ error: 'Invalid subject' })
+    if (userRoleName(req.user) === 'teacher' && !canManageSubject(subject, req.user)) {
+      return res.status(403).json({ error: 'Not authorized to access this subject' })
+    }
 
     const course = await getSubjectCourse(subject)
     if (!course) {

@@ -83,6 +83,13 @@ const isGmailAddress = (value) => {
 const normalizeRoleName = (roleName) =>
   roleName === 'superadmin' ? 'admin' : roleName
 
+const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English']
+const normalizeSubject = (value) => {
+  const normalized = normalizeString(value)
+  const match = SUBJECTS.find((subject) => subject.toLowerCase() === normalized.toLowerCase())
+  return match || ''
+}
+
 const shouldReturnDebugOtp = (error) => {
   if (!isDev) return false
   const message = String(error?.message || '').toLowerCase()
@@ -110,6 +117,8 @@ const buildUserResponse = (user, roleDoc, extra = {}) => ({
   roleId: roleDoc._id,
   isEmailVerified: user.isEmailVerified,
   isActive: user.isActive,
+  status: user.status || 'active',
+  assignedSubject: user.assignedSubject || null,
   hasLocalPassword: user.hasLocalPassword !== false,
   needsPasswordSetup: user.hasLocalPassword === false,
   ...extra,
@@ -118,9 +127,74 @@ const buildUserResponse = (user, roleDoc, extra = {}) => ({
 // ==================== REGISTER ====================
 exports.register = async (req, res) => {
   try {
-    return res.status(403).json({
-      error:
-        'Student self-registration is disabled. Please continue with Google, then set a password.',
+    const firstName = normalizeString(req.body.firstName)
+    const lastName = normalizeString(req.body.lastName)
+    const email = normalizeEmail(req.body.email)
+    const password = req.body.password
+    const roleInput = normalizeString(req.body.role || 'student').toLowerCase()
+    const roleName = roleInput === 'teacher' ? 'teacher' : roleInput === 'admin' ? 'admin' : 'student'
+    const assignedSubject = normalizeSubject(req.body.subjectId || req.body.assignedSubject)
+
+    if (!firstName || !email || !password) {
+      return res.status(400).json({ error: 'Please provide first name, email, and password' })
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ error: 'Please provide a valid email' })
+    }
+
+    if (typeof password !== 'string' || password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' })
+    }
+
+    if (roleName === 'admin') {
+      return res.status(403).json({ error: 'Admin accounts cannot be created from public registration.' })
+    }
+
+    if (roleName === 'teacher' && !assignedSubject) {
+      return res.status(400).json({ error: 'Teacher registration requires a subject' })
+    }
+
+    const existing = await User.findOne({ email }).select('_id')
+    if (existing) {
+      return res.status(409).json({ error: 'An account with this email already exists' })
+    }
+
+    const roleDoc = await Role.findOne({ name: roleName })
+    if (!roleDoc) {
+      return res.status(500).json({ error: `${roleName} role is not configured` })
+    }
+
+    const user = await User.create({
+      firstName,
+      lastName,
+      email,
+      password,
+      hasLocalPassword: true,
+      role: roleDoc._id,
+      isEmailVerified: true,
+      isActive: true,
+      status: roleName === 'teacher' ? 'pending' : 'active',
+      assignedSubject: roleName === 'teacher' ? assignedSubject : null,
+    })
+
+    if (roleName === 'teacher') {
+      return res.status(201).json({
+        success: true,
+        message: 'Your teacher account is pending admin approval.',
+        user: buildUserResponse(user, roleDoc),
+      })
+    }
+
+    const sessionId = crypto.randomUUID()
+    await User.findByIdAndUpdate(user._id, { activeSessionId: sessionId })
+    const token = signAuthToken(user._id, sessionId)
+
+    res.status(201).json({
+      success: true,
+      message: 'Account created successfully',
+      token,
+      user: buildUserResponse(user, roleDoc),
     })
   } catch (error) {
     res.status(500).json({ error: error.message })
@@ -144,7 +218,7 @@ exports.login = async (req, res) => {
     }
 
     const user = await User.findOne({ email }).select(
-      '+password role isActive isEmailVerified firstName lastName email hasLocalPassword',
+      '+password role isActive isEmailVerified firstName lastName email hasLocalPassword status assignedSubject',
     )
     if (!user) {
       return res.status(400).json({ error: 'Invalid credentials' })
@@ -177,6 +251,14 @@ exports.login = async (req, res) => {
     // Single-device enforcement for students
     let sessionId = null
     const roleName = normalizeRoleName(roleDoc.name)
+    if (roleName === 'teacher' && user.status !== 'active') {
+      return res.status(403).json({
+        error:
+          user.status === 'rejected'
+            ? 'Your teacher account request was rejected. Please contact admin.'
+            : 'Your teacher account is pending admin approval.',
+      })
+    }
     if (roleName === 'student') {
       sessionId = crypto.randomUUID()
       await User.findByIdAndUpdate(user._id, { activeSessionId: sessionId })
@@ -217,6 +299,8 @@ exports.getProfile = async (req, res) => {
         isActive: user.isActive,
         hasLocalPassword: user.hasLocalPassword !== false,
         needsPasswordSetup: user.hasLocalPassword === false,
+        status: user.status || 'active',
+        assignedSubject: user.assignedSubject || null,
       },
     })
   } catch (error) {
@@ -251,6 +335,8 @@ exports.updateProfile = async (req, res) => {
         isActive: user.isActive,
         hasLocalPassword: user.hasLocalPassword !== false,
         needsPasswordSetup: user.hasLocalPassword === false,
+        status: user.status || 'active',
+        assignedSubject: user.assignedSubject || null,
       },
     })
   } catch (error) {
@@ -332,7 +418,7 @@ exports.googleLogin = async (req, res) => {
 
     // Find existing user — single query, no duplicate creation
     let existingUser = await User.findOne({ email }).select(
-      'role isActive isEmailVerified firstName lastName email hasLocalPassword',
+      'role isActive isEmailVerified firstName lastName email hasLocalPassword status assignedSubject',
     )
 
     const isNewUser = !existingUser
@@ -360,6 +446,7 @@ exports.googleLogin = async (req, res) => {
         role: studentRole._id,
         isEmailVerified: true,
         isActive: true,
+        status: 'active',
       })
     }
 
@@ -418,7 +505,7 @@ exports.setPassword = async (req, res) => {
     }
 
     const user = await User.findById(req.user.id).select(
-      '+password role isActive isEmailVerified firstName lastName email hasLocalPassword',
+      '+password role isActive isEmailVerified firstName lastName email hasLocalPassword status assignedSubject',
     )
     if (!user) return res.status(404).json({ error: 'User not found' })
     if (user.isActive === false)

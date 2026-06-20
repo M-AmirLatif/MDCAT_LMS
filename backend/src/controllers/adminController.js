@@ -21,6 +21,7 @@ const normalizeRoleName = (value) =>
 const VALID_SUBSCRIPTION_PLANS = ['free', 'monthly', 'quarterly', 'premium', 'enterprise']
 const VALID_SUBSCRIPTION_STATUSES = ['none', 'pending', 'active', 'expired', 'cancelled']
 const VALID_ACCESS_STATUSES = ['active', 'restricted', 'expired']
+const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English']
 
 const normalizeEnumValue = (value, allowedValues) => {
   const normalized = String(value || '').trim().toLowerCase()
@@ -32,6 +33,25 @@ const parseOptionalDate = (value) => {
   const parsed = new Date(value)
   return Number.isNaN(parsed.getTime()) ? 'invalid' : parsed
 }
+
+const normalizeSubject = (value) => {
+  const raw = normalizeString(value)
+  return SUBJECTS.find((subject) => subject.toLowerCase() === raw.toLowerCase()) || ''
+}
+
+const serializeTeacherRequest = (teacher) => ({
+  _id: teacher._id,
+  firstName: teacher.firstName,
+  lastName: teacher.lastName,
+  email: teacher.email,
+  status: teacher.status || 'active',
+  assignedSubject: teacher.assignedSubject || null,
+  approvedBy: teacher.approvedBy || null,
+  approvedAt: teacher.approvedAt || null,
+  rejectedAt: teacher.rejectedAt || null,
+  rejectionReason: teacher.rejectionReason || '',
+  createdAt: teacher.createdAt,
+})
 
 const buildUserMetrics = async (userIds) => {
   if (!userIds.length) return new Map()
@@ -100,6 +120,11 @@ const serializeUser = (user, metrics = {}) => ({
   subscriptionStatus: user.subscriptionStatus || 'none',
   subscriptionStartDate: user.subscriptionStartDate || null,
   subscriptionEndDate: user.subscriptionEndDate || null,
+  status: user.status || 'active',
+  assignedSubject: user.assignedSubject || null,
+  approvedAt: user.approvedAt || null,
+  rejectedAt: user.rejectedAt || null,
+  rejectionReason: user.rejectionReason || '',
   accessStatus: user.accessStatus || 'active',
   metrics: {
     totalTests: metrics.totalTests || 0,
@@ -121,6 +146,7 @@ exports.createUser = async (req, res) => {
     const password = req.body.password
     const roleInput = normalizeString(req.body.role)
     const role = roleInput ? normalizeRoleName(roleInput) : 'teacher'
+    const assignedSubject = normalizeSubject(req.body.assignedSubject || req.body.subjectId)
 
     if (!firstName || !lastName || !email || !password) {
       return res
@@ -151,6 +177,10 @@ exports.createUser = async (req, res) => {
       return res.status(403).json({ error: 'Not authorized for this role' })
     }
 
+    if (role === 'teacher' && !assignedSubject) {
+      return res.status(400).json({ error: 'Teacher account requires an assigned subject' })
+    }
+
     const existingUser = await User.findOne({ email })
     if (existingUser) {
       return res.status(400).json({ error: 'Email already in use' })
@@ -169,6 +199,10 @@ exports.createUser = async (req, res) => {
       role: roleDoc._id,
       isEmailVerified: true,
       isActive: true,
+      status: 'active',
+      assignedSubject: role === 'teacher' ? assignedSubject : null,
+      approvedBy: req.user.id,
+      approvedAt: new Date(),
     })
 
     res.status(201).json({
@@ -182,6 +216,8 @@ exports.createUser = async (req, res) => {
         role: normalizeRoleName(roleDoc.name),
         roleId: roleDoc._id,
         isActive: user.isActive,
+        status: user.status,
+        assignedSubject: user.assignedSubject,
       },
     })
   } catch (error) {
@@ -262,6 +298,9 @@ exports.updateUser = async (req, res) => {
       subscriptionStartDate,
       subscriptionEndDate,
       accessStatus,
+      status,
+      assignedSubject,
+      rejectionReason,
     } = req.body
 
     const user = await User.findById(req.params.userId).populate('role', 'name')
@@ -312,6 +351,30 @@ exports.updateUser = async (req, res) => {
         return res.status(400).json({ error: 'Invalid access status' })
       }
       user.accessStatus = normalizedAccessStatus
+    }
+
+    if (typeof status !== 'undefined') {
+      const normalizedStatus = normalizeEnumValue(status, ['active', 'pending', 'rejected'])
+      if (!normalizedStatus) {
+        return res.status(400).json({ error: 'Invalid account status' })
+      }
+      user.status = normalizedStatus
+      if (normalizedStatus === 'active' && !user.approvedAt) {
+        user.approvedAt = new Date()
+        user.approvedBy = req.user.id
+      }
+      if (normalizedStatus === 'rejected') {
+        user.rejectedAt = new Date()
+        user.rejectionReason = normalizeString(rejectionReason)
+      }
+    }
+
+    if (typeof assignedSubject !== 'undefined') {
+      const normalizedSubject = assignedSubject ? normalizeSubject(assignedSubject) : ''
+      if (assignedSubject && !normalizedSubject) {
+        return res.status(400).json({ error: 'Invalid assigned subject' })
+      }
+      user.assignedSubject = normalizedSubject || null
     }
 
     if (typeof subscriptionStartDate !== 'undefined') {
@@ -564,6 +627,114 @@ exports.getAdminOverview = async (req, res) => {
       },
       recentStudents: recentStudents.map((student) =>
         serializeUser(student, recentStudentMetrics.get(String(student._id)))),
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+}
+
+// ==================== TEACHER APPROVAL QUEUE ====================
+exports.getPendingTeachers = async (req, res) => {
+  try {
+    const teacherRole = await Role.findOne({ name: 'teacher' }).select('_id').lean()
+    if (!teacherRole) {
+      return res.status(200).json({ success: true, count: 0, teachers: [] })
+    }
+
+    const teachers = await User.find({ role: teacherRole._id, status: 'pending' })
+      .select('firstName lastName email status assignedSubject createdAt')
+      .sort({ createdAt: -1 })
+      .lean()
+
+    res.status(200).json({
+      success: true,
+      count: teachers.length,
+      teachers: teachers.map(serializeTeacherRequest),
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+}
+
+exports.getAllTeachersForApproval = async (req, res) => {
+  try {
+    const teacherRole = await Role.findOne({ name: 'teacher' }).select('_id').lean()
+    if (!teacherRole) {
+      return res.status(200).json({ success: true, count: 0, teachers: [] })
+    }
+
+    const status = normalizeString(req.query.status).toLowerCase()
+    const filter = { role: teacherRole._id }
+    if (['active', 'pending', 'rejected'].includes(status)) filter.status = status
+
+    const teachers = await User.find(filter)
+      .select('firstName lastName email status assignedSubject approvedBy approvedAt rejectedAt rejectionReason createdAt')
+      .populate('approvedBy', 'firstName lastName email')
+      .sort({ createdAt: -1 })
+      .lean()
+
+    res.status(200).json({
+      success: true,
+      count: teachers.length,
+      teachers: teachers.map(serializeTeacherRequest),
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+}
+
+exports.approveTeacher = async (req, res) => {
+  try {
+    const teacherRole = await Role.findOne({ name: 'teacher' }).select('_id').lean()
+    const teacher = teacherRole
+      ? await User.findOne({ _id: req.params.id, role: teacherRole._id })
+      : null
+
+    if (!teacher) return res.status(404).json({ error: 'Teacher request not found' })
+
+    const assignedSubject = normalizeSubject(req.body.assignedSubject || teacher.assignedSubject)
+    if (!assignedSubject) {
+      return res.status(400).json({ error: 'Teacher must have a valid assigned subject' })
+    }
+
+    teacher.status = 'active'
+    teacher.isActive = true
+    teacher.assignedSubject = assignedSubject
+    teacher.approvedBy = req.user.id
+    teacher.approvedAt = new Date()
+    teacher.rejectedAt = null
+    teacher.rejectionReason = ''
+    await teacher.save()
+
+    res.status(200).json({
+      success: true,
+      message: 'Teacher approved',
+      teacher: serializeTeacherRequest(teacher.toObject()),
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+}
+
+exports.rejectTeacher = async (req, res) => {
+  try {
+    const teacherRole = await Role.findOne({ name: 'teacher' }).select('_id').lean()
+    const teacher = teacherRole
+      ? await User.findOne({ _id: req.params.id, role: teacherRole._id })
+      : null
+
+    if (!teacher) return res.status(404).json({ error: 'Teacher request not found' })
+
+    teacher.status = 'rejected'
+    teacher.isActive = true
+    teacher.rejectedAt = new Date()
+    teacher.rejectionReason = normalizeString(req.body.rejectionReason || req.body.reason)
+    await teacher.save()
+
+    res.status(200).json({
+      success: true,
+      message: 'Teacher rejected',
+      teacher: serializeTeacherRequest(teacher.toObject()),
     })
   } catch (error) {
     res.status(500).json({ error: error.message })

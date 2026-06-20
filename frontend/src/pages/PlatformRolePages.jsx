@@ -12,12 +12,13 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import toast from 'react-hot-toast'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import useAdminPanelData from '../hooks/useAdminPanelData'
 import useTeacherAnalyticsData from '../hooks/useTeacherAnalyticsData'
 import './PlatformPages.css'
 import {
-  adminTeachers,
   adminTransactions,
   permissionMatrix,
   superAdminLogs,
@@ -436,45 +437,115 @@ export function AdminStudentsPage() {
 }
 
 export function AdminTeachersPage() {
+  const [teachers, setTeachers] = useState([])
+  const [statusFilter, setStatusFilter] = useState('pending')
+  const [loading, setLoading] = useState(true)
+  const [savingId, setSavingId] = useState('')
+
+  const load = async () => {
+    setLoading(true)
+    try {
+      const endpoint = statusFilter === 'pending' ? '/admin/teachers/pending' : '/admin/teachers/all'
+      const res = await API.get(endpoint, {
+        params: statusFilter !== 'all' && statusFilter !== 'pending' ? { status: statusFilter } : {},
+      })
+      setTeachers(res.data.teachers || [])
+    } catch (error) {
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not load teacher requests.'))
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    load()
+  }, [statusFilter])
+
+  const approve = async (teacher) => {
+    setSavingId(teacher._id)
+    try {
+      await API.patch(`/admin/teachers/${teacher._id}/approve`)
+      toast.success('Teacher approved.')
+      load()
+    } catch (error) {
+      toast.error(getUserFriendlyErrorMessage(error, 'Could not approve teacher.'))
+    } finally {
+      setSavingId('')
+    }
+  }
+
+  const reject = async (teacher) => {
+    const rejectionReason = window.prompt('Optional rejection reason:', teacher.rejectionReason || '')
+    if (rejectionReason === null) return
+    setSavingId(teacher._id)
+    try {
+      await API.patch(`/admin/teachers/${teacher._id}/reject`, { rejectionReason })
+      toast.success('Teacher rejected.')
+      load()
+    } catch (error) {
+      toast.error(getUserFriendlyErrorMessage(error, 'Could not reject teacher.'))
+    } finally {
+      setSavingId('')
+    }
+  }
+
+  const selectedTeacher = teachers[0] || null
+
   return (
     <div className="workspace-page animate-fade-up">
       <div className="split-layout">
         <div className="workspace-card">
-          <div className="workspace-card-head"><div><div className="label-xs">Teacher Queue</div><h2 className="workspace-card-title">Pending approvals and ratings</h2></div></div>
+          <div className="workspace-card-head">
+            <div><div className="label-xs">Teacher Queue</div><h2 className="workspace-card-title">Pending teacher approvals</h2></div>
+            <div className="filter-pills">
+              {['pending', 'all', 'active', 'rejected'].map((status) => (
+                <button key={status} className={`filter-pill ${statusFilter === status ? 'filter-pill--active' : ''}`} type="button" onClick={() => setStatusFilter(status)}>{formatTitle(status)}</button>
+              ))}
+            </div>
+          </div>
           <div className="workspace-card-body list-stack">
-            {adminTeachers.map((teacher) => (
-              <div key={teacher.name} className="queue-card">
+            {loading ? <div className="empty-state empty-state--compact"><div className="empty-orb" /><h3>Loading teachers...</h3></div> : null}
+            {!loading && teachers.map((teacher) => (
+              <div key={teacher._id} className="queue-card">
                 <div className="workspace-card-title-row">
-                  <strong>{teacher.name}</strong>
-                  <span className={`state-chip ${teacher.pending === 'Approved' ? 'state-chip--success' : 'state-chip--warning'}`}>{teacher.pending}</span>
+                  <strong>{teacher.firstName} {teacher.lastName}</strong>
+                  <span className={`state-chip ${teacher.status === 'active' ? 'state-chip--success' : teacher.status === 'rejected' ? 'state-chip--warning' : 'state-chip--neutral'}`}>{formatTitle(teacher.status)}</span>
                 </div>
-                <p>{teacher.subject} • Rating {teacher.rating} • {teacher.students} students</p>
+                <p>{teacher.email} - {teacher.assignedSubject || 'No subject'} - Registered {formatDate(teacher.createdAt)}</p>
                 <div className="inline-actions">
-                  <button className="btn btn-primary btn-sm" type="button">Assign Courses</button>
-                  <button className="btn btn-ghost btn-sm" type="button">View Ratings</button>
+                  {teacher.status === 'pending' ? (
+                    <>
+                      <button className="btn btn-primary btn-sm" type="button" disabled={savingId === teacher._id} onClick={() => approve(teacher)}>Approve</button>
+                      <button className="btn btn-ghost btn-sm" type="button" disabled={savingId === teacher._id} onClick={() => reject(teacher)}>Reject</button>
+                    </>
+                  ) : (
+                    <span className="state-chip state-chip--neutral">{teacher.assignedSubject || 'No subject'}</span>
+                  )}
                 </div>
               </div>
             ))}
-            {adminTeachers.length === 0 ? (
-              <div className="empty-state empty-state--compact"><div className="empty-orb" /><h3>No teachers yet</h3><p>Real teacher accounts and approvals will appear here.</p></div>
+            {!loading && teachers.length === 0 ? (
+              <div className="empty-state empty-state--compact"><div className="empty-orb" /><h3>No teachers yet</h3><p>Teacher accounts and approvals will appear here.</p></div>
             ) : null}
           </div>
         </div>
 
         <aside className="workspace-card drawer-card">
-          <div className="workspace-card-head"><div><div className="label-xs">Teacher Detail</div><h3 className="workspace-card-title">No teacher selected</h3></div></div>
+          <div className="workspace-card-head"><div><div className="label-xs">Teacher Detail</div><h3 className="workspace-card-title">{selectedTeacher ? `${selectedTeacher.firstName} ${selectedTeacher.lastName}` : 'No teacher selected'}</h3></div></div>
           <div className="workspace-card-body list-stack">
-            <div className="metric-row"><span>Approval status</span><strong>No data</strong></div>
-            <div className="metric-row"><span>Student rating</span><strong>No data</strong></div>
-            <div className="metric-row"><span>Assignable courses</span><strong>0</strong></div>
-            <button className="btn btn-amber" type="button">Approve Teacher</button>
+            <div className="metric-row"><span>Email</span><strong>{selectedTeacher?.email || 'No data'}</strong></div>
+            <div className="metric-row"><span>Approval status</span><strong>{formatTitle(selectedTeacher?.status || 'No data')}</strong></div>
+            <div className="metric-row"><span>Assigned subject</span><strong>{selectedTeacher?.assignedSubject || 'No data'}</strong></div>
+            <div className="metric-row"><span>Registered</span><strong>{formatDate(selectedTeacher?.createdAt)}</strong></div>
+            {selectedTeacher?.status === 'pending' ? (
+              <button className="btn btn-amber" type="button" disabled={savingId === selectedTeacher._id} onClick={() => approve(selectedTeacher)}>Approve Teacher</button>
+            ) : null}
           </div>
         </aside>
       </div>
     </div>
   )
 }
-
 export function AdminCoursesPage() {
   return (
     <div className="workspace-page animate-fade-up">
@@ -723,3 +794,4 @@ export function SuperAdminAnnouncementsPage() {
     </div>
   )
 }
+

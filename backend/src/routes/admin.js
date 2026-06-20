@@ -6,6 +6,10 @@ const {
   deactivateUser,
   getAllCoursesAdmin,
   getAdminOverview,
+  getPendingTeachers,
+  getAllTeachersForApproval,
+  approveTeacher,
+  rejectTeacher,
 } = require('../controllers/adminController')
 const {
   getPendingPaymentRequests,
@@ -25,6 +29,10 @@ router.get('/payments/pending', getPendingPaymentRequests)
 router.get('/payments/all', getAllPaymentRequests)
 router.patch('/payments/:id/approve', approvePaymentRequest)
 router.patch('/payments/:id/reject', rejectPaymentRequest)
+router.get('/teachers/pending', getPendingTeachers)
+router.get('/teachers/all', getAllTeachersForApproval)
+router.patch('/teachers/:id/approve', approveTeacher)
+router.patch('/teachers/:id/reject', rejectTeacher)
 router.get('/users', getAllUsers)
 router.post('/users', createUser)
 router.put('/users/:userId', updateUser)

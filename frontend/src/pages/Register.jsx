@@ -1,7 +1,19 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import { useGoogleSignIn } from '../hooks/useGoogleSignIn'
+import { useAuth } from '../context/AuthContext'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import ThemeToggle from '../components/ThemeToggle'
 import './Auth.css'
+
+const roles = [
+  { key: 'student', label: 'Student', hint: 'Practice MCQs' },
+  { key: 'teacher', label: 'Teacher', hint: 'Manage one subject' },
+  { key: 'admin', label: 'Admin', hint: 'Protected access' },
+]
+
+const subjects = ['Biology', 'Chemistry', 'Physics', 'English']
 
 function GoogleIcon() {
   return (
@@ -15,7 +27,54 @@ function GoogleIcon() {
 }
 
 export default function Register() {
+  const navigate = useNavigate()
+  const { login } = useAuth()
   const googleSignIn = useGoogleSignIn({ remember: true, mode: 'signup' })
+  const [role, setRole] = useState('student')
+  const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    assignedSubject: 'Biology',
+  })
+  const [submitting, setSubmitting] = useState(false)
+  const [pendingMessage, setPendingMessage] = useState('')
+
+  const setField = (field, value) => {
+    setForm((current) => ({ ...current, [field]: value }))
+  }
+
+  const submit = async (event) => {
+    event.preventDefault()
+    setPendingMessage('')
+    setSubmitting(true)
+    try {
+      const res = await API.post('/auth/register', {
+        ...form,
+        role,
+        subjectId: role === 'teacher' ? form.assignedSubject : undefined,
+      })
+
+      if (role === 'teacher') {
+        setPendingMessage(res.data.message || 'Your teacher account is pending admin approval.')
+        toast.success('Teacher request submitted.')
+        return
+      }
+
+      if (res.data.token && res.data.user) {
+        login(res.data.token, res.data.user, true)
+        navigate('/dashboard', { replace: true })
+      } else {
+        toast.success('Account created. Please log in.')
+        navigate('/login', { replace: true })
+      }
+    } catch (error) {
+      toast.error(getUserFriendlyErrorMessage(error, 'Registration failed.'))
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   return (
     <div className="auth-page">
@@ -26,44 +85,22 @@ export default function Register() {
             <span className="auth-mark">M</span>
             <span className="auth-brand-name">MDCAT LMS</span>
           </div>
-          <div className="auth-mobile-stat">
-            <i />
-            MDCAT Prep
-          </div>
+          <div className="auth-mobile-stat"><i />MDCAT Prep</div>
           <div className="auth-brand-content">
             <h1>Create Your Account</h1>
-            <p>
-              Join Pakistan&apos;s focused MDCAT prep platform. Practice
-              chapter based MCQs at home.
-            </p>
-
+            <p>Register as a student immediately, or request teacher access for a specific MDCAT subject.</p>
             <div className="auth-register-steps">
               {[
-                ['1', 'Continue with Google', 'Fast signup, instant access, and no email OTP delay.'],
-                ['2', 'Set Your Password', 'One-time setup, then log in with Gmail and password.'],
-                ['3', 'Start Practicing', 'MCQs, live classes, tests, and performance tracking.'],
+                ['1', 'Choose Role', 'Student access is instant. Teacher access requires admin approval.'],
+                ['2', 'Enter Details', 'Teachers choose one assigned subject during registration.'],
+                ['3', 'Start Securely', 'Approved teachers can manage only their assigned subject.'],
               ].map(([number, title, body]) => (
                 <div className="auth-register-step" key={title}>
                   <span className="auth-register-step-number">{number}</span>
-                  <div>
-                    <strong>{title}</strong>
-                    <p>{body}</p>
-                  </div>
+                  <div><strong>{title}</strong><p>{body}</p></div>
                 </div>
               ))}
             </div>
-
-            <div className="auth-feature-list">
-              <span>Chapter Based MCQs</span>
-              <span>No OTP Email</span>
-              <span>Mobile Friendly</span>
-              <span>Growing Community</span>
-              <span>Live Classes</span>
-            </div>
-            <p className="auth-bottom-quote">
-              Helping MDCAT aspirants achieve their dream of becoming doctors,
-              one chapter at a time.
-            </p>
           </div>
         </section>
 
@@ -71,37 +108,66 @@ export default function Register() {
           <ThemeToggle className="theme-toggle--auth" />
           <div className="auth-left-inner">
             <div className="auth-card auth-card--platform">
-              <h1 className="auth-title">Create your student account</h1>
-              <p className="auth-subtitle">
-                Sign up with Google to get started. You&apos;ll set a password
-                right after to enable email and password login too.
-              </p>
+              <h1 className="auth-title">Create your account</h1>
+              <p className="auth-subtitle">Select your role and complete registration.</p>
 
-              <div className="auth-form">
+              <div className="auth-role-switcher auth-role-switcher--mobile" aria-label="Choose registration role">
+                {roles.map((item) => (
+                  <button key={item.key} className={`auth-role-option ${role === item.key ? 'auth-role-option--active' : ''}`} type="button" onClick={() => setRole(item.key)}>
+                    <strong>{item.label}</strong>
+                    <span>{item.hint}</span>
+                  </button>
+                ))}
+              </div>
+
+              {pendingMessage ? (
+                <div className="auth-form">
+                  <div className="auth-success-message">{pendingMessage}</div>
+                  <Link className="auth-submit" to="/login">Go to login</Link>
+                </div>
+              ) : (
+                <form className="auth-form" onSubmit={submit}>
+                  <div className="auth-grid-two">
+                    <label className="auth-field">
+                      <span>First name</span>
+                      <input value={form.firstName} onChange={(event) => setField('firstName', event.target.value)} required />
+                    </label>
+                    <label className="auth-field">
+                      <span>Last name</span>
+                      <input value={form.lastName} onChange={(event) => setField('lastName', event.target.value)} />
+                    </label>
+                  </div>
+                  <label className="auth-field">
+                    <span>Email</span>
+                    <input type="email" value={form.email} onChange={(event) => setField('email', event.target.value)} required />
+                  </label>
+                  <label className="auth-field">
+                    <span>Password</span>
+                    <input type="password" value={form.password} onChange={(event) => setField('password', event.target.value)} minLength={6} required />
+                  </label>
+                  {role === 'teacher' ? (
+                    <label className="auth-field">
+                      <span>Assigned subject</span>
+                      <select value={form.assignedSubject} onChange={(event) => setField('assignedSubject', event.target.value)}>
+                        {subjects.map((subject) => <option key={subject} value={subject}>{subject}</option>)}
+                      </select>
+                    </label>
+                  ) : null}
+                  {role === 'admin' ? (
+                    <div className="auth-error-text">Admin accounts cannot be created from public registration.</div>
+                  ) : null}
+                  <button className="auth-submit" type="submit" disabled={submitting || role === 'admin'}>
+                    {submitting ? 'Creating...' : role === 'teacher' ? 'Request teacher access' : 'Create student account'}
+                  </button>
+                </form>
+              )}
+
+              {role === 'student' && !pendingMessage ? (
                 <div className="auth-google-block auth-google-block--register">
                   {googleSignIn.configured ? (
                     <>
-                      {googleSignIn.loading ? (
-                        <span className="auth-google-loading">Loading Google sign-in...</span>
-                      ) : null}
-                      <div
-                        ref={googleSignIn.buttonRef}
-                        className="auth-google-rendered-button auth-google-rendered-button--large"
-                        aria-label="Sign up with Google"
-                      />
-                      {googleSignIn.error ? (
-                        <span className="auth-google-error-text">{googleSignIn.error}</span>
-                      ) : null}
-                      {googleSignIn.error ? (
-                        <button
-                          className="auth-secondary auth-google-retry"
-                          type="button"
-                          onClick={googleSignIn.retry}
-                          disabled={googleSignIn.loading}
-                        >
-                          Retry Google sign-up
-                        </button>
-                      ) : null}
+                      <div ref={googleSignIn.buttonRef} className="auth-google-rendered-button auth-google-rendered-button--large" aria-label="Sign up with Google" />
+                      {googleSignIn.error ? <span className="auth-google-error-text">{googleSignIn.error}</span> : null}
                     </>
                   ) : (
                     <button className="auth-google-custom-btn auth-google-custom-btn--disabled" type="button" disabled>
@@ -110,11 +176,11 @@ export default function Register() {
                     </button>
                   )}
                 </div>
+              ) : null}
 
-                <p className="auth-footer" style={{ marginTop: '1.5rem' }}>
-                  Already have an account? <Link to="/login">Log in</Link>
-                </p>
-              </div>
+              <p className="auth-footer" style={{ marginTop: '1.5rem' }}>
+                Already have an account? <Link to="/login">Log in</Link>
+              </p>
             </div>
           </div>
         </section>

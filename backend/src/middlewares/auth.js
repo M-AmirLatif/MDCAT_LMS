@@ -29,6 +29,14 @@ exports.protect = async (req, res, next) => {
     // Single-device enforcement: students only
     const roleName =
       user.role?.name === 'superadmin' ? 'admin' : user.role?.name
+    if (roleName === 'teacher' && user.status !== 'active') {
+      return res.status(403).json({
+        error:
+          user.status === 'rejected'
+            ? 'Your teacher account request was rejected. Please contact admin.'
+            : 'Your teacher account is pending admin approval.',
+      })
+    }
     if (roleName === 'student' && decoded.sessionId) {
       const freshUser = await User.findById(decoded.id).select(
         'activeSessionId',
@@ -84,6 +92,14 @@ exports.protectWithPermissions = async (req, res, next) => {
     // Single-device enforcement: students only
     const roleName =
       user.role?.name === 'superadmin' ? 'admin' : user.role?.name
+    if (roleName === 'teacher' && user.status !== 'active') {
+      return res.status(403).json({
+        error:
+          user.status === 'rejected'
+            ? 'Your teacher account request was rejected. Please contact admin.'
+            : 'Your teacher account is pending admin approval.',
+      })
+    }
     if (roleName === 'student' && decoded.sessionId) {
       const freshUser = await User.findById(decoded.id).select(
         'activeSessionId',
