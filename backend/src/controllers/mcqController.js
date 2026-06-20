@@ -2,6 +2,7 @@ const MCQ = require('../models/MCQ')
 const Course = require('../models/Course')
 const TestSession = require('../models/TestSession')
 const { parse } = require('csv-parse/sync')
+const { hasActiveSubscription } = require('../utils/subscriptions')
 
 const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English']
 const SUBJECT_SLUGS = {
@@ -30,6 +31,17 @@ const canManageCourse = (course, user) => {
   const roleName = user?.role?.name
   return teacherRoleNames.has(roleName)
 }
+
+const canAccessSubjectContent = (user, subject, contentIndex = 0) => {
+  const roleName = user?.role?.name
+  if (teacherRoleNames.has(roleName)) return true
+  if (roleName !== 'student') return false
+  if (contentIndex === 0) return true
+  return hasActiveSubscription(user, subject)
+}
+
+const getChapterIndex = (course, chapterId) =>
+  (course?.chapters || []).findIndex((chapter) => String(chapter.id) === String(chapterId))
 
 const getSubjectCourse = async (subject) => {
   return Course.findOne({ category: subject })
@@ -791,18 +803,25 @@ exports.getChaptersBySubject = async (req, res) => {
       ]),
     )
 
-    const chapters = (course.chapters || []).map((chapter) => ({
-      id: chapter.id,
-      name: chapter.name,
-      description: chapter.description || '',
-      mcqCount: countByChapter.get(chapter.id) || 0,
-      topics: getChapterTopics(chapter).map((topic) => ({
-        id: topic.id,
-        name: topic.name,
-        description: topic.description || '',
-        mcqCount: topicCountByKey.get(`${chapter.id}:${topic.id}`) || 0,
-      })),
-    }))
+    const chapters = (course.chapters || []).map((chapter, index) => {
+      const locked = !canAccessSubjectContent(req.user, subject, index)
+      return {
+        id: chapter.id,
+        name: chapter.name,
+        description: chapter.description || '',
+        mcqCount: countByChapter.get(chapter.id) || 0,
+        isLocked: locked,
+        lockReason: locked
+          ? 'Please subscribe to access this test/past paper.'
+          : null,
+        topics: getChapterTopics(chapter).map((topic) => ({
+          id: topic.id,
+          name: topic.name,
+          description: topic.description || '',
+          mcqCount: topicCountByKey.get(`${chapter.id}:${topic.id}`) || 0,
+        })),
+      }
+    })
 
     res
       .status(200)
@@ -1147,6 +1166,15 @@ exports.getMcqsByChapter = async (req, res) => {
       })
     }
 
+    const chapterIndex = getChapterIndex(context.course, context.chapter.id)
+    if (!canAccessSubjectContent(req.user, context.subject, chapterIndex)) {
+      return res.status(403).json({
+        error: 'Please subscribe to access this test/past paper.',
+        code: 'SUBSCRIPTION_REQUIRED',
+        subject: context.subject,
+      })
+    }
+
     const mcqs = await MCQ.find(context.filter).sort({ createdAt: 1 }).lean()
     const safeMcqs = includeFull ? mcqs : stripCorrectOptions(mcqs)
 
@@ -1185,6 +1213,15 @@ exports.createChapterMcq = async (req, res) => {
     if (context.error) return res.status(400).json({ error: context.error })
     if (!context.course || !context.chapter)
       return res.status(404).json({ error: 'Chapter not found' })
+
+    const chapterIndex = getChapterIndex(context.course, context.chapter.id)
+    if (!canAccessSubjectContent(req.user, context.subject, chapterIndex)) {
+      return res.status(403).json({
+        error: 'Please subscribe to access this test/past paper.',
+        code: 'SUBSCRIPTION_REQUIRED',
+        subject: context.subject,
+      })
+    }
     if (!canManageCourse(context.course, req.user)) {
       return res
         .status(403)
@@ -1760,6 +1797,15 @@ exports.submitChapterAttempt = async (req, res) => {
     if (context.error) return res.status(400).json({ error: context.error })
     if (!context.course || !context.chapter)
       return res.status(404).json({ error: 'Chapter not found' })
+
+    const chapterIndex = getChapterIndex(context.course, context.chapter.id)
+    if (!canAccessSubjectContent(req.user, context.subject, chapterIndex)) {
+      return res.status(403).json({
+        error: 'Please subscribe to access this test/past paper.',
+        code: 'SUBSCRIPTION_REQUIRED',
+        subject: context.subject,
+      })
+    }
 
     const answers = req.body.answers || {}
     const mcqs = await MCQ.find(context.filter).sort({ createdAt: 1 }).lean()

@@ -24,6 +24,7 @@ export const PLATFORM_NAV = {
         { key: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
         { key: 'courses', label: 'Practice Subjects', path: '/mcqs', icon: 'courses' },
         { key: 'performance', label: 'Performance', path: '/performance', icon: 'performance' },
+        { key: 'payments', label: 'Subscriptions', path: '/payments', icon: 'payments' },
         { key: 'notifications', label: 'Notifications', path: '/notifications', icon: 'notifications' },
       ],
     },
@@ -110,8 +111,8 @@ export function getMobileNavForRole(role = 'student') {
       { key: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
       { key: 'courses', label: 'Subjects', path: '/mcqs', icon: 'courses' },
       { key: 'performance', label: 'Performance', path: '/performance', icon: 'performance' },
+      { key: 'payments', label: 'Payments', path: '/payments', icon: 'payments' },
       { key: 'profile', label: 'Profile', path: '/profile/edit', icon: 'profile' },
-      { key: 'notifications', label: 'Alerts', path: '/notifications', icon: 'notifications' },
     ]
   }
 

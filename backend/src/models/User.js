@@ -86,6 +86,28 @@ const userSchema = new mongoose.Schema(
       enum: ['active', 'restricted', 'expired'],
       default: 'active',
     },
+    subscriptions: [
+      {
+        subjectId: {
+          type: String,
+          enum: ['Biology', 'Chemistry', 'Physics', 'English'],
+          required: true,
+        },
+        startDate: {
+          type: Date,
+          required: true,
+        },
+        endDate: {
+          type: Date,
+          required: true,
+        },
+        paymentRequestId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'PaymentRequest',
+          required: true,
+        },
+      },
+    ],
     isActive: {
       type: Boolean,
       default: true,
@@ -117,5 +139,6 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 // ==================== INDEXES ====================
 userSchema.index({ email: 1 })
 userSchema.index({ role: 1, isActive: 1 })
+userSchema.index({ 'subscriptions.subjectId': 1, 'subscriptions.endDate': 1 })
 
 module.exports = mongoose.model('User', userSchema)

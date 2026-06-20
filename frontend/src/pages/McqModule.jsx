@@ -432,7 +432,7 @@ function ChapterList() {
         {chapters.map((chapter) => (
           <article
             key={chapter.id}
-            className="workspace-card chapter-practice-card"
+            className={`workspace-card chapter-practice-card ${chapter.isLocked ? 'chapter-practice-card--locked' : ''}`}
           >
             <div className="workspace-card-head">
               <div>
@@ -450,12 +450,18 @@ function ChapterList() {
             </div>
             <div className="workspace-card-body">
               <div className="inline-actions">
-                <Link
-                  className="btn btn-primary btn-sm"
-                  to={`/mcqs/${subject}/${chapter.id}`}
-                >
-                  Open MCQs
-                </Link>
+                {chapter.isLocked && !isTeacher ? (
+                  <Link className="btn btn-primary btn-sm" to="/payments">
+                    Please subscribe to access this test/past paper.
+                  </Link>
+                ) : (
+                  <Link
+                    className="btn btn-primary btn-sm"
+                    to={`/mcqs/${subject}/${chapter.id}`}
+                  >
+                    Open MCQs
+                  </Link>
+                )}
                 {isTeacher ? (
                   <button
                     className="btn btn-secondary btn-sm"
@@ -963,6 +969,7 @@ function McqList() {
   const { subject, chapterId } = useParams()
   const { isTeacher } = useAuth()
   const meta = subjectById(subject)
+  const [lockMessage, setLockMessage] = useState('')
   const [chapter, setChapter] = useState(null)
   const [topics, setTopics] = useState([])
   const [mcqs, setMcqs] = useState([])
@@ -983,11 +990,16 @@ function McqList() {
         ? `?topicId=${encodeURIComponent(selectedTopicId)}`
         : ''
       const res = await API.get(`/mcqs/${subject}/${chapterId}${query}`)
+      setLockMessage('')
       setChapter(res.data.chapter)
       setTopics(res.data.topics || [])
       setMcqs(res.data.mcqs || [])
       setReviewQueue(res.data.reviewQueue || [])
     } catch (error) {
+      if (error?.response?.data?.code === 'SUBSCRIPTION_REQUIRED') {
+        setLockMessage(error.response.data.error)
+        return
+      }
       toast.error(getUserFriendlyErrorMessage(error, 'We could not load the MCQs right now.'))
     } finally {
       setLoading(false)
@@ -1186,6 +1198,22 @@ function McqList() {
         }
       />
     )
+
+  if (lockMessage) {
+    return (
+      <div className="workspace-page animate-fade-up">
+        <EmptyState
+          title="Subscription required"
+          text={lockMessage}
+          action={
+            <Link className="btn btn-primary" to="/payments">
+              Subscribe
+            </Link>
+          }
+        />
+      </div>
+    )
+  }
   const totalSeconds = mcqs.length * 50
   const formattedTime = `${Math.floor(totalSeconds / 60)}:${String(totalSeconds % 60).padStart(2, '0')}`
 

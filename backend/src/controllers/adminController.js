@@ -1,7 +1,7 @@
 const User = require('../models/User')
 const Course = require('../models/Course')
 const Role = require('../models/Role')
-const Payment = require('../models/Payment')
+const PaymentRequest = require('../models/PaymentRequest')
 const TestSession = require('../models/TestSession')
 const MCQ = require('../models/MCQ')
 
@@ -48,17 +48,17 @@ const buildUserMetrics = async (userIds) => {
         },
       },
     ]),
-    Payment.aggregate([
+    PaymentRequest.aggregate([
       { $match: { studentId: { $in: userIds } } },
       {
         $group: {
           _id: '$studentId',
           totalPayments: { $sum: 1 },
           completedPayments: {
-            $sum: { $cond: [{ $eq: ['$status', 'completed'] }, 1, 0] },
+            $sum: { $cond: [{ $eq: ['$status', 'approved'] }, 1, 0] },
           },
           totalPaidAmount: {
-            $sum: { $cond: [{ $eq: ['$status', 'completed'] }, '$amount', 0] },
+            $sum: { $cond: [{ $eq: ['$status', 'approved'] }, '$amount', 0] },
           },
           latestPaymentStatus: { $last: '$status' },
         },
@@ -460,7 +460,7 @@ exports.getAdminOverview = async (req, res) => {
           },
         },
       ]),
-      Payment.aggregate([
+      PaymentRequest.aggregate([
         {
           $facet: {
             totals: [
@@ -475,8 +475,8 @@ exports.getAdminOverview = async (req, res) => {
             currentMonthRevenue: [
               {
                 $match: {
-                  status: 'completed',
-                  createdAt: {
+                  status: 'approved',
+                  approvedAt: {
                     $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
                   },
                 },
@@ -515,14 +515,13 @@ exports.getAdminOverview = async (req, res) => {
       studentRoleId
         ? User.countDocuments({
             role: studentRoleId,
-            subscriptionStatus: 'active',
-            $or: [{ subscriptionEndDate: null }, { subscriptionEndDate: { $gte: now } }],
+            'subscriptions.endDate': { $gte: now },
           })
         : 0,
       studentRoleId
         ? User.countDocuments({
             role: studentRoleId,
-            subscriptionEndDate: { $gte: now, $lte: weekAhead },
+            'subscriptions.endDate': { $gte: now, $lte: weekAhead },
           })
         : 0,
       studentRoleId
@@ -560,7 +559,7 @@ exports.getAdminOverview = async (req, res) => {
         expiringSoon,
         restrictedStudents,
         pendingPayments: paymentTotals.get('pending')?.count || 0,
-        completedPayments: paymentTotals.get('completed')?.count || 0,
+        completedPayments: paymentTotals.get('approved')?.count || 0,
         monthlyRevenue: paymentSummary[0]?.currentMonthRevenue?.[0]?.amount || 0,
       },
       recentStudents: recentStudents.map((student) =>

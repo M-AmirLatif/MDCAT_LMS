@@ -1,142 +1,375 @@
+import { useEffect, useMemo, useState } from 'react'
+import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import './PlatformPages.css'
-import { adminTransactions } from './platformContent'
 
-function PaymentMethod({ method }) {
-  if (method === 'JazzCash') {
-    return <span className="payment-method-pill payment-method-pill--jazzcash"><span className="payment-method-icon">JC</span> JazzCash</span>
-  }
+const fallbackSubjects = ['Biology', 'Chemistry', 'Physics', 'English']
+const fallbackMethods = [
+  { id: 'JazzCash', name: 'JazzCash', number: '03006575463', accountName: 'Muhammad Shafiq' },
+  { id: 'Easypaisa', name: 'Easypaisa', number: '03350631487', accountName: 'Muhammad Amir' },
+]
 
-  if (method === 'Card') {
-    return (
-      <span className="payment-method-pill payment-method-pill--card">
-        <span className="payment-method-icon">
-          <svg viewBox="0 0 24 24" width="10" height="10" fill="none" aria-hidden="true">
-            <path d="M3 7h18v10H3V7Zm0 3h18" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-          </svg>
-        </span>
-        Card
-      </span>
-    )
-  }
-
-  return <span className="payment-method-pill payment-method-pill--card"><span className="payment-method-icon">EP</span> EasyPaisa</span>
+function formatDate(value) {
+  if (!value) return 'Not set'
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return 'Not set'
+  return date.toLocaleDateString()
 }
 
 function StatusBadge({ status }) {
-  const normalized = status.toLowerCase()
+  const normalized = String(status || 'pending').toLowerCase()
   const className =
-    normalized === 'paid'
+    normalized === 'approved'
       ? 'status-pill status-pill--paid'
-      : normalized === 'pending'
-        ? 'status-pill status-pill--pending'
-        : normalized === 'failed'
-          ? 'status-pill status-pill--failed'
-          : normalized === 'refunded'
-            ? 'status-pill status-pill--refunded'
-            : 'status-pill status-pill--pending'
+      : normalized === 'rejected'
+        ? 'status-pill status-pill--failed'
+        : 'status-pill status-pill--pending'
 
-  return <span className={className}>{status}</span>
+  return <span className={className}>{normalized}</span>
+}
+
+function PaymentMethod({ method }) {
+  const isJazzCash = method === 'JazzCash'
+  return (
+    <span className={`payment-method-pill ${isJazzCash ? 'payment-method-pill--jazzcash' : 'payment-method-pill--card'}`}>
+      <span className="payment-method-icon">{isJazzCash ? 'JC' : 'EP'}</span>
+      {method}
+    </span>
+  )
 }
 
 function StudentPayments() {
+  const [subjects, setSubjects] = useState(fallbackSubjects)
+  const [methods, setMethods] = useState(fallbackMethods)
+  const [subjectFee, setSubjectFee] = useState(1000)
+  const [selectedSubjects, setSelectedSubjects] = useState([])
+  const [paymentMethod, setPaymentMethod] = useState('JazzCash')
+  const [transactionId, setTransactionId] = useState('')
+  const [screenshot, setScreenshot] = useState(null)
+  const [requests, setRequests] = useState([])
+  const [subscriptions, setSubscriptions] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
+
+  const totalAmount = selectedSubjects.length * subjectFee
+  const activeSubjects = subscriptions
+    .filter((subscription) => subscription.active)
+    .map((subscription) => subscription.subjectId)
+
+  const load = async () => {
+    setLoading(true)
+    try {
+      const [methodsRes, requestsRes, subscriptionsRes] = await Promise.all([
+        API.get('/payments/methods'),
+        API.get('/payments/my-requests'),
+        API.get('/subscriptions/my-subscriptions'),
+      ])
+      setSubjects(methodsRes.data.subjects || fallbackSubjects)
+      setMethods(methodsRes.data.methods || fallbackMethods)
+      setSubjectFee(Number(methodsRes.data.subjectFee) || 1000)
+      setRequests(requestsRes.data.requests || [])
+      setSubscriptions(subscriptionsRes.data.subscriptions || [])
+      setPaymentMethod((current) => current || methodsRes.data.methods?.[0]?.id || 'JazzCash')
+    } catch (error) {
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not load payment details right now.'))
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    load()
+  }, [])
+
+  const toggleSubject = (subject) => {
+    setSelectedSubjects((current) =>
+      current.includes(subject)
+        ? current.filter((item) => item !== subject)
+        : [...current, subject],
+    )
+  }
+
+  const submit = async (event) => {
+    event.preventDefault()
+    if (!selectedSubjects.length) {
+      toast.error('Please select at least one subject.')
+      return
+    }
+    if (!transactionId.trim()) {
+      toast.error('Enter transaction ID/reference number.')
+      return
+    }
+    if (!screenshot) {
+      toast.error('Upload payment screenshot.')
+      return
+    }
+
+    const formData = new FormData()
+    selectedSubjects.forEach((subject) => formData.append('selectedSubjects', subject))
+    formData.append('paymentMethod', paymentMethod)
+    formData.append('transactionId', transactionId.trim())
+    formData.append('screenshot', screenshot)
+
+    setSubmitting(true)
+    try {
+      await API.post('/payments/submit', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      toast.success('Payment request submitted for admin review.')
+      setSelectedSubjects([])
+      setTransactionId('')
+      setScreenshot(null)
+      event.target.reset()
+      load()
+    } catch (error) {
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not submit your payment request.'))
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   return (
     <div className="workspace-page workspace-page--payments animate-fade-up">
-      <section className="workspace-card pricing-card pricing-card--featured payments-active-plan">
+      <section className="workspace-card payments-active-plan">
         <div className="workspace-card-head">
           <div>
-            <div className="label-xs">Active Plan</div>
-            <h2 className="workspace-card-title">No active plan yet</h2>
-            <p>Real subscription status will appear after the student purchases a plan.</p>
+            <div className="label-xs">Subject Subscription</div>
+            <h2 className="workspace-card-title">Rs {subjectFee} per subject per month</h2>
+            <p>Select the subjects you paid for, upload proof, and wait for admin approval.</p>
           </div>
-          <span className="badge badge-purple">Inactive</span>
+          <span className="badge badge-purple">{activeSubjects.length} active</span>
         </div>
         <div className="workspace-card-body">
           <div className="workspace-columns-3">
-            <div className="metric-row"><span>Amount</span><strong>Rs 0</strong></div>
-            <div className="metric-row"><span>Gateway</span><strong>Not selected</strong></div>
-            <div className="metric-row"><span>Status</span><strong>Inactive</strong></div>
+            {subjects.map((subject) => (
+              <div className="metric-row" key={subject}>
+                <span>{subject}</span>
+                <strong>{activeSubjects.includes(subject) ? 'Active' : 'Not active'}</strong>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <div className="pricing-grid">
-        <div className="pricing-card payments-plan-card">
-          <div className="label-xs">Starter</div>
-          <h3 className="workspace-card-title">Rs 4,999</h3>
-          <p>Topic practice and basic analytics.</p>
-          <button className="btn btn-secondary" type="button">Choose Plan</button>
-        </div>
-        <div className="pricing-card pricing-card--featured payments-plan-card">
-          <div className="label-xs">Most Popular</div>
-          <h3 className="workspace-card-title">Premium Plus</h3>
-          <p>Everything needed for daily MDCAT preparation.</p>
-          <button className="btn btn-primary" type="button">Current Plan</button>
-        </div>
-        <div className="pricing-card payments-plan-card">
-          <div className="label-xs">Elite Mentorship</div>
-          <h3 className="workspace-card-title">Rs 24,999</h3>
-          <p>Live doubt support and mentor check-ins.</p>
-          <button className="btn btn-ghost" type="button">Upgrade</button>
-        </div>
-      </div>
+      <div className="workspace-section-grid">
+        <section className="workspace-card">
+          <div className="workspace-card-head">
+            <div>
+              <div className="label-xs">Manual Payment</div>
+              <h3 className="workspace-card-title">Submit payment request</h3>
+            </div>
+          </div>
+          <div className="workspace-card-body">
+            <form className="form-shell" onSubmit={submit}>
+              <div className="pricing-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))' }}>
+                {methods.map((method) => (
+                  <div className="pricing-card payments-plan-card" key={method.id}>
+                    <div className="label-xs">{method.name}</div>
+                    <h3 className="workspace-card-title">{method.number}</h3>
+                    <p>{method.accountName}</p>
+                  </div>
+                ))}
+              </div>
 
-      <div className="workspace-card payments-history-card">
-        <div className="workspace-card-head"><div><div className="label-xs">History</div><h3 className="workspace-card-title">Payment history</h3></div></div>
-        <div className="workspace-card-body">
-          <table className="simple-table">
-            <thead>
-              <tr><th>DATE</th><th>METHOD</th><th>AMOUNT</th><th>STATUS</th></tr>
-            </thead>
-            <tbody>
-              <tr><td colSpan="4"><div className="empty-state empty-state--compact"><div className="empty-orb" /><h3>No payment history yet</h3><p>Real transactions will appear here after payment gateway activity starts.</p></div></td></tr>
-            </tbody>
-          </table>
-        </div>
+              <div className="floating-field">
+                <label>Subjects</label>
+                <div className="filter-pills">
+                  {subjects.map((subject) => (
+                    <button
+                      className={`filter-pill ${selectedSubjects.includes(subject) ? 'filter-pill--active' : ''}`}
+                      key={subject}
+                      type="button"
+                      onClick={() => toggleSubject(subject)}
+                    >
+                      {subject}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="workspace-columns-3">
+                <div className="floating-field">
+                  <label htmlFor="payment-method">Payment Method</label>
+                  <select id="payment-method" value={paymentMethod} onChange={(event) => setPaymentMethod(event.target.value)}>
+                    {methods.map((method) => <option key={method.id} value={method.id}>{method.name}</option>)}
+                  </select>
+                </div>
+                <div className="floating-field">
+                  <label htmlFor="transaction-id">Transaction ID / Reference</label>
+                  <input id="transaction-id" value={transactionId} onChange={(event) => setTransactionId(event.target.value)} placeholder="Enter reference number" />
+                </div>
+                <div className="floating-field">
+                  <label htmlFor="payment-screenshot">Payment Screenshot</label>
+                  <input id="payment-screenshot" type="file" accept="image/*" onChange={(event) => setScreenshot(event.target.files?.[0] || null)} />
+                </div>
+              </div>
+
+              <div className="stat-tile stat-tile--teal">
+                <span>Total Amount</span>
+                <strong>Rs {totalAmount}</strong>
+                <small>{selectedSubjects.length} subject{selectedSubjects.length === 1 ? '' : 's'} x Rs {subjectFee}</small>
+              </div>
+
+              <button className="btn btn-primary" type="submit" disabled={submitting}>
+                {submitting ? 'Submitting...' : 'Submit payment request'}
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <section className="workspace-card payments-history-card">
+          <div className="workspace-card-head"><div><div className="label-xs">History</div><h3 className="workspace-card-title">My payment requests</h3></div></div>
+          <div className="workspace-card-body">
+            <table className="simple-table">
+              <thead><tr><th>Date</th><th>Subjects</th><th>Amount</th><th>Method</th><th>Status</th></tr></thead>
+              <tbody>
+                {loading ? (
+                  <tr><td colSpan="5">Loading...</td></tr>
+                ) : requests.length ? requests.map((request) => (
+                  <tr key={request._id}>
+                    <td>{formatDate(request.createdAt)}</td>
+                    <td>{request.selectedSubjects?.join(', ')}</td>
+                    <td>Rs {request.amount}</td>
+                    <td><PaymentMethod method={request.paymentMethod} /></td>
+                    <td><StatusBadge status={request.status} /></td>
+                  </tr>
+                )) : (
+                  <tr><td colSpan="5"><div className="empty-state empty-state--compact"><div className="empty-orb" /><h3>No requests yet</h3><p>Your submitted payment requests will appear here.</p></div></td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
       </div>
     </div>
   )
 }
 
 function AdminPayments() {
+  const [requests, setRequests] = useState([])
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [loading, setLoading] = useState(true)
+  const [savingId, setSavingId] = useState('')
+
+  const totals = useMemo(() => {
+    return requests.reduce(
+      (acc, request) => {
+        acc.total += 1
+        acc[request.status] = (acc[request.status] || 0) + 1
+        if (request.status === 'approved') acc.revenue += Number(request.amount) || 0
+        return acc
+      },
+      { total: 0, pending: 0, approved: 0, rejected: 0, revenue: 0 },
+    )
+  }, [requests])
+
+  const load = async () => {
+    setLoading(true)
+    try {
+      const endpoint = statusFilter === 'pending' ? '/admin/payments/pending' : '/admin/payments/all'
+      const res = await API.get(endpoint, {
+        params: statusFilter !== 'all' && statusFilter !== 'pending' ? { status: statusFilter } : {},
+      })
+      setRequests(res.data.requests || [])
+    } catch (error) {
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not load payment requests.'))
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    load()
+  }, [statusFilter])
+
+  const approve = async (request) => {
+    setSavingId(request._id)
+    try {
+      await API.patch(`/admin/payments/${request._id}/approve`)
+      toast.success('Payment approved.')
+      load()
+    } catch (error) {
+      toast.error(getUserFriendlyErrorMessage(error, 'Could not approve payment.'))
+    } finally {
+      setSavingId('')
+    }
+  }
+
+  const reject = async (request) => {
+    const adminNote = window.prompt('Optional rejection note:', request.adminNote || '')
+    if (adminNote === null) return
+    setSavingId(request._id)
+    try {
+      await API.patch(`/admin/payments/${request._id}/reject`, { adminNote })
+      toast.success('Payment rejected.')
+      load()
+    } catch (error) {
+      toast.error(getUserFriendlyErrorMessage(error, 'Could not reject payment.'))
+    } finally {
+      setSavingId('')
+    }
+  }
+
   return (
     <div className="workspace-page workspace-page--payments animate-fade-up">
       <div className="card-grid">
-        <div className="stat-tile"><span>Monthly Revenue</span><strong>Rs 0</strong><small>No transactions yet</small></div>
-        <div className="stat-tile"><span>Refund Requests</span><strong>0</strong><small>No refund activity</small></div>
-        <div className="stat-tile"><span>JazzCash Share</span><strong>0%</strong><small>No gateway data</small></div>
-        <div className="stat-tile"><span>EasyPaisa Share</span><strong>0%</strong><small>No gateway data</small></div>
+        <div className="stat-tile"><span>Total Requests</span><strong>{totals.total}</strong><small>Manual submissions</small></div>
+        <div className="stat-tile"><span>Pending</span><strong>{totals.pending}</strong><small>Need verification</small></div>
+        <div className="stat-tile"><span>Approved</span><strong>{totals.approved}</strong><small>Subscriptions activated</small></div>
+        <div className="stat-tile"><span>Approved Revenue</span><strong>Rs {totals.revenue}</strong><small>Manual verified amount</small></div>
       </div>
 
-      <div className="workspace-card payments-history-card">
-        <div className="workspace-card-head"><div><div className="label-xs">Transactions</div><h2 className="workspace-card-title">Revenue stream</h2></div></div>
+      <section className="workspace-card payments-history-card">
+        <div className="workspace-card-head">
+          <div>
+            <div className="label-xs">Admin Review</div>
+            <h2 className="workspace-card-title">Payment requests</h2>
+          </div>
+          <div className="filter-pills">
+            {['all', 'pending', 'approved', 'rejected'].map((status) => (
+              <button key={status} className={`filter-pill ${statusFilter === status ? 'filter-pill--active' : ''}`} type="button" onClick={() => setStatusFilter(status)}>
+                {status}
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="workspace-card-body">
           <table className="simple-table">
-            <thead><tr><th>STUDENT</th><th>AMOUNT</th><th>METHOD</th><th>STATUS</th><th>DATE</th><th>ACTION</th></tr></thead>
+            <thead><tr><th>Student</th><th>Subjects</th><th>Amount</th><th>Method</th><th>Txn ID</th><th>Screenshot</th><th>Status</th><th>Action</th></tr></thead>
             <tbody>
-              {adminTransactions.map((row) => (
-                <tr key={`${row.student}-${row.date}`}>
-                  <td>{row.student}</td>
-                  <td><span className="amount-strong">{row.amount}</span></td>
-                  <td><PaymentMethod method={row.method} /></td>
-                  <td><StatusBadge status={row.status} /></td>
-                  <td>{row.date}</td>
-                  <td><button className="btn btn-ghost btn-sm" type="button">Refund</button></td>
-                </tr>
-              ))}
-              {adminTransactions.length === 0 ? (
-                <tr><td colSpan="6"><div className="empty-state empty-state--compact"><div className="empty-orb" /><h3>No transactions yet</h3><p>Revenue rows will appear after real student payments.</p></div></td></tr>
-              ) : null}
+              {loading ? (
+                <tr><td colSpan="8">Loading...</td></tr>
+              ) : requests.length ? requests.map((request) => {
+                const student = request.studentId || {}
+                return (
+                  <tr key={request._id}>
+                    <td>{[student.firstName, student.lastName].filter(Boolean).join(' ') || 'Student'}<br /><small>{student.email}</small></td>
+                    <td>{request.selectedSubjects?.join(', ')}</td>
+                    <td>Rs {request.amount}</td>
+                    <td><PaymentMethod method={request.paymentMethod} /></td>
+                    <td>{request.transactionId}</td>
+                    <td><a className="btn btn-ghost btn-sm" href={request.screenshotUrl} target="_blank" rel="noreferrer">Open</a></td>
+                    <td><StatusBadge status={request.status} /></td>
+                    <td>
+                      {request.status === 'pending' ? (
+                        <div className="inline-actions">
+                          <button className="btn btn-primary btn-sm" type="button" disabled={savingId === request._id} onClick={() => approve(request)}>Approve</button>
+                          <button className="btn btn-ghost btn-sm" type="button" disabled={savingId === request._id} onClick={() => reject(request)}>Reject</button>
+                        </div>
+                      ) : (
+                        <small>{request.adminNote || formatDate(request.approvedAt || request.rejectedAt)}</small>
+                      )}
+                    </td>
+                  </tr>
+                )
+              }) : (
+                <tr><td colSpan="8"><div className="empty-state empty-state--compact"><div className="empty-orb" /><h3>No payment requests</h3><p>Student payment requests will appear here.</p></div></td></tr>
+              )}
             </tbody>
           </table>
         </div>
-      </div>
-
-      <div className="pricing-grid">
-        <div className="pricing-card payments-plan-card"><div className="label-xs">Starter Plan</div><h3 className="workspace-card-title">Rs 4,999</h3><p>Basic access and tests.</p></div>
-        <div className="pricing-card payments-plan-card"><div className="label-xs">Premium Plus</div><h3 className="workspace-card-title">Rs 15,000</h3><p>Most popular annual plan.</p></div>
-        <div className="pricing-card payments-plan-card"><div className="label-xs">Gateway Controls</div><h3 className="workspace-card-title">JazzCash / EasyPaisa / Card</h3><p>Master settlement and payout routing.</p></div>
-      </div>
+      </section>
     </div>
   )
 }

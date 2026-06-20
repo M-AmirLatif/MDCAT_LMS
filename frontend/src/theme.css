@@ -2648,6 +2648,19 @@ html[data-theme="dark"] .insight-card .workspace-card-title {
   }
 }
 
+.chapter-practice-card--locked {
+  opacity: 0.82;
+}
+
+.chapter-practice-card--locked .workspace-card-title::after {
+  content: ' Locked';
+  display: inline-block;
+  margin-left: 8px;
+  color: var(--purple);
+  font-size: 12px;
+  font-weight: 800;
+}
+
 /* Final mobile hero tone-down: keep dashboards readable without dense blue blocks. */
 .workspace-hero,
 .notification-hero,
