@@ -774,6 +774,15 @@
     text-align: center;
   }
 
+  .lp-value-grid {
+    gap: 34px;
+  }
+
+  .lp-value-grid > div:first-child {
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
   .lp-row-actions {
     align-items: center;
     justify-content: center;
@@ -950,7 +959,33 @@
   }
 
   .lp-section {
-    padding: 72px 0;
+    padding: 76px 0;
+  }
+
+  .lp-section-light {
+    background:
+      radial-gradient(circle at 88% 10%, rgba(108, 71, 255, 0.09), transparent 30%),
+      #f6f4ff;
+  }
+
+  .lp-label {
+    margin-bottom: 16px;
+    letter-spacing: 0.16em;
+  }
+
+  .lp-value-grid h2 {
+    max-width: 560px;
+    margin: 0 auto;
+    font-size: clamp(29px, 7.8vw, 38px);
+    line-height: 1.22;
+    letter-spacing: -0.025em;
+  }
+
+  .lp-copy {
+    max-width: 520px;
+    margin: 16px auto 0;
+    font-size: 16px;
+    line-height: 1.75;
   }
 }
 

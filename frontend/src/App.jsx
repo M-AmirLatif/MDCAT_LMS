@@ -1,5 +1,5 @@
-import { lazy, Suspense } from 'react'
-import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom'
+import { lazy, Suspense, useEffect } from 'react'
+import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import './App.css'
 import './pages/PlatformPages.css'
@@ -74,6 +74,17 @@ function RouteFallback() {
   )
 }
 
+function ScrollToTop() {
+  const location = useLocation()
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+    document.getElementById('app-content')?.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+  }, [location.pathname, location.search])
+
+  return null
+}
+
 // ==================== PREFETCH HEAVY CHUNKS ====================
 // After initial load, prefetch the two heaviest modules during browser idle time
 // so navigation to MCQs / admin pages feels instant.
@@ -138,6 +149,7 @@ const LazyTeacherAnalyticsPage = lazyWithRetry(() =>
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <Suspense fallback={<RouteFallback />}>
         <Routes>
           <Route path="/" element={<Home />} />

@@ -1969,7 +1969,6 @@ html[data-theme="dark"] .subject-stats-grid span {
    HERO BANNER READING CONTRAST & VISIBILITY POLISH
    ────────────────────────────────────────────────────────────────────────── */
 
-/* Darken all hero banner gradients for softer readability of white text */
 .workspace-hero,
 .notification-hero,
 .workspace-hero--teal,
@@ -1977,7 +1976,10 @@ html[data-theme="dark"] .subject-stats-grid span {
 .workspace-hero--coral,
 .hero-banner,
 .dashboard-hero,
-.hero-section,
+.hero-section {
+  background: linear-gradient(135deg, #7565F1 0%, #5687D8 58%, #42B99A 100%) !important;
+}
+
 html[data-theme="dark"] .workspace-hero,
 html[data-theme="dark"] .notification-hero,
 html[data-theme="dark"] .workspace-hero--teal,
@@ -1986,7 +1988,7 @@ html[data-theme="dark"] .workspace-hero--coral,
 html[data-theme="dark"] .hero-banner,
 html[data-theme="dark"] .dashboard-hero,
 html[data-theme="dark"] .hero-section {
-  background: linear-gradient(135deg, #5535E8 0%, #3D6DB5 60%, #1A9E72 100%) !important;
+  background: linear-gradient(135deg, #4F43C9 0%, #3769AE 58%, #238D7D 100%) !important;
 }
 
 /* Subtitle and description text inside hero — softer white */
@@ -2052,9 +2054,19 @@ html[data-theme="dark"] .hero-section {
 .hero-mini-card,
 .notification-hero-card,
 .notification-hero-panel {
-  background: rgba(9, 10, 24, 0.2) !important;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  border: 1px solid rgba(255, 255, 255, 0.26) !important;
   backdrop-filter: blur(8px) !important;
+}
+
+html[data-theme="dark"] .workspace-hero .stat-box,
+html[data-theme="dark"] .hero-stat-card,
+html[data-theme="dark"] .hero-banner .insight-mini,
+html[data-theme="dark"] .hero-mini-card,
+html[data-theme="dark"] .notification-hero-card,
+html[data-theme="dark"] .notification-hero-panel {
+  background: rgba(255, 255, 255, 0.11) !important;
+  border-color: rgba(255, 255, 255, 0.20) !important;
 }
 
 .workspace-hero .stat-box p,
@@ -2534,5 +2546,153 @@ html[data-theme="dark"] .notification-showcase-body strong,
 html[data-theme="dark"] .notification-summary-card strong {
   color: #f0eeff !important;
   -webkit-text-fill-color: #f0eeff !important;
+}
+
+/* Final dashboard/performance/notification readability polish */
+html:not([data-theme="dark"]) .stat-tile,
+html:not([data-theme="dark"]) .notification-summary-card,
+html:not([data-theme="dark"]) .notification-showcase,
+html:not([data-theme="dark"]) .insight-card {
+  background: #f8f9fe !important;
+  border-color: #c8cfe4 !important;
+}
+
+html:not([data-theme="dark"]) .stat-tile-top span,
+html:not([data-theme="dark"]) .stat-tile small,
+html:not([data-theme="dark"]) .notification-summary-card p,
+html:not([data-theme="dark"]) .notification-showcase-body p,
+html:not([data-theme="dark"]) .insight-card p {
+  color: #4b5573 !important;
+  -webkit-text-fill-color: #4b5573 !important;
+}
+
+html:not([data-theme="dark"]) .stat-tile strong,
+html:not([data-theme="dark"]) .notification-summary-card strong,
+html:not([data-theme="dark"]) .notification-showcase-body strong,
+html:not([data-theme="dark"]) .insight-card .workspace-card-title {
+  color: #11162c !important;
+  -webkit-text-fill-color: #11162c !important;
+}
+
+html[data-theme="dark"] .stat-tile,
+html[data-theme="dark"] .notification-summary-card,
+html[data-theme="dark"] .notification-showcase,
+html[data-theme="dark"] .insight-card {
+  background: #181634 !important;
+  border-color: rgba(165, 144, 255, 0.24) !important;
+}
+
+html[data-theme="dark"] .stat-tile-top span,
+html[data-theme="dark"] .stat-tile small,
+html[data-theme="dark"] .notification-summary-card p,
+html[data-theme="dark"] .notification-showcase-body p,
+html[data-theme="dark"] .insight-card p {
+  color: rgba(240, 238, 255, 0.72) !important;
+  -webkit-text-fill-color: rgba(240, 238, 255, 0.72) !important;
+}
+
+html[data-theme="dark"] .stat-tile strong,
+html[data-theme="dark"] .notification-summary-card strong,
+html[data-theme="dark"] .notification-showcase-body strong,
+html[data-theme="dark"] .insight-card .workspace-card-title {
+  color: #f6f4ff !important;
+  -webkit-text-fill-color: #f6f4ff !important;
+}
+
+@media (max-width: 768px) {
+  .workspace-hero,
+  .notification-hero {
+    padding: 22px 18px !important;
+    border-radius: 24px !important;
+  }
+
+  .workspace-hero-copy h1,
+  .workspace-hero-copy h2 {
+    font-size: clamp(27px, 7.4vw, 34px) !important;
+    line-height: 1.18 !important;
+    letter-spacing: -0.025em !important;
+  }
+
+  .workspace-hero-copy p {
+    font-size: 15px !important;
+    line-height: 1.58 !important;
+  }
+
+  .workspace-hero-actions {
+    gap: 10px !important;
+  }
+
+  .workspace-hero-actions .btn {
+    min-height: 44px !important;
+  }
+
+  .notification-toolbar .filter-pills {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    width: 100% !important;
+    gap: 8px !important;
+  }
+
+  .notification-toolbar .filter-pill {
+    width: 100% !important;
+    justify-content: center !important;
+    min-height: 42px !important;
+    padding: 0 10px !important;
+    font-size: 12px !important;
+  }
+
+  .notification-toolbar-note {
+    margin-top: 4px !important;
+    color: rgba(255, 255, 255, 0.88) !important;
+    -webkit-text-fill-color: rgba(255, 255, 255, 0.88) !important;
+  }
+}
+
+/* Final mobile hero tone-down: keep dashboards readable without dense blue blocks. */
+.workspace-hero,
+.notification-hero,
+.workspace-hero--teal,
+.workspace-hero--amber,
+.workspace-hero--coral {
+  background: linear-gradient(135deg, #7b6bf2 0%, #5e8ee0 56%, #47bba0 100%) !important;
+}
+
+html[data-theme="dark"] .workspace-hero,
+html[data-theme="dark"] .notification-hero,
+html[data-theme="dark"] .workspace-hero--teal,
+html[data-theme="dark"] .workspace-hero--amber,
+html[data-theme="dark"] .workspace-hero--coral {
+  background: linear-gradient(135deg, #6d61e5 0%, #507fcc 56%, #3ca897 100%) !important;
+}
+
+.workspace-hero::after,
+.notification-hero::after {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+html[data-theme="dark"] .workspace-hero .hero-mini-card,
+html[data-theme="dark"] .notification-hero .hero-mini-card,
+html[data-theme="dark"] .notification-hero .notification-hero-panel {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-color: rgba(255, 255, 255, 0.24) !important;
+}
+
+@media (max-width: 768px) {
+  .workspace-hero,
+  .notification-hero {
+    background: linear-gradient(145deg, #7969ee 0%, #5a8bd7 58%, #43af98 100%) !important;
+  }
+
+  html[data-theme="dark"] .workspace-hero,
+  html[data-theme="dark"] .notification-hero {
+    background: linear-gradient(145deg, #665ddd 0%, #4d7cc5 58%, #3aa391 100%) !important;
+  }
+
+  .workspace-hero::after,
+  .notification-hero::after {
+    opacity: 0.55 !important;
+    width: 180px !important;
+    height: 180px !important;
+  }
 }
 

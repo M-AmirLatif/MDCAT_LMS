@@ -8,6 +8,8 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { useAuth } from '../context/AuthContext'
+import useMcqSubjectSummary from '../hooks/useMcqSubjectSummary'
 import useStudentPerformanceData from '../hooks/useStudentPerformanceData'
 import useThemeMode from '../hooks/useThemeMode'
 import './PlatformPages.css'
@@ -25,18 +27,39 @@ function StatIcon({ tone }) {
 
 export default function PlatformPerformance() {
   const chartTheme = useThemeMode()
-  const { summary, subjects, performanceTrend, practiceAttempts, loading } = useStudentPerformanceData()
-  const visibleSubjects = subjects.length ? subjects : mdcatSubjects
+  const { user } = useAuth()
+  const role = user?.role || 'student'
+  const studentData = useStudentPerformanceData()
+  const bankData = useMcqSubjectSummary()
+  const isStudent = role === 'student'
+  const { summary, subjects, performanceTrend, practiceAttempts, loading } = studentData
+  const visibleSubjects = isStudent
+    ? (subjects.length ? subjects : mdcatSubjects)
+    : (bankData.subjects.length ? bankData.subjects : mdcatSubjects)
+  const totalMcqs = visibleSubjects.reduce((sum, subject) => sum + (Number(subject.totalMcqs) || 0), 0)
+  const totalChapters = visibleSubjects.reduce((sum, subject) => sum + (Number(subject.totalChapters) || 0), 0)
+  const strongestBank = [...visibleSubjects].sort((a, b) => (Number(b.totalMcqs) || 0) - (Number(a.totalMcqs) || 0))[0]?.name || 'No uploads yet'
+  const weakestBank = [...visibleSubjects].sort((a, b) => (Number(a.totalMcqs) || 0) - (Number(b.totalMcqs) || 0))[0]?.name || 'No uploads yet'
+  const pageSummary = isStudent
+    ? summary
+    : {
+      totalAttempted: totalMcqs,
+      totalMcqs: totalChapters,
+      overallAccuracy: totalChapters,
+      bestSubject: strongestBank,
+      weakestSubject: weakestBank,
+    }
 
   return (
     <div className="workspace-page animate-fade-up">
       <div className="card-grid">
-        <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Attempted MCQs</span><StatIcon tone="purple" /></div><strong>{summary.totalAttempted}</strong><small>{Math.max(summary.totalMcqs - summary.totalAttempted, 0)} still unattempted</small></div>
-        <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Overall Accuracy</span><StatIcon tone="teal" /></div><strong>{summary.overallAccuracy}%</strong><small>Live average across all attempts</small></div>
-        <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Best Subject</span><StatIcon tone="amber" /></div><strong>{summary.bestSubject}</strong><small>Highest current subject accuracy</small></div>
-        <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>Weakest Subject</span><StatIcon tone="coral" /></div><strong>{summary.weakestSubject}</strong><small>Main recovery target for this week</small></div>
+        <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>{isStudent ? 'Attempted MCQs' : 'Uploaded MCQs'}</span><StatIcon tone="purple" /></div><strong>{pageSummary.totalAttempted}</strong><small>{isStudent ? `${Math.max(pageSummary.totalMcqs - pageSummary.totalAttempted, 0)} still unattempted` : 'Live subject-bank count'}</small></div>
+        <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>{isStudent ? 'Overall Accuracy' : 'Total Chapters'}</span><StatIcon tone="teal" /></div><strong>{isStudent ? `${pageSummary.overallAccuracy}%` : pageSummary.overallAccuracy}</strong><small>{isStudent ? 'Live average across all attempts' : 'Across Biology, Chemistry, Physics, and English'}</small></div>
+        <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>{isStudent ? 'Best Subject' : 'Largest Bank'}</span><StatIcon tone="amber" /></div><strong>{pageSummary.bestSubject}</strong><small>{isStudent ? 'Highest current subject accuracy' : 'Most uploaded MCQs'}</small></div>
+        <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>{isStudent ? 'Weakest Subject' : 'Smallest Bank'}</span><StatIcon tone="coral" /></div><strong>{pageSummary.weakestSubject}</strong><small>{isStudent ? 'Main recovery target for this week' : 'Needs content coverage next'}</small></div>
       </div>
 
+      {isStudent ? (
       <div className="workspace-section-grid">
         <div className="workspace-card">
           <div className="workspace-card-head">
@@ -88,6 +111,7 @@ export default function PlatformPerformance() {
           </div>
         </div>
       </div>
+      ) : null}
 
       <div className="workspace-section-grid">
         <div className="workspace-card">
@@ -102,16 +126,17 @@ export default function PlatformPerformance() {
               <div key={subject.id} className="progress-inline">
                 <div className="progress-inline-row">
                   <span>{subject.name}</span>
-                  <strong>{subject.accuracy}%</strong>
+                  <strong>{isStudent ? `${subject.accuracy}%` : `${subject.totalMcqs || 0} MCQs`}</strong>
                 </div>
                 <div className="progress-bar-bg">
-                  <div className="progress-bar-fill" style={{ '--fill': `${subject.accuracy}%`, width: `${subject.accuracy}%`, background: subject.name === 'Biology' ? 'var(--grad-teal)' : subject.name === 'Chemistry' ? 'linear-gradient(135deg, #6C47FF 0%, #1DB884 100%)' : subject.name === 'Physics' ? 'linear-gradient(135deg, #4A90E2 0%, #73B1FF 100%)' : 'linear-gradient(135deg, #F59E0B 0%, #FFB648 100%)' }} />
+                  <div className="progress-bar-fill" style={{ '--fill': `${isStudent ? subject.accuracy : totalMcqs ? Math.round(((subject.totalMcqs || 0) / totalMcqs) * 100) : 0}%`, width: `${isStudent ? subject.accuracy : totalMcqs ? Math.round(((subject.totalMcqs || 0) / totalMcqs) * 100) : 0}%`, background: subject.name === 'Biology' ? 'var(--grad-teal)' : subject.name === 'Chemistry' ? 'linear-gradient(135deg, #6C47FF 0%, #1DB884 100%)' : subject.name === 'Physics' ? 'linear-gradient(135deg, #4A90E2 0%, #73B1FF 100%)' : 'linear-gradient(135deg, #F59E0B 0%, #FFB648 100%)' }} />
                 </div>
               </div>
             ))}
           </div>
         </div>
 
+        {isStudent ? (
         <div className="workspace-card">
           <div className="workspace-card-head">
             <div>
@@ -139,6 +164,28 @@ export default function PlatformPerformance() {
             ) : null}
           </div>
         </div>
+        ) : (
+        <div className="workspace-card">
+          <div className="workspace-card-head">
+            <div>
+              <div className="label-xs">Teacher Coverage</div>
+              <h2 className="workspace-card-title">Subject-wise bank status</h2>
+            </div>
+          </div>
+          <div className="workspace-card-body list-stack">
+            {visibleSubjects.map((subject) => (
+              <div key={`${subject.id}-coverage`} className="timeline-item">
+                <div className="timeline-dot" style={{ background: subject.name === 'Biology' ? 'var(--teal)' : subject.name === 'Chemistry' ? 'var(--purple)' : subject.name === 'Physics' ? 'var(--indigo)' : 'var(--amber)' }} />
+                <div>
+                  <strong>{subject.name}</strong>
+                  <p>{subject.totalChapters || 0} chapters - {subject.totalMcqs || 0} MCQs uploaded</p>
+                  <small>{subject.totalMcqs > 0 ? 'Live bank data' : 'No uploads yet'}</small>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        )}
       </div>
     </div>
   )

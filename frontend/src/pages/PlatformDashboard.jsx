@@ -15,6 +15,7 @@ import { useAuth } from '../context/AuthContext'
 import useAdminPanelData from '../hooks/useAdminPanelData'
 import useMcqSubjectSummary from '../hooks/useMcqSubjectSummary'
 import useStudentPerformanceData from '../hooks/useStudentPerformanceData'
+import useTeacherAnalyticsData from '../hooks/useTeacherAnalyticsData'
 import useThemeMode from '../hooks/useThemeMode'
 import './PlatformPages.css'
 import {
@@ -174,6 +175,7 @@ function StudentDashboard({ firstName }) {
 
 function TeacherDashboard() {
   const { subjects, totals, teacherSummary } = useMcqSubjectSummary()
+  const { summary } = useTeacherAnalyticsData()
   const totalMcqs = totals.totalMcqs
   const totalChapters = totals.totalChapters
 
@@ -198,8 +200,8 @@ function TeacherDashboard() {
             </div>
             <div className="hero-mini-card">
               <span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Student Attempts</span>
-              <strong>0</strong>
-              <p>Attempts will update after students start practicing</p>
+              <strong>{summary.totalAttempts}</strong>
+              <p>Live submissions from student practice</p>
             </div>
           </div>
         </div>
@@ -208,8 +210,8 @@ function TeacherDashboard() {
       <div className="card-grid">
         <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Total MCQs</span><span className="badge badge-teal">Bank</span></div><strong>{totalMcqs}</strong><small>Live count from uploaded subject banks</small></div>
         <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Total Chapters</span><span className="badge badge-purple">Coverage</span></div><strong>{totalChapters}</strong><small>Chapter count across MDCAT subjects</small></div>
-        <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Student Attempts</span><span className="badge badge-amber">Active</span></div><strong>0</strong><small>Attempts will appear after launch</small></div>
-        <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>Average Score</span><span className="badge badge-coral">Class</span></div><strong>0%</strong><small>Analytics will use real submissions</small></div>
+        <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Student Attempts</span><span className="badge badge-amber">Active</span></div><strong>{summary.totalAttempts}</strong><small>Real chapter submissions from students</small></div>
+        <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>Average Score</span><span className="badge badge-coral">Class</span></div><strong>{summary.classAverage}%</strong><small>Average across recorded submissions</small></div>
       </div>
 
       <section className="workspace-card">

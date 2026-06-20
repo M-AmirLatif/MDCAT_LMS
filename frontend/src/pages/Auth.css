@@ -183,6 +183,10 @@
   margin-top: 30px;
 }
 
+.auth-role-switcher--mobile {
+  display: none;
+}
+
 .auth-role-option {
   min-height: 78px;
   padding: 14px 16px;
@@ -812,13 +816,19 @@ input:focus-visible {
 
   .auth-brand-panel {
     min-height: auto;
-    padding: 16px 24px;
+    padding: 16px 22px;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
     background: linear-gradient(135deg, #0a0a1a 0%, #12102a 100%);
+  }
+
+  html:not([data-theme="dark"]) .auth-brand-panel {
+    background:
+      linear-gradient(135deg, rgba(225, 233, 250, 0.96), rgba(224, 217, 255, 0.96)),
+      #eef2fb;
   }
 
   .auth-brand-panel::after {
@@ -856,14 +866,29 @@ input:focus-visible {
     font-weight: 700;
   }
 
+  html:not([data-theme="dark"]) .auth-brand-panel .auth-brand-name {
+    color: #06122f;
+    font-weight: 900;
+  }
+
   .auth-mobile-stat {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    color: rgba(255, 255, 255, 0.62);
+    max-width: 132px;
+    padding: 6px 9px;
+    border-radius: 999px;
+    color: rgba(255, 255, 255, 0.82);
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 900;
     white-space: nowrap;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  html:not([data-theme="dark"]) .auth-mobile-stat {
+    color: #53617f;
+    background: rgba(255, 255, 255, 0.64);
+    border: 1px solid rgba(108, 71, 255, 0.10);
   }
 
   .auth-mobile-stat i {
@@ -901,7 +926,7 @@ input:focus-visible {
     max-width: none;
     min-height: auto;
     flex: 1;
-    padding: 66px 22px 40px;
+    padding: 72px 22px 42px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -917,7 +942,60 @@ input:focus-visible {
   }
 
   .auth-role-row {
-    margin-bottom: 12px;
+    margin-bottom: 10px;
+  }
+
+  .auth-role-switcher--mobile {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin: 0 0 18px;
+  }
+
+  .auth-role-switcher--mobile .auth-role-option {
+    min-height: 56px;
+    padding: 9px 10px;
+    border-radius: 14px;
+    border: 1px solid rgba(108, 71, 255, 0.18);
+    background: rgba(108, 71, 255, 0.07);
+    color: #1a1a2e;
+    text-align: center;
+    box-shadow: none;
+    transform: none;
+  }
+
+  .auth-role-switcher--mobile .auth-role-option strong {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .auth-role-switcher--mobile .auth-role-option span {
+    margin-top: 3px;
+    color: #64708e;
+    font-size: 10px;
+    line-height: 1.15;
+  }
+
+  .auth-role-switcher--mobile .auth-role-option--active {
+    border-color: #6c47ff;
+    background: linear-gradient(135deg, rgba(108, 71, 255, 0.16), rgba(74, 144, 226, 0.10));
+    box-shadow: 0 8px 18px rgba(108, 71, 255, 0.12);
+  }
+
+  [data-theme="dark"] .auth-role-switcher--mobile .auth-role-option {
+    border-color: rgba(139, 111, 255, 0.22);
+    background: rgba(139, 111, 255, 0.10);
+    color: #f0eeff;
+  }
+
+  [data-theme="dark"] .auth-role-switcher--mobile .auth-role-option span {
+    color: rgba(240, 238, 255, 0.58);
+  }
+
+  [data-theme="dark"] .auth-role-switcher--mobile .auth-role-option--active {
+    border-color: #8b6fff;
+    background: rgba(139, 111, 255, 0.22);
   }
 
   .badge {
@@ -939,7 +1017,7 @@ input:focus-visible {
     font-weight: 700;
     color: #1a1a2e;
     line-height: 1.2;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
   }
 
   .auth-shell--register .auth-title {
@@ -951,7 +1029,7 @@ input:focus-visible {
     font-size: 14px;
     color: #6b6b8a;
     line-height: 1.6;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
 
   .auth-form {

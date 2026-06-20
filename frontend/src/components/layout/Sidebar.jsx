@@ -233,7 +233,14 @@ export default function Sidebar({
         </div>
       </aside>
 
-      <nav className="mobile-bottom-nav" aria-label="Mobile navigation">
+      <nav
+        className={`mobile-bottom-nav ${
+          currentPath === '/performance' || currentPath === '/notifications'
+            ? 'mobile-bottom-nav--hidden'
+            : ''
+        }`.trim()}
+        aria-label="Mobile navigation"
+      >
         <div className="mobile-bottom-nav-inner">
           {mobileItems.slice(0, 4).map((item) => {
             const active =

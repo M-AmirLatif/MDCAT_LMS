@@ -8,6 +8,13 @@ const SUBJECTS = [
   { id: 'english', name: 'English' },
 ]
 
+const SUBJECT_NAME_BY_KEY = new Map(
+  SUBJECTS.flatMap((subject) => [
+    [subject.id, subject.name],
+    [subject.name.toLowerCase(), subject.name],
+  ]),
+)
+
 const EMPTY_SUMMARY = {
   totalAttempted: 0,
   totalMcqs: 0,
@@ -25,10 +32,14 @@ const formatAttemptDate = (value) => {
 
 const getSubjectNameFromSession = (session) => {
   const explicitSubject = String(session?.subject || '').trim()
-  if (explicitSubject) return explicitSubject
+  if (explicitSubject) {
+    return SUBJECT_NAME_BY_KEY.get(explicitSubject.toLowerCase()) || explicitSubject
+  }
 
   const courseCategory = String(session?.courseId?.category || '').trim()
-  if (courseCategory) return courseCategory
+  if (courseCategory) {
+    return SUBJECT_NAME_BY_KEY.get(courseCategory.toLowerCase()) || courseCategory
+  }
 
   return ''
 }
@@ -68,7 +79,11 @@ const buildPerformanceData = (subjectSummary = [], sessions = []) => {
   })
 
   const subjects = SUBJECTS.map((subject) => {
-    const summaryMatch = subjectSummary.find((item) => item.id === subject.id)
+    const summaryMatch = subjectSummary.find((item) => {
+      const itemId = String(item.id || item._id || '').toLowerCase()
+      const itemName = String(item.name || item.subject || '').toLowerCase()
+      return itemId === subject.id || itemName === subject.name.toLowerCase()
+    })
     const stats = sessionStats.get(subject.name)
     const accuracy = stats?.weight ? Math.round((stats.weightedCorrect / stats.weight) * 100) : 0
 

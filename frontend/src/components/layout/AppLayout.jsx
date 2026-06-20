@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import Topbar from './Topbar'
@@ -14,6 +14,7 @@ export default function AppLayout() {
     }
   })
   const location = useLocation()
+  const contentRef = useRef(null)
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev)
   const closeSidebar = () => setSidebarOpen(false)
@@ -29,12 +30,17 @@ export default function AppLayout() {
 
   useEffect(() => {
     closeSidebar()
+    contentRef.current?.scrollTo({ top: 0, left: 0, behavior: 'auto' })
   }, [location.pathname])
 
-  const layoutClass = useMemo(
-    () => `app-layout ${sidebarCollapsed ? 'app-layout--collapsed' : ''}`.trim(),
-    [sidebarCollapsed],
-  )
+  const layoutClass = useMemo(() => {
+    const classes = ['app-layout']
+    if (sidebarCollapsed) classes.push('app-layout--collapsed')
+    if (location.pathname === '/performance' || location.pathname === '/notifications') {
+      classes.push('app-layout--no-mobile-nav')
+    }
+    return classes.join(' ')
+  }, [location.pathname, sidebarCollapsed])
 
   return (
     <div className={layoutClass}>
@@ -56,7 +62,7 @@ export default function AppLayout() {
 
       <div className="app-main">
         <Topbar onMenuClick={toggleSidebar} />
-        <main className="app-content" id="app-content">
+        <main className="app-content" id="app-content" ref={contentRef}>
           <Outlet />
         </main>
       </div>

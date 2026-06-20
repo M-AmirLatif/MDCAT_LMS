@@ -3,12 +3,20 @@ import API from '../services/api'
 
 const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English']
 
+const SUBJECT_NAME_BY_KEY = new Map(
+  SUBJECTS.flatMap((subject) => [
+    [subject.toLowerCase(), subject],
+    [subject.slice(0, 3).toLowerCase(), subject],
+  ]),
+)
+
 const EMPTY = {
   summary: {
     classAverage: 0,
     submissionRate: 0,
     liveAttendance: 0,
     atRisk: 0,
+    totalAttempts: 0,
   },
   scoreDistribution: [],
   subjectMastery: SUBJECTS.map((subject) => ({ subject, score: 0 })),
@@ -22,8 +30,17 @@ const getStudentName = (student) => {
   return name || student.email || 'Unknown'
 }
 
+const normalizeSubjectName = (value) => {
+  const key = String(value || '').trim().toLowerCase()
+  if (!key) return ''
+  return SUBJECT_NAME_BY_KEY.get(key) || SUBJECT_NAME_BY_KEY.get(key.replace(/[^a-z]/g, '')) || ''
+}
+
 const getSubjectName = (session) =>
-  String(session?.subject || session?.courseId?.category || '').trim()
+  normalizeSubjectName(session?.subject) ||
+  normalizeSubjectName(session?.courseId?.category) ||
+  normalizeSubjectName(session?.courseId?.subject) ||
+  normalizeSubjectName(session?.subjectName)
 
 const buildAnalyticsData = (sessions = [], subjects = []) => {
   const totalChapters = subjects.reduce((sum, subject) => sum + (Number(subject.totalChapters) || 0), 0)
@@ -130,6 +147,7 @@ const buildAnalyticsData = (sessions = [], subjects = []) => {
       submissionRate,
       liveAttendance: 0,
       atRisk,
+      totalAttempts: totalSessions,
     },
     scoreDistribution: bands.map(({ band, count }) => ({ band, count })),
     subjectMastery,

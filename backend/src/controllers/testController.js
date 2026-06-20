@@ -1,14 +1,11 @@
 const MCQ = require('../models/MCQ')
 const TestSession = require('../models/TestSession')
-const Course = require('../models/Course')
 const mongoose = require('mongoose')
 
 const buildTestFilter = async (req) => {
   const role = req.user.role?.name || ''
   if (role === 'teacher') {
-    const courses = await Course.find({ createdBy: req.user.id }).select('_id')
-    const courseIds = courses.map(c => c._id)
-    return { courseId: { $in: courseIds } }
+    return {}
   } else if (role === 'admin') {
     return {}
   }

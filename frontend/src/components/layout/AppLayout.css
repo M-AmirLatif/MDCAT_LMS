@@ -66,11 +66,19 @@
   .app-content {
     padding: var(--space-page-y, 14px) var(--space-page-x, 14px) calc(76px + env(safe-area-inset-bottom));
   }
+
+  .app-layout--no-mobile-nav .app-content {
+    padding-bottom: var(--space-page-y, 14px);
+  }
 }
 
 @media (max-width: 480px) {
   .app-content {
     padding: var(--space-page-y, 10px) var(--space-page-x, 10px) calc(72px + env(safe-area-inset-bottom));
+  }
+
+  .app-layout--no-mobile-nav .app-content {
+    padding-bottom: var(--space-page-y, 10px);
   }
 }
 

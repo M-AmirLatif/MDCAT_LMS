@@ -213,6 +213,20 @@ export default function Login() {
                 </span>
               </div>
 
+              <div className="auth-role-switcher auth-role-switcher--mobile" aria-label="Choose login role">
+                {loginRoles.map((role) => (
+                  <button
+                    key={role.key}
+                    className={`auth-role-option ${requestedRole === role.key ? 'auth-role-option--active' : ''}`}
+                    type="button"
+                    onClick={() => switchRole(role.key)}
+                  >
+                    <strong>{role.label}</strong>
+                    <span>{role.hint}</span>
+                  </button>
+                ))}
+              </div>
+
               <h1 className="auth-title">Sign in to continue</h1>
               <p className="auth-subtitle">
                 Access your prep workspace, progress metrics, and role-specific
