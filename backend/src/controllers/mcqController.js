@@ -107,8 +107,10 @@ const IMAGE_TAG_REGEX = /<img\b[^>]*>/gi
 const IMAGE_SOURCE_REGEX = /\bsrc\s*=\s*["']([^"']+)["']/i
 const IMAGE_ALT_REGEX = /\balt\s*=\s*["']([^"']*)["']/i
 const MARKDOWN_IMAGE_REGEX = /!\[([\s\S]*?)\]\(([\s\S]*?)\)/gi
+const IMAGE_TOKEN_REGEX =
+  /\[(?:IMAGE|IMG|PIC|PICTURE|FIGURE|SCREENSHOT|SS):\s*([\s\S]*?)\]/gi
 const IMAGE_URL_REGEX =
-  /((?:(?:https?:\/\/)[^\s<>"']+?\.(?:png|jpe?g|gif|webp|svg|bmp|avif)(?:\?[^\s<>"']*)?)|(?:\/uploads\/[^\s<>"']+?\.(?:png|jpe?g|gif|webp|svg|bmp|avif)(?:\?[^\s<>"']*)?)|(?:data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+))/gi
+  /((?:(?:https?:\/\/)[^\s<>"']+?\.(?:png|jpe?g|gif|webp|svg|bmp|avif)(?:\?[^\s<>"']*)?)|(?:https?:\/\/res\.cloudinary\.com\/[^\s<>"']*?\/image\/upload\/[^\s<>"']+)|(?:\/uploads\/[^\s<>"']+?\.(?:png|jpe?g|gif|webp|svg|bmp|avif)(?:\?[^\s<>"']*)?)|(?:data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+))/gi
 
 const encodeImageToken = ({ url, alt = '' }) =>
   `[IMAGE:${String(url || '').trim()}|alt=${String(alt || '').trim()}]`
@@ -128,8 +130,17 @@ const normalizeMediaMarkup = (value) =>
 
 const normalizeCsvCell = (value) => String(value ?? '')
 
+const cleanImageUrl = (value) =>
+  String(value || '')
+    .trim()
+    .replace(/^["'`]+|["'`]+$/g, '')
+    .replace(/\s+["'][^"']*["']$/g, '')
+    .replace(/[),.;\]]+$/g, '')
+
 const isRenderableImageUrl = (value) => {
-  const url = String(value || '').trim()
+  const url = cleanImageUrl(value)
+  if (/^\/uploads\/[^\s<>"']+/i.test(url)) return true
+  if (/^data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+$/i.test(url)) return true
   if (!/^https?:\/\//i.test(url)) return false
 
   try {
@@ -161,7 +172,7 @@ const extractImageUrlFromField = (value) => {
     /\[(?:IMAGE|IMG|PIC|PICTURE|FIGURE|SCREENSHOT|SS):\s*([\s\S]*?)\]/i,
   )
   if (markerMatch?.[1]) {
-    const candidate = markerMatch[1].split('|')[0].trim()
+    const candidate = cleanImageUrl(markerMatch[1].split('|')[0])
     return isRenderableImageUrl(candidate) ? candidate : null
   }
 
@@ -177,6 +188,115 @@ const appendImageReference = (text, imageUrl, alt = '') => {
   const token = encodeImageToken({ url: imageUrl, alt })
   return base ? `${base}\n${token}` : token
 }
+
+const normalizeImageArray = (...values) => {
+  const urls = []
+  const push = (value) => {
+    if (!value) return
+    if (Array.isArray(value)) {
+      value.forEach(push)
+      return
+    }
+    if (typeof value === 'object') {
+      push(value.secure_url || value.url || value.src || value.imageUrl || value.path)
+      return
+    }
+    const extracted = extractImageUrlFromField(value) || cleanImageUrl(value)
+    if (isRenderableImageUrl(extracted)) urls.push(extracted)
+  }
+  values.forEach(push)
+  return [...new Set(urls)]
+}
+
+const extractImagesAndCleanText = (value, extraImages = []) => {
+  let text = normalizeCsvCell(value)
+  const images = []
+  const add = (candidate) => {
+    const url = extractImageUrlFromField(candidate) || cleanImageUrl(candidate)
+    if (isRenderableImageUrl(url)) images.push(url)
+  }
+
+  text = text.replace(IMAGE_TAG_REGEX, (tag) => {
+    const srcMatch = tag.match(IMAGE_SOURCE_REGEX)
+    if (srcMatch?.[1]) add(srcMatch[1])
+    return ''
+  })
+
+  text = text.replace(MARKDOWN_IMAGE_REGEX, (_, alt, url) => {
+    add(url)
+    return alt ? String(alt).trim() : ''
+  })
+
+  text = text.replace(IMAGE_TOKEN_REGEX, (_, body) => {
+    add(String(body || '').split('|')[0])
+    return ''
+  })
+
+  text = text.replace(IMAGE_URL_REGEX, (url) => {
+    add(url)
+    return ''
+  })
+
+  const finalImages = normalizeImageArray(images, extraImages)
+  return {
+    text: text.replace(/\n{3,}/g, '\n\n').trim(),
+    images: finalImages,
+  }
+}
+
+const optionImagesForLetter = (mcq, letter, option) =>
+  normalizeImageArray(
+    mcq?.[`option${letter}Images`],
+    option?.images,
+  )
+
+const serializeMcqMedia = (mcq) => {
+  if (!mcq) return mcq
+  const plain = typeof mcq.toObject === 'function' ? mcq.toObject() : { ...mcq }
+  const optionValues = ['A', 'B', 'C', 'D'].map((letter, index) => {
+    const option = plain.options?.[index] || {}
+    const text = plain[`option${letter}`] || option.text || ''
+    const images = optionImagesForLetter(plain, letter, option)
+    return {
+      letter,
+      text,
+      images,
+      isCorrect: option.isCorrect,
+    }
+  })
+
+  const questionLegacy = extractImagesAndCleanText(plain.question || '')
+  const explanationLegacy = extractImagesAndCleanText(plain.explanation || '')
+  const questionText = plain.questionText || questionLegacy.text || plain.question || ''
+  const explanationText = plain.explanationText || explanationLegacy.text || plain.explanation || ''
+  const questionImages = normalizeImageArray(plain.questionImages, questionLegacy.images)
+  const explanationImages = normalizeImageArray(plain.explanationImages, explanationLegacy.images)
+
+  return {
+    ...plain,
+    question: questionText,
+    questionText,
+    questionImages,
+    explanation: explanationText,
+    explanationText,
+    explanationImages,
+    optionA: optionValues[0].text,
+    optionAImages: optionValues[0].images,
+    optionB: optionValues[1].text,
+    optionBImages: optionValues[1].images,
+    optionC: optionValues[2].text,
+    optionCImages: optionValues[2].images,
+    optionD: optionValues[3].text,
+    optionDImages: optionValues[3].images,
+    options: optionValues.map((option) => ({
+      text: option.text,
+      images: option.images,
+      isCorrect: option.isCorrect,
+    })),
+  }
+}
+
+const serializeMcqsMedia = (mcqs) => mcqs.map(serializeMcqMedia)
 
 const hasLatex = (text) =>
   /(\$\$[\s\S]+?\$\$|\$[^$]+?\$)/.test(String(text || ''))
@@ -274,60 +394,94 @@ const buildReviewQueueItem = ({
 const createMcqDocFromRow = ({
   context,
   question,
+  questionImages = [],
   optionA,
+  optionAImages = [],
   optionB,
+  optionBImages = [],
   optionC,
+  optionCImages = [],
   optionD,
+  optionDImages = [],
   correctAnswer,
   explanation,
+  explanationImages = [],
   createdBy,
   reviewReason = null,
-}) => ({
-  courseId: context.course._id,
-  topic: context.topic?.name || context.chapter.name,
-  subject: context.subject,
-  chapterId: context.chapter.id,
-  chapterName: context.chapter.name,
-  topicId: context.topic?.id || null,
-  question,
-  options: normalizeOptionsFromLetters({
+}) => {
+  const questionMedia = extractImagesAndCleanText(question, questionImages)
+  const explanationMedia = extractImagesAndCleanText(explanation, explanationImages)
+  const options = normalizeOptionsFromLetters({
     optionA,
+    optionAImages,
     optionB,
+    optionBImages,
     optionC,
+    optionCImages,
     optionD,
+    optionDImages,
     correctAnswer: String(correctAnswer || '').toUpperCase(),
-  }),
-  explanation: explanation || null,
-  difficulty: 'medium',
-  createdBy,
-  isPublished: true,
-  correctAnswer: String(correctAnswer || '').toUpperCase(),
-  needsReview: false,
-  hasDiagram: [question, optionA, optionB, optionC, optionD, explanation].some(
-    (value) => hasDiagram(value) || hasImageReference(value),
-  ),
-  hasLatex: [question, optionA, optionB, optionC, optionD, explanation].some(
-    hasLatex,
-  ),
-  reviewReason,
-})
+  })
+  const fields = [questionMedia.text, ...options.map((option) => option.text), explanationMedia.text]
+  const imageGroups = [questionMedia.images, explanationMedia.images, ...options.map((option) => option.images)]
+  return {
+    courseId: context.course._id,
+    topic: context.topic?.name || context.chapter.name,
+    subject: context.subject,
+    chapterId: context.chapter.id,
+    chapterName: context.chapter.name,
+    topicId: context.topic?.id || null,
+    question: questionMedia.text,
+    questionText: questionMedia.text,
+    questionImages: questionMedia.images,
+    options,
+    optionA: options[0]?.text || '',
+    optionAImages: options[0]?.images || [],
+    optionB: options[1]?.text || '',
+    optionBImages: options[1]?.images || [],
+    optionC: options[2]?.text || '',
+    optionCImages: options[2]?.images || [],
+    optionD: options[3]?.text || '',
+    optionDImages: options[3]?.images || [],
+    explanation: explanationMedia.text || null,
+    explanationText: explanationMedia.text,
+    explanationImages: explanationMedia.images,
+    difficulty: 'medium',
+    createdBy,
+    isPublished: true,
+    correctAnswer: String(correctAnswer || '').toUpperCase(),
+    needsReview: false,
+    hasDiagram: fields.some(hasDiagram) || imageGroups.some((images) => images?.length),
+    hasLatex: fields.some(hasLatex),
+    reviewReason,
+  }
+}
 
 const normalizeOptionsFromLetters = ({
   optionA,
+  optionAImages = [],
   optionB,
+  optionBImages = [],
   optionC,
+  optionCImages = [],
   optionD,
+  optionDImages = [],
   correctAnswer,
 }) => {
   const letters = ['A', 'B', 'C', 'D']
   const values = [optionA, optionB, optionC, optionD]
+  const imageValues = [optionAImages, optionBImages, optionCImages, optionDImages]
   const normalizedAnswer = String(correctAnswer || '')
     .trim()
     .toUpperCase()
-  return values.map((text, index) => ({
-    text: String(text ?? ''),
-    isCorrect: letters[index] === normalizedAnswer,
-  }))
+  return values.map((text, index) => {
+    const media = extractImagesAndCleanText(text, imageValues[index])
+    return {
+      text: media.text,
+      images: media.images,
+      isCorrect: letters[index] === normalizedAnswer,
+    }
+  })
 }
 
 const parseCsv = (csvText) => {
@@ -398,23 +552,43 @@ exports.createMcq = async (req, res) => {
       chapterName,
       topicId,
       question,
+      questionText,
+      questionImages,
+      imageUrl,
+      imageUrls,
+      images,
       options,
       explanation,
+      explanationText,
+      explanationImages,
       difficulty,
       year,
       isPastPaper,
       isPublished,
     } = req.body
-    const sanitizedQuestion = normalizeCsvCell(question)
+    const questionMedia = extractImagesAndCleanText(questionText ?? question, [
+      questionImages,
+      imageUrl,
+      imageUrls,
+      images,
+    ])
     const sanitizedOptions = Array.isArray(options)
-      ? options.map((option) => ({
-          ...option,
-          text: normalizeCsvCell(option?.text),
-        }))
+      ? options.map((option, index) => {
+          const letter = ['A', 'B', 'C', 'D'][index]
+          const media = extractImagesAndCleanText(option?.text, [
+            option?.images,
+            req.body?.[`option${letter}Images`],
+          ])
+          return {
+            ...option,
+            text: media.text,
+            images: media.images,
+          }
+        })
       : options
-    const sanitizedExplanation = normalizeCsvCell(explanation)
+    const explanationMedia = extractImagesAndCleanText(explanationText ?? explanation, explanationImages)
 
-    if (!courseId || !topic || !sanitizedQuestion || !sanitizedOptions) {
+    if (!courseId || !topic || !questionMedia.text || !sanitizedOptions) {
       return res
         .status(400)
         .json({ error: 'Please provide all required fields' })
@@ -444,9 +618,21 @@ exports.createMcq = async (req, res) => {
     const mcq = await MCQ.create({
       courseId,
       topic,
-      question: sanitizedQuestion,
+      question: questionMedia.text,
+      questionText: questionMedia.text,
+      questionImages: questionMedia.images,
       options: sanitizedOptions,
-      explanation: sanitizedExplanation || null,
+      optionA: sanitizedOptions?.[0]?.text || '',
+      optionAImages: sanitizedOptions?.[0]?.images || [],
+      optionB: sanitizedOptions?.[1]?.text || '',
+      optionBImages: sanitizedOptions?.[1]?.images || [],
+      optionC: sanitizedOptions?.[2]?.text || '',
+      optionCImages: sanitizedOptions?.[2]?.images || [],
+      optionD: sanitizedOptions?.[3]?.text || '',
+      optionDImages: sanitizedOptions?.[3]?.images || [],
+      explanation: explanationMedia.text || null,
+      explanationText: explanationMedia.text,
+      explanationImages: explanationMedia.images,
       subject: nextSubject,
       chapterId: chapterId || null,
       chapterName: chapterName || topic,
@@ -461,21 +647,22 @@ exports.createMcq = async (req, res) => {
           sanitizedOptions.findIndex((option) => option.isCorrect)
         ] || null,
       hasDiagram: [
-        sanitizedQuestion,
+        questionMedia.text,
         ...sanitizedOptions.map((option) => option?.text),
-        sanitizedExplanation,
-      ].some((value) => hasDiagram(value) || hasImageReference(value)),
+        explanationMedia.text,
+      ].some((value) => hasDiagram(value)) ||
+        [questionMedia.images, explanationMedia.images, ...sanitizedOptions.map((option) => option?.images)].some((images) => images?.length),
       hasLatex: [
-        sanitizedQuestion,
+        questionMedia.text,
         ...sanitizedOptions.map((option) => option?.text),
-        sanitizedExplanation,
+        explanationMedia.text,
       ].some(hasLatex),
     })
 
     res.status(201).json({
       success: true,
       message: 'MCQ created successfully',
-      mcq,
+      mcq: serializeMcqMedia(mcq),
     })
   } catch (error) {
     res.status(500).json({ error: error.message })
@@ -484,10 +671,14 @@ exports.createMcq = async (req, res) => {
 
 const stripCorrectOptions = (mcqs) => {
   return mcqs.map((mcq) => {
-    const { correctAnswer, explanation, ...safeMcq } = mcq
+    const normalized = serializeMcqMedia(mcq)
+    const { correctAnswer, explanation, explanationText, explanationImages, ...safeMcq } = normalized
     return {
       ...safeMcq,
-      options: mcq.options?.map((opt) => ({ text: opt.text })) || [],
+      options: normalized.options?.map((opt) => ({
+        text: opt.text,
+        images: opt.images || [],
+      })) || [],
     }
   })
 }
@@ -600,7 +791,7 @@ exports.getMcqsByCourseFull = async (req, res) => {
     res.status(200).json({
       success: true,
       count: mcqs.length,
-      mcqs,
+      mcqs: serializeMcqsMedia(mcqs),
       page,
       limit,
       total,
@@ -621,8 +812,15 @@ exports.updateMcq = async (req, res) => {
       chapterName,
       topicId,
       question,
+      questionText,
+      questionImages,
+      imageUrl,
+      imageUrls,
+      images,
       options,
       explanation,
+      explanationText,
+      explanationImages,
       difficulty,
       year,
       isPastPaper,
@@ -632,16 +830,6 @@ exports.updateMcq = async (req, res) => {
       hasLatex: incomingHasLatex,
       reviewReason,
     } = req.body
-    const sanitizedQuestion =
-      question === undefined ? undefined : normalizeCsvCell(question)
-    const sanitizedOptions = Array.isArray(options)
-      ? options.map((option) => ({
-          ...option,
-          text: normalizeCsvCell(option?.text),
-        }))
-      : options
-    const sanitizedExplanation =
-      explanation === undefined ? undefined : normalizeCsvCell(explanation)
 
     let mcq = await MCQ.findById(req.params.mcqId).populate('courseId', 'category subject')
 
@@ -654,6 +842,34 @@ exports.updateMcq = async (req, res) => {
         .status(403)
         .json({ error: 'Not authorized to update this MCQ' })
     }
+
+    const questionMedia =
+      question === undefined && questionText === undefined && questionImages === undefined && imageUrl === undefined && imageUrls === undefined && images === undefined
+        ? null
+        : extractImagesAndCleanText(questionText ?? question ?? mcq.question ?? '', [
+            questionImages,
+            imageUrl,
+            imageUrls,
+            images,
+          ])
+    const sanitizedOptions = Array.isArray(options)
+      ? options.map((option, index) => {
+          const letter = ['A', 'B', 'C', 'D'][index]
+          const media = extractImagesAndCleanText(option?.text, [
+            option?.images,
+            req.body?.[`option${letter}Images`],
+          ])
+          return {
+            ...option,
+            text: media.text,
+            images: media.images,
+          }
+        })
+      : options
+    const explanationMedia =
+      explanation === undefined && explanationText === undefined && explanationImages === undefined
+        ? null
+        : extractImagesAndCleanText(explanationText ?? explanation ?? mcq.explanation ?? '', explanationImages)
 
     if (sanitizedOptions && !hasCorrectOption(sanitizedOptions)) {
       return res
@@ -673,9 +889,21 @@ exports.updateMcq = async (req, res) => {
         chapterId,
         chapterName,
         topicId,
-        question: sanitizedQuestion,
+        question: questionMedia ? questionMedia.text : undefined,
+        questionText: questionMedia ? questionMedia.text : undefined,
+        questionImages: questionMedia ? questionMedia.images : undefined,
         options: sanitizedOptions,
-        explanation: sanitizedExplanation,
+        optionA: sanitizedOptions ? sanitizedOptions?.[0]?.text || '' : undefined,
+        optionAImages: sanitizedOptions ? sanitizedOptions?.[0]?.images || [] : undefined,
+        optionB: sanitizedOptions ? sanitizedOptions?.[1]?.text || '' : undefined,
+        optionBImages: sanitizedOptions ? sanitizedOptions?.[1]?.images || [] : undefined,
+        optionC: sanitizedOptions ? sanitizedOptions?.[2]?.text || '' : undefined,
+        optionCImages: sanitizedOptions ? sanitizedOptions?.[2]?.images || [] : undefined,
+        optionD: sanitizedOptions ? sanitizedOptions?.[3]?.text || '' : undefined,
+        optionDImages: sanitizedOptions ? sanitizedOptions?.[3]?.images || [] : undefined,
+        explanation: explanationMedia ? explanationMedia.text : undefined,
+        explanationText: explanationMedia ? explanationMedia.text : undefined,
+        explanationImages: explanationMedia ? explanationMedia.images : undefined,
         difficulty,
         year,
         isPastPaper,
@@ -684,19 +912,25 @@ exports.updateMcq = async (req, res) => {
         hasDiagram:
           typeof incomingHasDiagram === 'boolean'
             ? incomingHasDiagram
-            : [
-                sanitizedQuestion,
+            : questionMedia || explanationMedia || sanitizedOptions
+              ? [
+                questionMedia?.text,
                 ...(sanitizedOptions || []).map((option) => option?.text),
-                sanitizedExplanation,
-              ].some((value) => hasDiagram(value) || hasImageReference(value)),
+                explanationMedia?.text,
+              ].some((value) => hasDiagram(value)) ||
+                Boolean(questionMedia?.images?.length || explanationMedia?.images?.length) ||
+                (sanitizedOptions || []).some((option) => option?.images?.length)
+              : mcq.hasDiagram,
         hasLatex:
           typeof incomingHasLatex === 'boolean'
             ? incomingHasLatex
-            : [
-                sanitizedQuestion,
+            : questionMedia || explanationMedia || sanitizedOptions
+              ? [
+                questionMedia?.text,
                 ...(sanitizedOptions || []).map((option) => option?.text),
-                sanitizedExplanation,
-              ].some(hasLatex),
+                explanationMedia?.text,
+              ].some(hasLatex)
+              : mcq.hasLatex,
         reviewReason: reviewReason || null,
         correctAnswer: sanitizedOptions
           ? ['A', 'B', 'C', 'D'][
@@ -710,7 +944,7 @@ exports.updateMcq = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'MCQ updated successfully',
-      mcq,
+      mcq: serializeMcqMedia(mcq),
     })
   } catch (error) {
     res.status(500).json({ error: error.message })
@@ -1201,7 +1435,7 @@ exports.getMcqsByChapter = async (req, res) => {
     }
 
     const mcqs = await MCQ.find(context.filter).sort({ createdAt: 1 }).lean()
-    const safeMcqs = includeFull ? mcqs : stripCorrectOptions(mcqs)
+    const safeMcqs = includeFull ? serializeMcqsMedia(mcqs) : stripCorrectOptions(mcqs)
 
     res.status(200).json({
       success: true,
@@ -1290,55 +1524,45 @@ exports.createChapterMcq = async (req, res) => {
     const normalizedAnswer = String(correctAnswer || '')
       .trim()
       .toUpperCase()
-    const questionImageUrl = extractImageUrlFromField(
-      rawQuestionImageUrl || rawQuestionImageUrlAlt,
-    )
-    const optionAImageUrl = extractImageUrlFromField(
-      rawOptionAImageUrl || rawOptionAImageUrlAlt,
-    )
-    const optionBImageUrl = extractImageUrlFromField(
-      rawOptionBImageUrl || rawOptionBImageUrlAlt,
-    )
-    const optionCImageUrl = extractImageUrlFromField(
-      rawOptionCImageUrl || rawOptionCImageUrlAlt,
-    )
-    const optionDImageUrl = extractImageUrlFromField(
-      rawOptionDImageUrl || rawOptionDImageUrlAlt,
-    )
-    const explanationImageUrl = extractImageUrlFromField(
-      rawExplanationImageUrl || rawExplanationImageUrlAlt,
-    )
+    const questionMedia = extractImagesAndCleanText(question, [
+      req.body.questionImages,
+      req.body.questionImage,
+      rawQuestionImageUrl,
+      rawQuestionImageUrlAlt,
+    ])
+    const optionAMedia = extractImagesAndCleanText(optionA, [
+      req.body.optionAImages,
+      rawOptionAImageUrl,
+      rawOptionAImageUrlAlt,
+    ])
+    const optionBMedia = extractImagesAndCleanText(optionB, [
+      req.body.optionBImages,
+      rawOptionBImageUrl,
+      rawOptionBImageUrlAlt,
+    ])
+    const optionCMedia = extractImagesAndCleanText(optionC, [
+      req.body.optionCImages,
+      rawOptionCImageUrl,
+      rawOptionCImageUrlAlt,
+    ])
+    const optionDMedia = extractImagesAndCleanText(optionD, [
+      req.body.optionDImages,
+      rawOptionDImageUrl,
+      rawOptionDImageUrlAlt,
+    ])
+    const explanationMedia = extractImagesAndCleanText(explanation, [
+      req.body.explanationImages,
+      req.body.explanationImage,
+      rawExplanationImageUrl,
+      rawExplanationImageUrlAlt,
+    ])
 
-    const sanitizedQuestion = appendImageReference(
-      normalizeCsvCell(question),
-      questionImageUrl,
-      rawQuestionImageAlt || questionImageAlt || '',
-    )
-    const sanitizedOptionA = appendImageReference(
-      normalizeCsvCell(optionA),
-      optionAImageUrl,
-      rawOptionAImageAlt || optionAImageAlt || '',
-    )
-    const sanitizedOptionB = appendImageReference(
-      normalizeCsvCell(optionB),
-      optionBImageUrl,
-      rawOptionBImageAlt || optionBImageAlt || '',
-    )
-    const sanitizedOptionC = appendImageReference(
-      normalizeCsvCell(optionC),
-      optionCImageUrl,
-      rawOptionCImageAlt || optionCImageAlt || '',
-    )
-    const sanitizedOptionD = appendImageReference(
-      normalizeCsvCell(optionD),
-      optionDImageUrl,
-      rawOptionDImageAlt || optionDImageAlt || '',
-    )
-    const sanitizedExplanation = appendImageReference(
-      normalizeCsvCell(explanation),
-      explanationImageUrl,
-      rawExplanationImageAlt || explanationImageAlt || '',
-    )
+    const sanitizedQuestion = questionMedia.text
+    const sanitizedOptionA = optionAMedia.text
+    const sanitizedOptionB = optionBMedia.text
+    const sanitizedOptionC = optionCMedia.text
+    const sanitizedOptionD = optionDMedia.text
+    const sanitizedExplanation = explanationMedia.text
     if (
       !sanitizedQuestion ||
       !sanitizedOptionA ||
@@ -1354,9 +1578,13 @@ exports.createChapterMcq = async (req, res) => {
 
     const options = normalizeOptionsFromLetters({
       optionA: sanitizedOptionA,
+      optionAImages: optionAMedia.images,
       optionB: sanitizedOptionB,
+      optionBImages: optionBMedia.images,
       optionC: sanitizedOptionC,
+      optionCImages: optionCMedia.images,
       optionD: sanitizedOptionD,
+      optionDImages: optionDMedia.images,
       correctAnswer: normalizedAnswer,
     })
     const mcq = await MCQ.create({
@@ -1367,8 +1595,20 @@ exports.createChapterMcq = async (req, res) => {
       chapterName: context.chapter.name,
       topicId: context.topic?.id || null,
       question: sanitizedQuestion,
+      questionText: sanitizedQuestion,
+      questionImages: questionMedia.images,
       options,
+      optionA: options[0]?.text || '',
+      optionAImages: options[0]?.images || [],
+      optionB: options[1]?.text || '',
+      optionBImages: options[1]?.images || [],
+      optionC: options[2]?.text || '',
+      optionCImages: options[2]?.images || [],
+      optionD: options[3]?.text || '',
+      optionDImages: options[3]?.images || [],
       explanation: sanitizedExplanation || null,
+      explanationText: sanitizedExplanation,
+      explanationImages: explanationMedia.images,
       difficulty: String(difficulty || 'medium').toLowerCase(),
       createdBy: req.user.id,
       isPublished: true,
@@ -1381,7 +1621,8 @@ exports.createChapterMcq = async (req, res) => {
         sanitizedOptionC,
         sanitizedOptionD,
         sanitizedExplanation,
-      ].some((value) => hasDiagram(value) || hasImageReference(value)),
+      ].some((value) => hasDiagram(value)) ||
+        [questionMedia.images, optionAMedia.images, optionBMedia.images, optionCMedia.images, optionDMedia.images, explanationMedia.images].some((images) => images?.length),
       hasLatex: [
         sanitizedQuestion,
         sanitizedOptionA,
@@ -1395,7 +1636,7 @@ exports.createChapterMcq = async (req, res) => {
 
     res
       .status(201)
-      .json({ success: true, message: 'MCQ created successfully', mcq })
+      .json({ success: true, message: 'MCQ created successfully', mcq: serializeMcqMedia(mcq) })
   } catch (error) {
     res.status(500).json({ error: error.message })
   }
@@ -1837,7 +2078,8 @@ exports.submitChapterAttempt = async (req, res) => {
     if (!mcqs.length)
       return res.status(404).json({ error: 'No MCQs found for this chapter' })
 
-    const detailed = mcqs.map((mcq) => {
+    const detailed = mcqs.map((rawMcq) => {
+      const mcq = serializeMcqMedia(rawMcq)
       const selectedIndexRaw = answers[String(mcq._id)]
       const selectedIndex =
         selectedIndexRaw === null || selectedIndexRaw === undefined
@@ -1848,13 +2090,17 @@ exports.submitChapterAttempt = async (req, res) => {
       const isCorrect = !skipped && selectedIndex === correctIndex
       return {
         mcqId: mcq._id,
-        question: mcq.question,
+        question: mcq.questionText || mcq.question,
+        questionText: mcq.questionText || mcq.question,
+        questionImages: mcq.questionImages || [],
         options: mcq.options,
         selectedIndex,
         correctIndex,
         skipped,
         isCorrect,
-        explanation: mcq.explanation || '',
+        explanation: mcq.explanationText || mcq.explanation || '',
+        explanationText: mcq.explanationText || mcq.explanation || '',
+        explanationImages: mcq.explanationImages || [],
       }
     })
 

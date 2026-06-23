@@ -37,12 +37,89 @@ const SUBJECTS = [
 
 const emptyMcqForm = {
   question: '',
+  questionImages: [],
   optionA: '',
+  optionAImages: [],
   optionB: '',
+  optionBImages: [],
   optionC: '',
+  optionCImages: [],
   optionD: '',
+  optionDImages: [],
   correctAnswer: 'A',
   explanation: '',
+  explanationImages: [],
+}
+
+const letters = ['A', 'B', 'C', 'D']
+
+const getOptionImages = (mcq, letter, index) =>
+  mcq?.[`option${letter}Images`] || mcq?.options?.[index]?.images || []
+
+async function uploadMcqImage(file) {
+  const data = new FormData()
+  data.append('file', file)
+  const res = await API.post('/uploads/single', data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return res.data.secure_url || res.data.url || res.data.fileUrl
+}
+
+function McqImageManager({ id, label, images = [], onChange }) {
+  const [url, setUrl] = useState('')
+  const [uploading, setUploading] = useState(false)
+  const addImage = (nextUrl) => {
+    const clean = String(nextUrl || '').trim()
+    if (!clean) return
+    onChange([...(images || []), clean])
+    setUrl('')
+  }
+
+  const handleUpload = async (event) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    try {
+      const uploadedUrl = await uploadMcqImage(file)
+      addImage(uploadedUrl)
+      toast.success(`${label} uploaded`)
+    } catch (error) {
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not upload this image.'))
+    } finally {
+      setUploading(false)
+      event.target.value = ''
+    }
+  }
+
+  return (
+    <div className="mcq-image-manager">
+      <div className="mcq-image-manager-head">
+        <span>{label}</span>
+        <label className="btn btn-secondary btn-sm" htmlFor={id}>
+          {uploading ? 'Uploading...' : 'Upload image'}
+        </label>
+        <input id={id} type="file" accept="image/*" onChange={handleUpload} hidden />
+      </div>
+      {images?.length ? (
+        <div className="mcq-image-preview-grid">
+          {images.map((image, index) => (
+            <div className="mcq-image-preview" key={`${image}-${index}`}>
+              <img src={image} alt={`${label} ${index + 1}`} />
+              <button type="button" onClick={() => onChange(images.filter((_, itemIndex) => itemIndex !== index))}>
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+      ) : null}
+      <div className="mcq-image-url-row">
+        <input value={url} onChange={(event) => setUrl(event.target.value)} placeholder="Paste image URL" />
+        <button className="btn btn-ghost btn-sm" type="button" onClick={() => addImage(url)}>
+          Add URL
+        </button>
+      </div>
+    </div>
+  )
 }
 
 function subjectById(id) {
@@ -533,23 +610,35 @@ function mcqToForm(mcq) {
     }))
     return {
       question: mcq.question || '',
+      questionImages: mcq.questionImages || [],
       optionA: byLetter[0].text,
+      optionAImages: getOptionImages(mcq, 'A', 0),
       optionB: byLetter[1].text,
+      optionBImages: getOptionImages(mcq, 'B', 1),
       optionC: byLetter[2].text,
+      optionCImages: getOptionImages(mcq, 'C', 2),
       optionD: byLetter[3].text,
+      optionDImages: getOptionImages(mcq, 'D', 3),
       correctAnswer: mcq.correctAnswer || 'A',
       explanation: mcq.explanation || '',
+      explanationImages: mcq.explanationImages || [],
     }
   }
 
   return {
     question: mcq.question || '',
+    questionImages: mcq.questionImages || [],
     optionA: mcq.optionA || '',
+    optionAImages: mcq.optionAImages || [],
     optionB: mcq.optionB || '',
+    optionBImages: mcq.optionBImages || [],
     optionC: mcq.optionC || '',
+    optionCImages: mcq.optionCImages || [],
     optionD: mcq.optionD || '',
+    optionDImages: mcq.optionDImages || [],
     correctAnswer: mcq.correctAnswer || 'A',
     explanation: mcq.explanation || '',
+    explanationImages: mcq.explanationImages || [],
   }
 }
 
@@ -580,6 +669,12 @@ function McqForm({ initial, onSubmit }) {
             placeholder="Type the MDCAT question..."
           />
         </div>
+        <McqImageManager
+          id="question-image"
+          label="Question image"
+          images={form.questionImages || []}
+          onChange={(images) => setField('questionImages', images)}
+        />
       <div className="floating-grid">
         <div className="floating-field">
           <label htmlFor="option-a">Option A</label>
@@ -614,6 +709,17 @@ function McqForm({ initial, onSubmit }) {
           />
         </div>
       </div>
+      <div className="floating-grid">
+        {letters.map((letter) => (
+          <McqImageManager
+            key={`option-image-${letter}`}
+            id={`option-${letter.toLowerCase()}-image`}
+            label={`Option ${letter} image`}
+            images={form[`option${letter}Images`] || []}
+            onChange={(images) => setField(`option${letter}Images`, images)}
+          />
+        ))}
+      </div>
       <div className="floating-field">
         <label htmlFor="correct-answer">Correct Answer</label>
         <select
@@ -637,6 +743,12 @@ function McqForm({ initial, onSubmit }) {
           placeholder="Explanation students see after submission."
         />
       </div>
+      <McqImageManager
+        id="explanation-image"
+        label="Explanation image"
+        images={form.explanationImages || []}
+        onChange={(images) => setField('explanationImages', images)}
+      />
       <button className="btn btn-primary" type="submit">
         Save MCQ
       </button>
@@ -749,14 +861,19 @@ function TeacherInlineMcqCard({ mcq, index, chapterId, meta, onSaved, onDelete }
     event.preventDefault()
     setSaving(true)
     try {
-      const options = ['A', 'B', 'C', 'D'].map((letter) => ({
+      const options = letters.map((letter) => ({
         text: form[`option${letter}`],
+        images: form[`option${letter}Images`] || [],
         isCorrect: form.correctAnswer === letter,
       }))
       await API.put(`/mcqs/${mcq._id}`, {
         question: form.question,
+        questionText: form.question,
+        questionImages: form.questionImages || [],
         options,
         explanation: form.explanation,
+        explanationText: form.explanation,
+        explanationImages: form.explanationImages || [],
         correctAnswer: form.correctAnswer,
         topic: mcq.topic || 'General',
         chapterName: mcq.chapterName,
@@ -797,6 +914,12 @@ function TeacherInlineMcqCard({ mcq, index, chapterId, meta, onSaved, onDelete }
             value={form.question}
             onChange={(event) => setField('question', event.target.value)}
             placeholder="Type question statement here..."
+          />
+          <McqImageManager
+            id={`question-image-${mcq._id}`}
+            label="Question image"
+            images={form.questionImages || []}
+            onChange={(images) => setField('questionImages', images)}
           />
         </div>
 
@@ -859,6 +982,12 @@ function TeacherInlineMcqCard({ mcq, index, chapterId, meta, onSaved, onDelete }
               onChange={(event) => setField('explanation', event.target.value)}
               placeholder="Provide correct explanation..."
             />
+            <McqImageManager
+              id={`explanation-image-${mcq._id}`}
+              label="Explanation image"
+              images={form.explanationImages || []}
+              onChange={(images) => setField('explanationImages', images)}
+            />
           </div>
         </div>
 
@@ -913,16 +1042,16 @@ function ReviewQueueReadonlyCard({ item, index, onEdit, onApprove, onDelete }) {
         <div className="teacher-review-render-card">
           <div className="teacher-review-render-label">Question</div>
           <div className="teacher-review-render-content">
-            <MCQRenderer text={item.question || ''} />
+            <MCQRenderer text={item.questionText || item.question || ''} images={item.questionImages || []} />
           </div>
         </div>
       </div>
       <div className="teacher-mcq-option-grid">
-        {['A', 'B', 'C', 'D'].map((letter) => (
+        {letters.map((letter, index) => (
           <div className="teacher-mcq-option-field" key={letter}>
             <label>{`Option ${letter}`}</label>
             <div className="teacher-review-render-content">
-              <MCQRenderer text={item[`option${letter}`] || ''} />
+              <MCQRenderer text={item[`option${letter}`] || item.options?.[index]?.text || ''} images={item[`option${letter}Images`] || item.options?.[index]?.images || []} />
             </div>
           </div>
         ))}
@@ -940,7 +1069,7 @@ function ReviewQueueReadonlyCard({ item, index, onEdit, onApprove, onDelete }) {
         <div className="floating-field">
           <label>Explanation</label>
           <div className="teacher-review-render-content">
-            <MCQRenderer text={item.explanation || ''} />
+            <MCQRenderer text={item.explanationText || item.explanation || ''} images={item.explanationImages || []} />
           </div>
         </div>
       </div>
@@ -1057,14 +1186,19 @@ function McqList() {
   const saveMcq = async (payload) => {
     try {
       if (modal?.mcq) {
-        const options = ['A', 'B', 'C', 'D'].map((letter) => ({
+        const options = letters.map((letter) => ({
           text: payload[`option${letter}`],
+          images: payload[`option${letter}Images`] || [],
           isCorrect: payload.correctAnswer === letter,
         }))
         await API.put(`/mcqs/${modal.mcq._id}`, {
           question: payload.question,
+          questionText: payload.question,
+          questionImages: payload.questionImages || [],
           options,
           explanation: payload.explanation,
+          explanationText: payload.explanation,
+          explanationImages: payload.explanationImages || [],
           correctAnswer: payload.correctAnswer,
           topic: modal.mcq.topic || chapter?.name,
           chapterName: chapter?.name,
@@ -1077,6 +1211,8 @@ function McqList() {
       } else {
         await API.post(`/mcqs/${subject}/${chapterId}`, {
           ...payload,
+          questionText: payload.question,
+          explanationText: payload.explanation,
           topicId: selectedTopicId || null,
         })
         if (modal?.reviewItem?.id) {
@@ -1793,7 +1929,7 @@ function QuizAttempt() {
         <div className="mcq-attempt-layout">
           <div className="mcq-question-card">
             <div className="mcq-question-title">
-              <MCQRenderer text={current.question} />
+              <MCQRenderer text={current.questionText || current.question} images={current.questionImages || []} />
             </div>
             {current.needsReview ? (
               <div className="mcq-under-review-badge">Under Review</div>
@@ -1811,7 +1947,7 @@ function QuizAttempt() {
                     {String.fromCharCode(65 + index)}
                   </span>
                   <div className="mcq-option-text">
-                    <MCQRenderer text={option.text || option} />
+                    <MCQRenderer text={option.text || option} images={option.images || current[`option${String.fromCharCode(65 + index)}Images`] || []} />
                   </div>
                 </button>
               ))}
@@ -2029,7 +2165,7 @@ function ReviewSection({ title, items }) {
             </span>
           </div>
           <div className="review-question-title">
-            <MCQRenderer text={item.question} />
+            <MCQRenderer text={item.questionText || item.question} images={item.questionImages || []} />
           </div>
           <div className="review-options-list">
             {item.options.map((option, optionIndex) => {
@@ -2044,7 +2180,7 @@ function ReviewSection({ title, items }) {
                     {String.fromCharCode(65 + optionIndex)}
                   </span>
                   <div className="review-option-text">
-                    <MCQRenderer text={option.text || option} />
+                    <MCQRenderer text={option.text || option} images={option.images || item[`option${String.fromCharCode(65 + optionIndex)}Images`] || []} />
                   </div>
                   {selected ? (
                     <span className="review-option-tag">Your answer</span>
@@ -2061,7 +2197,7 @@ function ReviewSection({ title, items }) {
           <div className="review-explanation-box">
             <strong>Explanation</strong>
             <div className="review-explanation-text">
-              <MCQRenderer text={item.explanation || 'No explanation added yet.'} />
+              <MCQRenderer text={item.explanationText || item.explanation || 'No explanation added yet.'} images={item.explanationImages || []} />
             </div>
           </div>
         </article>

@@ -231,7 +231,7 @@ function TeacherMcqManagement() {
                     <div>
                       <span className="state-chip state-chip--neutral">Q{index + 1}</span>
                       <div className="teacher-mcq-question-preview">
-                        <MCQRenderer text={mcq.question} />
+                        <MCQRenderer text={mcq.questionText || mcq.question} images={mcq.questionImages || []} />
                       </div>
                       <p>Correct answer: {mcq.correctAnswer} - {mcq.difficulty}</p>
                     </div>

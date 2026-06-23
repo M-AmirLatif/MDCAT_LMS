@@ -57,7 +57,7 @@ function encodeImageToken({ url, alt = '' }) {
 function shouldDebugRenderer() {
   if (typeof console === 'undefined') return false
   if (typeof window === 'undefined') return true
-  return window.localStorage?.getItem('mcqRendererDebug') !== 'false'
+  return window.localStorage?.getItem('mcqRendererDebug') === 'true'
 }
 
 function logRendererDebug(payload) {
@@ -108,6 +108,16 @@ function normalizeMediaMarkup(text) {
       return segment.replace(IMAGE_URL_REGEX, (url) => encodeImageToken({ url }))
     })
     .join('')
+}
+
+function stripMediaMarkup(text) {
+  return String(text || '')
+    .replace(HTML_IMAGE_TAG_REGEX, '')
+    .replace(MARKDOWN_IMAGE_REGEX, (_, alt) => (alt ? String(alt).trim() : ''))
+    .replace(IMAGE_TOKEN_REGEX, '')
+    .replace(IMAGE_URL_REGEX, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
 }
 
 function extractImageMatches(value) {
@@ -245,14 +255,18 @@ export default function MCQRenderer({
     ...[].concat(imageUrls || []).map((url) => imageFromUnknown(url)),
     ...[].concat(images || []).map((image) => imageFromUnknown(image)),
   ].filter((image) => image?.url)
+    .filter((image) => isSafeImageUrl(image.url))
 
-  const appendedImages = normalizedPropImages
+  const explicitImages = normalizedPropImages
+  const appendedImages = explicitImages
     .map((image) => encodeImageToken(image))
     .filter(Boolean)
     .join('')
 
-  const value = normalizeMediaMarkup(`${rawContent || ''}${appendedImages}`)
-  if (!value) return <div className="mcq-renderer" />
+  const value = explicitImages.length
+    ? stripMediaMarkup(rawContent)
+    : normalizeMediaMarkup(`${rawContent || ''}${appendedImages}`)
+  if (!value && explicitImages.length === 0) return <div className="mcq-renderer" />
 
   const nodes = []
   let lastIndex = 0
@@ -260,10 +274,11 @@ export default function MCQRenderer({
   const blocks = []
   const diagramRegex = new RegExp(DIAGRAM_REGEX)
   const imageRegex = new RegExp(IMAGE_TOKEN_REGEX)
-  const extractedImageMatches = extractImageMatches(value)
+  const extractedImageMatches = explicitImages.length ? [] : extractImageMatches(value)
   const finalImageUrls = extractedImageMatches
     .filter((image) => image.valid)
     .map((image) => image.url)
+    .concat(explicitImages.map((image) => image.url))
   let diagramMatch
   let imageMatch
 
@@ -336,7 +351,11 @@ export default function MCQRenderer({
     )
   }
 
+  explicitImages.forEach((image, index) => {
+    nodes.push(<RichImage key={`prop-image-${index}-${image.url}`} image={image} />)
+  })
+
   return <div className="mcq-renderer">{nodes}</div>
 }
 
-export { MCQRenderer as RichContentRenderer }
+export { MCQRenderer as MCQContent, MCQRenderer as RichContentRenderer }

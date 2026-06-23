@@ -112,7 +112,7 @@ export default function MCQTest() {
               <span className="state-chip state-chip--warning">{chapter.name}</span>
             </div>
             <div className="mcq-question-title">
-              <MCQRenderer text={currentMcq.question} />
+              <MCQRenderer text={currentMcq.questionText || currentMcq.question} images={currentMcq.questionImages || []} />
             </div>
             <div className="mcq-options-grid">
               {currentMcq.options.map((option, index) => {
@@ -126,7 +126,7 @@ export default function MCQTest() {
                   >
                     <span className="mcq-option-letter">{String.fromCharCode(65 + index)}</span>
                     <div className="mcq-option-text">
-                      <MCQRenderer text={option} />
+                      <MCQRenderer text={option?.text || option} images={option?.images || currentMcq[`option${String.fromCharCode(65 + index)}Images`] || []} />
                     </div>
                   </button>
                 )

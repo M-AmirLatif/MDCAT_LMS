@@ -6,6 +6,10 @@ const optionSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Option text is required'],
     },
+    images: {
+      type: [String],
+      default: [],
+    },
     isCorrect: {
       type: Boolean,
       default: false,
@@ -50,6 +54,14 @@ const mcqSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Please provide question'],
     },
+    questionText: {
+      type: String,
+      default: '',
+    },
+    questionImages: {
+      type: [String],
+      default: [],
+    },
     options: {
       type: [optionSchema],
       validate: [
@@ -57,9 +69,25 @@ const mcqSchema = new mongoose.Schema(
         'At least two options are required',
       ],
     },
+    optionA: { type: String, default: '' },
+    optionAImages: { type: [String], default: [] },
+    optionB: { type: String, default: '' },
+    optionBImages: { type: [String], default: [] },
+    optionC: { type: String, default: '' },
+    optionCImages: { type: [String], default: [] },
+    optionD: { type: String, default: '' },
+    optionDImages: { type: [String], default: [] },
     explanation: {
       type: String,
       default: null,
+    },
+    explanationText: {
+      type: String,
+      default: '',
+    },
+    explanationImages: {
+      type: [String],
+      default: [],
     },
     needsReview: {
       type: Boolean,

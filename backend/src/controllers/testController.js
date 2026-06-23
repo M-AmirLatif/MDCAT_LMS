@@ -17,6 +17,39 @@ const normalizeIndex = (value) => {
   return Number.isInteger(index) && index >= 0 ? index : -1
 }
 
+const normalizeImageArray = (...values) => {
+  const urls = []
+  const push = (value) => {
+    if (!value) return
+    if (Array.isArray(value)) return value.forEach(push)
+    if (typeof value === 'object') return push(value.url || value.src || value.imageUrl || value.secure_url || value.path)
+    const url = String(value || '').trim()
+    if (url) urls.push(url)
+  }
+  values.forEach(push)
+  return [...new Set(urls)]
+}
+
+const serializeMcqMedia = (mcq) => {
+  if (!mcq) return {}
+  const letters = ['A', 'B', 'C', 'D']
+  const options = (mcq.options || []).map((option, index) => ({
+    ...option,
+    text: option.text || mcq[`option${letters[index]}`] || '',
+    images: normalizeImageArray(option.images, mcq[`option${letters[index]}Images`]),
+  }))
+  return {
+    ...mcq,
+    question: mcq.questionText || mcq.question || '',
+    questionText: mcq.questionText || mcq.question || '',
+    questionImages: normalizeImageArray(mcq.questionImages),
+    options,
+    explanation: mcq.explanationText || mcq.explanation || null,
+    explanationText: mcq.explanationText || mcq.explanation || null,
+    explanationImages: normalizeImageArray(mcq.explanationImages),
+  }
+}
+
 // ==================== SUBMIT TEST (Student) ====================
 exports.submitTest = async (req, res) => {
   try {
@@ -79,14 +112,19 @@ exports.submitTest = async (req, res) => {
         isCorrect,
       })
 
+      const normalizedMcq = serializeMcqMedia(mcq)
       results.push({
         mcqId: mcq._id,
-        question: mcq.question,
-        options: mcq.options,
+        question: normalizedMcq.question,
+        questionText: normalizedMcq.questionText,
+        questionImages: normalizedMcq.questionImages,
+        options: normalizedMcq.options,
         selectedIndex,
         correctIndex,
         isCorrect,
-        explanation: mcq.explanation || null,
+        explanation: normalizedMcq.explanation,
+        explanationText: normalizedMcq.explanationText,
+        explanationImages: normalizedMcq.explanationImages,
         difficulty: mcq.difficulty || 'medium',
       })
     })
@@ -226,12 +264,16 @@ exports.getTestDetail = async (req, res) => {
     const mcqMap = new Map(mcqs.map((m) => [m._id.toString(), m]))
 
     const detailedAnswers = session.answers.map((answer) => {
-      const mcq = mcqMap.get(answer.mcqId.toString())
+      const mcq = serializeMcqMedia(mcqMap.get(answer.mcqId.toString()))
       return {
         ...answer,
-        question: mcq?.question || '',
-        options: mcq?.options || [],
-        explanation: mcq?.explanation || null,
+        question: mcq.question || '',
+        questionText: mcq.questionText || '',
+        questionImages: mcq.questionImages || [],
+        options: mcq.options || [],
+        explanation: mcq.explanation || null,
+        explanationText: mcq.explanationText || null,
+        explanationImages: mcq.explanationImages || [],
         topic: mcq?.topic || '',
         difficulty: mcq?.difficulty || 'medium',
       }

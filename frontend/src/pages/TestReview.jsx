@@ -50,7 +50,7 @@ export default function TestReview() {
                 </span>
               </div>
               <div className="review-question-title">
-                <MCQRenderer text={item.question} />
+                <MCQRenderer text={item.questionText || item.question} images={item.questionImages || []} />
               </div>
 
               <div className="review-options-list">
@@ -64,7 +64,7 @@ export default function TestReview() {
                     >
                       <span className="review-option-letter">{String.fromCharCode(65 + optionIndex)}</span>
                       <div className="review-option-text">
-                        <MCQRenderer text={option} />
+                        <MCQRenderer text={option?.text || option} images={option?.images || item[`option${String.fromCharCode(65 + optionIndex)}Images`] || []} />
                       </div>
                       {selected ? <span className="review-option-tag">Your answer</span> : null}
                       {correct ? <span className="review-option-tag review-option-tag--correct">Correct answer</span> : null}
@@ -76,7 +76,7 @@ export default function TestReview() {
               <div className="review-explanation-box">
                 <strong>Explanation</strong>
                 <div className="review-explanation-text">
-                  <MCQRenderer text={item.explanation || 'No explanation added yet.'} />
+                  <MCQRenderer text={item.explanationText || item.explanation || 'No explanation added yet.'} images={item.explanationImages || []} />
                 </div>
               </div>
             </article>
