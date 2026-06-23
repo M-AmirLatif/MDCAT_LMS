@@ -2732,3 +2732,66 @@ html[data-theme="dark"] .notification-hero .notification-hero-panel {
   }
 }
 
+.auth-page .auth-remember-checkbox,
+html[data-theme="dark"] .auth-page .auth-remember-checkbox,
+html:not([data-theme="dark"]) .auth-page .auth-remember-checkbox {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  box-sizing: border-box !important;
+  inline-size: 14px !important;
+  block-size: 14px !important;
+  width: 14px !important;
+  height: 14px !important;
+  min-width: 14px !important;
+  min-height: 14px !important;
+  max-width: 14px !important;
+  max-height: 14px !important;
+  flex: 0 0 14px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 4px !important;
+  border: 1.5px solid #ddd9f7 !important;
+  background-color: #ffffff !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: 8px 8px !important;
+  transform: none !important;
+}
+
+.auth-page .auth-remember-checkbox:checked,
+html[data-theme="dark"] .auth-page .auth-remember-checkbox:checked,
+html:not([data-theme="dark"]) .auth-page .auth-remember-checkbox:checked {
+  border-color: #6c47ff !important;
+  background-color: #6c47ff !important;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 6l3 3 5-5' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+}
+
+.auth-page .auth-row .auth-checkbox {
+  gap: 8px !important;
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+}
+
+.auth-page .auth-field select,
+html:not([data-theme="dark"]) .auth-page .auth-field select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  padding-right: 54px !important;
+  background-color: var(--bg-surface) !important;
+  background-image: url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='15' cy='15' r='12' fill='%23EEE9FF'/%3E%3Cpath d='M10 13l5 5 5-5' stroke='%236C47FF' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 14px center !important;
+  background-size: 30px 30px !important;
+  cursor: pointer !important;
+}
+
+html[data-theme="dark"] .auth-page .auth-field select {
+  background-color: #1A1640 !important;
+  background-image: url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='15' cy='15' r='12' fill='%23362D70'/%3E%3Cpath d='M10 13l5 5 5-5' stroke='%23FFFFFF' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+}
+
+html[data-theme="dark"] .auth-page .auth-field select:focus {
+  background-color: #151138 !important;
+  background-image: url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='15' cy='15' r='12' fill='%234D3FA0'/%3E%3Cpath d='M10 13l5 5 5-5' stroke='%23FFFFFF' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+}
+

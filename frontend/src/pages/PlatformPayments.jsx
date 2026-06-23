@@ -162,7 +162,7 @@ function StudentPayments() {
           </div>
           <div className="workspace-card-body">
             <form className="form-shell" onSubmit={submit}>
-              <div className="pricing-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))' }}>
+              <div className="payments-method-grid">
                 {methods.map((method) => (
                   <div className="pricing-card payments-plan-card" key={method.id}>
                     <div className="label-xs">{method.name}</div>
@@ -172,7 +172,7 @@ function StudentPayments() {
                 ))}
               </div>
 
-              <div className="floating-field">
+              <div className="payments-subject-picker">
                 <label>Subjects</label>
                 <div className="filter-pills">
                   {subjects.map((subject) => (
@@ -188,7 +188,7 @@ function StudentPayments() {
                 </div>
               </div>
 
-              <div className="workspace-columns-3">
+              <div className="payments-form-grid">
                 <div className="floating-field">
                   <label htmlFor="payment-method">Payment Method</label>
                   <select id="payment-method" value={paymentMethod} onChange={(event) => setPaymentMethod(event.target.value)}>

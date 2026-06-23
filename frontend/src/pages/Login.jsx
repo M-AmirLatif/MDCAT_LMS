@@ -286,6 +286,7 @@ export default function Login() {
                 <div className="auth-row">
                   <label className="checkbox auth-checkbox">
                     <input
+                      className="auth-remember-checkbox"
                       type="checkbox"
                       checked={remember}
                       onChange={(event) => setRemember(event.target.checked)}
