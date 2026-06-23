@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import MCQRenderer from '../components/MCQRenderer'
 import './MCQTest.css'
 import { getChapterById, getMcqsByChapter, getSubjectById, SUBJECT_STYLES } from './platformContent'
 
@@ -110,7 +111,9 @@ export default function MCQTest() {
               <span className="state-chip state-chip--neutral">{subject.name}</span>
               <span className="state-chip state-chip--warning">{chapter.name}</span>
             </div>
-            <h2>{currentMcq.question}</h2>
+            <div className="mcq-question-title">
+              <MCQRenderer text={currentMcq.question} />
+            </div>
             <div className="mcq-options-grid">
               {currentMcq.options.map((option, index) => {
                 const selected = answers[currentMcq.id] === index
@@ -122,7 +125,9 @@ export default function MCQTest() {
                     onClick={() => handleSelect(index)}
                   >
                     <span className="mcq-option-letter">{String.fromCharCode(65 + index)}</span>
-                    <span>{option}</span>
+                    <div className="mcq-option-text">
+                      <MCQRenderer text={option} />
+                    </div>
                   </button>
                 )
               })}

@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
+import MCQRenderer from '../components/MCQRenderer'
 import './PlatformPages.css'
 import {
   SUBJECT_STYLES,
@@ -229,7 +230,9 @@ function TeacherMcqManagement() {
                   <article key={mcq.id} className="teacher-mcq-row">
                     <div>
                       <span className="state-chip state-chip--neutral">Q{index + 1}</span>
-                      <h4>{mcq.question}</h4>
+                      <div className="teacher-mcq-question-preview">
+                        <MCQRenderer text={mcq.question} />
+                      </div>
                       <p>Correct answer: {mcq.correctAnswer} - {mcq.difficulty}</p>
                     </div>
                     <button className="btn btn-ghost btn-sm" type="button" onClick={() => openPanel('mcq')}>Edit</button>

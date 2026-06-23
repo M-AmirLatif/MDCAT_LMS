@@ -69,7 +69,8 @@
   margin-bottom: 18px;
 }
 
-.mcq-question-card h2 {
+.mcq-question-card h2,
+.mcq-question-title {
   margin-bottom: 22px;
   font-size: 22px;
   line-height: 1.45;
@@ -178,7 +179,8 @@
   font-weight: 400;
 }
 
-.mcq-option-text .mcq-renderer *,
+.mcq-option-text .mcq-renderer > span,
+.mcq-option-text .mcq-renderer p,
 .mcq-option-card > span:last-child * {
   border: 0 !important;
   outline: 0 !important;
@@ -212,7 +214,8 @@ html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card--selected {
 html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card > span:not(.mcq-option-letter),
 html:not([data-theme="dark"]) .mcq-question-card .mcq-option-text,
 html:not([data-theme="dark"]) .mcq-question-card .mcq-option-text .mcq-renderer,
-html:not([data-theme="dark"]) .mcq-question-card .mcq-option-text .mcq-renderer * {
+html:not([data-theme="dark"]) .mcq-question-card .mcq-option-text .mcq-renderer > span,
+html:not([data-theme="dark"]) .mcq-question-card .mcq-option-text .mcq-renderer p {
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
@@ -340,7 +343,8 @@ html:not([data-theme="dark"]) .mcq-question-card .mcq-option-text .mcq-renderer 
     padding: 20px 18px;
   }
 
-  .mcq-question-card h2 {
+  .mcq-question-card h2,
+  .mcq-question-title {
     font-size: 19px;
     line-height: 1.45;
   }

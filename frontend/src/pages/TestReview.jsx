@@ -1,4 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import MCQRenderer from '../components/MCQRenderer'
 import './TestReview.css'
 
 export default function TestReview() {
@@ -48,7 +49,9 @@ export default function TestReview() {
                   {item.isCorrect ? 'Correct' : 'Needs Review'}
                 </span>
               </div>
-              <h3>{item.question}</h3>
+              <div className="review-question-title">
+                <MCQRenderer text={item.question} />
+              </div>
 
               <div className="review-options-list">
                 {item.options.map((option, optionIndex) => {
@@ -60,7 +63,9 @@ export default function TestReview() {
                       className={`review-option-row ${correct ? 'review-option-row--correct' : ''} ${selected && !correct ? 'review-option-row--wrong' : ''}`}
                     >
                       <span className="review-option-letter">{String.fromCharCode(65 + optionIndex)}</span>
-                      <span>{option}</span>
+                      <div className="review-option-text">
+                        <MCQRenderer text={option} />
+                      </div>
                       {selected ? <span className="review-option-tag">Your answer</span> : null}
                       {correct ? <span className="review-option-tag review-option-tag--correct">Correct answer</span> : null}
                     </div>
@@ -70,7 +75,9 @@ export default function TestReview() {
 
               <div className="review-explanation-box">
                 <strong>Explanation</strong>
-                <p>{item.explanation}</p>
+                <div className="review-explanation-text">
+                  <MCQRenderer text={item.explanation || 'No explanation added yet.'} />
+                </div>
               </div>
             </article>
           ))}

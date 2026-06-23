@@ -545,11 +545,17 @@
   box-shadow: 0 12px 30px rgba(108, 71, 255, 0.06);
 }
 
-.teacher-mcq-row h4 {
+.teacher-mcq-row h4,
+.teacher-mcq-question-preview {
   margin: 10px 0 6px;
   color: var(--heading);
   font-size: 16px;
   line-height: 1.35;
+  font-weight: 700;
+}
+
+.teacher-mcq-question-preview .mcq-renderer {
+  color: inherit;
 }
 
 .teacher-mcq-row p {
@@ -5896,18 +5902,48 @@
   display: grid;
   gap: 8px;
   margin: 12px 0;
+  justify-items: center;
+  width: 100%;
 }
 
 .mcq-image-block-media {
   display: block;
   width: 100%;
-  max-width: min(100%, 520px);
+  max-width: min(100%, 700px);
   height: auto;
   border-radius: 14px;
   border: 1px solid rgba(108, 71, 255, 0.16);
   background: rgba(255, 255, 255, 0.72);
   object-fit: contain;
   box-shadow: 0 12px 28px rgba(108, 71, 255, 0.12);
+}
+
+.mcq-image-skeleton,
+.mcq-image-unavailable {
+  width: 100%;
+  max-width: min(100%, 700px);
+  min-height: 180px;
+  border-radius: 14px;
+  border: 1px solid rgba(108, 71, 255, 0.16);
+  background:
+    linear-gradient(90deg, rgba(108, 71, 255, 0.08), rgba(74, 144, 226, 0.12), rgba(108, 71, 255, 0.08));
+  background-size: 220% 100%;
+  animation: mcq-image-loading 1.4s ease infinite;
+}
+
+.mcq-image-unavailable {
+  display: grid;
+  place-items: center;
+  min-height: 120px;
+  color: var(--text-muted, #6b7280);
+  font-weight: 800;
+  animation: none;
+  background: rgba(108, 71, 255, 0.06);
+}
+
+@keyframes mcq-image-loading {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 220% 50%; }
 }
 
 .mcq-image-block-caption {
@@ -6042,6 +6078,18 @@
   border-color: rgba(139, 111, 255, 0.22);
   background: rgba(17, 14, 33, 0.92);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+}
+
+[data-theme='dark'] .mcq-image-skeleton,
+[data-theme='dark'] .mcq-image-unavailable {
+  border-color: rgba(139, 111, 255, 0.26);
+  background:
+    linear-gradient(90deg, rgba(139, 111, 255, 0.12), rgba(74, 144, 226, 0.12), rgba(139, 111, 255, 0.12));
+}
+
+[data-theme='dark'] .mcq-image-unavailable {
+  color: rgba(240, 238, 255, 0.76);
+  background: rgba(139, 111, 255, 0.1);
 }
 
 [data-theme='dark'] .mcq-image-block-caption {

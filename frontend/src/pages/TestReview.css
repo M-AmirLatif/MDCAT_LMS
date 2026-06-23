@@ -136,11 +136,27 @@
   letter-spacing: 0.04em;
 }
 
-.review-question-card h3 {
+.review-question-card h3,
+.review-question-title {
   margin-bottom: 18px;
   font-size: 18px;
   line-height: 1.5;
   color: var(--text-primary);
+}
+
+.review-question-title {
+  font-weight: 700;
+}
+
+.review-option-text {
+  min-width: 0;
+  flex: 1 1 auto;
+  color: var(--text-primary);
+}
+
+.review-option-text .mcq-renderer,
+.review-explanation-text .mcq-renderer {
+  color: inherit;
 }
 
 /* ── Options List ── */
@@ -231,7 +247,8 @@
   letter-spacing: 0.06em;
 }
 
-.review-explanation-box p {
+.review-explanation-box p,
+.review-explanation-text {
   color: var(--text-secondary);
   font-size: 14px;
   line-height: 1.65;
@@ -336,7 +353,8 @@
     align-items: flex-start;
   }
 
-  .review-question-card h3 {
+  .review-question-card h3,
+  .review-question-title {
     font-size: 16px;
   }
 

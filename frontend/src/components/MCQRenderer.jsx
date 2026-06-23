@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, useState } from 'react'
 import { BlockMath, InlineMath } from 'react-katex'
 import 'katex/dist/katex.min.css'
 
@@ -15,6 +15,34 @@ const IMAGE_URL_REGEX =
 const HTML_IMAGE_TAG_REGEX = /<img\b[^>]*>/gi
 const IMAGE_SOURCE_REGEX = /\bsrc\s*=\s*["']([^"']+)["']/i
 const IMAGE_ALT_REGEX = /\balt\s*=\s*["']([^"']*)["']/i
+
+function cleanImageUrl(url) {
+  return String(url || '')
+    .trim()
+    .replace(/[),.;\]]+$/g, '')
+}
+
+function isSafeImageUrl(url) {
+  const value = cleanImageUrl(url)
+  if (!value) return false
+
+  if (/^data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+$/i.test(value)) {
+    return true
+  }
+
+  if (/^\/uploads\/[^\s<>"']+/i.test(value)) return true
+
+  try {
+    const parsed = new URL(value)
+    if (!['http:', 'https:'].includes(parsed.protocol)) return false
+    if (parsed.hostname.includes('cloudinary.com') && parsed.pathname.includes('/image/upload/')) {
+      return true
+    }
+    return /\.(png|jpe?g|gif|webp|svg|bmp|avif)$/i.test(parsed.pathname)
+  } catch {
+    return false
+  }
+}
 
 function encodeImageToken({ url, alt = '' }) {
   return `[IMAGE:${String(url || '').trim()}|alt=${String(alt || '').trim()}]`
@@ -49,24 +77,35 @@ function parseImageTokenBody(body) {
   if (!value) return { url: '', alt: '' }
 
   const parts = value.split('|').map((part) => part.trim()).filter(Boolean)
-  const url = parts[0] || ''
+  const url = cleanImageUrl(parts[0] || '')
   const altPart = parts.find((part) => /^alt\s*=/i.test(part))
   const alt = altPart ? altPart.replace(/^alt\s*=/i, '').trim() : ''
   return { url, alt }
 }
 
-function renderImageBlock(body, key) {
+function RichImage({ body }) {
   const { url, alt } = parseImageTokenBody(body)
-  if (!url) return null
+  const [loaded, setLoaded] = useState(false)
+  const [failed, setFailed] = useState(false)
+
+  if (!isSafeImageUrl(url)) return null
 
   return (
-    <figure key={key} className="mcq-image-block">
-      <img
-        className="mcq-image-block-media"
-        src={url}
-        alt={alt || 'MCQ figure'}
-        loading="lazy"
-      />
+    <figure className="mcq-image-block">
+      {!loaded && !failed ? <div className="mcq-image-skeleton" aria-hidden="true" /> : null}
+      {failed ? (
+        <div className="mcq-image-unavailable" role="status">Image unavailable</div>
+      ) : (
+        <img
+          className="mcq-image-block-media"
+          src={url}
+          alt={alt || 'Question figure'}
+          loading="lazy"
+          style={{ display: loaded ? 'block' : 'none' }}
+          onLoad={() => setLoaded(true)}
+          onError={() => setFailed(true)}
+        />
+      )}
       {alt ? <figcaption className="mcq-image-block-caption">{alt}</figcaption> : null}
     </figure>
   )
@@ -111,8 +150,19 @@ function renderTextWithMath(text, keyPrefix) {
   })
 }
 
-export default function MCQRenderer({ text }) {
-  const value = normalizeMediaMarkup(text)
+export default function MCQRenderer({ text, imageUrls = [], images = [] }) {
+  const appendedImages = [
+    ...images.map((image) => {
+      if (typeof image === 'string') return { url: image, alt: '' }
+      return { url: image?.url || image?.src || image?.imageUrl || '', alt: image?.alt || image?.caption || '' }
+    }),
+    ...imageUrls.map((url) => ({ url, alt: '' })),
+  ]
+    .filter((image) => image.url)
+    .map((image) => encodeImageToken(image))
+    .join('')
+
+  const value = normalizeMediaMarkup(`${text || ''}${appendedImages}`)
   if (!value) return <div className="mcq-renderer" />
 
   const nodes = []
@@ -167,8 +217,7 @@ export default function MCQRenderer({ text }) {
         </div>
       )
     } else {
-      const imageNode = renderImageBlock(match[1] || '', `image-${blockIndex}`)
-      if (imageNode) nodes.push(imageNode)
+      nodes.push(<RichImage key={`image-${blockIndex}`} body={match[1] || ''} />)
     }
 
     lastIndex = match.index + match[0].length
@@ -185,3 +234,5 @@ export default function MCQRenderer({ text }) {
 
   return <div className="mcq-renderer">{nodes}</div>
 }
+
+export { MCQRenderer as RichContentRenderer }
