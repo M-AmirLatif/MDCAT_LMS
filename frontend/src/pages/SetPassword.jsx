@@ -98,7 +98,6 @@ export default function SetPassword() {
           <ThemeToggle className="theme-toggle--auth" />
           <div className="auth-left-inner">
             <div className="auth-card auth-card--platform">
-              <span className="role-pill">Student Setup</span>
               <h1 className="auth-title">Set your password</h1>
               <p className="auth-subtitle">
                 {user?.email

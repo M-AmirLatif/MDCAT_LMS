@@ -309,6 +309,23 @@
   font: inherit;
 }
 
+.auth-field select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 44px;
+  cursor: pointer;
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='18' height='18' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5' stroke='%236C47FF' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 18px 18px;
+}
+
+[data-theme="dark"] .auth-field select {
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='18' height='18' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5' stroke='%23A590FF' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
 .auth-field input:focus,
 .auth-field select:focus {
   outline: none;
@@ -1684,5 +1701,23 @@ html[data-theme="dark"] .auth-form .floating-field {
     border-color: rgba(139, 111, 255, 0.22);
     color: #F0EEFF;
   }
+}
+
+.auth-page .auth-row .auth-checkbox input[type="checkbox"],
+.auth-page .checkbox.auth-checkbox input[type="checkbox"] {
+  width: 14px !important;
+  height: 14px !important;
+  min-width: 14px !important;
+  min-height: 14px !important;
+  max-width: 14px !important;
+  max-height: 14px !important;
+  flex: 0 0 14px !important;
+  border-radius: 4px !important;
+  background-size: 8px !important;
+}
+
+.auth-page .auth-row .auth-checkbox {
+  gap: 8px !important;
+  font-size: 11px !important;
 }
 

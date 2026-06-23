@@ -205,14 +205,6 @@ export default function Login() {
           <ThemeToggle className="theme-toggle--auth" />
           <div className="auth-left-inner">
             <div className="auth-card auth-card--platform">
-              <div className="auth-role-row">
-                <span
-                  className={`badge ${requestedRole === 'teacher' ? 'badge-teal' : requestedRole === 'admin' ? 'badge-amber' : 'badge-purple'}`}
-                >
-                  {roleLabel}
-                </span>
-              </div>
-
               <div className="auth-role-switcher auth-role-switcher--mobile" aria-label="Choose login role">
                 {loginRoles.map((role) => (
                   <button
