@@ -3655,6 +3655,16 @@
     width: fit-content;
   }
 
+  .payments-summary-card .workspace-columns-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .payments-summary-card .metric-row {
+    min-height: 82px;
+    padding: 12px 14px;
+  }
+
   .payments-method-grid {
     grid-template-columns: 1fr;
   }
@@ -3664,7 +3674,7 @@
   }
 
   .payments-subject-picker .filter-pill {
-    flex-basis: calc(50% - 5px);
+    flex: 0 1 calc(50% - 5px);
     padding-inline: 12px;
   }
 
@@ -3683,8 +3693,20 @@
     padding-inline: 16px;
   }
 
+  .payments-summary-card .workspace-columns-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .payments-summary-card .metric-row {
+    min-height: 80px;
+    padding: 11px 12px;
+  }
+
   .payments-subject-picker .filter-pill {
-    flex-basis: 100%;
+    flex: 0 1 calc(50% - 5px);
+    min-height: 42px;
+    padding-inline: 8px;
+    font-size: 13px;
   }
 
   .payments-history-table {
