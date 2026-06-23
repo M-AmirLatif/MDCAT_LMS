@@ -7250,6 +7250,245 @@ select:focus,
   color: rgba(255, 255, 255, 0.45);
 }
 
+/* Dashboard + notifications visual contrast polish. Colors only; layout stays unchanged. */
+.workspace-hero,
+.notification-hero,
+.workspace-hero--teal {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.26), transparent 28%),
+    radial-gradient(circle at 92% 18%, rgba(45, 217, 155, 0.22), transparent 30%),
+    linear-gradient(135deg, #6f4cff 0%, #4f66d8 48%, #2a9fbd 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 24px 58px rgba(68, 74, 190, 0.28);
+}
+
+.workspace-hero-copy p,
+.notification-hero .workspace-hero-copy p {
+  color: rgba(255, 255, 255, 0.93) !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.93) !important;
+  opacity: 1 !important;
+}
+
+.workspace-hero .label-xs,
+.notification-hero .label-xs {
+  color: rgba(255, 255, 255, 0.9) !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.hero-mini-card,
+.notification-hero-card,
+.notification-hero-panel {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.13)) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.36) !important;
+  box-shadow:
+    0 18px 34px rgba(18, 22, 65, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24) !important;
+}
+
+.hero-mini-card strong,
+.notification-hero-panel strong {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  text-shadow: 0 1px 10px rgba(11, 14, 36, 0.24);
+}
+
+.hero-mini-card p,
+.hero-mini-card span,
+.hero-mini-card small,
+.notification-hero-panel-row span {
+  color: rgba(255, 255, 255, 0.91) !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.91) !important;
+}
+
+.subject-focus-card,
+.stat-tile,
+.notification-feed-card,
+.notification-summary-card,
+.notification-showcase,
+.notification-summary-panel {
+  border-color: rgba(122, 112, 214, 0.24);
+  box-shadow: 0 16px 36px rgba(39, 46, 95, 0.1);
+}
+
+.subject-focus-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 247, 255, 0.96));
+}
+
+.subject-focus-metrics div,
+.subject-stats-grid div {
+  background:
+    linear-gradient(180deg, rgba(108, 71, 255, 0.075), rgba(74, 144, 226, 0.035)),
+    #f7f9ff;
+  border-color: rgba(122, 112, 214, 0.22);
+}
+
+.subject-focus-metrics span,
+.subject-stats-grid span {
+  color: #4d3ab7;
+}
+
+.stat-tile {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(246, 248, 255, 0.97));
+  border: 1.5px solid rgba(122, 112, 214, 0.2);
+}
+
+.stat-tile-top span:first-child {
+  color: #343a5f;
+  font-weight: 900;
+}
+
+.stat-tile small {
+  color: #4f5876;
+}
+
+.notification-toolbar .filter-pill {
+  background: rgba(255, 255, 255, 0.22) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.notification-toolbar .filter-pill--active {
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #4429c8 !important;
+  -webkit-text-fill-color: #4429c8 !important;
+}
+
+.notification-summary-panel .filter-pill {
+  background: #f4f6ff !important;
+  border-color: rgba(122, 112, 214, 0.28) !important;
+  color: #252b4c !important;
+  -webkit-text-fill-color: #252b4c !important;
+}
+
+.notification-summary-panel .filter-pill--active {
+  background: linear-gradient(135deg, #6c47ff 0%, #4a90e2 100%) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.notification-toolbar-note {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  text-shadow: 0 1px 8px rgba(13, 18, 45, 0.28);
+}
+
+.notification-showcase {
+  background:
+    linear-gradient(180deg, rgba(108, 71, 255, 0.08), rgba(255, 255, 255, 0.98)),
+    #ffffff;
+}
+
+.notification-showcase-body strong,
+.notification-feed-card .workspace-card-title,
+.notification-summary-card .workspace-card-title {
+  color: #171a2f;
+}
+
+.notification-showcase-body p,
+.notification-summary-panel p,
+.notification-showcase-top small {
+  color: #4e5875;
+}
+
+html[data-theme="dark"] .workspace-hero,
+html[data-theme="dark"] .notification-hero,
+html[data-theme="dark"] .workspace-hero--teal {
+  background:
+    radial-gradient(circle at 10% 0%, rgba(167, 139, 250, 0.42), transparent 28%),
+    radial-gradient(circle at 92% 18%, rgba(45, 217, 155, 0.2), transparent 32%),
+    linear-gradient(135deg, #3922a8 0%, #243a8f 48%, #136d8c 100%) !important;
+  border-color: rgba(167, 139, 250, 0.4);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.42);
+}
+
+html[data-theme="dark"] .hero-mini-card,
+html[data-theme="dark"] .notification-hero-card,
+html[data-theme="dark"] .notification-hero-panel {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(139, 111, 255, 0.1)) !important;
+  border-color: rgba(219, 212, 255, 0.32) !important;
+  box-shadow:
+    0 18px 38px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+html[data-theme="dark"] .subject-focus-card,
+html[data-theme="dark"] .stat-tile,
+html[data-theme="dark"] .notification-feed-card,
+html[data-theme="dark"] .notification-summary-card,
+html[data-theme="dark"] .notification-showcase,
+html[data-theme="dark"] .notification-summary-panel {
+  background:
+    linear-gradient(180deg, rgba(139, 111, 255, 0.1), rgba(18, 16, 42, 0.96)),
+    #15132f !important;
+  border-color: rgba(167, 139, 250, 0.34) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.34);
+}
+
+html[data-theme="dark"] .subject-focus-metrics div,
+html[data-theme="dark"] .subject-stats-grid div {
+  background:
+    linear-gradient(180deg, rgba(139, 111, 255, 0.16), rgba(74, 144, 226, 0.08)),
+    #1c1a3c;
+  border-color: rgba(167, 139, 250, 0.3);
+}
+
+html[data-theme="dark"] .subject-focus-metrics span,
+html[data-theme="dark"] .subject-stats-grid span,
+html[data-theme="dark"] .stat-tile-top span:first-child {
+  color: rgba(239, 236, 255, 0.86) !important;
+  -webkit-text-fill-color: rgba(239, 236, 255, 0.86) !important;
+}
+
+html[data-theme="dark"] .subject-focus-metrics strong,
+html[data-theme="dark"] .subject-stats-grid strong,
+html[data-theme="dark"] .stat-tile strong,
+html[data-theme="dark"] .notification-showcase-body strong,
+html[data-theme="dark"] .notification-feed-card .workspace-card-title,
+html[data-theme="dark"] .notification-summary-card .workspace-card-title,
+html[data-theme="dark"] .summary-row strong {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+html[data-theme="dark"] .stat-tile small,
+html[data-theme="dark"] .notification-showcase-body p,
+html[data-theme="dark"] .notification-summary-panel p,
+html[data-theme="dark"] .notification-showcase-top small,
+html[data-theme="dark"] .summary-row span {
+  color: rgba(232, 228, 255, 0.78) !important;
+  -webkit-text-fill-color: rgba(232, 228, 255, 0.78) !important;
+}
+
+html[data-theme="dark"] .notification-toolbar .filter-pill,
+html[data-theme="dark"] .notification-summary-panel .filter-pill {
+  background: rgba(167, 139, 250, 0.16) !important;
+  border-color: rgba(219, 212, 255, 0.34) !important;
+  color: #f4f1ff !important;
+  -webkit-text-fill-color: #f4f1ff !important;
+}
+
+html[data-theme="dark"] .notification-toolbar .filter-pill--active,
+html[data-theme="dark"] .notification-summary-panel .filter-pill--active {
+  background: linear-gradient(135deg, #7c5cff 0%, #4f92e8 100%) !important;
+  border-color: rgba(219, 212, 255, 0.5) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+html[data-theme="dark"] .notification-toolbar-note {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  opacity: 1 !important;
+}
+
 @media (max-width: 768px) {
   .mcq-inline-card {
     padding: 16px;
