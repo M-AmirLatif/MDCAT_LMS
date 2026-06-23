@@ -3004,3 +3004,73 @@ button:disabled,
   filter: none !important;
 }
 
+/* Final MCQ option letter badge contrast: keep A/B/C/D crisp. */
+.mcq-option-badge,
+.mcq-option-letter {
+  filter: none !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+html:not([data-theme="dark"]) .mcq-option-badge,
+html:not([data-theme="dark"]) .mcq-option-letter {
+  background: #eef1ff !important;
+  border: 1.5px solid #b8c0dc !important;
+  color: #3f32c9 !important;
+  -webkit-text-fill-color: #3f32c9 !important;
+  box-shadow: 0 6px 14px rgba(47, 56, 112, 0.12) !important;
+}
+
+html:not([data-theme="dark"]) .mcq-inline-option-row:nth-child(1) .mcq-option-badge {
+  color: #3f32c9 !important;
+  -webkit-text-fill-color: #3f32c9 !important;
+}
+
+html:not([data-theme="dark"]) .mcq-inline-option-row:nth-child(2) .mcq-option-badge {
+  color: #08735d !important;
+  -webkit-text-fill-color: #08735d !important;
+}
+
+html:not([data-theme="dark"]) .mcq-inline-option-row:nth-child(3) .mcq-option-badge {
+  color: #1d4ed8 !important;
+  -webkit-text-fill-color: #1d4ed8 !important;
+}
+
+html:not([data-theme="dark"]) .mcq-inline-option-row:nth-child(4) .mcq-option-badge {
+  color: #a95700 !important;
+  -webkit-text-fill-color: #a95700 !important;
+}
+
+html:not([data-theme="dark"]) .mcq-inline-option-row--correct .mcq-option-badge,
+html:not([data-theme="dark"]) .mcq-inline-option-row--correct .mcq-option-letter,
+html:not([data-theme="dark"]) .mcq-correct-box .mcq-option-badge,
+html:not([data-theme="dark"]) .correct-option-box .mcq-option-badge {
+  background: #0f8f67 !important;
+  border-color: #087b58 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: 0 8px 18px rgba(15, 143, 103, 0.26) !important;
+}
+
+html[data-theme="dark"] .mcq-option-badge,
+html[data-theme="dark"] .mcq-option-letter {
+  background: #27234d !important;
+  border: 1.5px solid rgba(167, 139, 250, 0.42) !important;
+  color: #d8d0ff !important;
+  -webkit-text-fill-color: #d8d0ff !important;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.24) !important;
+}
+
+html[data-theme="dark"] .mcq-inline-option-row--correct .mcq-option-badge,
+html[data-theme="dark"] .mcq-inline-option-row--correct .mcq-option-letter,
+html[data-theme="dark"] .mcq-correct-box .mcq-option-badge,
+html[data-theme="dark"] .correct-option-box .mcq-option-badge {
+  background: #19a875 !important;
+  border-color: #2dd99b !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: 0 8px 18px rgba(45, 217, 155, 0.24) !important;
+}
+
