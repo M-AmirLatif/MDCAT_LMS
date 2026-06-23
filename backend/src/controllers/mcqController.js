@@ -379,6 +379,7 @@ const determineReviewReasons = ({
   if (!['a', 'b', 'c', 'd'].includes(correctAnswer)) {
     reasons.push('correct_answer must be a, b, c, or d')
   }
+  if (!explanation) reasons.push('Explanation is empty')
   if (hasUnavailableDiagram(question))
     reasons.push('Diagram description unavailable')
 
