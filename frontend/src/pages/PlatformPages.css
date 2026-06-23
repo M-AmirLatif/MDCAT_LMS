@@ -5899,6 +5899,7 @@
 }
 
 .mcq-image-block {
+  position: relative;
   display: grid;
   gap: 8px;
   margin: 12px 0;
@@ -5916,6 +5917,19 @@
   background: rgba(255, 255, 255, 0.72);
   object-fit: contain;
   box-shadow: 0 12px 28px rgba(108, 71, 255, 0.12);
+}
+
+.mcq-image-block-media--loading {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mcq-image-block-media--loaded {
+  position: static;
+  display: block;
+  opacity: 1;
 }
 
 .mcq-image-skeleton,

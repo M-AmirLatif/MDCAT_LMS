@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { BlockMath, InlineMath } from 'react-katex'
 import 'katex/dist/katex.min.css'
 
@@ -85,8 +85,25 @@ function parseImageTokenBody(body) {
 
 function RichImage({ body }) {
   const { url, alt } = parseImageTokenBody(body)
+  const imageRef = useRef(null)
   const [loaded, setLoaded] = useState(false)
   const [failed, setFailed] = useState(false)
+
+  useEffect(() => {
+    setLoaded(false)
+    setFailed(false)
+
+    const image = imageRef.current
+    if (!image) return
+
+    if (image.complete) {
+      if (image.naturalWidth > 0) {
+        setLoaded(true)
+      } else {
+        setFailed(true)
+      }
+    }
+  }, [url])
 
   if (!isSafeImageUrl(url)) return null
 
@@ -97,13 +114,19 @@ function RichImage({ body }) {
         <div className="mcq-image-unavailable" role="status">Image unavailable</div>
       ) : (
         <img
-          className="mcq-image-block-media"
+          ref={imageRef}
+          className={`mcq-image-block-media ${loaded ? 'mcq-image-block-media--loaded' : 'mcq-image-block-media--loading'}`}
           src={url}
           alt={alt || 'Question figure'}
-          loading="lazy"
-          style={{ display: loaded ? 'block' : 'none' }}
-          onLoad={() => setLoaded(true)}
-          onError={() => setFailed(true)}
+          loading="eager"
+          onLoad={() => {
+            setFailed(false)
+            setLoaded(true)
+          }}
+          onError={() => {
+            setLoaded(false)
+            setFailed(true)
+          }}
         />
       )}
       {alt ? <figcaption className="mcq-image-block-caption">{alt}</figcaption> : null}
