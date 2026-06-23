@@ -30,11 +30,14 @@ exports.protect = async (req, res, next) => {
     const roleName =
       user.role?.name === 'superadmin' ? 'admin' : user.role?.name
     if (roleName === 'teacher' && user.status !== 'active') {
+      const teacherStatusMessage =
+        user.status === 'rejected'
+          ? 'Your teacher account request was rejected. Please contact admin.'
+          : user.status === 'restricted'
+            ? 'Your teacher account has been restricted by admin. Please contact admin.'
+            : 'Your teacher account is pending admin approval.'
       return res.status(403).json({
-        error:
-          user.status === 'rejected'
-            ? 'Your teacher account request was rejected. Please contact admin.'
-            : 'Your teacher account is pending admin approval.',
+        error: teacherStatusMessage,
       })
     }
     if (roleName === 'student' && decoded.sessionId) {
@@ -93,11 +96,14 @@ exports.protectWithPermissions = async (req, res, next) => {
     const roleName =
       user.role?.name === 'superadmin' ? 'admin' : user.role?.name
     if (roleName === 'teacher' && user.status !== 'active') {
+      const teacherStatusMessage =
+        user.status === 'rejected'
+          ? 'Your teacher account request was rejected. Please contact admin.'
+          : user.status === 'restricted'
+            ? 'Your teacher account has been restricted by admin. Please contact admin.'
+            : 'Your teacher account is pending admin approval.'
       return res.status(403).json({
-        error:
-          user.status === 'rejected'
-            ? 'Your teacher account request was rejected. Please contact admin.'
-            : 'Your teacher account is pending admin approval.',
+        error: teacherStatusMessage,
       })
     }
     if (roleName === 'student' && decoded.sessionId) {

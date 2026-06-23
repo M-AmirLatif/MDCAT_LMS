@@ -354,7 +354,7 @@ exports.updateUser = async (req, res) => {
     }
 
     if (typeof status !== 'undefined') {
-      const normalizedStatus = normalizeEnumValue(status, ['active', 'pending', 'rejected'])
+      const normalizedStatus = normalizeEnumValue(status, ['active', 'pending', 'rejected', 'restricted'])
       if (!normalizedStatus) {
         return res.status(400).json({ error: 'Invalid account status' })
       }
@@ -363,7 +363,7 @@ exports.updateUser = async (req, res) => {
         user.approvedAt = new Date()
         user.approvedBy = req.user.id
       }
-      if (normalizedStatus === 'rejected') {
+      if (normalizedStatus === 'rejected' || normalizedStatus === 'restricted') {
         user.rejectedAt = new Date()
         user.rejectionReason = normalizeString(rejectionReason)
       }
@@ -665,7 +665,7 @@ exports.getAllTeachersForApproval = async (req, res) => {
 
     const status = normalizeString(req.query.status).toLowerCase()
     const filter = { role: teacherRole._id }
-    if (['active', 'pending', 'rejected'].includes(status)) filter.status = status
+    if (['active', 'pending', 'rejected', 'restricted'].includes(status)) filter.status = status
 
     const teachers = await User.find(filter)
       .select('firstName lastName email status assignedSubject approvedBy approvedAt rejectedAt rejectionReason createdAt')
@@ -734,6 +734,31 @@ exports.rejectTeacher = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Teacher rejected',
+      teacher: serializeTeacherRequest(teacher.toObject()),
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+}
+
+exports.restrictTeacher = async (req, res) => {
+  try {
+    const teacherRole = await Role.findOne({ name: 'teacher' }).select('_id').lean()
+    const teacher = teacherRole
+      ? await User.findOne({ _id: req.params.id, role: teacherRole._id })
+      : null
+
+    if (!teacher) return res.status(404).json({ error: 'Teacher not found' })
+
+    teacher.status = 'restricted'
+    teacher.isActive = true
+    teacher.rejectedAt = new Date()
+    teacher.rejectionReason = normalizeString(req.body.restrictionReason || req.body.reason)
+    await teacher.save()
+
+    res.status(200).json({
+      success: true,
+      message: 'Teacher restricted',
       teacher: serializeTeacherRequest(teacher.toObject()),
     })
   } catch (error) {

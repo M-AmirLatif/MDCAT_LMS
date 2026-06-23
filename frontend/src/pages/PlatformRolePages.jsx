@@ -489,6 +489,21 @@ export function AdminTeachersPage() {
     }
   }
 
+  const restrict = async (teacher) => {
+    const restrictionReason = window.prompt('Optional restriction reason:', teacher.rejectionReason || '')
+    if (restrictionReason === null) return
+    setSavingId(teacher._id)
+    try {
+      await API.patch(`/admin/teachers/${teacher._id}/restrict`, { restrictionReason })
+      toast.success('Teacher restricted.')
+      load()
+    } catch (error) {
+      toast.error(getUserFriendlyErrorMessage(error, 'Could not restrict teacher.'))
+    } finally {
+      setSavingId('')
+    }
+  }
+
   const selectedTeacher = teachers[0] || null
 
   return (
@@ -498,7 +513,7 @@ export function AdminTeachersPage() {
           <div className="workspace-card-head">
             <div><div className="label-xs">Teacher Queue</div><h2 className="workspace-card-title">Pending teacher approvals</h2></div>
             <div className="filter-pills">
-              {['pending', 'all', 'active', 'rejected'].map((status) => (
+              {['pending', 'all', 'active', 'restricted', 'rejected'].map((status) => (
                 <button key={status} className={`filter-pill ${statusFilter === status ? 'filter-pill--active' : ''}`} type="button" onClick={() => setStatusFilter(status)}>{formatTitle(status)}</button>
               ))}
             </div>
@@ -509,7 +524,7 @@ export function AdminTeachersPage() {
               <div key={teacher._id} className="queue-card">
                 <div className="workspace-card-title-row">
                   <strong>{teacher.firstName} {teacher.lastName}</strong>
-                  <span className={`state-chip ${teacher.status === 'active' ? 'state-chip--success' : teacher.status === 'rejected' ? 'state-chip--warning' : 'state-chip--neutral'}`}>{formatTitle(teacher.status)}</span>
+                  <span className={`state-chip ${teacher.status === 'active' ? 'state-chip--success' : teacher.status === 'rejected' || teacher.status === 'restricted' ? 'state-chip--warning' : 'state-chip--neutral'}`}>{formatTitle(teacher.status)}</span>
                 </div>
                 <p>{teacher.email} - {teacher.assignedSubject || 'No subject'} - Registered {formatDate(teacher.createdAt)}</p>
                 <div className="inline-actions">
@@ -517,6 +532,16 @@ export function AdminTeachersPage() {
                     <>
                       <button className="btn btn-primary btn-sm" type="button" disabled={savingId === teacher._id} onClick={() => approve(teacher)}>Approve</button>
                       <button className="btn btn-ghost btn-sm" type="button" disabled={savingId === teacher._id} onClick={() => reject(teacher)}>Reject</button>
+                    </>
+                  ) : teacher.status === 'active' ? (
+                    <>
+                      <button className="btn btn-danger btn-sm" type="button" disabled={savingId === teacher._id} onClick={() => restrict(teacher)}>Restrict</button>
+                      <span className="state-chip state-chip--neutral">{teacher.assignedSubject || 'No subject'}</span>
+                    </>
+                  ) : teacher.status === 'restricted' || teacher.status === 'rejected' ? (
+                    <>
+                      <button className="btn btn-primary btn-sm" type="button" disabled={savingId === teacher._id} onClick={() => approve(teacher)}>Approve Again</button>
+                      <span className="state-chip state-chip--neutral">{teacher.assignedSubject || 'No subject'}</span>
                     </>
                   ) : (
                     <span className="state-chip state-chip--neutral">{teacher.assignedSubject || 'No subject'}</span>
@@ -539,6 +564,12 @@ export function AdminTeachersPage() {
             <div className="metric-row"><span>Registered</span><strong>{formatDate(selectedTeacher?.createdAt)}</strong></div>
             {selectedTeacher?.status === 'pending' ? (
               <button className="btn btn-amber" type="button" disabled={savingId === selectedTeacher._id} onClick={() => approve(selectedTeacher)}>Approve Teacher</button>
+            ) : null}
+            {selectedTeacher?.status === 'active' ? (
+              <button className="btn btn-danger" type="button" disabled={savingId === selectedTeacher._id} onClick={() => restrict(selectedTeacher)}>Restrict Teacher</button>
+            ) : null}
+            {selectedTeacher?.status === 'restricted' || selectedTeacher?.status === 'rejected' ? (
+              <button className="btn btn-primary" type="button" disabled={savingId === selectedTeacher._id} onClick={() => approve(selectedTeacher)}>Approve Again</button>
             ) : null}
           </div>
         </aside>

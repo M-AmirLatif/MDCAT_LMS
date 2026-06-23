@@ -252,11 +252,14 @@ exports.login = async (req, res) => {
     let sessionId = null
     const roleName = normalizeRoleName(roleDoc.name)
     if (roleName === 'teacher' && user.status !== 'active') {
+      const teacherStatusMessage =
+        user.status === 'rejected'
+          ? 'Your teacher account request was rejected. Please contact admin.'
+          : user.status === 'restricted'
+            ? 'Your teacher account has been restricted by admin. Please contact admin.'
+            : 'Your teacher account is pending admin approval.'
       return res.status(403).json({
-        error:
-          user.status === 'rejected'
-            ? 'Your teacher account request was rejected. Please contact admin.'
-            : 'Your teacher account is pending admin approval.',
+        error: teacherStatusMessage,
       })
     }
     if (roleName === 'student') {

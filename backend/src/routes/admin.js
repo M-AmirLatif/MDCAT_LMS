@@ -10,6 +10,7 @@ const {
   getAllTeachersForApproval,
   approveTeacher,
   rejectTeacher,
+  restrictTeacher,
 } = require('../controllers/adminController')
 const {
   getPendingPaymentRequests,
@@ -33,6 +34,7 @@ router.get('/teachers/pending', getPendingTeachers)
 router.get('/teachers/all', getAllTeachersForApproval)
 router.patch('/teachers/:id/approve', approveTeacher)
 router.patch('/teachers/:id/reject', rejectTeacher)
+router.patch('/teachers/:id/restrict', restrictTeacher)
 router.get('/users', getAllUsers)
 router.post('/users', createUser)
 router.put('/users/:userId', updateUser)

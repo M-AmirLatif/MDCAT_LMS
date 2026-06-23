@@ -2862,3 +2862,145 @@ html:not([data-theme="dark"]) .notification-toolbar .filter-pill--active {
   box-shadow: none !important;
 }
 
+/* Site-wide professional button hover: keep buttons crisp and readable. */
+.btn,
+.btn:visited,
+button.btn,
+a.btn,
+.lp-btn,
+.lp-btn:visited,
+.filter-pill,
+.auth-google-custom-btn,
+.theme-toggle,
+button:not(:disabled) {
+  filter: none !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+.btn:hover,
+.btn:focus-visible,
+button.btn:hover,
+button.btn:focus-visible,
+a.btn:hover,
+a.btn:focus-visible,
+.lp-btn:hover,
+.lp-btn:focus-visible,
+.filter-pill:hover,
+.filter-pill:focus-visible,
+.auth-google-custom-btn:hover,
+.auth-google-custom-btn:focus-visible,
+button:not(:disabled):hover,
+button:not(:disabled):focus-visible {
+  filter: none !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+.btn-primary,
+.btn-primary:visited,
+.btn-primary:hover,
+.btn-primary:focus-visible,
+.btn-success,
+.btn-success:visited,
+.btn-success:hover,
+.btn-success:focus-visible,
+.btn-danger,
+.btn-danger:visited,
+.btn-danger:hover,
+.btn-danger:focus-visible,
+.btn-amber,
+.btn-amber:visited,
+.btn-amber:hover,
+.btn-amber:focus-visible,
+.lp-btn-primary,
+.lp-btn-primary:visited,
+.lp-btn-primary:hover,
+.lp-btn-primary:focus-visible,
+.lp-btn-teal,
+.lp-btn-teal:visited,
+.lp-btn-teal:hover,
+.lp-btn-teal:focus-visible {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus-visible {
+  background: linear-gradient(135deg, #7555ff 0%, #4f95ec 100%) !important;
+  border-color: transparent !important;
+  box-shadow: 0 10px 26px rgba(108, 71, 255, 0.28) !important;
+}
+
+.btn-secondary,
+.btn-secondary:visited,
+.btn-ghost,
+.btn-ghost:visited {
+  color: var(--purple, #6c47ff) !important;
+  -webkit-text-fill-color: var(--purple, #6c47ff) !important;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus-visible,
+.btn-ghost:hover,
+.btn-ghost:focus-visible {
+  background: rgba(108, 71, 255, 0.1) !important;
+  border-color: rgba(108, 71, 255, 0.48) !important;
+  color: #5b3dff !important;
+  -webkit-text-fill-color: #5b3dff !important;
+  box-shadow: 0 8px 20px rgba(108, 71, 255, 0.12) !important;
+}
+
+.filter-pill:hover,
+.filter-pill:focus-visible {
+  background: rgba(108, 71, 255, 0.1) !important;
+  border-color: rgba(108, 71, 255, 0.42) !important;
+  color: #5b3dff !important;
+  -webkit-text-fill-color: #5b3dff !important;
+}
+
+.filter-pill--active,
+.filter-pill--active:hover,
+.filter-pill--active:focus-visible {
+  background: linear-gradient(135deg, #6c47ff 0%, #4a90e2 100%) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+html[data-theme="dark"] .btn-secondary,
+html[data-theme="dark"] .btn-secondary:visited,
+html[data-theme="dark"] .btn-ghost,
+html[data-theme="dark"] .btn-ghost:visited {
+  color: #f4f1ff !important;
+  -webkit-text-fill-color: #f4f1ff !important;
+}
+
+html[data-theme="dark"] .btn-secondary:hover,
+html[data-theme="dark"] .btn-secondary:focus-visible,
+html[data-theme="dark"] .btn-ghost:hover,
+html[data-theme="dark"] .btn-ghost:focus-visible {
+  background: rgba(139, 111, 255, 0.18) !important;
+  border-color: rgba(190, 178, 255, 0.5) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22) !important;
+}
+
+html[data-theme="dark"] .filter-pill:hover,
+html[data-theme="dark"] .filter-pill:focus-visible {
+  background: rgba(139, 111, 255, 0.18) !important;
+  border-color: rgba(190, 178, 255, 0.5) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.btn:disabled,
+.btn[disabled],
+button:disabled,
+.filter-pill:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.72 !important;
+  filter: none !important;
+}
+

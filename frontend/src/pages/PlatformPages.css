@@ -5665,6 +5665,55 @@
   -webkit-text-fill-color: #ffffff !important;
 }
 
+.workspace-page--mcq-list .inline-actions .btn,
+.workspace-page--mcq-list .inline-actions .btn:visited,
+.workspace-page--mcq-list .inline-actions .btn:hover,
+.workspace-page--mcq-list .inline-actions .btn:focus-visible {
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+.workspace-page--mcq-list .inline-actions .btn-primary,
+.workspace-page--mcq-list .inline-actions .btn-primary:visited,
+.workspace-page--mcq-list .inline-actions .btn-primary:hover,
+.workspace-page--mcq-list .inline-actions .btn-primary:focus-visible {
+  background: linear-gradient(135deg, #6c47ff 0%, #4a90e2 100%) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  border-color: transparent !important;
+}
+
+.workspace-page--mcq-list .inline-actions .btn-secondary,
+.workspace-page--mcq-list .inline-actions .btn-secondary:visited {
+  color: var(--text-primary, #24294a) !important;
+  -webkit-text-fill-color: var(--text-primary, #24294a) !important;
+}
+
+.workspace-page--mcq-list .inline-actions .btn-secondary:hover,
+.workspace-page--mcq-list .inline-actions .btn-secondary:focus-visible {
+  color: #5b3dff !important;
+  -webkit-text-fill-color: #5b3dff !important;
+  background: rgba(108, 71, 255, 0.1) !important;
+  border-color: rgba(108, 71, 255, 0.36) !important;
+}
+
+[data-theme='dark'] .workspace-page--mcq-list .inline-actions .btn-secondary,
+[data-theme='dark'] .workspace-page--mcq-list .inline-actions .btn-secondary:visited {
+  color: #f4f1ff !important;
+  -webkit-text-fill-color: #f4f1ff !important;
+}
+
+[data-theme='dark'] .workspace-page--mcq-list .inline-actions .btn-secondary:hover,
+[data-theme='dark'] .workspace-page--mcq-list .inline-actions .btn-secondary:focus-visible {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  background: rgba(139, 111, 255, 0.2) !important;
+  border-color: rgba(190, 178, 255, 0.44) !important;
+}
+
 .workspace-hero .inline-actions .btn-secondary:first-child {
   border-color: var(--border-card, #d1d5db) !important;
   color: var(--text-primary, #374151) !important;
