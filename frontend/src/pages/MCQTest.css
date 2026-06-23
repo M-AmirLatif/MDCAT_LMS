@@ -93,6 +93,7 @@
 }
 
 .mcq-option-card {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -108,6 +109,18 @@
   line-height: 1.5;
   cursor: pointer;
   transition: background 200ms ease, box-shadow 200ms ease;
+}
+
+.mcq-option-card:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  bottom: -6px;
+  height: 1px;
+  border-radius: 999px;
+  background: rgba(108, 71, 255, 0.22);
+  pointer-events: none;
 }
 
 .mcq-option-card:hover {
@@ -272,6 +285,10 @@ html:not([data-theme="dark"]) .mcq-question-card .mcq-option-text .mcq-renderer 
 
 [data-theme="dark"] .mcq-option-card {
   background: var(--bg-surface-2, #1A1640);
+}
+
+[data-theme="dark"] .mcq-option-card:not(:last-child)::after {
+  background: rgba(165, 144, 255, 0.26);
 }
 
 [data-theme="dark"] .mcq-option-card:hover {
