@@ -116,7 +116,7 @@ export default function Login() {
       const response = await API.post('/auth/login', formData)
       const user = response.data.user
 
-      if (requestedRole !== 'student' && user?.role !== requestedRole) {
+      if (user?.role !== requestedRole) {
         toast.error(`This account is a ${getRoleLabel(user?.role)} account, not ${roleLabel}.`)
         setLoading(false)
         return
@@ -233,7 +233,7 @@ export default function Login() {
                 tools.
               </p>
 
-              <form className="auth-form" onSubmit={handleSubmit}>
+              <form className="auth-form" onSubmit={handleSubmit} autoComplete="off">
                 <div
                   className={`floating-field auth-input-shell ${formData.email ? 'auth-input-shell--filled' : ''} ${emailValid ? 'auth-input-shell--valid' : ''}`}
                 >
@@ -250,7 +250,7 @@ export default function Login() {
                       setFormData((current) => ({ ...current, email: event.target.value }))
                     }
                     placeholder="Enter your email"
-                    autoComplete="email"
+                    autoComplete="off"
                     required
                     readOnly={!isInteractable}
                     onFocus={() => setIsInteractable(true)}
@@ -274,7 +274,7 @@ export default function Login() {
                       setFormData((current) => ({ ...current, password: event.target.value }))
                     }
                     placeholder="Enter your password"
-                    autoComplete="current-password"
+                    autoComplete="new-password"
                     required
                     readOnly={!isInteractable}
                     onFocus={() => setIsInteractable(true)}

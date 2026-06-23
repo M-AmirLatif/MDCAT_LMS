@@ -10,7 +10,6 @@ import './Auth.css'
 const roles = [
   { key: 'student', label: 'Student', hint: 'Practice MCQs' },
   { key: 'teacher', label: 'Teacher', hint: 'Manage one subject' },
-  { key: 'admin', label: 'Admin', hint: 'Protected access' },
 ]
 
 const subjects = ['Biology', 'Chemistry', 'Physics', 'English']
@@ -111,6 +110,13 @@ export default function Register() {
               <h1 className="auth-title">Create your account</h1>
               <p className="auth-subtitle">Select your role and complete registration.</p>
 
+              <label className="auth-field">
+                <span>Register as</span>
+                <select value={role} onChange={(event) => setRole(event.target.value)}>
+                  {roles.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
+                </select>
+              </label>
+
               <div className="auth-role-switcher auth-role-switcher--mobile" aria-label="Choose registration role">
                 {roles.map((item) => (
                   <button key={item.key} className={`auth-role-option ${role === item.key ? 'auth-role-option--active' : ''}`} type="button" onClick={() => setRole(item.key)}>
@@ -126,24 +132,24 @@ export default function Register() {
                   <Link className="auth-submit" to="/login">Go to login</Link>
                 </div>
               ) : (
-                <form className="auth-form" onSubmit={submit}>
+                <form className="auth-form" onSubmit={submit} autoComplete="off">
                   <div className="auth-grid-two">
                     <label className="auth-field">
                       <span>First name</span>
-                      <input value={form.firstName} onChange={(event) => setField('firstName', event.target.value)} required />
+                      <input value={form.firstName} onChange={(event) => setField('firstName', event.target.value)} placeholder="Enter your first name" autoComplete="given-name" required />
                     </label>
                     <label className="auth-field">
                       <span>Last name</span>
-                      <input value={form.lastName} onChange={(event) => setField('lastName', event.target.value)} />
+                      <input value={form.lastName} onChange={(event) => setField('lastName', event.target.value)} placeholder="Enter your last name" autoComplete="family-name" />
                     </label>
                   </div>
                   <label className="auth-field">
                     <span>Email</span>
-                    <input type="email" value={form.email} onChange={(event) => setField('email', event.target.value)} required />
+                    <input type="email" value={form.email} onChange={(event) => setField('email', event.target.value)} placeholder="Enter your email" autoComplete="off" required />
                   </label>
                   <label className="auth-field">
                     <span>Password</span>
-                    <input type="password" value={form.password} onChange={(event) => setField('password', event.target.value)} minLength={6} required />
+                    <input type="password" value={form.password} onChange={(event) => setField('password', event.target.value)} placeholder="Enter your password" autoComplete="new-password" minLength={6} required />
                   </label>
                   {role === 'teacher' ? (
                     <label className="auth-field">
@@ -153,10 +159,7 @@ export default function Register() {
                       </select>
                     </label>
                   ) : null}
-                  {role === 'admin' ? (
-                    <div className="auth-error-text">Admin accounts cannot be created from public registration.</div>
-                  ) : null}
-                  <button className="auth-submit" type="submit" disabled={submitting || role === 'admin'}>
+                  <button className="auth-submit" type="submit" disabled={submitting}>
                     {submitting ? 'Creating...' : role === 'teacher' ? 'Request teacher access' : 'Create student account'}
                   </button>
                 </form>
