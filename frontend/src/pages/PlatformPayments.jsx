@@ -163,48 +163,62 @@ function StudentPayments() {
           </div>
           <div className="workspace-card-body">
             <form className="form-shell" onSubmit={submit}>
-              <div className="payments-method-grid">
-                {methods.map((method) => (
-                  <div className="payments-plan-card" key={method.id}>
-                    <div className="label-xs">{method.name}</div>
-                    <strong className="payments-account-number">{method.number}</strong>
-                    <span className="payments-account-name">{method.accountName}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="payments-subject-picker">
-                <label>Subjects</label>
-                <div className="filter-pills">
-                  {subjects.map((subject) => (
-                    <button
-                      className={`filter-pill ${selectedSubjects.includes(subject) ? 'filter-pill--active' : ''}`}
-                      key={subject}
-                      type="button"
-                      onClick={() => toggleSubject(subject)}
-                    >
-                      {subject}
-                    </button>
+              <section className="payments-form-section payments-form-section--accounts" aria-labelledby="payment-account-details">
+                <div className="payments-section-head">
+                  <span className="label-xs" id="payment-account-details">Account details</span>
+                  <p>Send payment to one of these manual accounts.</p>
+                </div>
+                <div className="payments-method-grid">
+                  {methods.map((method) => (
+                    <div className="payments-plan-card" key={method.id}>
+                      <div className="label-xs">{method.name}</div>
+                      <strong className="payments-account-number">{method.number}</strong>
+                      <span className="payments-account-name">{method.accountName}</span>
+                    </div>
                   ))}
                 </div>
-              </div>
+              </section>
 
-              <div className="payments-form-grid">
-                <div className="payments-field">
-                  <label htmlFor="payment-method">Payment Method</label>
-                  <select id="payment-method" value={paymentMethod} onChange={(event) => setPaymentMethod(event.target.value)}>
-                    {methods.map((method) => <option key={method.id} value={method.id}>{method.name}</option>)}
-                  </select>
+              <section className="payments-form-section payments-form-section--subjects" aria-labelledby="payment-subjects">
+                <div className="payments-subject-picker">
+                  <label id="payment-subjects">Subjects</label>
+                  <div className="filter-pills">
+                    {subjects.map((subject) => (
+                      <button
+                        className={`filter-pill ${selectedSubjects.includes(subject) ? 'filter-pill--active' : ''}`}
+                        key={subject}
+                        type="button"
+                        onClick={() => toggleSubject(subject)}
+                      >
+                        {subject}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div className="payments-field">
-                  <label htmlFor="transaction-id">Transaction ID / Reference</label>
-                  <input id="transaction-id" value={transactionId} onChange={(event) => setTransactionId(event.target.value)} placeholder="Enter reference number" />
+              </section>
+
+              <section className="payments-form-section payments-form-section--proof" aria-labelledby="payment-proof-details">
+                <div className="payments-section-head">
+                  <span className="label-xs" id="payment-proof-details">Payment proof</span>
+                  <p>Select method, enter reference number, and upload screenshot.</p>
                 </div>
-                <div className="payments-field">
-                  <label htmlFor="payment-screenshot">Payment Screenshot</label>
-                  <input id="payment-screenshot" type="file" accept="image/*" onChange={(event) => setScreenshot(event.target.files?.[0] || null)} />
+                <div className="payments-form-grid">
+                  <div className="payments-field">
+                    <label htmlFor="payment-method">Payment Method</label>
+                    <select id="payment-method" value={paymentMethod} onChange={(event) => setPaymentMethod(event.target.value)}>
+                      {methods.map((method) => <option key={method.id} value={method.id}>{method.name}</option>)}
+                    </select>
+                  </div>
+                  <div className="payments-field">
+                    <label htmlFor="transaction-id">Transaction ID / Reference</label>
+                    <input id="transaction-id" value={transactionId} onChange={(event) => setTransactionId(event.target.value)} placeholder="Enter reference number" />
+                  </div>
+                  <div className="payments-field">
+                    <label htmlFor="payment-screenshot">Payment Screenshot</label>
+                    <input id="payment-screenshot" type="file" accept="image/*" onChange={(event) => setScreenshot(event.target.files?.[0] || null)} />
+                  </div>
                 </div>
-              </div>
+              </section>
 
               <div className="payments-amount-card">
                 <span>Total Amount</span>

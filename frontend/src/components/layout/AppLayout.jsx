@@ -36,11 +36,8 @@ export default function AppLayout() {
   const layoutClass = useMemo(() => {
     const classes = ['app-layout']
     if (sidebarCollapsed) classes.push('app-layout--collapsed')
-    if (location.pathname === '/performance' || location.pathname === '/notifications') {
-      classes.push('app-layout--no-mobile-nav')
-    }
     return classes.join(' ')
-  }, [location.pathname, sidebarCollapsed])
+  }, [sidebarCollapsed])
 
   return (
     <div className={layoutClass}>

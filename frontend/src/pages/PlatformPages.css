@@ -3187,6 +3187,44 @@
   min-width: 0;
 }
 
+.payments-form-section {
+  display: grid;
+  gap: clamp(14px, 1.6vw, 18px);
+  min-width: 0;
+  padding: clamp(16px, 1.8vw, 22px);
+  border: 1.5px solid #c4cce2;
+  border-radius: 22px;
+  background:
+    linear-gradient(180deg, rgba(108, 71, 255, 0.045), rgba(74, 144, 226, 0.025)),
+    #f7f9ff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86);
+}
+
+.payments-form-section--subjects {
+  background:
+    linear-gradient(180deg, rgba(45, 217, 155, 0.055), rgba(108, 71, 255, 0.025)),
+    #fbfcff;
+}
+
+.payments-form-section--proof {
+  background:
+    linear-gradient(180deg, rgba(74, 144, 226, 0.06), rgba(108, 71, 255, 0.025)),
+    #f7f9ff;
+}
+
+.payments-section-head {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.payments-section-head p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: clamp(13px, 1vw, 15px);
+  line-height: 1.45;
+}
+
 .payments-method-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -3205,9 +3243,9 @@
   border-radius: 18px;
   border: 1.5px solid #c3cbe2;
   background:
-    linear-gradient(180deg, rgba(108, 71, 255, 0.06), rgba(74, 144, 226, 0.03)),
-    #f5f7ff !important;
-  box-shadow: none !important;
+    linear-gradient(135deg, rgba(108, 71, 255, 0.12), rgba(45, 217, 155, 0.045)),
+    #eef3ff !important;
+  box-shadow: 0 8px 18px rgba(31, 39, 68, 0.06) !important;
 }
 
 .payments-plan-card .label-xs {
@@ -3501,12 +3539,35 @@
 [data-theme='dark'] .payments-plan-card,
 [data-theme='dark'] .payments-amount-card,
 [data-theme='dark'] .payments-table-wrap,
+[data-theme='dark'] .payments-form-section,
 [data-theme='dark'] .payments-field input,
 [data-theme='dark'] .payments-field select {
   background:
     linear-gradient(180deg, rgba(139, 111, 255, 0.055), rgba(18, 16, 42, 0)),
     var(--bg-surface, #1a1640) !important;
   border-color: rgba(139, 111, 255, 0.32);
+}
+
+[data-theme='dark'] .payments-form-section {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+[data-theme='dark'] .payments-form-section--accounts {
+  background:
+    linear-gradient(135deg, rgba(139, 111, 255, 0.16), rgba(45, 217, 155, 0.055)),
+    #14112f !important;
+}
+
+[data-theme='dark'] .payments-form-section--subjects {
+  background:
+    linear-gradient(135deg, rgba(45, 217, 155, 0.095), rgba(139, 111, 255, 0.075)),
+    #13112b !important;
+}
+
+[data-theme='dark'] .payments-form-section--proof {
+  background:
+    linear-gradient(135deg, rgba(74, 144, 226, 0.12), rgba(139, 111, 255, 0.075)),
+    #13122d !important;
 }
 
 [data-theme='dark'] .payments-form-card,
@@ -3539,6 +3600,7 @@
 
 [data-theme='dark'] .payments-account-name,
 [data-theme='dark'] .payments-amount-card small,
+[data-theme='dark'] .payments-section-head p,
 [data-theme='dark'] .payments-summary-card p {
   color: var(--text-muted, #9b8fcc);
 }

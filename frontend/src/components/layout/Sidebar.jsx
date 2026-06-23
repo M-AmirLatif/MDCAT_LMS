@@ -1,11 +1,7 @@
 import { useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import {
-  getMobileNavForRole,
-  getNavigationForRole,
-} from '../../lib/platform'
-import ThemeToggle from '../ThemeToggle'
+import { getNavigationForRole } from '../../lib/platform'
 import './Sidebar.css'
 
 const ICONS = {
@@ -139,7 +135,6 @@ export default function Sidebar({
   const { user, logout } = useAuth()
   const role = user?.role || 'student'
   const sections = getNavigationForRole(role)
-  const mobileItems = getMobileNavForRole(role)
   const initials = `${user?.firstName?.[0] || 'U'}${user?.lastName?.[0] || ''}`.toUpperCase()
 
   const sidebarClass = useMemo(() => {
@@ -233,35 +228,6 @@ export default function Sidebar({
         </div>
       </aside>
 
-      <nav
-        className={`mobile-bottom-nav ${
-          currentPath === '/performance' || currentPath === '/notifications'
-            ? 'mobile-bottom-nav--hidden'
-            : ''
-        }`.trim()}
-        aria-label="Mobile navigation"
-      >
-        <div className="mobile-bottom-nav-inner">
-          {mobileItems.slice(0, 4).map((item) => {
-            const active =
-              currentPath === item.path ||
-              (item.path !== '/dashboard' && currentPath.startsWith(item.path))
-
-            return (
-              <button
-                key={item.key}
-                className={`mobile-nav-item ${active ? 'mobile-nav-item--active' : ''}`}
-                type="button"
-                onClick={() => go(item.path)}
-              >
-                <span className="mobile-nav-item-icon">{getIcon(item.icon)}</span>
-                <span className="mobile-nav-item-label">{item.label}</span>
-              </button>
-            )
-          })}
-          <ThemeToggle className="theme-toggle--mobile-nav" />
-        </div>
-      </nav>
     </>
   )
 }
