@@ -15,10 +15,14 @@ const IMAGE_URL_REGEX =
 const HTML_IMAGE_TAG_REGEX = /<img\b[^>]*>/gi
 const IMAGE_SOURCE_REGEX = /\bsrc\s*=\s*["']([^"']+)["']/i
 const IMAGE_ALT_REGEX = /\balt\s*=\s*["']([^"']*)["']/i
+const DEBUG_LOG_LIMIT = 40
+let debugLogCount = 0
 
 function cleanImageUrl(url) {
   return String(url || '')
     .trim()
+    .replace(/^["'`]+|["'`]+$/g, '')
+    .replace(/\s+["'][^"']*["']$/g, '')
     .replace(/[),.;\]]+$/g, '')
 }
 
@@ -45,7 +49,41 @@ function isSafeImageUrl(url) {
 }
 
 function encodeImageToken({ url, alt = '' }) {
-  return `[IMAGE:${String(url || '').trim()}|alt=${String(alt || '').trim()}]`
+  const safeUrl = cleanImageUrl(url)
+  if (!safeUrl) return ''
+  return `[IMAGE:${safeUrl}|alt=${String(alt || '').trim()}]`
+}
+
+function shouldDebugRenderer() {
+  if (typeof console === 'undefined') return false
+  if (typeof window === 'undefined') return true
+  return window.localStorage?.getItem('mcqRendererDebug') !== 'false'
+}
+
+function logRendererDebug(payload) {
+  if (!shouldDebugRenderer() || debugLogCount >= DEBUG_LOG_LIMIT) return
+  debugLogCount += 1
+  console.groupCollapsed?.('[MCQRenderer] image extraction')
+  console.debug('[MCQRenderer] raw content prop:', payload.rawContent)
+  console.debug('[MCQRenderer] images prop:', payload.images)
+  console.debug('[MCQRenderer] imageUrls prop:', payload.imageUrls)
+  console.debug('[MCQRenderer] extracted image matches:', payload.extractedImageMatches)
+  console.debug('[MCQRenderer] final image URL array:', payload.finalImageUrls)
+  console.groupEnd?.()
+}
+
+function imageFromUnknown(image) {
+  if (!image) return null
+  if (typeof image === 'string') return { url: cleanImageUrl(image), alt: '' }
+  return {
+    url: cleanImageUrl(image.url || image.src || image.imageUrl || image.secure_url || image.path || ''),
+    alt: image.alt || image.caption || image.title || '',
+  }
+}
+
+function getImageToken(rawBody) {
+  const parsed = parseImageTokenBody(rawBody)
+  return parsed.url ? parsed : null
 }
 
 function normalizeMediaMarkup(text) {
@@ -72,6 +110,26 @@ function normalizeMediaMarkup(text) {
     .join('')
 }
 
+function extractImageMatches(value) {
+  const matches = []
+  const imageRegex = new RegExp(IMAGE_TOKEN_REGEX)
+  let imageMatch
+
+  while ((imageMatch = imageRegex.exec(value)) !== null) {
+    const image = getImageToken(imageMatch[1] || '')
+    matches.push({
+      raw: imageMatch[0],
+      body: imageMatch[1] || '',
+      index: imageMatch.index,
+      url: image?.url || '',
+      alt: image?.alt || '',
+      valid: Boolean(image?.url && isSafeImageUrl(image.url)),
+    })
+  }
+
+  return matches
+}
+
 function parseImageTokenBody(body) {
   const value = String(body || '').trim()
   if (!value) return { url: '', alt: '' }
@@ -83,8 +141,9 @@ function parseImageTokenBody(body) {
   return { url, alt }
 }
 
-function RichImage({ body }) {
-  const { url, alt } = parseImageTokenBody(body)
+function RichImage({ image }) {
+  const url = cleanImageUrl(image?.url)
+  const alt = image?.alt || ''
   const imageRef = useRef(null)
   const [loaded, setLoaded] = useState(false)
   const [failed, setFailed] = useState(false)
@@ -173,19 +232,26 @@ function renderTextWithMath(text, keyPrefix) {
   })
 }
 
-export default function MCQRenderer({ text, imageUrls = [], images = [] }) {
-  const appendedImages = [
-    ...images.map((image) => {
-      if (typeof image === 'string') return { url: image, alt: '' }
-      return { url: image?.url || image?.src || image?.imageUrl || '', alt: image?.alt || image?.caption || '' }
-    }),
-    ...imageUrls.map((url) => ({ url, alt: '' })),
-  ]
-    .filter((image) => image.url)
+export default function MCQRenderer({
+  text,
+  content,
+  imageUrl,
+  imageUrls = [],
+  images = [],
+}) {
+  const rawContent = text ?? content ?? ''
+  const normalizedPropImages = [
+    imageFromUnknown(imageUrl),
+    ...[].concat(imageUrls || []).map((url) => imageFromUnknown(url)),
+    ...[].concat(images || []).map((image) => imageFromUnknown(image)),
+  ].filter((image) => image?.url)
+
+  const appendedImages = normalizedPropImages
     .map((image) => encodeImageToken(image))
+    .filter(Boolean)
     .join('')
 
-  const value = normalizeMediaMarkup(`${text || ''}${appendedImages}`)
+  const value = normalizeMediaMarkup(`${rawContent || ''}${appendedImages}`)
   if (!value) return <div className="mcq-renderer" />
 
   const nodes = []
@@ -194,8 +260,20 @@ export default function MCQRenderer({ text, imageUrls = [], images = [] }) {
   const blocks = []
   const diagramRegex = new RegExp(DIAGRAM_REGEX)
   const imageRegex = new RegExp(IMAGE_TOKEN_REGEX)
+  const extractedImageMatches = extractImageMatches(value)
+  const finalImageUrls = extractedImageMatches
+    .filter((image) => image.valid)
+    .map((image) => image.url)
   let diagramMatch
   let imageMatch
+
+  logRendererDebug({
+    rawContent,
+    images,
+    imageUrls,
+    extractedImageMatches,
+    finalImageUrls,
+  })
 
   while ((diagramMatch = diagramRegex.exec(value)) !== null) {
     blocks.push({
@@ -240,7 +318,10 @@ export default function MCQRenderer({ text, imageUrls = [], images = [] }) {
         </div>
       )
     } else {
-      nodes.push(<RichImage key={`image-${blockIndex}`} body={match[1] || ''} />)
+      const image = getImageToken(match[1] || '')
+      if (image?.url && isSafeImageUrl(image.url)) {
+        nodes.push(<RichImage key={`image-${blockIndex}`} image={image} />)
+      }
     }
 
     lastIndex = match.index + match[0].length
