@@ -3136,7 +3136,7 @@
 
 .payments-content-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(340px, 0.92fr);
+  grid-template-columns: minmax(620px, 1fr) minmax(560px, 0.9fr);
   gap: clamp(16px, 2vw, 24px);
   align-items: start;
   width: 100%;
@@ -3396,7 +3396,7 @@
 
 .payments-history-table {
   width: 100%;
-  min-width: 620px;
+  min-width: 540px;
   border-collapse: separate;
   border-spacing: 0;
   table-layout: auto;
@@ -3489,7 +3489,7 @@
   color: var(--text-primary, #f0eeff);
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1280px) {
   .payments-content-grid {
     grid-template-columns: 1fr;
   }
