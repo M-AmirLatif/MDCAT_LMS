@@ -56,6 +56,7 @@ exports.submitTest = async (req, res) => {
     const {
       courseId,
       answers,
+      mcqIds: submittedMcqIds,
       topic,
       subject,
       chapterId,
@@ -63,15 +64,24 @@ exports.submitTest = async (req, res) => {
       enableNegativeMarking,
       timeLimitSeconds,
       timeSpentSeconds,
+      startedAt,
     } = req.body
 
-    if (!courseId || !Array.isArray(answers) || answers.length === 0) {
+    const normalizedAnswers = Array.isArray(answers) ? answers : []
+    const mcqIds = [
+      ...new Set(
+        [
+          ...(Array.isArray(submittedMcqIds) ? submittedMcqIds : []),
+          ...normalizedAnswers.map((a) => a?.mcqId),
+        ].filter(Boolean),
+      ),
+    ]
+
+    if (!courseId || mcqIds.length === 0) {
       return res.status(400).json({
-        error: 'Please provide courseId and answers',
+        error: 'Please provide courseId and MCQs to submit',
       })
     }
-
-    const mcqIds = [...new Set(answers.map((a) => a.mcqId).filter(Boolean))]
 
     const mcqs = await MCQ.find({
       _id: { $in: mcqIds },
@@ -84,16 +94,22 @@ exports.submitTest = async (req, res) => {
     }
 
     const mcqMap = new Map(mcqs.map((mcq) => [mcq._id.toString(), mcq]))
+    const answerMap = new Map(
+      normalizedAnswers
+        .filter((answer) => answer?.mcqId)
+        .map((answer) => [String(answer.mcqId), answer]),
+    )
 
     let score = 0
     let negativeScore = 0
     const evaluatedAnswers = []
     const results = []
 
-    answers.forEach((answer) => {
-      const mcq = mcqMap.get(String(answer.mcqId))
+    mcqIds.forEach((mcqId) => {
+      const mcq = mcqMap.get(String(mcqId))
       if (!mcq) return
 
+      const answer = answerMap.get(String(mcqId)) || {}
       const selectedIndex = normalizeIndex(answer.selectedIndex)
       const correctIndex = mcq.options.findIndex((opt) => opt.isCorrect)
       const isCorrect = selectedIndex === correctIndex
@@ -133,6 +149,7 @@ exports.submitTest = async (req, res) => {
     const finalScore = Math.max(0, score - negativeScore)
     const percentage =
       totalQuestions > 0 ? Math.round((finalScore / totalQuestions) * 100) : 0
+    const submittedStartedAt = startedAt ? new Date(startedAt) : new Date()
 
     const testSession = await TestSession.create({
       studentId: req.user.id,
@@ -148,6 +165,9 @@ exports.submitTest = async (req, res) => {
       percentage,
       timeLimitSeconds: timeLimitSeconds || null,
       timeSpentSeconds: timeSpentSeconds || null,
+      startedAt: Number.isNaN(submittedStartedAt.getTime())
+        ? new Date()
+        : submittedStartedAt,
       submittedAt: new Date(),
       answers: evaluatedAnswers,
     })
@@ -298,6 +318,7 @@ exports.getSubjectWisePerformance = async (req, res) => {
 
     const data = await TestSession.aggregate([
       { $match: match },
+      { $sort: { submittedAt: 1 } },
       {
         $lookup: {
           from: 'courses',
@@ -306,16 +327,17 @@ exports.getSubjectWisePerformance = async (req, res) => {
           as: 'course',
         },
       },
-      { $unwind: '$course' },
+      { $unwind: { path: '$course', preserveNullAndEmptyArrays: true } },
       {
         $group: {
-          _id: '$course.category',
+          _id: { $ifNull: ['$subject', '$course.category'] },
           totalTests: { $sum: 1 },
           avgPercentage: { $avg: '$percentage' },
           bestPercentage: { $max: '$percentage' },
           latestPercentage: { $last: '$percentage' },
         },
       },
+      { $match: { _id: { $ne: null } } },
       { $sort: { _id: 1 } },
     ])
 

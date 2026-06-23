@@ -2108,6 +2108,7 @@ exports.submitChapterAttempt = async (req, res) => {
     const skipped = detailed.filter((item) => item.skipped).length
     const wrong = detailed.length - correct - skipped
     const percentage = Math.round((correct / detailed.length) * 100)
+    const startedAt = req.body.startedAt ? new Date(req.body.startedAt) : new Date()
 
     const testSession = await TestSession.create({
       studentId: req.user.id,
@@ -2123,9 +2124,9 @@ exports.submitChapterAttempt = async (req, res) => {
       percentage,
       timeLimitSeconds: req.body.timeLimitSeconds || detailed.length * 50,
       timeSpentSeconds: req.body.timeSpentSeconds || null,
+      startedAt: Number.isNaN(startedAt.getTime()) ? new Date() : startedAt,
       submittedAt: new Date(),
       answers: detailed
-        .filter((item) => !item.skipped)
         .map((item) => ({
           mcqId: item.mcqId,
           selectedIndex: item.selectedIndex,

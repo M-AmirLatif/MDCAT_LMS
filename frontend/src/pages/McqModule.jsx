@@ -1664,6 +1664,10 @@ function QuizAttempt() {
   const [answers, setAnswers] = useState({})
   const [skipped, setSkipped] = useState({})
   const [remaining, setRemaining] = useState(0)
+  const [quizTiming, setQuizTiming] = useState({
+    startedAt: null,
+    expiresAt: null,
+  })
   const [submitting, setSubmitting] = useState(false)
   const [showQuestionPanel, setShowQuestionPanel] = useState(false)
   const quizUserKey = useMemo(
@@ -1739,6 +1743,21 @@ function QuizAttempt() {
             Object.values(savedSkipped).some(Boolean) ||
             (savedIds.length > 0 &&
               savedIds.every((id) => loadedIdSet.has(id))))
+        const now = Date.now()
+        const savedStartedAt = Number(savedDraft?.startedAt)
+        const savedExpiresAt = Number(savedDraft?.expiresAt)
+        const startedAt =
+          canRestore && Number.isFinite(savedStartedAt) && savedStartedAt > 0
+            ? savedStartedAt
+            : now
+        const expiresAt =
+          canRestore && Number.isFinite(savedExpiresAt) && savedExpiresAt > 0
+            ? savedExpiresAt
+            : startedAt + defaultRemaining * 1000
+        const remainingFromClock = Math.max(
+          0,
+          Math.ceil((expiresAt - now) / 1000),
+        )
 
         setChapter(response.data.chapter)
         setMcqs(loadedMcqs)
@@ -1752,11 +1771,8 @@ function QuizAttempt() {
         )
         setAnswers(canRestore ? savedAnswers : {})
         setSkipped(canRestore ? savedSkipped : {})
-        setRemaining(
-          canRestore && Number(savedDraft.remaining) > 0
-            ? Number(savedDraft.remaining)
-            : defaultRemaining,
-        )
+        setQuizTiming({ startedAt, expiresAt })
+        setRemaining(remainingFromClock)
       } catch (error) {
         if (alive)
           toast.error(getUserFriendlyErrorMessage(error, 'We could not load the quiz right now.'))
@@ -1779,10 +1795,12 @@ function QuizAttempt() {
       answers,
       skipped,
       remaining,
+      startedAt: quizTiming.startedAt,
+      expiresAt: quizTiming.expiresAt,
       updatedAt: new Date().toISOString(),
     }
     localStorage.setItem(quizStorageKey, JSON.stringify(draft))
-  }, [answers, currentIndex, loading, mcqs, quizStorageKey, remaining, skipped])
+  }, [answers, currentIndex, loading, mcqs, quizStorageKey, quizTiming, remaining, skipped])
 
   const submit = async ({ force = false } = {}) => {
     if (submitting || !mcqs.length) return
@@ -1800,10 +1818,24 @@ function QuizAttempt() {
     }
     setSubmitting(true)
     try {
+      const timeLimitSeconds = mcqs.length * 50
+      const startedAt = Number(quizTiming.startedAt)
+      const elapsedSeconds =
+        Number.isFinite(startedAt) && startedAt > 0
+          ? Math.round((Date.now() - startedAt) / 1000)
+          : timeLimitSeconds - remaining
+      const timeSpentSeconds = Math.min(
+        timeLimitSeconds,
+        Math.max(0, elapsedSeconds),
+      )
       const res = await API.post(`/mcqs/${subject}/${chapterId}/submit`, {
         answers,
-        timeLimitSeconds: mcqs.length * 50,
-        timeSpentSeconds: mcqs.length * 50 - remaining,
+        timeLimitSeconds,
+        timeSpentSeconds,
+        startedAt:
+          Number.isFinite(startedAt) && startedAt > 0
+            ? new Date(startedAt).toISOString()
+            : undefined,
       })
       const suffix = `-${subject}-${chapterId}`
       Object.keys(localStorage)
@@ -1824,17 +1856,21 @@ function QuizAttempt() {
   }
 
   useEffect(() => {
-    if (!mcqs.length || submitting) return undefined
-    if (remaining <= 0) {
-      submit({ force: true })
-      return undefined
+    if (!mcqs.length || submitting || !quizTiming.expiresAt) return undefined
+    const tick = () => {
+      const nextRemaining = Math.max(
+        0,
+        Math.ceil((Number(quizTiming.expiresAt) - Date.now()) / 1000),
+      )
+      setRemaining(nextRemaining)
+      if (nextRemaining <= 0) {
+        submit({ force: true })
+      }
     }
-    const timer = setInterval(
-      () => setRemaining((value) => Math.max(0, value - 1)),
-      1000,
-    )
+    tick()
+    const timer = setInterval(tick, 1000)
     return () => clearInterval(timer)
-  }, [remaining, mcqs.length, submitting]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [mcqs.length, quizTiming.expiresAt, submitting]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const current = mcqs[currentIndex]
   const selected = current ? answers[current._id] : undefined
