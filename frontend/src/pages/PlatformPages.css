@@ -5969,10 +5969,16 @@
 .mcq-image-manager {
   display: grid;
   gap: 10px;
+  margin-top: 14px;
   padding: 12px;
   border: 1px solid var(--border-card, rgba(108, 71, 255, 0.16));
   border-radius: 14px;
-  background: var(--bg-surface, #f8f9fe);
+  background: color-mix(in srgb, var(--bg-surface, #f8f9fe) 82%, #ffffff 18%);
+}
+
+.floating-field + .mcq-image-manager,
+.mcq-section-container > .mcq-image-manager {
+  margin-top: 18px;
 }
 
 .mcq-image-manager-head,
@@ -6024,6 +6030,17 @@
   color: var(--coral-dark, #e04e4e);
   font-size: 12px;
   font-weight: 800;
+}
+
+@media (max-width: 768px) {
+  .mcq-image-manager {
+    margin-top: 10px;
+  }
+
+  .floating-field + .mcq-image-manager,
+  .mcq-section-container > .mcq-image-manager {
+    margin-top: 14px;
+  }
 }
 
 .mcq-diagram-callout {
