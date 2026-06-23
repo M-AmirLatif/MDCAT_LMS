@@ -112,9 +112,11 @@ export default function Register() {
 
               <label className="auth-field">
                 <span>Register as</span>
-                <select value={role} onChange={(event) => setRole(event.target.value)}>
-                  {roles.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
-                </select>
+                <span className="auth-select-wrap">
+                  <select value={role} onChange={(event) => setRole(event.target.value)}>
+                    {roles.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
+                  </select>
+                </span>
               </label>
 
               <div className="auth-role-switcher auth-role-switcher--mobile" aria-label="Choose registration role">
@@ -154,9 +156,11 @@ export default function Register() {
                   {role === 'teacher' ? (
                     <label className="auth-field">
                       <span>Assigned subject</span>
-                      <select value={form.assignedSubject} onChange={(event) => setField('assignedSubject', event.target.value)}>
-                        {subjects.map((subject) => <option key={subject} value={subject}>{subject}</option>)}
-                      </select>
+                      <span className="auth-select-wrap">
+                        <select value={form.assignedSubject} onChange={(event) => setField('assignedSubject', event.target.value)}>
+                          {subjects.map((subject) => <option key={subject} value={subject}>{subject}</option>)}
+                        </select>
+                      </span>
                     </label>
                   ) : null}
                   <button className="auth-submit" type="submit" disabled={submitting}>
