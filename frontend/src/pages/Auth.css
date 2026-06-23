@@ -1605,6 +1605,25 @@ html[data-theme="dark"] .auth-form .floating-field {
   border-color: #6c47ff !important;
 }
 
+@media (min-width: 769px) {
+  .auth-row .auth-checkbox input[type="checkbox"] {
+    width: 14px !important;
+    height: 14px !important;
+    min-width: 14px !important;
+    min-height: 14px !important;
+    max-width: 14px !important;
+    max-height: 14px !important;
+    flex: 0 0 14px !important;
+    border-radius: 4px !important;
+    background-size: 8px !important;
+  }
+
+  .auth-row .auth-checkbox {
+    gap: 8px !important;
+    font-size: 11px !important;
+  }
+}
+
 [data-theme="dark"] .auth-brand-name {
   color: #F0EEFF;
 }
