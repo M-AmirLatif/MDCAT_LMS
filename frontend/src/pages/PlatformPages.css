@@ -3056,6 +3056,506 @@
   }
 }
 
+/* Student payment/subscription page: final responsive layout layer. */
+.payments-student-page,
+.payments-student-page *,
+.payments-student-page *::before,
+.payments-student-page *::after {
+  box-sizing: border-box;
+}
+
+.payments-student-page {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  gap: clamp(16px, 2vw, 24px);
+  padding: clamp(0px, 1vw, 8px);
+}
+
+.payments-student-page .workspace-card {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-card, rgba(108, 71, 255, 0.14));
+  background: var(--bg-card);
+}
+
+.payments-summary-card {
+  background:
+    linear-gradient(135deg, rgba(108, 71, 255, 0.09), rgba(74, 144, 226, 0.05)),
+    var(--bg-card) !important;
+}
+
+.payments-summary-card .workspace-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.payments-summary-card .workspace-card-title {
+  font-size: clamp(20px, 2.2vw, 30px);
+  line-height: 1.2;
+  overflow-wrap: break-word;
+}
+
+.payments-summary-card p {
+  max-width: 760px;
+  margin-top: 6px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.payments-summary-card .workspace-columns-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+  gap: 12px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.payments-summary-card .metric-row {
+  min-width: 0;
+  min-height: 76px;
+  display: grid;
+  align-content: center;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border-card, rgba(108, 71, 255, 0.12));
+  background: var(--bg-surface);
+}
+
+.payments-summary-card .metric-row span,
+.payments-summary-card .metric-row strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.payments-content-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(340px, 0.92fr);
+  gap: clamp(16px, 2vw, 24px);
+  align-items: start;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.payments-form-card .workspace-card-head,
+.payments-history-card .workspace-card-head {
+  padding-bottom: 12px;
+}
+
+.payments-form-card .workspace-card-title,
+.payments-history-card .workspace-card-title {
+  font-size: clamp(19px, 1.7vw, 26px);
+  line-height: 1.25;
+}
+
+.payments-form-card .form-shell {
+  display: grid;
+  gap: clamp(16px, 1.8vw, 22px);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.payments-method-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.payments-plan-card {
+  display: grid !important;
+  align-content: start;
+  gap: 10px;
+  min-width: 0;
+  min-height: 128px !important;
+  padding: clamp(16px, 1.8vw, 22px) !important;
+  border-radius: 18px;
+  border: 1px solid var(--border-card, rgba(108, 71, 255, 0.14));
+  background:
+    linear-gradient(180deg, rgba(108, 71, 255, 0.045), rgba(74, 144, 226, 0.025)),
+    var(--bg-surface) !important;
+  box-shadow: none !important;
+}
+
+.payments-plan-card .label-xs {
+  color: var(--purple);
+  overflow-wrap: anywhere;
+}
+
+.payments-account-number {
+  display: block;
+  min-width: 0;
+  color: var(--heading);
+  font-size: clamp(20px, 2.4vw, 30px);
+  line-height: 1.1;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  overflow-wrap: anywhere;
+}
+
+.payments-account-name {
+  display: block;
+  min-width: 0;
+  color: var(--text-muted);
+  font-size: clamp(13px, 1.1vw, 15px);
+  line-height: 1.45;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.payments-subject-picker {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.payments-subject-picker > label,
+.payments-field > label,
+.payments-amount-card > span {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.payments-subject-picker .filter-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-width: 0;
+}
+
+.payments-subject-picker .filter-pill {
+  flex: 1 1 128px;
+  min-width: 0;
+  min-height: 44px;
+  justify-content: center;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border-card, rgba(108, 71, 255, 0.16));
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: clamp(13px, 1vw, 15px);
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.payments-subject-picker .filter-pill--active {
+  border-color: transparent;
+  background: var(--grad-purple);
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+}
+
+.payments-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.payments-field {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.payments-field input,
+.payments-field select {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: 50px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border-card, rgba(108, 71, 255, 0.16));
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.payments-field select {
+  padding-right: 38px;
+}
+
+.payments-field input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.72;
+}
+
+.payments-field input:focus,
+.payments-field select:focus {
+  outline: none;
+  border-color: var(--purple);
+  box-shadow: 0 0 0 4px rgba(108, 71, 255, 0.14);
+}
+
+.payments-field input[type="file"] {
+  display: flex;
+  align-items: center;
+  height: auto;
+  min-height: 50px;
+  padding: 9px 10px;
+  font-size: 13px;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.payments-field input[type="file"]::file-selector-button {
+  max-width: 48%;
+  margin-right: 10px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(108, 71, 255, 0.13);
+  color: var(--purple);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.payments-amount-card {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  padding: clamp(18px, 2vw, 24px);
+  border-radius: 18px;
+  border: 1px solid var(--border-card, rgba(45, 217, 155, 0.24));
+  border-top: 4px solid #2dd99b;
+  background: var(--bg-surface);
+}
+
+.payments-amount-card strong {
+  color: var(--heading);
+  font-size: clamp(30px, 3.2vw, 44px);
+  line-height: 1;
+  font-weight: 900;
+}
+
+.payments-amount-card small {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.payments-submit-btn {
+  width: 100%;
+  max-width: 100%;
+  min-height: 54px;
+  border-radius: 999px;
+  font-size: clamp(14px, 1vw, 16px);
+  font-weight: 900;
+}
+
+.payments-submit-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+  filter: saturate(0.72);
+  box-shadow: none;
+}
+
+.payments-history-card {
+  min-width: 0;
+  align-self: stretch;
+}
+
+.payments-history-card .workspace-card-body {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.payments-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-radius: 16px;
+  border: 1px solid var(--border-card, rgba(108, 71, 255, 0.12));
+  background: var(--bg-surface);
+}
+
+.payments-history-table {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: auto;
+}
+
+.payments-history-table th,
+.payments-history-table td {
+  padding: 13px 14px;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-card, rgba(108, 71, 255, 0.08));
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.payments-history-table th {
+  color: var(--text-muted);
+  background: var(--bg-hover, rgba(108, 71, 255, 0.06));
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.payments-history-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.payments-subject-list {
+  display: inline-block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+.payments-empty-state {
+  min-height: 220px !important;
+  padding: 30px 18px !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.payments-empty-state h3 {
+  font-size: 20px;
+}
+
+.payments-empty-state p {
+  max-width: 300px;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+[data-theme='dark'] .payments-student-page .workspace-card {
+  background: var(--bg-card, #12102a);
+  border-color: rgba(139, 111, 255, 0.18);
+}
+
+[data-theme='dark'] .payments-summary-card,
+[data-theme='dark'] .payments-plan-card,
+[data-theme='dark'] .payments-amount-card,
+[data-theme='dark'] .payments-table-wrap,
+[data-theme='dark'] .payments-field input,
+[data-theme='dark'] .payments-field select {
+  background:
+    linear-gradient(180deg, rgba(139, 111, 255, 0.055), rgba(18, 16, 42, 0)),
+    var(--bg-surface, #1a1640) !important;
+  border-color: rgba(139, 111, 255, 0.22);
+}
+
+[data-theme='dark'] .payments-history-table th {
+  color: rgba(240, 238, 255, 0.72);
+  background: rgba(139, 111, 255, 0.12);
+}
+
+[data-theme='dark'] .payments-history-table th,
+[data-theme='dark'] .payments-history-table td,
+[data-theme='dark'] .payments-account-number,
+[data-theme='dark'] .payments-amount-card strong {
+  color: var(--text-primary, #f0eeff);
+}
+
+[data-theme='dark'] .payments-account-name,
+[data-theme='dark'] .payments-amount-card small,
+[data-theme='dark'] .payments-summary-card p {
+  color: var(--text-muted, #9b8fcc);
+}
+
+[data-theme='dark'] .payments-field input[type="file"]::file-selector-button {
+  background: rgba(139, 111, 255, 0.22);
+  color: var(--text-primary, #f0eeff);
+}
+
+@media (max-width: 1180px) {
+  .payments-content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .payments-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .payments-student-page {
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  .payments-summary-card .workspace-card-head {
+    display: grid;
+  }
+
+  .payments-summary-card .badge {
+    width: fit-content;
+  }
+
+  .payments-method-grid,
+  .payments-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .payments-plan-card {
+    min-height: 116px !important;
+  }
+
+  .payments-subject-picker .filter-pill {
+    flex-basis: calc(50% - 5px);
+    padding-inline: 12px;
+  }
+
+  .payments-history-table {
+    min-width: 560px;
+  }
+
+  .payments-field input[type="file"]::file-selector-button {
+    max-width: 46%;
+  }
+}
+
+@media (max-width: 460px) {
+  .payments-student-page .workspace-card-head,
+  .payments-student-page .workspace-card-body {
+    padding-inline: 16px;
+  }
+
+  .payments-subject-picker .filter-pill {
+    flex-basis: 100%;
+  }
+
+  .payments-history-table {
+    min-width: 520px;
+  }
+
+  .payments-history-table th,
+  .payments-history-table td {
+    padding: 11px 12px;
+  }
+}
+
 @media (max-width: 720px) {
   .workspace-page--payments {
     padding: 0;

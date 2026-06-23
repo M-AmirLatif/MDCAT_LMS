@@ -53,6 +53,7 @@ function StudentPayments() {
   const [submitting, setSubmitting] = useState(false)
 
   const totalAmount = selectedSubjects.length * subjectFee
+  const canSubmit = selectedSubjects.length > 0 && transactionId.trim() && screenshot && !submitting
   const activeSubjects = subscriptions
     .filter((subscription) => subscription.active)
     .map((subscription) => subscription.subjectId)
@@ -130,8 +131,8 @@ function StudentPayments() {
   }
 
   return (
-    <div className="workspace-page workspace-page--payments animate-fade-up">
-      <section className="workspace-card payments-active-plan">
+    <div className="workspace-page workspace-page--payments payments-student-page animate-fade-up">
+      <section className="workspace-card payments-active-plan payments-summary-card">
         <div className="workspace-card-head">
           <div>
             <div className="label-xs">Subject Subscription</div>
@@ -152,8 +153,8 @@ function StudentPayments() {
         </div>
       </section>
 
-      <div className="workspace-section-grid">
-        <section className="workspace-card">
+      <div className="payments-content-grid">
+        <section className="workspace-card payments-form-card">
           <div className="workspace-card-head">
             <div>
               <div className="label-xs">Manual Payment</div>
@@ -164,10 +165,10 @@ function StudentPayments() {
             <form className="form-shell" onSubmit={submit}>
               <div className="payments-method-grid">
                 {methods.map((method) => (
-                  <div className="pricing-card payments-plan-card" key={method.id}>
+                  <div className="payments-plan-card" key={method.id}>
                     <div className="label-xs">{method.name}</div>
-                    <h3 className="workspace-card-title">{method.number}</h3>
-                    <p>{method.accountName}</p>
+                    <strong className="payments-account-number">{method.number}</strong>
+                    <span className="payments-account-name">{method.accountName}</span>
                   </div>
                 ))}
               </div>
@@ -189,29 +190,29 @@ function StudentPayments() {
               </div>
 
               <div className="payments-form-grid">
-                <div className="floating-field">
+                <div className="payments-field">
                   <label htmlFor="payment-method">Payment Method</label>
                   <select id="payment-method" value={paymentMethod} onChange={(event) => setPaymentMethod(event.target.value)}>
                     {methods.map((method) => <option key={method.id} value={method.id}>{method.name}</option>)}
                   </select>
                 </div>
-                <div className="floating-field">
+                <div className="payments-field">
                   <label htmlFor="transaction-id">Transaction ID / Reference</label>
                   <input id="transaction-id" value={transactionId} onChange={(event) => setTransactionId(event.target.value)} placeholder="Enter reference number" />
                 </div>
-                <div className="floating-field">
+                <div className="payments-field">
                   <label htmlFor="payment-screenshot">Payment Screenshot</label>
                   <input id="payment-screenshot" type="file" accept="image/*" onChange={(event) => setScreenshot(event.target.files?.[0] || null)} />
                 </div>
               </div>
 
-              <div className="stat-tile stat-tile--teal">
+              <div className="payments-amount-card">
                 <span>Total Amount</span>
                 <strong>Rs {totalAmount}</strong>
                 <small>{selectedSubjects.length} subject{selectedSubjects.length === 1 ? '' : 's'} x Rs {subjectFee}</small>
               </div>
 
-              <button className="btn btn-primary" type="submit" disabled={submitting}>
+              <button className="btn btn-primary payments-submit-btn" type="submit" disabled={!canSubmit}>
                 {submitting ? 'Submitting...' : 'Submit payment request'}
               </button>
             </form>
@@ -221,24 +222,26 @@ function StudentPayments() {
         <section className="workspace-card payments-history-card">
           <div className="workspace-card-head"><div><div className="label-xs">History</div><h3 className="workspace-card-title">My payment requests</h3></div></div>
           <div className="workspace-card-body">
-            <table className="simple-table">
-              <thead><tr><th>Date</th><th>Subjects</th><th>Amount</th><th>Method</th><th>Status</th></tr></thead>
-              <tbody>
-                {loading ? (
-                  <tr><td colSpan="5">Loading...</td></tr>
-                ) : requests.length ? requests.map((request) => (
-                  <tr key={request._id}>
-                    <td>{formatDate(request.createdAt)}</td>
-                    <td>{request.selectedSubjects?.join(', ')}</td>
-                    <td>Rs {request.amount}</td>
-                    <td><PaymentMethod method={request.paymentMethod} /></td>
-                    <td><StatusBadge status={request.status} /></td>
-                  </tr>
-                )) : (
-                  <tr><td colSpan="5"><div className="empty-state empty-state--compact"><div className="empty-orb" /><h3>No requests yet</h3><p>Your submitted payment requests will appear here.</p></div></td></tr>
-                )}
-              </tbody>
-            </table>
+            <div className="payments-table-wrap">
+              <table className="simple-table payments-history-table">
+                <thead><tr><th>Date</th><th>Subjects</th><th>Amount</th><th>Method</th><th>Status</th></tr></thead>
+                <tbody>
+                  {loading ? (
+                    <tr><td colSpan="5">Loading...</td></tr>
+                  ) : requests.length ? requests.map((request) => (
+                    <tr key={request._id}>
+                      <td>{formatDate(request.createdAt)}</td>
+                      <td><span className="payments-subject-list">{request.selectedSubjects?.join(', ')}</span></td>
+                      <td>Rs {request.amount}</td>
+                      <td><PaymentMethod method={request.paymentMethod} /></td>
+                      <td><StatusBadge status={request.status} /></td>
+                    </tr>
+                  )) : (
+                    <tr><td colSpan="5"><div className="empty-state empty-state--compact payments-empty-state"><div className="empty-orb" /><h3>No requests yet</h3><p>Your submitted payment requests will appear here.</p></div></td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
       </div>

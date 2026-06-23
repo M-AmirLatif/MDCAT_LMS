@@ -2836,3 +2836,36 @@ html[data-theme="dark"] .auth-page .auth-select-wrap::after {
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18);
 }
 
+html:not([data-theme="dark"]) .workspace-hero h1,
+html:not([data-theme="dark"]) .workspace-hero h2,
+html:not([data-theme="dark"]) .workspace-hero-copy h1,
+html:not([data-theme="dark"]) .workspace-hero-copy h2,
+html:not([data-theme="dark"]) .notification-hero h1,
+html:not([data-theme="dark"]) .notification-hero h2 {
+  color: #11162f !important;
+  -webkit-text-fill-color: #11162f !important;
+  text-shadow: none !important;
+}
+
+html:not([data-theme="dark"]) .workspace-hero p,
+html:not([data-theme="dark"]) .workspace-hero-copy p,
+html:not([data-theme="dark"]) .notification-hero p,
+html:not([data-theme="dark"]) .workspace-hero .label-xs,
+html:not([data-theme="dark"]) .workspace-hero-copy .label-xs,
+html:not([data-theme="dark"]) .notification-hero .label-xs {
+  color: #202640 !important;
+  -webkit-text-fill-color: #202640 !important;
+  text-shadow: none !important;
+}
+
+html:not([data-theme="dark"]) .notification-toolbar .filter-pill,
+html:not([data-theme="dark"]) .notification-toolbar .filter-pill--active {
+  min-width: 132px !important;
+  justify-content: center !important;
+  background: #f4f6fb !important;
+  border: 1.5px solid #bcc4dc !important;
+  color: #24294a !important;
+  -webkit-text-fill-color: #24294a !important;
+  box-shadow: none !important;
+}
+
