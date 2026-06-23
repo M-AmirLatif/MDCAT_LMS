@@ -5885,6 +5885,13 @@
   line-height: 1.25 !important;
 }
 
+.review-validation-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 14px;
+}
+
 .mcq-renderer {
   display: block;
   color: inherit;

@@ -1,6 +1,7 @@
 const MCQ = require('../models/MCQ')
 const Course = require('../models/Course')
 const TestSession = require('../models/TestSession')
+const ImportBatch = require('../models/ImportBatch')
 const { parse } = require('csv-parse/sync')
 const { hasActiveSubscription } = require('../utils/subscriptions')
 
@@ -95,6 +96,35 @@ const getChapterTopics = (chapter) =>
   Array.isArray(chapter?.topics) ? chapter.topics : []
 const getChapterReviewQueue = (chapter) =>
   Array.isArray(chapter?.reviewQueue) ? chapter.reviewQueue : []
+
+const numericQuestionNumber = (value) => {
+  const raw = String(value ?? '').trim()
+  if (!raw) return null
+  const numeric = Number(raw)
+  return Number.isFinite(numeric) ? numeric : null
+}
+
+const compareMcqOrder = (a, b) => {
+  const aNumber = numericQuestionNumber(a?.originalQuestionNumber ?? a?.questionNumber)
+  const bNumber = numericQuestionNumber(b?.originalQuestionNumber ?? b?.questionNumber)
+  if (aNumber !== null && bNumber !== null && aNumber !== bNumber) {
+    return aNumber - bNumber
+  }
+  if (aNumber !== null && bNumber === null) return -1
+  if (aNumber === null && bNumber !== null) return 1
+
+  const aRow = Number(a?.csvRowIndex)
+  const bRow = Number(b?.csvRowIndex)
+  if (Number.isFinite(aRow) && Number.isFinite(bRow) && aRow !== bRow) {
+    return aRow - bRow
+  }
+  if (Number.isFinite(aRow) && !Number.isFinite(bRow)) return -1
+  if (!Number.isFinite(aRow) && Number.isFinite(bRow)) return 1
+
+  return new Date(a?.createdAt || 0) - new Date(b?.createdAt || 0)
+}
+
+const sortMcqsByOriginalOrder = (items = []) => [...items].sort(compareMcqOrder)
 
 const getTopic = (chapter, topicId) =>
   getChapterTopics(chapter).find(
@@ -342,13 +372,13 @@ const determineReviewReasons = ({
 }) => {
   const reasons = []
   if (!question) reasons.push('Question is empty')
-  if (countPresentOptions([optionA, optionB, optionC, optionD]) < 3) {
-    reasons.push('Fewer than 3 options present')
-  }
+  if (!optionA) reasons.push('Option A is empty')
+  if (!optionB) reasons.push('Option B is empty')
+  if (!optionC) reasons.push('Option C is empty')
+  if (!optionD) reasons.push('Option D is empty')
   if (!['a', 'b', 'c', 'd'].includes(correctAnswer)) {
     reasons.push('correct_answer must be a, b, c, or d')
   }
-  if (!explanation) reasons.push('Explanation is empty')
   if (hasUnavailableDiagram(question))
     reasons.push('Diagram description unavailable')
 
@@ -364,29 +394,54 @@ const determineReviewReasons = ({
 
 const buildReviewQueueItem = ({
   rowNumber,
+  csvRowIndex,
+  questionNumber,
+  importBatchId,
+  validationErrors = [],
   context,
   question,
+  questionImages = [],
   optionA,
+  optionAImages = [],
   optionB,
+  optionBImages = [],
   optionC,
+  optionCImages = [],
   optionD,
+  optionDImages = [],
   correctAnswer,
   explanation,
+  explanationImages = [],
   rawRow,
   reason,
 }) => ({
   id: createReviewQueueItemId(),
   row: rowNumber,
+  questionNumber: String(questionNumber || csvRowIndex || rowNumber || '').trim(),
+  originalQuestionNumber: String(questionNumber || csvRowIndex || rowNumber || '').trim(),
+  originalQuestionNumberSort: numericQuestionNumber(questionNumber || csvRowIndex || rowNumber),
+  csvRowIndex,
+  importBatchId,
+  importStatus: 'review',
+  validationErrors,
   topicId: context.topic?.id || null,
   topicName: context.topic?.name || null,
   reason,
   question,
+  questionText: question,
+  questionImages,
   optionA,
+  optionAImages,
   optionB,
+  optionBImages,
   optionC,
+  optionCImages,
   optionD,
+  optionDImages,
   correctAnswer: String(correctAnswer || '').toUpperCase(),
   explanation,
+  explanationText: explanation,
+  explanationImages,
   rawRow: rawRow.map((cell) => String(cell || '')),
   createdAt: new Date(),
 })
@@ -406,6 +461,12 @@ const createMcqDocFromRow = ({
   correctAnswer,
   explanation,
   explanationImages = [],
+  questionNumber = null,
+  originalQuestionNumber = null,
+  csvRowIndex = null,
+  importBatchId = null,
+  importStatus = 'imported',
+  validationErrors = [],
   createdBy,
   reviewReason = null,
 }) => {
@@ -454,6 +515,13 @@ const createMcqDocFromRow = ({
     hasDiagram: fields.some(hasDiagram) || imageGroups.some((images) => images?.length),
     hasLatex: fields.some(hasLatex),
     reviewReason,
+    questionNumber: String(questionNumber || originalQuestionNumber || csvRowIndex || '').trim() || null,
+    originalQuestionNumber: String(originalQuestionNumber || questionNumber || csvRowIndex || '').trim() || null,
+    originalQuestionNumberSort: numericQuestionNumber(originalQuestionNumber || questionNumber || csvRowIndex),
+    csvRowIndex,
+    importBatchId,
+    importStatus,
+    validationErrors,
   }
 }
 
@@ -536,6 +604,19 @@ const normalizeCsvRowToHeaders = (row, headers) => {
   const mergedQuestion = row.slice(0, overflowCount + 1).join(',')
   return [mergedQuestion, ...row.slice(overflowCount + 1)]
 }
+
+const getCsvValue = (row, ...keys) => {
+  for (const key of keys) {
+    const normalized = String(key || '').trim().toLowerCase()
+    if (Object.prototype.hasOwnProperty.call(row, normalized)) {
+      return row[normalized]
+    }
+  }
+  return ''
+}
+
+const csvImageArray = (row, ...keys) =>
+  normalizeImageArray(...keys.map((key) => getCsvValue(row, key)))
 
 const hasCorrectOption = (options) => {
   return Array.isArray(options) && options.some((opt) => opt.isCorrect === true)
@@ -730,7 +811,7 @@ exports.getMcqsByCourse = async (req, res) => {
       })
     }
 
-    const mcqs = await query.sort({ createdAt: -1 })
+    const mcqs = sortMcqsByOriginalOrder(await query.sort({ createdAt: 1 }))
     const safeMcqs = stripCorrectOptions(mcqs)
 
     res.status(200).json({
@@ -781,17 +862,16 @@ exports.getMcqsByCourseFull = async (req, res) => {
     const [mcqs, total] = await Promise.all([
       MCQ.find(filter)
         .populate('createdBy', 'firstName lastName email')
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
+        .sort({ createdAt: 1 })
         .lean(),
       MCQ.countDocuments(filter),
     ])
+    const pagedMcqs = sortMcqsByOriginalOrder(mcqs).slice(skip, skip + limit)
 
     res.status(200).json({
       success: true,
-      count: mcqs.length,
-      mcqs: serializeMcqsMedia(mcqs),
+      count: pagedMcqs.length,
+      mcqs: serializeMcqsMedia(pagedMcqs),
       page,
       limit,
       total,
@@ -1434,7 +1514,9 @@ exports.getMcqsByChapter = async (req, res) => {
       })
     }
 
-    const mcqs = await MCQ.find(context.filter).sort({ createdAt: 1 }).lean()
+    const mcqs = sortMcqsByOriginalOrder(
+      await MCQ.find(context.filter).sort({ createdAt: 1 }).lean(),
+    )
     const safeMcqs = includeFull ? serializeMcqsMedia(mcqs) : stripCorrectOptions(mcqs)
 
     res.status(200).json({
@@ -1449,9 +1531,7 @@ exports.getMcqsByChapter = async (req, res) => {
           if (!req.query.topicId) return true
           return String(item.topicId || '') === String(req.query.topicId)
         })
-        .sort(
-          (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0),
-        ),
+        .sort(compareMcqOrder),
       count: safeMcqs.length,
       mcqs: safeMcqs,
     })
@@ -1709,6 +1789,16 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
         ),
       )
 
+    const importBatch = await ImportBatch.create({
+      fileName: req.file?.originalname || req.body.fileName || 'CSV upload',
+      subject: context.subject,
+      courseId: context.course._id,
+      chapterId: context.chapter.id,
+      topicId: context.topic?.id || null,
+      totalRows: rows.length,
+      createdBy: req.user.id,
+    })
+
     const skipped = []
     const reviewItems = []
     const docs = []
@@ -1719,14 +1809,25 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
     if (context.topic?.id) duplicateFilter.topicId = context.topic.id
     else
       duplicateFilter.$or = [{ topicId: null }, { topicId: { $exists: false } }]
+    const existingMcqs = await MCQ.find(duplicateFilter)
+      .select('question originalQuestionNumber questionNumber')
+      .lean()
     const existingQuestions = new Set(
-      (await MCQ.find(duplicateFilter).select('question').lean()).map((item) =>
-        item.question.trim().toLowerCase(),
-      ),
+      existingMcqs.map((item) => item.question.trim().toLowerCase()),
+    )
+    const existingNumberQuestionKeys = new Set(
+      existingMcqs
+        .map((item) => {
+          const number = String(item.originalQuestionNumber || item.questionNumber || '').trim()
+          const question = String(item.question || '').trim().toLowerCase()
+          return number && question ? `${number}::${question}` : null
+        })
+        .filter(Boolean),
     )
 
     rows.forEach((rawRow, index) => {
       const rowNumber = index + 2
+      const csvRowIndex = rowNumber
       const row = Object.fromEntries(
         Object.entries(rawRow || {}).map(([key, value]) => [
           String(key).trim().toLowerCase(),
@@ -1734,13 +1835,23 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
         ]),
       )
 
-      const question = normalizeCsvCell(row.question)
-      const optionA = normalizeCsvCell(row.option_a)
-      const optionB = normalizeCsvCell(row.option_b)
-      const optionC = normalizeCsvCell(row.option_c)
-      const optionD = normalizeCsvCell(row.option_d)
-      const correctAnswer = normalizeCsvCorrectAnswer(row.correct_answer)
-      const explanation = normalizeCsvCell(row.explanation)
+      const questionNumber = String(
+        getCsvValue(row, 'question_number', 'questionnumber', 'question_no', 'q_no', 'no') ||
+          csvRowIndex,
+      ).trim()
+      const question = normalizeCsvCell(getCsvValue(row, 'questionText', 'question_text', 'question'))
+      const optionA = normalizeCsvCell(getCsvValue(row, 'option_a', 'optionA'))
+      const optionB = normalizeCsvCell(getCsvValue(row, 'option_b', 'optionB'))
+      const optionC = normalizeCsvCell(getCsvValue(row, 'option_c', 'optionC'))
+      const optionD = normalizeCsvCell(getCsvValue(row, 'option_d', 'optionD'))
+      const correctAnswer = normalizeCsvCorrectAnswer(getCsvValue(row, 'correct_answer', 'correctAnswer'))
+      const explanation = normalizeCsvCell(getCsvValue(row, 'explanationText', 'explanation_text', 'explanation'))
+      const questionImages = csvImageArray(row, 'questionImages', 'question_images', 'questionImage', 'question_image')
+      const optionAImages = csvImageArray(row, 'optionAImages', 'option_a_images', 'optionAImage', 'option_a_image')
+      const optionBImages = csvImageArray(row, 'optionBImages', 'option_b_images', 'optionBImage', 'option_b_image')
+      const optionCImages = csvImageArray(row, 'optionCImages', 'option_c_images', 'optionCImage', 'option_c_image')
+      const optionDImages = csvImageArray(row, 'optionDImages', 'option_d_images', 'optionDImage', 'option_d_image')
+      const explanationImages = csvImageArray(row, 'explanationImages', 'explanation_images', 'explanationImage', 'explanation_image')
       const explicitNeedsReview =
         String(row.needs_review || '')
           .trim()
@@ -1755,25 +1866,47 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
         explanation,
         explicitNeedsReview,
       })
+      const duplicateKey = `${questionNumber}::${String(question).trim().toLowerCase()}`
 
       if (question && existingQuestions.has(question.toLowerCase())) {
-        reviewReasons.push('Duplicate question skipped')
+        reviewReasons.push('Duplicate question already exists')
+      }
+      if (question && questionNumber && existingNumberQuestionKeys.has(duplicateKey)) {
+        reviewReasons.push('Duplicate original question number and text')
       }
 
       if (reviewReasons.length > 0) {
         const reason = [...new Set(reviewReasons)].join('; ')
-        skipped.push({ row: rowNumber, reason })
+        const validationErrors = [...new Set(reviewReasons)]
+        skipped.push({
+          row: rowNumber,
+          csvRowIndex,
+          questionNumber,
+          originalQuestionNumber: questionNumber,
+          reason,
+          validationErrors,
+        })
         reviewItems.push(
           buildReviewQueueItem({
             rowNumber,
+            csvRowIndex,
+            questionNumber,
+            importBatchId: importBatch._id,
+            validationErrors,
             context,
             question,
+            questionImages,
             optionA,
+            optionAImages,
             optionB,
+            optionBImages,
             optionC,
+            optionCImages,
             optionD,
+            optionDImages,
             correctAnswer,
             explanation,
+            explanationImages,
             rawRow: headers.map((header) => row[header] ?? ''),
             reason,
           }),
@@ -1782,16 +1915,29 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
       }
 
       existingQuestions.add(question.toLowerCase())
+      existingNumberQuestionKeys.add(duplicateKey)
       docs.push(
         createMcqDocFromRow({
           context,
           question,
+          questionImages,
           optionA,
+          optionAImages,
           optionB,
+          optionBImages,
           optionC,
+          optionCImages,
           optionD,
+          optionDImages,
           correctAnswer,
           explanation,
+          explanationImages,
+          questionNumber,
+          originalQuestionNumber: questionNumber,
+          csvRowIndex,
+          importBatchId: importBatch._id,
+          importStatus: 'imported',
+          validationErrors: [],
           createdBy: req.user.id,
           reviewReason: null,
         }),
@@ -1814,11 +1960,23 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
     const inserted = docs.length
       ? await MCQ.insertMany(docs, { ordered: false })
       : []
+    importBatch.importedCount = inserted.length
+    importBatch.reviewCount = reviewItems.length
+    importBatch.rejectedCount = 0
+    await importBatch.save()
+    const reviewQuestionNumbers = reviewItems.map(
+      (item) => item.originalQuestionNumber || item.questionNumber || item.csvRowIndex || item.row,
+    )
     res.status(200).json({
       success: true,
+      importBatchId: importBatch._id,
+      totalRows: rows.length,
+      importedRows: inserted.length,
+      reviewRows: reviewItems.length,
+      reviewQuestionNumbers,
       imported: inserted.length,
       review_queue: reviewItems.length,
-      message: `${inserted.length} MCQs imported. ${reviewItems.length} sent to review queue.`,
+      message: `Imported: ${inserted.length}. Needs review: ${reviewItems.length}.`,
       uploaded: inserted.length,
       skippedCount: skipped.length,
       queuedForReview: reviewItems.length,
@@ -1916,6 +2074,8 @@ exports.updateCsvReviewItem = async (req, res) => {
         item.reason ||
         'Needs manual review',
     ).trim()
+    item.validationErrors = reviewReasons
+    item.importStatus = reviewReasons.length ? 'review' : 'pending'
 
     await course.save()
 
@@ -1952,7 +2112,7 @@ exports.getCsvReviewQueue = async (req, res) => {
         if (!req.query.topicId) return true
         return String(item.topicId || '') === String(req.query.topicId)
       })
-      .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+      .sort(compareMcqOrder)
 
     res.status(200).json({
       success: true,
@@ -2025,12 +2185,24 @@ exports.approveCsvReviewItem = async (req, res) => {
       createMcqDocFromRow({
         context: approvalContext,
         question,
+        questionImages: item.questionImages || [],
         optionA,
+        optionAImages: item.optionAImages || [],
         optionB,
+        optionBImages: item.optionBImages || [],
         optionC,
+        optionCImages: item.optionCImages || [],
         optionD,
+        optionDImages: item.optionDImages || [],
         correctAnswer,
         explanation,
+        explanationImages: item.explanationImages || [],
+        questionNumber: item.questionNumber || item.originalQuestionNumber || item.csvRowIndex || item.row,
+        originalQuestionNumber: item.originalQuestionNumber || item.questionNumber || item.csvRowIndex || item.row,
+        csvRowIndex: item.csvRowIndex || item.row || null,
+        importBatchId: item.importBatchId || null,
+        importStatus: 'fixed',
+        validationErrors: [],
         createdBy: req.user.id,
         reviewReason: item.reason || null,
       }),
@@ -2074,7 +2246,9 @@ exports.submitChapterAttempt = async (req, res) => {
     }
 
     const answers = req.body.answers || {}
-    const mcqs = await MCQ.find(context.filter).sort({ createdAt: 1 }).lean()
+    const mcqs = sortMcqsByOriginalOrder(
+      await MCQ.find(context.filter).sort({ createdAt: 1 }).lean(),
+    )
     if (!mcqs.length)
       return res.status(404).json({ error: 'No MCQs found for this chapter' })
 

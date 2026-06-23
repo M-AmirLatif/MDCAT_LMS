@@ -133,6 +133,38 @@ const mcqSchema = new mongoose.Schema(
       enum: ['A', 'B', 'C', 'D'],
       default: null,
     },
+    questionNumber: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+    originalQuestionNumber: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+    originalQuestionNumberSort: {
+      type: Number,
+      default: null,
+    },
+    csvRowIndex: {
+      type: Number,
+      default: null,
+    },
+    importBatchId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'ImportBatch',
+      default: null,
+    },
+    importStatus: {
+      type: String,
+      enum: ['imported', 'review', 'pending', 'fixed', 'rejected'],
+      default: 'imported',
+    },
+    validationErrors: {
+      type: [String],
+      default: [],
+    },
   },
   { timestamps: true },
 )
@@ -144,5 +176,14 @@ mcqSchema.index({ courseId: 1, isPastPaper: 1, year: 1 })
 mcqSchema.index({ courseId: 1, subject: 1, chapterId: 1, isPublished: 1 })
 mcqSchema.index({ courseId: 1, chapterId: 1, topicId: 1, isPublished: 1 })
 mcqSchema.index({ subject: 1 })
+mcqSchema.index({
+  courseId: 1,
+  chapterId: 1,
+  topicId: 1,
+  originalQuestionNumberSort: 1,
+  csvRowIndex: 1,
+  createdAt: 1,
+})
+mcqSchema.index({ importBatchId: 1, csvRowIndex: 1 })
 
 module.exports = mongoose.model('MCQ', mcqSchema)

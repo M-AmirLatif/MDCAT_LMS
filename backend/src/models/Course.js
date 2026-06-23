@@ -70,6 +70,36 @@ const courseSchema = new mongoose.Schema(
           {
             id: String,
             row: Number,
+            questionNumber: {
+              type: String,
+              default: null,
+            },
+            originalQuestionNumber: {
+              type: String,
+              default: null,
+            },
+            originalQuestionNumberSort: {
+              type: Number,
+              default: null,
+            },
+            csvRowIndex: {
+              type: Number,
+              default: null,
+            },
+            importBatchId: {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: 'ImportBatch',
+              default: null,
+            },
+            importStatus: {
+              type: String,
+              enum: ['imported', 'review', 'pending', 'fixed', 'rejected'],
+              default: 'review',
+            },
+            validationErrors: {
+              type: [String],
+              default: [],
+            },
             topicId: {
               type: String,
               default: null,

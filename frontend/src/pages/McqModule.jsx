@@ -1026,9 +1026,21 @@ function ReviewQueueReadonlyCard({ item, index, onEdit, onApprove, onDelete }) {
     <article className="teacher-mcq-row teacher-mcq-row--editor">
       <div className="teacher-mcq-editor-head">
         <span className="state-chip state-chip--neutral">
-          MCQ {item.row || index + 1}
+          MCQ {item.originalQuestionNumber || item.questionNumber || item.row || index + 1}
+        </span>
+        <span className="state-chip state-chip--neutral">
+          CSV row {item.csvRowIndex || item.row || index + 1}
         </span>
       </div>
+      {item.validationErrors?.length ? (
+        <div className="review-validation-list">
+          {item.validationErrors.map((error) => (
+            <span className="state-chip state-chip--warning" key={error}>
+              {error}
+            </span>
+          ))}
+        </div>
+      ) : null}
       <div className="floating-field teacher-mcq-question-field">
         <label>Issue</label>
         <AutoSizeTextarea
@@ -1261,9 +1273,18 @@ function McqList() {
       const csvText = await file.text()
       const res = await API.post(`/mcqs/${subject}/${chapterId}/upload-csv`, {
         csvText,
+        fileName: file.name,
         topicId: selectedTopicId || null,
       })
-      toast.success(res.data.message)
+      toast.success(
+        `Total rows: ${res.data.totalRows ?? 'N/A'} | Imported: ${res.data.importedRows ?? res.data.imported} | Needs review: ${res.data.reviewRows ?? res.data.queuedForReview}`,
+      )
+      if (res.data.reviewQuestionNumbers?.length) {
+        toast(
+          `Review question numbers: ${res.data.reviewQuestionNumbers.join(', ')}`,
+          { duration: 8000 },
+        )
+      }
       if (res.data.queuedForReview) {
         toast(
           `${res.data.queuedForReview} rejected row${res.data.queuedForReview === 1 ? '' : 's'} saved in this chapter's review queue.`,
@@ -1273,7 +1294,7 @@ function McqList() {
       if (res.data.skipped?.length) {
         toast.error(
           res.data.skipped
-            .map((row) => `Row ${row.row}: ${row.reason}`)
+            .map((row) => `Question ${row.questionNumber || row.originalQuestionNumber || row.row} / CSV row ${row.csvRowIndex || row.row}: ${row.reason}`)
             .join('\n'),
           { duration: 8000 },
         )
