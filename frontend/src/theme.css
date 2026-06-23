@@ -1802,6 +1802,29 @@ html[data-theme="dark"] .landing .lp-btn-white {
   background: var(--bg-card) !important;
 }
 
+.landing .lp-final-cta .lp-btn-ghost,
+.landing .lp-final-cta .lp-btn-ghost:visited {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.58) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  filter: none !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+.landing .lp-final-cta .lp-btn-ghost:hover,
+.landing .lp-final-cta .lp-btn-ghost:focus-visible {
+  background: rgba(255, 255, 255, 0.22) !important;
+  border-color: rgba(255, 255, 255, 0.86) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: 0 14px 30px rgba(20, 22, 48, 0.18) !important;
+  filter: none !important;
+  opacity: 1 !important;
+  outline: none;
+}
+
 html[data-theme="dark"] .landing .lp-green-pill,
 html[data-theme="dark"] .landing .lp-green-pill span {
   color: #D9FFF0 !important;
