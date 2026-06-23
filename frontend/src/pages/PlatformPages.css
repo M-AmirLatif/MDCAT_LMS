@@ -3070,7 +3070,11 @@
   min-width: 0;
   overflow-x: hidden;
   gap: clamp(16px, 2vw, 24px);
-  padding: clamp(0px, 1vw, 8px);
+  padding: clamp(14px, 1.6vw, 24px);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(108, 71, 255, 0.12), transparent 34%),
+    linear-gradient(180deg, #eef1fb 0%, #e4e8f5 100%);
 }
 
 .payments-student-page .workspace-card {
@@ -3078,14 +3082,16 @@
   max-width: 100%;
   min-width: 0;
   overflow: hidden;
-  border: 1px solid var(--border-card, rgba(108, 71, 255, 0.14));
-  background: var(--bg-card);
+  border: 1.5px solid #bec7df;
+  background: #ffffff;
+  box-shadow: 0 14px 38px rgba(31, 38, 70, 0.09);
 }
 
 .payments-summary-card {
   background:
-    linear-gradient(135deg, rgba(108, 71, 255, 0.09), rgba(74, 144, 226, 0.05)),
-    var(--bg-card) !important;
+    linear-gradient(135deg, rgba(108, 71, 255, 0.08), rgba(45, 217, 155, 0.035)),
+    #fbfcff !important;
+  border-top: 4px solid rgba(108, 71, 255, 0.72) !important;
 }
 
 .payments-summary-card .workspace-card-head {
@@ -3099,6 +3105,7 @@
   font-size: clamp(20px, 2.2vw, 30px);
   line-height: 1.2;
   overflow-wrap: break-word;
+  color: #11162f;
 }
 
 .payments-summary-card p {
@@ -3124,8 +3131,18 @@
   gap: 6px;
   padding: 14px 16px;
   border-radius: 14px;
-  border: 1px solid var(--border-card, rgba(108, 71, 255, 0.12));
-  background: var(--bg-surface);
+  border: 1.5px solid #c3cbe2;
+  background: linear-gradient(180deg, #f8faff, #f1f4fb);
+}
+
+.payments-summary-card .metric-row span {
+  color: #11162f;
+  font-weight: 700;
+}
+
+.payments-summary-card .metric-row strong {
+  color: #0d1430;
+  font-weight: 900;
 }
 
 .payments-summary-card .metric-row span,
@@ -3147,12 +3164,19 @@
 .payments-form-card .workspace-card-head,
 .payments-history-card .workspace-card-head {
   padding-bottom: 12px;
+  border-bottom: 1px solid rgba(190, 199, 223, 0.72);
 }
 
 .payments-form-card .workspace-card-title,
 .payments-history-card .workspace-card-title {
   font-size: clamp(19px, 1.7vw, 26px);
   line-height: 1.25;
+  color: #11162f;
+}
+
+.payments-form-card,
+.payments-history-card {
+  border-top: 4px solid rgba(108, 71, 255, 0.72) !important;
 }
 
 .payments-form-card .form-shell {
@@ -3179,10 +3203,10 @@
   min-height: 128px !important;
   padding: clamp(16px, 1.8vw, 22px) !important;
   border-radius: 18px;
-  border: 1px solid var(--border-card, rgba(108, 71, 255, 0.14));
+  border: 1.5px solid #c3cbe2;
   background:
-    linear-gradient(180deg, rgba(108, 71, 255, 0.045), rgba(74, 144, 226, 0.025)),
-    var(--bg-surface) !important;
+    linear-gradient(180deg, rgba(108, 71, 255, 0.06), rgba(74, 144, 226, 0.03)),
+    #f5f7ff !important;
   box-shadow: none !important;
 }
 
@@ -3284,9 +3308,9 @@
   height: 50px;
   padding: 0 14px;
   border-radius: 14px;
-  border: 1px solid var(--border-card, rgba(108, 71, 255, 0.16));
-  background: var(--bg-surface);
-  color: var(--text-primary);
+  border: 1.5px solid #bdc6de;
+  background-color: #ffffff;
+  color: #11162f;
   font: inherit;
   font-size: 14px;
   line-height: 1.2;
@@ -3305,7 +3329,7 @@
 }
 
 .payments-field input::placeholder {
-  color: var(--text-muted);
+  color: #6c7488;
   opacity: 0.72;
 }
 
@@ -3347,9 +3371,9 @@
   min-width: 0;
   padding: clamp(18px, 2vw, 24px);
   border-radius: 18px;
-  border: 1px solid var(--border-card, rgba(45, 217, 155, 0.24));
+  border: 1.5px solid #bcc6dd;
   border-top: 4px solid #2dd99b;
-  background: var(--bg-surface);
+  background: linear-gradient(180deg, #f7f9ff, #eef2fb);
 }
 
 .payments-amount-card strong {
@@ -3402,8 +3426,8 @@
   overflow-x: auto;
   overflow-y: hidden;
   border-radius: 16px;
-  border: 1px solid var(--border-card, rgba(108, 71, 255, 0.12));
-  background: var(--bg-surface);
+  border: 1.5px solid #bcc6dd;
+  background: #ffffff;
 }
 
 .payments-history-table {
@@ -3424,8 +3448,8 @@
 }
 
 .payments-history-table th {
-  color: var(--text-muted);
-  background: var(--bg-hover, rgba(108, 71, 255, 0.06));
+  color: #5d667a;
+  background: #eef2fb;
   font-size: 11px;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -3462,8 +3486,15 @@
 }
 
 [data-theme='dark'] .payments-student-page .workspace-card {
-  background: var(--bg-card, #12102a);
-  border-color: rgba(139, 111, 255, 0.18);
+  background: #111027;
+  border-color: rgba(139, 111, 255, 0.28);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.32);
+}
+
+[data-theme='dark'] .payments-student-page {
+  background:
+    radial-gradient(circle at 8% 0%, rgba(139, 111, 255, 0.18), transparent 34%),
+    linear-gradient(180deg, #09081a 0%, #0f0d28 100%);
 }
 
 [data-theme='dark'] .payments-summary-card,
@@ -3475,7 +3506,18 @@
   background:
     linear-gradient(180deg, rgba(139, 111, 255, 0.055), rgba(18, 16, 42, 0)),
     var(--bg-surface, #1a1640) !important;
-  border-color: rgba(139, 111, 255, 0.22);
+  border-color: rgba(139, 111, 255, 0.32);
+}
+
+[data-theme='dark'] .payments-form-card,
+[data-theme='dark'] .payments-history-card,
+[data-theme='dark'] .payments-summary-card {
+  border-top-color: rgba(139, 111, 255, 0.86) !important;
+}
+
+[data-theme='dark'] .payments-form-card .workspace-card-head,
+[data-theme='dark'] .payments-history-card .workspace-card-head {
+  border-bottom-color: rgba(139, 111, 255, 0.18);
 }
 
 [data-theme='dark'] .payments-history-table th {
@@ -3486,7 +3528,12 @@
 [data-theme='dark'] .payments-history-table th,
 [data-theme='dark'] .payments-history-table td,
 [data-theme='dark'] .payments-account-number,
-[data-theme='dark'] .payments-amount-card strong {
+[data-theme='dark'] .payments-amount-card strong,
+[data-theme='dark'] .payments-form-card .workspace-card-title,
+[data-theme='dark'] .payments-history-card .workspace-card-title,
+[data-theme='dark'] .payments-summary-card .workspace-card-title,
+[data-theme='dark'] .payments-summary-card .metric-row span,
+[data-theme='dark'] .payments-summary-card .metric-row strong {
   color: var(--text-primary, #f0eeff);
 }
 
