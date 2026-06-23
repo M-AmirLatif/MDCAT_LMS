@@ -3263,7 +3263,7 @@
 
 .payments-form-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(180px, 0.85fr) minmax(260px, 1fr) minmax(260px, 1fr);
   gap: 14px;
   width: 100%;
   max-width: 100%;
@@ -3293,7 +3293,15 @@
 }
 
 .payments-field select {
-  padding-right: 38px;
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 48px;
+  cursor: pointer;
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='26' height='26' viewBox='0 0 26 26' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='13' cy='13' r='11' fill='%23EEE9FF'/%3E%3Cpath d='M8.5 11l4.5 4.5L17.5 11' stroke='%236C47FF' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 13px center;
+  background-size: 26px 26px;
 }
 
 .payments-field input::placeholder {
@@ -3368,9 +3376,13 @@
 
 .payments-submit-btn:disabled {
   cursor: not-allowed;
-  opacity: 0.58;
-  filter: saturate(0.72);
-  box-shadow: none;
+  opacity: 1;
+  filter: none;
+  background: linear-gradient(135deg, #d8ddee, #c9d3e8) !important;
+  color: #202640 !important;
+  -webkit-text-fill-color: #202640 !important;
+  box-shadow: none !important;
+  border: 1px solid rgba(125, 137, 170, 0.42) !important;
 }
 
 .payments-history-card {
@@ -3489,13 +3501,34 @@
   color: var(--text-primary, #f0eeff);
 }
 
+[data-theme='dark'] .payments-field select {
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='26' height='26' viewBox='0 0 26 26' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='13' cy='13' r='11' fill='%234D3FA0'/%3E%3Cpath d='M8.5 11l4.5 4.5L17.5 11' stroke='%23FFFFFF' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 13px center !important;
+  background-size: 26px 26px !important;
+}
+
+[data-theme='dark'] .payments-submit-btn:disabled {
+  background: linear-gradient(135deg, #332a78, #304970) !important;
+  color: #f0eeff !important;
+  -webkit-text-fill-color: #f0eeff !important;
+  border-color: rgba(165, 144, 255, 0.34) !important;
+}
+
 @media (max-width: 1280px) {
   .payments-content-grid {
     grid-template-columns: 1fr;
   }
 
   .payments-form-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(180px, 0.85fr) minmax(260px, 1fr) minmax(260px, 1fr);
+  }
+}
+
+@media (max-width: 860px) {
+  .payments-form-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -3513,8 +3546,7 @@
     width: fit-content;
   }
 
-  .payments-method-grid,
-  .payments-form-grid {
+  .payments-method-grid {
     grid-template-columns: 1fr;
   }
 
