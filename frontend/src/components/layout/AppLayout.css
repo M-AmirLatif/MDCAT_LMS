@@ -53,24 +53,58 @@
 }
 
 @media (max-width: 1024px) {
+  .app-layout {
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
   .app-main {
     margin-left: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: auto;
+    max-height: none;
+    overflow: visible;
   }
 
   .sidebar-overlay {
     display: block;
   }
+
+  .app-content {
+    min-height: calc(100vh - var(--topbar-height));
+    min-height: calc(100dvh - var(--topbar-height));
+    overflow: visible;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: auto;
+    scroll-behavior: auto;
+  }
+
+  .app-layout .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 80;
+  }
 }
 
 @media (max-width: 768px) {
   .app-content {
-    padding: var(--space-page-y, 14px) var(--space-page-x, 14px) var(--space-page-y, 14px);
+    padding:
+      var(--space-page-y, 14px)
+      var(--space-page-x, 14px)
+      calc(var(--space-page-y, 14px) + env(safe-area-inset-bottom, 0px));
   }
 }
 
 @media (max-width: 480px) {
   .app-content {
-    padding: var(--space-page-y, 10px) var(--space-page-x, 10px) var(--space-page-y, 10px);
+    padding:
+      var(--space-page-y, 10px)
+      var(--space-page-x, 10px)
+      calc(var(--space-page-y, 10px) + env(safe-area-inset-bottom, 0px));
   }
 }
 
