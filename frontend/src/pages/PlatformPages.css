@@ -2149,6 +2149,267 @@
   border-bottom: none;
 }
 
+/* Admin panel alignment and readability fixes */
+.admin-students-page,
+.admin-teachers-page,
+.admin-courses-page,
+.admin-payments-page {
+  overflow-x: hidden;
+}
+
+.admin-students-page .card-grid,
+.admin-payments-page .card-grid {
+  align-items: stretch;
+}
+
+.admin-students-page .stat-tile,
+.admin-payments-page .stat-tile {
+  min-height: 190px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.admin-students-page .stat-tile-top,
+.admin-payments-page .stat-tile-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 14px;
+}
+
+.admin-students-page .stat-tile-top > span:first-child,
+.admin-payments-page .stat-tile-top > span:first-child {
+  min-width: 0;
+  color: var(--heading);
+  font-size: clamp(20px, 2vw, 26px);
+  line-height: 1.22;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+
+.admin-students-page .stat-tile .badge,
+.admin-payments-page .stat-tile .badge {
+  min-width: max-content;
+  justify-self: end;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1;
+  text-align: center;
+}
+
+.admin-students-page .stat-tile > strong,
+.admin-payments-page .stat-tile > strong {
+  color: var(--heading);
+  font-size: clamp(34px, 4vw, 46px);
+  line-height: 1;
+}
+
+.admin-students-page .stat-tile > small,
+.admin-payments-page .stat-tile > small {
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.admin-students-page .split-layout,
+.admin-teachers-page .admin-split-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+  align-items: start;
+}
+
+.admin-table-card,
+.admin-payments-page .payments-history-card,
+.admin-teacher-queue-card {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.admin-table-card .workspace-card-body,
+.admin-payments-page .payments-history-card .workspace-card-body {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-students-page .simple-table,
+.admin-payments-page .simple-table {
+  min-width: 920px;
+  table-layout: fixed;
+}
+
+.admin-students-page .simple-table th,
+.admin-students-page .simple-table td,
+.admin-payments-page .simple-table th,
+.admin-payments-page .simple-table td {
+  vertical-align: middle;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+.admin-students-page .simple-table th:nth-child(1) { width: 270px; }
+.admin-students-page .simple-table th:nth-child(2) { width: 128px; }
+.admin-students-page .simple-table th:nth-child(3) { width: 168px; }
+.admin-students-page .simple-table th:nth-child(4) { width: 128px; }
+.admin-students-page .simple-table th:nth-child(5) { width: 88px; }
+.admin-students-page .simple-table th:nth-child(6) { width: 150px; }
+
+.admin-payments-page .simple-table th:nth-child(1) { width: 240px; }
+.admin-payments-page .simple-table th:nth-child(2) { width: 150px; }
+.admin-payments-page .simple-table th:nth-child(3) { width: 120px; }
+.admin-payments-page .simple-table th:nth-child(4) { width: 160px; }
+.admin-payments-page .simple-table th:nth-child(5) { width: 130px; }
+.admin-payments-page .simple-table th:nth-child(6) { width: 130px; }
+.admin-payments-page .simple-table th:nth-child(7) { width: 130px; }
+.admin-payments-page .simple-table th:nth-child(8) { width: 150px; }
+
+.admin-students-page .simple-table select,
+.admin-courses-page .floating-field select {
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border-input, rgba(108, 71, 255, 0.22));
+  background-color: var(--bg-input, #fff);
+  color: var(--text-primary);
+  padding: 0 42px 0 14px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #6c47ff 50%),
+    linear-gradient(135deg, #6c47ff 50%, transparent 50%),
+    linear-gradient(to right, rgba(108, 71, 255, 0.12), rgba(108, 71, 255, 0.12));
+  background-position:
+    calc(100% - 22px) 50%,
+    calc(100% - 15px) 50%,
+    calc(100% - 44px) 50%;
+  background-size: 7px 7px, 7px 7px, 1px 24px;
+  background-repeat: no-repeat;
+}
+
+.admin-students-page .simple-table select:focus,
+.admin-courses-page .floating-field select:focus {
+  outline: none;
+  border-color: var(--purple);
+  box-shadow: 0 0 0 4px rgba(108, 71, 255, 0.14);
+}
+
+.admin-payments-page .simple-table .inline-actions,
+.admin-students-page .simple-table .inline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.admin-payments-page .simple-table .btn,
+.admin-students-page .simple-table .btn {
+  min-width: 0;
+  height: 40px;
+  padding: 0 16px;
+  white-space: nowrap;
+}
+
+.admin-detail-card {
+  position: sticky;
+  top: 92px;
+  min-width: 0;
+}
+
+.admin-detail-card .workspace-card-title,
+.admin-detail-card .metric-row strong {
+  overflow-wrap: anywhere;
+}
+
+.admin-teachers-page .workspace-card-head {
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.admin-teachers-page .filter-pills {
+  justify-content: flex-end;
+  max-width: 420px;
+}
+
+.admin-teachers-page .filter-pill {
+  min-width: 88px;
+  justify-content: center;
+}
+
+.admin-teachers-page .queue-card {
+  padding: 20px;
+}
+
+.admin-teachers-page .queue-card p {
+  margin: 8px 0 14px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.admin-courses-page .floating-field select {
+  height: 58px;
+  font-size: 16px;
+}
+
+[data-theme='dark'] .admin-students-page .simple-table select,
+[data-theme='dark'] .admin-courses-page .floating-field select {
+  background-color: #151338;
+  color: #f4f1ff;
+  border-color: rgba(165, 144, 255, 0.34);
+}
+
+[data-theme='dark'] .admin-students-page .stat-tile-top > span:first-child,
+[data-theme='dark'] .admin-payments-page .stat-tile-top > span:first-child,
+[data-theme='dark'] .admin-students-page .stat-tile > strong,
+[data-theme='dark'] .admin-payments-page .stat-tile > strong {
+  color: #f4f1ff;
+}
+
+[data-theme='dark'] .admin-students-page .stat-tile > small,
+[data-theme='dark'] .admin-payments-page .stat-tile > small {
+  color: rgba(240, 238, 255, 0.76);
+}
+
+@media (max-width: 1180px) {
+  .admin-students-page .split-layout,
+  .admin-teachers-page .admin-split-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-detail-card {
+    position: static;
+  }
+
+  .admin-teachers-page .filter-pills {
+    justify-content: flex-start;
+    max-width: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-students-page .stat-tile,
+  .admin-payments-page .stat-tile {
+    min-height: 170px;
+    padding: 22px;
+  }
+
+  .admin-students-page .stat-tile-top,
+  .admin-payments-page .stat-tile-top {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-students-page .stat-tile .badge,
+  .admin-payments-page .stat-tile .badge {
+    justify-self: start;
+  }
+}
+
 .simple-table--compact th,
 .simple-table--compact td {
   padding: 10px 12px;

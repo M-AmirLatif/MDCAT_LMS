@@ -329,7 +329,7 @@ function AdminPayments() {
   }
 
   return (
-    <div className="workspace-page workspace-page--payments animate-fade-up">
+    <div className="workspace-page workspace-page--payments admin-payments-page animate-fade-up">
       <div className="card-grid">
         <div className="stat-tile"><span>Total Requests</span><strong>{totals.total}</strong><small>Manual submissions</small></div>
         <div className="stat-tile"><span>Pending</span><strong>{totals.pending}</strong><small>Need verification</small></div>

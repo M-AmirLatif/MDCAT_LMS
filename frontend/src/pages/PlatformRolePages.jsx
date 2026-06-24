@@ -332,7 +332,7 @@ export function AdminStudentsPage() {
   }
 
   return (
-    <div className="workspace-page animate-fade-up">
+    <div className="workspace-page admin-students-page animate-fade-up">
       <div className="card-grid">
         <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Total Students</span><span className="badge badge-purple">Live</span></div><strong>{overview.totalStudents}</strong><small>{overview.activeStudents} active accounts</small></div>
         <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Paid Access</span><span className="badge badge-teal">Plans</span></div><strong>{overview.activeSubscriptions}</strong><small>Current active subscriptions</small></div>
@@ -360,7 +360,7 @@ export function AdminStudentsPage() {
       </div>
 
       <div className="split-layout">
-        <div className="workspace-card">
+        <div className="workspace-card admin-table-card">
           <div className="workspace-card-body">
             <table className="simple-table">
               <thead>
@@ -416,7 +416,7 @@ export function AdminStudentsPage() {
           </div>
         </div>
 
-        <aside className="workspace-card drawer-card">
+        <aside className="workspace-card drawer-card admin-detail-card">
           <div className="workspace-card-head"><div><div className="label-xs">Student Detail</div><h3 className="workspace-card-title">{selectedStudent ? `${selectedStudent.firstName} ${selectedStudent.lastName}` : 'No student selected'}</h3></div></div>
           <div className="workspace-card-body list-stack">
             <div className="metric-row"><span>Email</span><strong>{selectedStudent?.email || 'No student selected'}</strong></div>
@@ -507,9 +507,9 @@ export function AdminTeachersPage() {
   const selectedTeacher = teachers[0] || null
 
   return (
-    <div className="workspace-page animate-fade-up">
-      <div className="split-layout">
-        <div className="workspace-card">
+    <div className="workspace-page admin-teachers-page animate-fade-up">
+      <div className="split-layout admin-split-layout">
+        <div className="workspace-card admin-teacher-queue-card">
           <div className="workspace-card-head">
             <div><div className="label-xs">Teacher Queue</div><h2 className="workspace-card-title">Pending teacher approvals</h2></div>
             <div className="filter-pills">
@@ -555,7 +555,7 @@ export function AdminTeachersPage() {
           </div>
         </div>
 
-        <aside className="workspace-card drawer-card">
+        <aside className="workspace-card drawer-card admin-detail-card">
           <div className="workspace-card-head"><div><div className="label-xs">Teacher Detail</div><h3 className="workspace-card-title">{selectedTeacher ? `${selectedTeacher.firstName} ${selectedTeacher.lastName}` : 'No teacher selected'}</h3></div></div>
           <div className="workspace-card-body list-stack">
             <div className="metric-row"><span>Email</span><strong>{selectedTeacher?.email || 'No data'}</strong></div>
@@ -579,7 +579,7 @@ export function AdminTeachersPage() {
 }
 export function AdminCoursesPage() {
   return (
-    <div className="workspace-page animate-fade-up">
+    <div className="workspace-page admin-courses-page animate-fade-up">
       <section className="workspace-card">
         <div className="workspace-card-head"><div><div className="label-xs">MCQ Moderation</div><h2 className="workspace-card-title">Edit chapter metadata and moderate question quality</h2></div></div>
         <div className="workspace-card-body form-shell">
