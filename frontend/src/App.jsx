@@ -270,7 +270,7 @@ function App() {
               path="/admin/courses"
               element={
                 <ProtectedRoute roles={['admin']}>
-                  <LazyAdminCoursesPage />
+                  <Navigate to="/dashboard" replace />
                 </ProtectedRoute>
               }
             />
