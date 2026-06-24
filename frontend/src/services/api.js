@@ -10,6 +10,24 @@ const API = axios.create({
   timeout: Number(import.meta.env.VITE_API_TIMEOUT_MS || 15000),
 })
 
+const PUBLIC_ROUTE_PATHS = new Set([
+  '/',
+  '/login',
+  '/register',
+  '/verify-email',
+  '/forgot-password',
+])
+
+const isPublicRequest = (config = {}) => {
+  const requestUrl = String(config.url || '')
+  return requestUrl.startsWith('/public/') || requestUrl.startsWith('public/')
+}
+
+const isPublicPage = () => {
+  if (typeof window === 'undefined') return false
+  return PUBLIC_ROUTE_PATHS.has(window.location.pathname)
+}
+
 export const getUserFriendlyErrorMessage = (error, fallback = 'Something went wrong. Please try again.') => {
   const status = error?.response?.status
   const message = String(error?.response?.data?.error || '').trim()
@@ -69,14 +87,17 @@ API.interceptors.response.use(
 
     if (error.response?.status === 401) {
       const isSessionSuperseded = error.response?.data?.error === 'SESSION_SUPERSEDED'
-      clearAuth()
-      const path = window.location.pathname
-      if (path !== '/login' && path !== '/register' && path !== '/verify-email') {
+      const shouldRedirectToLogin = !isPublicPage() && !isPublicRequest(originalRequest)
+
+      if (shouldRedirectToLogin) {
+        clearAuth()
         if (isSessionSuperseded) {
           // Small delay so the toast appears after redirect
           sessionStorage.setItem('session_superseded', '1')
         }
         window.location.href = '/login'
+      } else if (isSessionSuperseded) {
+        clearAuth()
       }
     }
 

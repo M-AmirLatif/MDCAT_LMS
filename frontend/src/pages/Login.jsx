@@ -74,7 +74,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
   const { login } = useAuth()
-  const googleSignIn = useGoogleSignIn({ remember, nextPath, mode: 'signin' })
+  const googleSignIn = useGoogleSignIn({ remember, nextPath, mode: 'signin', expectedRole: requestedRole })
 
   // Show toast if user was forcibly logged out from another device
   useMemo(() => {
@@ -302,38 +302,38 @@ export default function Login() {
                   {loading ? 'Signing in...' : 'Sign In'}
                 </button>
 
-                {requestedRole === 'student' && (
-                  <div className="auth-google-block">
-                    <div className="auth-divider">or</div>
-                    {googleSignIn.configured ? (
-                      <>
-                        {googleSignIn.loading ? (
-                          <span className="auth-google-loading">Loading Google sign-in...</span>
-                        ) : null}
-                        <div
-                          ref={googleSignIn.buttonRef}
-                          className="auth-google-rendered-button"
-                          aria-label="Continue with Google"
-                        />
-                        {googleSignIn.error ? (
-                          <button
-                            className="auth-secondary auth-google-retry"
-                            type="button"
-                            onClick={googleSignIn.retry}
-                            disabled={googleSignIn.loading}
-                          >
-                            Retry Google sign-in
-                          </button>
-                        ) : null}
-                      </>
-                    ) : (
-                      <button className="auth-google-custom-btn auth-google-custom-btn--disabled" type="button" disabled>
+                <div className="auth-google-block">
+                  <div className="auth-divider">or</div>
+                  {googleSignIn.configured ? (
+                    <>
+                      <button
+                        className="auth-google-custom-btn"
+                        type="button"
+                        onClick={googleSignIn.signIn}
+                        disabled={googleSignIn.loading}
+                      >
                         <GoogleIcon />
-                        <span>Google sign-in is not configured</span>
+                        <span>{googleSignIn.loading ? 'Preparing Google sign-in...' : `Continue with Google as ${roleLabel}`}</span>
                       </button>
-                    )}
-                  </div>
-                )}
+                      <div ref={googleSignIn.buttonRef} className="auth-google-hidden-render" aria-hidden="true" />
+                      {googleSignIn.error ? (
+                        <button
+                          className="auth-secondary auth-google-retry"
+                          type="button"
+                          onClick={googleSignIn.retry}
+                          disabled={googleSignIn.loading}
+                        >
+                          Retry Google sign-in
+                        </button>
+                      ) : null}
+                    </>
+                  ) : (
+                    <button className="auth-google-custom-btn auth-google-custom-btn--disabled" type="button" disabled>
+                      <GoogleIcon />
+                      <span>Google sign-in is not configured</span>
+                    </button>
+                  )}
+                </div>
 
                 <p className="auth-footer">
                   New here? <Link to="/register">Create account</Link>

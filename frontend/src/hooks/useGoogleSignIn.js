@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import API, { getUserFriendlyErrorMessage } from '../services/api'
 import { useAuth } from '../context/AuthContext'
-import { getDefaultRouteForRole } from '../lib/platform'
+import { getDefaultRouteForRole, getRoleLabel } from '../lib/platform'
 
 const GOOGLE_CLIENT_ID =
   (typeof import.meta !== 'undefined'
@@ -50,6 +50,7 @@ export function useGoogleSignIn({
   remember = true,
   nextPath = null,
   mode = 'signin',
+  expectedRole = null,
 } = {}) {
   const { login } = useAuth()
   const navigate = useNavigate()
@@ -100,6 +101,11 @@ export function useGoogleSignIn({
         })
         const { token, user } = res.data
 
+        if (mode === 'signin' && expectedRole && user?.role !== expectedRole) {
+          toast.error(`This Google account is a ${getRoleLabel(user?.role)} account, not ${getRoleLabel(expectedRole)}.`)
+          return
+        }
+
         if (mode === 'signup') {
           if (user.needsPasswordSetup) {
             login(token, user, remember)
@@ -132,7 +138,7 @@ export function useGoogleSignIn({
         setLoading(false)
       }
     },
-    [login, mode, navigate, nextPath, remember],
+    [expectedRole, login, mode, navigate, nextPath, remember],
   )
 
   const initializeGoogle = useCallback(async () => {
@@ -177,6 +183,33 @@ export function useGoogleSignIn({
     initializeGoogle()
   }, [initializeGoogle])
 
+  const signIn = useCallback(async () => {
+    if (!configured) return
+
+    setError('')
+    try {
+      if (!initializedRef.current) {
+        await initializeGoogle()
+      }
+
+      if (!window.google?.accounts?.id) {
+        throw new Error('Google sign-in is unavailable right now.')
+      }
+
+      window.google.accounts.id.prompt((notification) => {
+        if (
+          notification?.isNotDisplayed?.() ||
+          notification?.isSkippedMoment?.()
+        ) {
+          setError('Google sign-in is not available in this browser session. Please try again.')
+        }
+      })
+    } catch (signInError) {
+      console.error('Google Sign-In prompt error:', signInError)
+      setError('Google sign-in is temporarily unavailable. Please retry.')
+    }
+  }, [configured, initializeGoogle])
+
   useEffect(() => {
     if (!configured || !ready) return
     renderGoogleButton()
@@ -187,5 +220,5 @@ export function useGoogleSignIn({
     initializeGoogle()
   }, [configured, initializeGoogle])
 
-  return { buttonRef, ready, loading, configured, error, retry }
+  return { buttonRef, ready, loading, configured, error, retry, signIn }
 }
