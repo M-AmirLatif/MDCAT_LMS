@@ -2158,15 +2158,16 @@ html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card--selected,
 html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card--selected:hover,
 html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card--selected:focus-visible {
   border-radius: 2px !important;
-  background: #E8FFF4 !important;
-  box-shadow: inset 5px 0 0 #16A36F !important;
+  outline: none !important;
+  background: #BFF4D8 !important;
+  box-shadow: inset 7px 0 0 #047857 !important;
 }
 
 html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card--selected .mcq-option-letter {
   border-color: transparent;
-  background: linear-gradient(135deg, #16A36F, #1DB884);
+  background: linear-gradient(135deg, #047857, #16A36F);
   color: #fff;
-  box-shadow: 0 8px 20px rgba(22, 163, 111, 0.24);
+  box-shadow: 0 8px 20px rgba(4, 120, 87, 0.26);
 }
 
 html[data-theme="dark"] .mcq-question-card .mcq-option-card:hover,
