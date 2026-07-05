@@ -20,6 +20,7 @@ const paymentRoutes = require('./routes/payments')
 const subscriptionRoutes = require('./routes/subscriptions')
 const uploadRoutes = require('./routes/uploads')
 const publicRoutes = require('./routes/public')
+const { serveUpload } = require('./controllers/uploadController')
 const NotificationJob = require('./models/NotificationJob')
 const Notification = require('./models/Notification')
 const { getEmailStatus } = require('./utils/email')
@@ -158,6 +159,7 @@ app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads'), {
   maxAge: '7d',
   immutable: true,
 }))
+app.get('/uploads/:filename', serveUpload)
 
 // ==================== DATABASE CONNECTION ====================
 connectDB()

@@ -1,6 +1,7 @@
 const path = require('path')
 const fs = require('fs')
 const multer = require('multer')
+const Upload = require('../models/Upload')
 
 const uploadDir = path.join(__dirname, '..', '..', 'uploads')
 
@@ -22,7 +23,13 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 200 * 1024 * 1024 },
+  limits: { fileSize: 12 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype?.startsWith('image/')) {
+      return cb(new Error('Only image files are allowed for MCQ uploads'))
+    }
+    cb(null, true)
+  },
 })
 
 exports.uploadSingleMiddleware = upload.single('file')
@@ -33,13 +40,44 @@ exports.uploadSingle = async (req, res) => {
       return res.status(400).json({ error: 'No file uploaded' })
     }
 
-    const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
+    const data = await fs.promises.readFile(req.file.path)
+    await Upload.findOneAndUpdate(
+      { filename: req.file.filename },
+      {
+        filename: req.file.filename,
+        originalName: req.file.originalname,
+        contentType: req.file.mimetype,
+        size: req.file.size,
+        data,
+        uploadedBy: req.user?._id || null,
+      },
+      { upsert: true, new: true, setDefaultsOnInsert: true },
+    )
+
+    const fileUrl = `/uploads/${req.file.filename}`
     res.status(200).json({
       success: true,
       fileUrl,
+      url: fileUrl,
       fileName: req.file.originalname,
     })
   } catch (error) {
     res.status(500).json({ error: error.message })
+  }
+}
+
+exports.serveUpload = async (req, res, next) => {
+  try {
+    const filename = path.basename(req.params.filename || '')
+    if (!filename) return next()
+
+    const upload = await Upload.findOne({ filename }).lean()
+    if (!upload?.data) return next()
+
+    res.setHeader('Content-Type', upload.contentType || 'application/octet-stream')
+    res.setHeader('Cache-Control', 'public, max-age=604800, immutable')
+    res.send(upload.data)
+  } catch (error) {
+    next(error)
   }
 }

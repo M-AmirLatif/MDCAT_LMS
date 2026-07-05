@@ -4,9 +4,10 @@ import toast from 'react-hot-toast'
 
 const FALLBACK_API_BASE_URL = 'https://mdcatlms-production-4d20.up.railway.app/api'
 const configuredApiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').trim()
+export const API_BASE_URL = configuredApiBaseUrl || FALLBACK_API_BASE_URL
 
 const API = axios.create({
-  baseURL: configuredApiBaseUrl || FALLBACK_API_BASE_URL,
+  baseURL: API_BASE_URL,
   timeout: Number(import.meta.env.VITE_API_TIMEOUT_MS || 15000),
 })
 

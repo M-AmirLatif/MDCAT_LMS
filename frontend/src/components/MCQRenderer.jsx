@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { BlockMath, InlineMath } from 'react-katex'
+import { normalizeImageUrl } from '../utils/mediaUrls'
 import 'katex/dist/katex.min.css'
 
 const DIAGRAM_REGEX = /\[DIAGRAM:\s*([\s\S]*?)\]/gi
@@ -152,7 +153,7 @@ function parseImageTokenBody(body) {
 }
 
 function RichImage({ image }) {
-  const url = cleanImageUrl(image?.url)
+  const url = normalizeImageUrl(cleanImageUrl(image?.url))
   const alt = image?.alt || ''
   const imageRef = useRef(null)
   const [loaded, setLoaded] = useState(false)

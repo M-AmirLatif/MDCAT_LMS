@@ -4,6 +4,7 @@ import toast from 'react-hot-toast'
 import API, { getUserFriendlyErrorMessage } from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import MCQRenderer from '../components/MCQRenderer'
+import { normalizeImageUrl } from '../utils/mediaUrls'
 import './PlatformPages.css'
 import './MCQTest.css'
 import './TestReview.css'
@@ -104,7 +105,7 @@ function McqImageManager({ id, label, images = [], onChange }) {
         <div className="mcq-image-preview-grid">
           {images.map((image, index) => (
             <div className="mcq-image-preview" key={`${image}-${index}`}>
-              <img src={image} alt={`${label} ${index + 1}`} />
+              <img src={normalizeImageUrl(image)} alt={`${label} ${index + 1}`} />
               <button type="button" onClick={() => onChange(images.filter((_, itemIndex) => itemIndex !== index))}>
                 Remove
               </button>
