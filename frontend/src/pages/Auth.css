@@ -1848,6 +1848,7 @@ html[data-theme="dark"] .auth-form .floating-field {
 .auth-google-rendered-button,
 .auth-google-rendered-button > div,
 .auth-google-rendered-button iframe {
+  width: 100% !important;
   max-width: 100% !important;
 }
 
@@ -1862,6 +1863,23 @@ html[data-theme="dark"] .auth-form .floating-field {
 
 .auth-google-rendered-button > div {
   margin-inline: auto !important;
+}
+
+.auth-google-role-hint {
+  margin: 0 0 10px;
+  color: var(--text-secondary, #6b6b8a);
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.auth-google-loading {
+  display: block;
+  margin-top: 8px;
+  color: var(--text-muted, #7b7f9d);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
 }
 
 .auth-google-custom-btn,

@@ -173,16 +173,9 @@ export default function Register() {
                 <div className="auth-google-block auth-google-block--register">
                   {googleSignIn.configured ? (
                     <>
-                      <button
-                        className="auth-google-custom-btn auth-google-custom-btn--large"
-                        type="button"
-                        onClick={googleSignIn.signIn}
-                        disabled={googleSignIn.loading}
-                      >
-                        <GoogleIcon />
-                        <span>{googleSignIn.loading ? 'Preparing Google sign-up...' : 'Continue with Google'}</span>
-                      </button>
-                      <div ref={googleSignIn.buttonRef} className="auth-google-hidden-render" aria-hidden="true" />
+                      <div className="auth-google-role-hint">Continue with Google</div>
+                      <div ref={googleSignIn.buttonRef} className="auth-google-rendered-button auth-google-rendered-button--large" />
+                      {googleSignIn.loading ? <span className="auth-google-loading">Preparing Google sign-up...</span> : null}
                       {googleSignIn.error ? <span className="auth-google-error-text">{googleSignIn.error}</span> : null}
                     </>
                   ) : (

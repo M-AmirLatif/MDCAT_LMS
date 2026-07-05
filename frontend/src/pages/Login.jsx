@@ -306,16 +306,9 @@ export default function Login() {
                   <div className="auth-divider">or</div>
                   {googleSignIn.configured ? (
                     <>
-                      <button
-                        className="auth-google-custom-btn"
-                        type="button"
-                        onClick={googleSignIn.signIn}
-                        disabled={googleSignIn.loading}
-                      >
-                        <GoogleIcon />
-                        <span>{googleSignIn.loading ? 'Preparing Google sign-in...' : `Continue with Google as ${roleLabel}`}</span>
-                      </button>
-                      <div ref={googleSignIn.buttonRef} className="auth-google-hidden-render" aria-hidden="true" />
+                      <div className="auth-google-role-hint">Continue with Google as {roleLabel}</div>
+                      <div ref={googleSignIn.buttonRef} className="auth-google-rendered-button" />
+                      {googleSignIn.loading ? <span className="auth-google-loading">Preparing Google sign-in...</span> : null}
                       {googleSignIn.error ? (
                         <button
                           className="auth-secondary auth-google-retry"
