@@ -127,13 +127,15 @@
   pointer-events: none;
 }
 
-.mcq-option-card:hover {
+.mcq-option-card:not(.mcq-option-card--selected):hover {
   border-radius: 2px;
   box-shadow: inset 4px 0 0 rgba(108, 71, 255, 0.5);
   background: rgba(108, 71, 255, 0.08);
 }
 
-.mcq-option-card--selected {
+.mcq-option-card--selected,
+.mcq-option-card--selected:hover,
+.mcq-option-card--selected:focus-visible {
   border-radius: 2px;
   background: #BFF4D8;
   box-shadow: inset 7px 0 0 #047857;
@@ -219,13 +221,15 @@ html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card {
   background: transparent !important;
 }
 
-html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card:hover {
+html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):hover {
   border-radius: 2px !important;
   background: rgba(108, 71, 255, 0.08) !important;
   box-shadow: inset 4px 0 0 rgba(108, 71, 255, 0.5) !important;
 }
 
-html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card--selected {
+html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card--selected,
+html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card--selected:hover,
+html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card--selected:focus-visible {
   border-radius: 2px !important;
   background: #BFF4D8 !important;
   box-shadow: inset 7px 0 0 #047857 !important;
@@ -298,13 +302,15 @@ html:not([data-theme="dark"]) .mcq-question-card .mcq-option-text .mcq-renderer 
   background: rgba(165, 144, 255, 0.26);
 }
 
-[data-theme="dark"] .mcq-option-card:hover {
+[data-theme="dark"] .mcq-option-card:not(.mcq-option-card--selected):hover {
   border-radius: 2px;
   background: rgba(139, 111, 255, 0.14);
   box-shadow: inset 4px 0 0 rgba(165, 144, 255, 0.75);
 }
 
-[data-theme="dark"] .mcq-option-card--selected {
+[data-theme="dark"] .mcq-option-card--selected,
+[data-theme="dark"] .mcq-option-card--selected:hover,
+[data-theme="dark"] .mcq-option-card--selected:focus-visible {
   border-radius: 2px;
   background: #123C35;
   box-shadow: inset 5px 0 0 #2DD99B;
