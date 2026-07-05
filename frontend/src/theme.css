@@ -2158,15 +2158,15 @@ html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card--selected,
 html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card--selected:hover,
 html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card--selected:focus-visible {
   border-radius: 2px !important;
-  background: linear-gradient(90deg, rgba(108, 71, 255, 0.18), rgba(74, 144, 226, 0.10)) !important;
-  box-shadow: inset 5px 0 0 #6C47FF !important;
+  background: #E8FFF4 !important;
+  box-shadow: inset 5px 0 0 #16A36F !important;
 }
 
 html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card--selected .mcq-option-letter {
   border-color: transparent;
-  background: linear-gradient(135deg, #6C47FF, #4A90E2);
+  background: linear-gradient(135deg, #16A36F, #1DB884);
   color: #fff;
-  box-shadow: 0 8px 20px rgba(108, 71, 255, 0.24);
+  box-shadow: 0 8px 20px rgba(22, 163, 111, 0.24);
 }
 
 html[data-theme="dark"] .mcq-question-card .mcq-option-card:hover,
@@ -2180,8 +2180,15 @@ html[data-theme="dark"] .mcq-question-card .mcq-option-card--selected,
 html[data-theme="dark"] .mcq-question-card .mcq-option-card--selected:hover,
 html[data-theme="dark"] .mcq-question-card .mcq-option-card--selected:focus-visible {
   border-radius: 2px !important;
-  background: linear-gradient(90deg, rgba(139, 111, 255, 0.24), rgba(106, 171, 255, 0.12)) !important;
-  box-shadow: inset 5px 0 0 #A590FF !important;
+  background: #123C35 !important;
+  box-shadow: inset 5px 0 0 #2DD99B !important;
+}
+
+html[data-theme="dark"] .mcq-question-card .mcq-option-card--selected .mcq-option-letter {
+  border-color: transparent;
+  background: linear-gradient(135deg, #1DB884, #2DD99B);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(45, 217, 155, 0.24);
 }
 
 html:not([data-theme="dark"]) .correct-option-box,
