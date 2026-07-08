@@ -95,30 +95,91 @@ function McqImageManager({ id, label, images = [], onChange }) {
     setUrl('')
   }
 
-  const handleUpload = async (event) => {
-    const file = event.target.files?.[0]
+  const uploadFile = async (file, sourceLabel = label) => {
     if (!file) return
+    if (!String(file.type || '').startsWith('image/')) {
+      toast.error('Only image files can be uploaded here.')
+      return
+    }
     setUploading(true)
     try {
       const uploadedUrl = await uploadMcqImage(file)
       addImage(uploadedUrl)
-      toast.success(`${label} uploaded`)
+      toast.success(`${sourceLabel} uploaded`)
     } catch (error) {
       toast.error(getUserFriendlyErrorMessage(error, 'We could not upload this image.'))
     } finally {
       setUploading(false)
+    }
+  }
+
+  const handleUpload = async (event) => {
+    try {
+      await uploadFile(event.target.files?.[0])
+    } finally {
       event.target.value = ''
     }
   }
 
+  const handlePaste = async (event) => {
+    const items = Array.from(event.clipboardData?.items || [])
+    const imageItem = items.find((item) => String(item.type || '').startsWith('image/'))
+    const file = imageItem?.getAsFile()
+    if (!file) return
+    event.preventDefault()
+    await uploadFile(file, `${label} pasted`)
+  }
+
+  const pasteFromClipboard = async () => {
+    if (!navigator.clipboard?.read) {
+      toast.error('Click this image field and press Ctrl+V to paste a copied image.')
+      return
+    }
+    try {
+      const clipboardItems = await navigator.clipboard.read()
+      for (const clipboardItem of clipboardItems) {
+        const imageType = clipboardItem.types.find((type) => type.startsWith('image/'))
+        if (!imageType) continue
+        const blob = await clipboardItem.getType(imageType)
+        const extension = imageType.split('/')[1] || 'png'
+        const file = new File([blob], `pasted-${Date.now()}.${extension}`, {
+          type: imageType,
+        })
+        await uploadFile(file, `${label} pasted`)
+        return
+      }
+      toast.error('No copied image found. Copy the image itself, then paste here.')
+    } catch (error) {
+      toast.error('Clipboard access was blocked. Click the image field and press Ctrl+V.')
+    }
+  }
+
   return (
-    <div className="mcq-image-manager">
+    <div className="mcq-image-manager" onPaste={handlePaste}>
       <div className="mcq-image-manager-head">
         <span>{label}</span>
-        <label className="btn btn-secondary btn-sm" htmlFor={id}>
-          {uploading ? 'Uploading...' : 'Upload image'}
-        </label>
+        <div className="mcq-image-manager-actions">
+          <button
+            className="btn btn-ghost btn-sm"
+            type="button"
+            onClick={pasteFromClipboard}
+            disabled={uploading}
+          >
+            Paste image
+          </button>
+          <label className="btn btn-secondary btn-sm" htmlFor={id}>
+            {uploading ? 'Uploading...' : 'Upload image'}
+          </label>
+        </div>
         <input id={id} type="file" accept="image/*" onChange={handleUpload} hidden />
+      </div>
+      <div
+        className="mcq-image-paste-zone"
+        tabIndex={0}
+        role="button"
+        aria-label={`Paste copied image for ${label}`}
+      >
+        Click here and press Ctrl+V to paste a copied image, or upload a saved file.
       </div>
       {images?.length ? (
         <div className="mcq-image-preview-grid">

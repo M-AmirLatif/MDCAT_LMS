@@ -100,7 +100,8 @@ const getChapterReviewQueue = (chapter) =>
 const numericQuestionNumber = (value) => {
   const raw = String(value ?? '').trim()
   if (!raw) return null
-  const numeric = Number(raw)
+  const extracted = raw.match(/^\D*(\d+(?:\.\d+)?)\D*$/)?.[1] || raw
+  const numeric = Number(extracted)
   return Number.isFinite(numeric) ? numeric : null
 }
 
@@ -145,6 +146,9 @@ const normalizeCsvQuestionNumber = ({
   if (!explicit) return String(csvRowIndex)
 
   const numeric = numericQuestionNumber(explicit)
+  if (numeric !== null && numeric === rowNumber && csvRowIndex === rowNumber - 1) {
+    return String(csvRowIndex)
+  }
   if (
     headerCountedQuestionNumbers &&
     numeric !== null &&
