@@ -104,6 +104,38 @@ const numericQuestionNumber = (value) => {
   return Number.isFinite(numeric) ? numeric : null
 }
 
+const CSV_NUMBER_COLUMNS = [
+  'question_number',
+  'questionnumber',
+  'question_no',
+  'q_no',
+  'no',
+]
+
+const getExplicitCsvQuestionNumber = (row) =>
+  getCsvValue(row, ...CSV_NUMBER_COLUMNS)
+
+const normalizeCsvQuestionNumber = ({
+  explicitQuestionNumber,
+  csvRowIndex,
+  rowNumber,
+  headerCountedQuestionNumbers,
+}) => {
+  const explicit = String(explicitQuestionNumber || '').trim()
+  if (!explicit) return String(csvRowIndex)
+
+  const numeric = numericQuestionNumber(explicit)
+  if (
+    headerCountedQuestionNumbers &&
+    numeric !== null &&
+    numeric === rowNumber
+  ) {
+    return String(csvRowIndex)
+  }
+
+  return explicit
+}
+
 const compareMcqOrder = (a, b) => {
   const aNumber = numericQuestionNumber(a?.originalQuestionNumber ?? a?.questionNumber)
   const bNumber = numericQuestionNumber(b?.originalQuestionNumber ?? b?.questionNumber)
@@ -1826,20 +1858,40 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
         .filter(Boolean),
     )
 
-    rows.forEach((rawRow, index) => {
-      const rowNumber = index + 2
-      // rowNumber is the physical CSV file row for debugging.
-      // csvRowIndex is the MCQ's order after ignoring the header row.
-      const csvRowIndex = index + 1
-      const row = Object.fromEntries(
+    const normalizedRows = rows.map((rawRow, index) => ({
+      rawRow,
+      rowNumber: index + 2,
+      csvRowIndex: index + 1,
+      row: Object.fromEntries(
         Object.entries(rawRow || {}).map(([key, value]) => [
           String(key).trim().toLowerCase(),
           value,
         ]),
-      )
+      ),
+    }))
 
-      const questionNumber = String(
-        getCsvValue(row, 'question_number', 'questionnumber', 'question_no', 'q_no', 'no') ||
+    const explicitNumberRows = normalizedRows
+      .map((entry) => ({
+        ...entry,
+        explicitQuestionNumber: getExplicitCsvQuestionNumber(entry.row),
+      }))
+      .filter((entry) => String(entry.explicitQuestionNumber || '').trim())
+    const headerCountedQuestionNumbers =
+      explicitNumberRows.length > 0 &&
+      explicitNumberRows.every((entry) => {
+        const numeric = numericQuestionNumber(entry.explicitQuestionNumber)
+        return numeric !== null && numeric === entry.rowNumber
+      })
+
+    normalizedRows.forEach(({ rawRow, rowNumber, csvRowIndex, row }) => {
+      const questionNumber = normalizeCsvQuestionNumber({
+        explicitQuestionNumber: getExplicitCsvQuestionNumber(row),
+        csvRowIndex,
+        rowNumber,
+        headerCountedQuestionNumbers,
+      })
+      const fallbackQuestionNumber = String(
+        questionNumber ||
           csvRowIndex,
       ).trim()
       const question = normalizeCsvCell(getCsvValue(row, 'questionText', 'question_text', 'question'))
@@ -1869,7 +1921,7 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
         explanation,
         explicitNeedsReview,
       })
-      const duplicateKey = `${questionNumber}::${String(question).trim().toLowerCase()}`
+      const duplicateKey = `${fallbackQuestionNumber}::${String(question).trim().toLowerCase()}`
 
       if (question && existingQuestions.has(question.toLowerCase())) {
         reviewReasons.push('Duplicate question already exists')
@@ -1884,8 +1936,8 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
         skipped.push({
           row: rowNumber,
           csvRowIndex,
-          questionNumber,
-          originalQuestionNumber: questionNumber,
+          questionNumber: fallbackQuestionNumber,
+          originalQuestionNumber: fallbackQuestionNumber,
           reason,
           validationErrors,
         })
@@ -1893,7 +1945,7 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
           buildReviewQueueItem({
             rowNumber,
             csvRowIndex,
-            questionNumber,
+            questionNumber: fallbackQuestionNumber,
             importBatchId: importBatch._id,
             validationErrors,
             context,
@@ -1935,8 +1987,8 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
           correctAnswer,
           explanation,
           explanationImages,
-          questionNumber,
-          originalQuestionNumber: questionNumber,
+          questionNumber: fallbackQuestionNumber,
+          originalQuestionNumber: fallbackQuestionNumber,
           csvRowIndex,
           importBatchId: importBatch._id,
           importStatus: 'imported',
