@@ -1902,12 +1902,13 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
         explicitQuestionNumber: getExplicitCsvQuestionNumber(entry.row),
       }))
       .filter((entry) => String(entry.explicitQuestionNumber || '').trim())
+    const explicitNumericQuestionNumbers = explicitNumberRows
+      .map((entry) => numericQuestionNumber(entry.explicitQuestionNumber))
+      .filter((number) => number !== null)
     const headerCountedQuestionNumbers =
-      explicitNumberRows.length > 0 &&
-      explicitNumberRows.every((entry, index) => {
-        const numeric = numericQuestionNumber(entry.explicitQuestionNumber)
-        return numeric !== null && numeric === index + 2
-      })
+      explicitNumericQuestionNumbers.length > 0 &&
+      Math.min(...explicitNumericQuestionNumbers) === 2 &&
+      !explicitNumericQuestionNumbers.includes(1)
 
     normalizedRows.forEach(({ rawRow, rowNumber, csvRowIndex, row }) => {
       const questionNumber = normalizeCsvQuestionNumber({
