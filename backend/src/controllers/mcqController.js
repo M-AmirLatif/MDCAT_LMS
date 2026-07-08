@@ -108,8 +108,28 @@ const CSV_NUMBER_COLUMNS = [
   'question_number',
   'questionnumber',
   'question_no',
+  'question no',
+  'question no.',
+  'questionno',
+  'question_numbering',
+  'qnumber',
   'q_no',
+  'q no',
+  'q.no',
+  'qno',
   'no',
+  'no.',
+  'number',
+  'sr',
+  'sr_no',
+  'sr no',
+  'sr.no',
+  'srno',
+  's_no',
+  's no',
+  's.no',
+  'serial',
+  'serial_number',
 ]
 
 const getExplicitCsvQuestionNumber = (row) =>
@@ -128,9 +148,9 @@ const normalizeCsvQuestionNumber = ({
   if (
     headerCountedQuestionNumbers &&
     numeric !== null &&
-    numeric === rowNumber
+    numeric >= 2
   ) {
-    return String(csvRowIndex)
+    return String(numeric - 1)
   }
 
   return explicit
@@ -639,11 +659,17 @@ const normalizeCsvRowToHeaders = (row, headers) => {
 }
 
 const getCsvValue = (row, ...keys) => {
+  const compact = (value) => String(value || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '')
   for (const key of keys) {
     const normalized = String(key || '').trim().toLowerCase()
     if (Object.prototype.hasOwnProperty.call(row, normalized)) {
       return row[normalized]
     }
+    const compactKey = compact(key)
+    const matchingEntry = Object.entries(row).find(
+      ([rowKey]) => compact(rowKey) === compactKey,
+    )
+    if (matchingEntry) return matchingEntry[1]
   }
   return ''
 }
@@ -1878,9 +1904,9 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
       .filter((entry) => String(entry.explicitQuestionNumber || '').trim())
     const headerCountedQuestionNumbers =
       explicitNumberRows.length > 0 &&
-      explicitNumberRows.every((entry) => {
+      explicitNumberRows.every((entry, index) => {
         const numeric = numericQuestionNumber(entry.explicitQuestionNumber)
-        return numeric !== null && numeric === entry.rowNumber
+        return numeric !== null && numeric === index + 2
       })
 
     normalizedRows.forEach(({ rawRow, rowNumber, csvRowIndex, row }) => {
