@@ -60,7 +60,24 @@ const getNumericMcqNumber = (mcq) => {
   return Number.isFinite(number) ? number : null
 }
 
-const getMcqDisplayNumberOffset = () => 0
+const getMcqDisplayNumberOffset = (items = []) => {
+  const numberedItems = items
+    .map((mcq) => ({
+      number: getNumericMcqNumber(mcq),
+      csvRowIndex: Number(mcq?.csvRowIndex),
+    }))
+    .filter(
+      (item) =>
+        item.number !== null &&
+        Number.isFinite(item.csvRowIndex) &&
+        item.csvRowIndex > 0,
+    )
+  if (numberedItems.length < 2) return 0
+  if (numberedItems.some((item) => item.number === 1)) return 0
+  return numberedItems.every((item) => item.number === item.csvRowIndex + 1)
+    ? -1
+    : 0
+}
 
 const getMcqDisplayNumber = (mcq, fallbackIndex, offset = 0) => {
   const numeric = getNumericMcqNumber(mcq)

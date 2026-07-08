@@ -1889,12 +1889,17 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
       }))
       .filter((entry) => String(entry.explicitQuestionNumber || '').trim())
     const explicitNumericQuestionNumbers = explicitNumberRows
-      .map((entry) => numericQuestionNumber(entry.explicitQuestionNumber))
-      .filter((number) => number !== null)
+      .map((entry) => ({
+        number: numericQuestionNumber(entry.explicitQuestionNumber),
+        csvRowIndex: entry.csvRowIndex,
+      }))
+      .filter((entry) => entry.number !== null)
     const headerCountedQuestionNumbers =
       explicitNumericQuestionNumbers.length > 0 &&
-      Math.min(...explicitNumericQuestionNumbers) === 2 &&
-      !explicitNumericQuestionNumbers.includes(1)
+      !explicitNumericQuestionNumbers.some((entry) => entry.number === 1) &&
+      explicitNumericQuestionNumbers.every(
+        (entry) => entry.number === entry.csvRowIndex + 1,
+      )
 
     normalizedRows.forEach(({ rawRow, rowNumber, csvRowIndex, row }) => {
       const questionNumber = normalizeCsvQuestionNumber({
