@@ -1828,7 +1828,9 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
 
     rows.forEach((rawRow, index) => {
       const rowNumber = index + 2
-      const csvRowIndex = rowNumber
+      // rowNumber is the physical CSV file row for debugging.
+      // csvRowIndex is the MCQ's order after ignoring the header row.
+      const csvRowIndex = index + 1
       const row = Object.fromEntries(
         Object.entries(rawRow || {}).map(([key, value]) => [
           String(key).trim().toLowerCase(),
