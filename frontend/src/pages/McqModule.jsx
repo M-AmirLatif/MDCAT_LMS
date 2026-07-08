@@ -60,13 +60,7 @@ const getNumericMcqNumber = (mcq) => {
   return Number.isFinite(number) ? number : null
 }
 
-const getMcqDisplayNumberOffset = (items = []) => {
-  const numbers = items
-    .map(getNumericMcqNumber)
-    .filter((number) => number !== null)
-  if (!numbers.length) return 0
-  return Math.min(...numbers) === 2 && !numbers.includes(1) ? -1 : 0
-}
+const getMcqDisplayNumberOffset = () => 0
 
 const getMcqDisplayNumber = (mcq, fallbackIndex, offset = 0) => {
   const numeric = getNumericMcqNumber(mcq)

@@ -1861,28 +1861,10 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
     const skipped = []
     const reviewItems = []
     const docs = []
-    const duplicateFilter = {
-      courseId: context.course._id,
-      chapterId: context.chapter.id,
-    }
-    if (context.topic?.id) duplicateFilter.topicId = context.topic.id
-    else
-      duplicateFilter.$or = [{ topicId: null }, { topicId: { $exists: false } }]
-    const existingMcqs = await MCQ.find(duplicateFilter)
-      .select('question originalQuestionNumber questionNumber')
-      .lean()
-    const existingQuestions = new Set(
-      existingMcqs.map((item) => item.question.trim().toLowerCase()),
-    )
-    const existingNumberQuestionKeys = new Set(
-      existingMcqs
-        .map((item) => {
-          const number = String(item.originalQuestionNumber || item.questionNumber || '').trim()
-          const question = String(item.question || '').trim().toLowerCase()
-          return number && question ? `${number}::${question}` : null
-        })
-        .filter(Boolean),
-    )
+    const batchQuestions = new Set()
+    const batchQuestionNumbers = new Set()
+    const batchNumberQuestionKeys = new Set()
+    const uploadedQuestionNumbers = new Set()
 
     const normalizedRows = rows.map((rawRow, index) => ({
       rawRow,
@@ -1950,12 +1932,18 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
       })
       const duplicateKey = `${fallbackQuestionNumber}::${String(question).trim().toLowerCase()}`
 
-      if (question && existingQuestions.has(question.toLowerCase())) {
-        reviewReasons.push('Duplicate question already exists')
+      if (question && batchQuestions.has(question.toLowerCase())) {
+        reviewReasons.push('Duplicate question inside this CSV')
       }
-      if (question && questionNumber && existingNumberQuestionKeys.has(duplicateKey)) {
-        reviewReasons.push('Duplicate original question number and text')
+      if (fallbackQuestionNumber && batchQuestionNumbers.has(fallbackQuestionNumber)) {
+        reviewReasons.push('Duplicate question number inside this CSV')
       }
+      if (question && fallbackQuestionNumber && batchNumberQuestionKeys.has(duplicateKey)) {
+        reviewReasons.push('Duplicate original question number and text inside this CSV')
+      }
+
+      uploadedQuestionNumbers.add(fallbackQuestionNumber)
+      if (fallbackQuestionNumber) batchQuestionNumbers.add(fallbackQuestionNumber)
 
       if (reviewReasons.length > 0) {
         const reason = [...new Set(reviewReasons)].join('; ')
@@ -1996,8 +1984,8 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
         return
       }
 
-      existingQuestions.add(question.toLowerCase())
-      existingNumberQuestionKeys.add(duplicateKey)
+      batchQuestions.add(question.toLowerCase())
+      batchNumberQuestionKeys.add(duplicateKey)
       docs.push(
         createMcqDocFromRow({
           context,
@@ -2026,7 +2014,33 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
       )
     })
 
-    if (reviewItems.length) {
+    const uploadedNumbers = [...uploadedQuestionNumbers].filter(Boolean)
+    if (uploadedNumbers.length) {
+      const numberFilter = {
+        $or: [
+          { originalQuestionNumber: { $in: uploadedNumbers } },
+          { questionNumber: { $in: uploadedNumbers } },
+        ],
+      }
+      const replaceFilter = {
+        courseId: context.course._id,
+        chapterId: context.chapter.id,
+      }
+      if (context.topic?.id) {
+        replaceFilter.topicId = context.topic.id
+        replaceFilter.$or = numberFilter.$or
+      } else {
+        replaceFilter.$and = [
+          { $or: [{ topicId: null }, { topicId: { $exists: false } }] },
+          numberFilter,
+        ]
+      }
+      // CSV upload is source-of-truth for these question-number slots.
+      // If row 12 goes to review, old main MCQ 12 must be removed.
+      await MCQ.deleteMany(replaceFilter)
+    }
+
+    if (uploadedNumbers.length || reviewItems.length) {
       const courseForReviewQueue = await getSubjectCourseFull(context.subject)
       const chapterForReviewQueue = getChapter(
         courseForReviewQueue,
@@ -2034,7 +2048,12 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
       )
       chapterForReviewQueue.reviewQueue = getChapterReviewQueue(
         chapterForReviewQueue,
-      )
+      ).filter((item) => {
+        const itemNumber = String(item.originalQuestionNumber || item.questionNumber || '').trim()
+        if (!uploadedQuestionNumbers.has(itemNumber)) return true
+        if (context.topic?.id) return String(item.topicId || '') !== String(context.topic.id)
+        return !!item.topicId
+      })
       chapterForReviewQueue.reviewQueue.push(...reviewItems)
       await courseForReviewQueue.save()
     }
@@ -2263,6 +2282,33 @@ exports.approveCsvReviewItem = async (req, res) => {
       topic,
       subject,
     }
+    const approvedQuestionNumber = String(
+      item.originalQuestionNumber || item.questionNumber || item.csvRowIndex || item.row || '',
+    ).trim()
+    if (approvedQuestionNumber) {
+      const replaceFilter = {
+        courseId: course._id,
+        chapterId: chapter.id,
+      }
+      if (topic?.id) {
+        replaceFilter.topicId = topic.id
+        replaceFilter.$or = [
+          { originalQuestionNumber: approvedQuestionNumber },
+          { questionNumber: approvedQuestionNumber },
+        ]
+      } else {
+        replaceFilter.$and = [
+          { $or: [{ topicId: null }, { topicId: { $exists: false } }] },
+          {
+            $or: [
+              { originalQuestionNumber: approvedQuestionNumber },
+              { questionNumber: approvedQuestionNumber },
+            ],
+          },
+        ]
+      }
+      await MCQ.deleteMany(replaceFilter)
+    }
     const mcq = await MCQ.create(
       createMcqDocFromRow({
         context: approvalContext,
@@ -2279,8 +2325,8 @@ exports.approveCsvReviewItem = async (req, res) => {
         correctAnswer,
         explanation,
         explanationImages: item.explanationImages || [],
-        questionNumber: item.questionNumber || item.originalQuestionNumber || item.csvRowIndex || item.row,
-        originalQuestionNumber: item.originalQuestionNumber || item.questionNumber || item.csvRowIndex || item.row,
+        questionNumber: approvedQuestionNumber || item.questionNumber || item.csvRowIndex || item.row,
+        originalQuestionNumber: approvedQuestionNumber || item.originalQuestionNumber || item.csvRowIndex || item.row,
         csvRowIndex: item.csvRowIndex || item.row || null,
         importBatchId: item.importBatchId || null,
         importStatus: 'fixed',
