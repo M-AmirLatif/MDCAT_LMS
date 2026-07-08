@@ -59,14 +59,18 @@ const getNumericMcqNumber = (mcq) => {
   const raw = String(value ?? '').trim()
   const extracted = raw.match(/^\D*(\d+(?:\.\d+)?)\D*$/)?.[1] || raw
   const number = Number(extracted)
-  return Number.isFinite(number) ? number : null
+  return Number.isFinite(number) && number >= 1 ? number : null
 }
 
-const getMcqDisplayNumberOffset = (items = []) => {
+const getMcqDisplayNumberOffset = (items = [], reviewItems = []) => {
   const numbers = items
     .map(getNumericMcqNumber)
     .filter((number) => number !== null)
   if (!numbers.length || numbers.some((number) => number === 1)) return 0
+  const reviewNumbers = reviewItems
+    .map(getNumericMcqNumber)
+    .filter((number) => number !== null)
+  if (reviewNumbers.includes(1)) return 0
 
   const numberedItems = items
     .map((mcq) => ({
@@ -87,6 +91,7 @@ const getMcqDisplayNumberOffset = (items = []) => {
   }
 
   const sortedNumbers = [...new Set(numbers)].sort((a, b) => a - b)
+  if (sortedNumbers[0] === 2) return -1
   const isHeaderShiftedSequence = sortedNumbers.every(
     (number, index) => number === index + 2,
   )
@@ -95,7 +100,7 @@ const getMcqDisplayNumberOffset = (items = []) => {
 
 const getMcqDisplayNumber = (mcq, fallbackIndex, offset = 0) => {
   const numeric = getNumericMcqNumber(mcq)
-  if (numeric !== null) return String(numeric + offset)
+  if (numeric !== null) return String(Math.max(1, numeric + offset))
   return String(
     mcq?.originalQuestionNumber ||
       mcq?.questionNumber ||
@@ -1242,8 +1247,8 @@ function McqList() {
   const selectedTopic =
     topics.find((topic) => topic.id === selectedTopicId) || null
   const mcqDisplayNumberOffset = useMemo(
-    () => getMcqDisplayNumberOffset(mcqs),
-    [mcqs],
+    () => getMcqDisplayNumberOffset(mcqs, reviewQueue),
+    [mcqs, reviewQueue],
   )
 
   const load = async () => {
