@@ -2265,6 +2265,9 @@ exports.submitChapterAttempt = async (req, res) => {
       const isCorrect = !skipped && selectedIndex === correctIndex
       return {
         mcqId: mcq._id,
+        questionNumber: mcq.questionNumber || null,
+        originalQuestionNumber: mcq.originalQuestionNumber || mcq.questionNumber || null,
+        csvRowIndex: mcq.csvRowIndex || null,
         question: mcq.questionText || mcq.question,
         questionText: mcq.questionText || mcq.question,
         questionImages: mcq.questionImages || [],

@@ -54,6 +54,14 @@ const emptyMcqForm = {
 
 const letters = ['A', 'B', 'C', 'D']
 
+const getMcqDisplayNumber = (mcq, fallbackIndex) =>
+  String(
+    mcq?.originalQuestionNumber ||
+      mcq?.questionNumber ||
+      mcq?.csvRowIndex ||
+      (Number.isFinite(fallbackIndex) ? fallbackIndex + 1 : ''),
+  ).trim()
+
 const getOptionImages = (mcq, letter, index) =>
   mcq?.[`option${letter}Images`] || mcq?.options?.[index]?.images || []
 
@@ -883,7 +891,7 @@ function TeacherInlineMcqCard({ mcq, index, chapterId, meta, onSaved, onDelete }
         subject: meta?.name,
         isPublished: true,
       })
-      toast.success(`Question ${index + 1} saved successfully`)
+      toast.success(`Question ${getMcqDisplayNumber(mcq, index)} saved successfully`)
       onSaved()
     } catch (error) {
       toast.error(getUserFriendlyErrorMessage(error, 'We could not save the MCQ.'))
@@ -899,7 +907,7 @@ function TeacherInlineMcqCard({ mcq, index, chapterId, meta, onSaved, onDelete }
   return (
     <article className="workspace-card mcq-inline-card animate-fade-up">
       <div className="mcq-inline-card-header">
-        <span className="mcq-inline-card-number">QUESTION {index + 1}</span>
+        <span className="mcq-inline-card-number">QUESTION {getMcqDisplayNumber(mcq, index)}</span>
         {saving && <span className="mcq-inline-card-status">Saving...</span>}
       </div>
 
@@ -1967,7 +1975,7 @@ function QuizAttempt() {
             </div>
             <h1>Quiz Attempt</h1>
             <p>
-              Question {currentIndex + 1} of {mcqs.length}
+              Question {getMcqDisplayNumber(current, currentIndex)} • {currentIndex + 1} of {mcqs.length}
             </p>
           </div>
           <div className="mcq-practice-tools">
@@ -2084,7 +2092,7 @@ function QuizAttempt() {
                       setShowQuestionPanel(false)
                     }}
                   >
-                    {index + 1}
+                    {getMcqDisplayNumber(mcq, index)}
                   </button>
                 )
               })}
@@ -2219,7 +2227,7 @@ function ReviewSection({ title, items }) {
         >
           <div className="review-question-top">
             <span className="review-question-number">
-              {title} {index + 1}
+              {title} {getMcqDisplayNumber(item, index)}
             </span>
           </div>
           <div className="review-question-title">
