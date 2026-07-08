@@ -56,11 +56,18 @@ const letters = ['A', 'B', 'C', 'D']
 
 const getNumericMcqNumber = (mcq) => {
   const value = mcq?.originalQuestionNumber || mcq?.questionNumber || mcq?.csvRowIndex
-  const number = Number(String(value ?? '').trim())
+  const raw = String(value ?? '').trim()
+  const extracted = raw.match(/^\D*(\d+(?:\.\d+)?)\D*$/)?.[1] || raw
+  const number = Number(extracted)
   return Number.isFinite(number) ? number : null
 }
 
 const getMcqDisplayNumberOffset = (items = []) => {
+  const numbers = items
+    .map(getNumericMcqNumber)
+    .filter((number) => number !== null)
+  if (!numbers.length || numbers.some((number) => number === 1)) return 0
+
   const numberedItems = items
     .map((mcq) => ({
       number: getNumericMcqNumber(mcq),
@@ -72,11 +79,18 @@ const getMcqDisplayNumberOffset = (items = []) => {
         Number.isFinite(item.csvRowIndex) &&
         item.csvRowIndex > 0,
     )
-  if (numberedItems.length < 2) return 0
-  if (numberedItems.some((item) => item.number === 1)) return 0
-  return numberedItems.every((item) => item.number === item.csvRowIndex + 1)
-    ? -1
-    : 0
+  if (
+    numberedItems.length >= 2 &&
+    numberedItems.every((item) => item.number === item.csvRowIndex + 1)
+  ) {
+    return -1
+  }
+
+  const sortedNumbers = [...new Set(numbers)].sort((a, b) => a - b)
+  const isHeaderShiftedSequence = sortedNumbers.every(
+    (number, index) => number === index + 2,
+  )
+  return isHeaderShiftedSequence ? -1 : 0
 }
 
 const getMcqDisplayNumber = (mcq, fallbackIndex, offset = 0) => {
