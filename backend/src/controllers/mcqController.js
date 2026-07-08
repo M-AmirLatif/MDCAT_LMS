@@ -102,7 +102,7 @@ const numericQuestionNumber = (value) => {
   if (!raw) return null
   const extracted = raw.match(/^\D*(\d+(?:\.\d+)?)\D*$/)?.[1] || raw
   const numeric = Number(extracted)
-  return Number.isFinite(numeric) ? numeric : null
+  return Number.isFinite(numeric) && numeric >= 1 ? numeric : null
 }
 
 const CSV_NUMBER_COLUMNS = [
@@ -146,6 +146,7 @@ const normalizeCsvQuestionNumber = ({
   if (!explicit) return String(csvRowIndex)
 
   const numeric = numericQuestionNumber(explicit)
+  if (numeric === null) return String(csvRowIndex)
   if (numeric !== null && numeric === rowNumber && csvRowIndex === rowNumber - 1) {
     return String(csvRowIndex)
   }

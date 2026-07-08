@@ -91,7 +91,6 @@ const getMcqDisplayNumberOffset = (items = [], reviewItems = []) => {
   }
 
   const sortedNumbers = [...new Set(numbers)].sort((a, b) => a - b)
-  if (sortedNumbers[0] === 2) return -1
   const isHeaderShiftedSequence = sortedNumbers.every(
     (number, index) => number === index + 2,
   )
