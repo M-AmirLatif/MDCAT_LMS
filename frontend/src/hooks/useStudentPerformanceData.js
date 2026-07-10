@@ -55,6 +55,7 @@ const buildPerformanceData = (subjectSummary = [], sessions = []) => {
         subject,
         chapter: session.chapterName || session.topic || 'Chapter practice',
         totalQuestions: Number(session.totalQuestions) || 0,
+        correct: Number(session.finalScore ?? session.score) || 0,
         score: Number(session.percentage) || 0,
         submittedAt: session.submittedAt || null,
       }
@@ -117,6 +118,19 @@ const buildPerformanceData = (subjectSummary = [], sessions = []) => {
     }
   })
 
+  let runningCorrect = 0
+  let runningTotal = 0
+  const overallTrend = normalizedSessions.map((session, index) => {
+    runningCorrect += session.correct
+    runningTotal += session.totalQuestions
+    return {
+      label: session.chapter || `Attempt ${index + 1}`,
+      attemptDate: formatAttemptDate(session.submittedAt),
+      Overall: runningTotal ? Math.round((runningCorrect / runningTotal) * 100) : 0,
+      attemptScore: session.score,
+    }
+  })
+
   const practiceAttempts = [...normalizedSessions]
     .sort((a, b) => new Date(b.submittedAt || 0) - new Date(a.submittedAt || 0))
     .slice(0, 6)
@@ -141,6 +155,7 @@ const buildPerformanceData = (subjectSummary = [], sessions = []) => {
       weakestSubject: sortedSubjects.at(-1)?.name || EMPTY_SUMMARY.weakestSubject,
     },
     performanceTrend,
+    overallTrend,
     practiceAttempts,
   }
 }

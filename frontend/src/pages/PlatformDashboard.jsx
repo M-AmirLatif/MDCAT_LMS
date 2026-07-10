@@ -4,6 +4,7 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
+  Legend,
   Pie,
   PieChart,
   ResponsiveContainer,
@@ -120,15 +121,35 @@ function StudentDashboard({ firstName }) {
               <AreaChart data={performanceTrend}>
                 <defs>
                   <linearGradient id="studentAreaBio" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#1db884" stopOpacity={0.25} />
+                    <stop offset="0%" stopColor="#1db884" stopOpacity={0.32} />
                     <stop offset="100%" stopColor="#1db884" stopOpacity={0.02} />
                   </linearGradient>
+                  <linearGradient id="studentAreaChem" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#6c47ff" stopOpacity={0.28} />
+                    <stop offset="100%" stopColor="#6c47ff" stopOpacity={0.02} />
+                  </linearGradient>
+                  <linearGradient id="studentAreaPhysics" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#4a90e2" stopOpacity={0.28} />
+                    <stop offset="100%" stopColor="#4a90e2" stopOpacity={0.02} />
+                  </linearGradient>
+                  <linearGradient id="studentAreaEnglish" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#f59e0b" stopOpacity={0.26} />
+                    <stop offset="100%" stopColor="#f59e0b" stopOpacity={0.02} />
+                  </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.gridColor} />
-                <XAxis dataKey="attemptDate" axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} domain={[40, 100]} />
-                <Tooltip contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 12 }} labelStyle={{ color: chartTheme.tooltipText }} />
-                <Area type="monotone" dataKey="Biology" stroke="#1db884" fill="url(#studentAreaBio)" strokeWidth={3} connectNulls />
+                <CartesianGrid strokeDasharray="4 6" vertical={false} stroke={chartTheme.gridColor} />
+                <XAxis dataKey="attemptDate" axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} minTickGap={18} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(value) => `${value}%`} />
+                <Tooltip
+                  formatter={(value, name) => [`${Math.round(Number(value) || 0)}%`, name]}
+                  contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 14, boxShadow: chartTheme.isDark ? '0 18px 42px rgba(0,0,0,0.42)' : '0 18px 42px rgba(42,51,86,0.16)' }}
+                  labelStyle={{ color: chartTheme.tooltipText, fontWeight: 800 }}
+                />
+                <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ color: chartTheme.legendColor, fontSize: 12, paddingBottom: 8 }} />
+                <Area type="monotone" dataKey="Biology" stroke="#1db884" fill="url(#studentAreaBio)" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 5 }} connectNulls />
+                <Area type="monotone" dataKey="Chemistry" stroke="#6c47ff" fill="url(#studentAreaChem)" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 5 }} connectNulls />
+                <Area type="monotone" dataKey="Physics" stroke="#4a90e2" fill="url(#studentAreaPhysics)" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 5 }} connectNulls />
+                <Area type="monotone" dataKey="English" stroke="#f59e0b" fill="url(#studentAreaEnglish)" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 5 }} connectNulls />
               </AreaChart>
             </ResponsiveContainer>
             ) : (

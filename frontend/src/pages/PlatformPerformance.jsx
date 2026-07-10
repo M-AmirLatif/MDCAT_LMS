@@ -1,8 +1,11 @@
 import {
+  Area,
+  AreaChart,
   CartesianGrid,
   Legend,
   Line,
   LineChart,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -32,7 +35,7 @@ export default function PlatformPerformance() {
   const studentData = useStudentPerformanceData()
   const bankData = useMcqSubjectSummary()
   const isStudent = role === 'student'
-  const { summary, subjects, performanceTrend, practiceAttempts, loading } = studentData
+  const { summary, subjects, performanceTrend, overallTrend, practiceAttempts, loading } = studentData
   const visibleSubjects = isStudent
     ? (subjects.length ? subjects : mdcatSubjects)
     : (bankData.subjects.length ? bankData.subjects : mdcatSubjects)
@@ -60,7 +63,7 @@ export default function PlatformPerformance() {
       </div>
 
       {isStudent ? (
-      <div className="workspace-section-grid">
+      <div className="workspace-section-grid performance-chart-grid">
         <div className="workspace-card">
           <div className="workspace-card-head">
             <div>
@@ -71,16 +74,19 @@ export default function PlatformPerformance() {
           <div className="workspace-card-body chart-panel">
             {!loading && performanceTrend.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={performanceTrend}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.gridColor} />
-                  <XAxis dataKey="attemptDate" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor }} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor }} domain={[40, 100]} />
-                  <Tooltip contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 12 }} labelStyle={{ color: chartTheme.tooltipText }} />
-                  <Legend wrapperStyle={{ color: chartTheme.legendColor }} />
-                  <Line type="monotone" dataKey="Biology" stroke="#1db884" strokeWidth={3} dot={false} connectNulls />
-                  <Line type="monotone" dataKey="Chemistry" stroke="#6c47ff" strokeWidth={3} dot={false} connectNulls />
-                  <Line type="monotone" dataKey="Physics" stroke="#4a90e2" strokeWidth={3} dot={false} connectNulls />
-                  <Line type="monotone" dataKey="English" stroke="#f59e0b" strokeWidth={3} dot={false} connectNulls />
+                <LineChart data={performanceTrend} margin={{ top: 12, right: 18, left: 0, bottom: 4 }}>
+                  <CartesianGrid strokeDasharray="4 6" vertical={false} stroke={chartTheme.gridColor} />
+                  <XAxis dataKey="attemptDate" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor }} minTickGap={18} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor }} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(value) => `${value}%`} />
+                  {pageSummary.overallAccuracy > 0 ? (
+                    <ReferenceLine y={pageSummary.overallAccuracy} stroke="#f8fafc" strokeOpacity={0.38} strokeDasharray="6 6" label={{ value: `Overall ${pageSummary.overallAccuracy}%`, fill: chartTheme.axisColor, fontSize: 11, position: 'insideTopRight' }} />
+                  ) : null}
+                  <Tooltip formatter={(value, name) => [`${Math.round(Number(value) || 0)}%`, name]} contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 14, boxShadow: chartTheme.isDark ? '0 18px 42px rgba(0,0,0,0.42)' : '0 18px 42px rgba(42,51,86,0.16)' }} labelStyle={{ color: chartTheme.tooltipText, fontWeight: 800 }} />
+                  <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ color: chartTheme.legendColor, fontSize: 12, paddingBottom: 8 }} />
+                  <Line type="monotone" dataKey="Biology" stroke="#1db884" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 5 }} connectNulls />
+                  <Line type="monotone" dataKey="Chemistry" stroke="#6c47ff" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 5 }} connectNulls />
+                  <Line type="monotone" dataKey="Physics" stroke="#4a90e2" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 5 }} connectNulls />
+                  <Line type="monotone" dataKey="English" stroke="#f59e0b" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 5 }} connectNulls />
                 </LineChart>
               </ResponsiveContainer>
             ) : (
@@ -93,21 +99,41 @@ export default function PlatformPerformance() {
           </div>
         </div>
 
-        <div className="insight-card">
-          <div className="insight-card-top">
+        <div className="workspace-card">
+          <div className="workspace-card-head">
             <div>
-              <div className="label-xs">AI Recommendation</div>
-              <h3 className="workspace-card-title">Recommendations will appear after real attempts</h3>
+              <div className="label-xs">Overall Trend</div>
+              <h2 className="workspace-card-title">Combined accuracy across all tests</h2>
             </div>
-            <div className="insight-badge">Waiting for data</div>
           </div>
-          <p className="insight-copy">
-            The system needs real chapter attempts before it can calculate weak areas, recovery blocks, and suggested test sets.
-          </p>
-          <div className="insight-highlights">
-            <div className="insight-highlight"><span>Best recovery block</span><strong>No data yet</strong></div>
-            <div className="insight-highlight"><span>Suggested test set</span><strong>No data yet</strong></div>
-            <div className="insight-highlight insight-highlight--accent"><span>Target uplift</span><strong>0%</strong></div>
+          <div className="workspace-card-body chart-panel">
+            {!loading && overallTrend.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={overallTrend} margin={{ top: 12, right: 18, left: 0, bottom: 4 }}>
+                  <defs>
+                    <linearGradient id="overallAccuracyArea" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#7c5cff" stopOpacity={0.34} />
+                      <stop offset="55%" stopColor="#4a90e2" stopOpacity={0.16} />
+                      <stop offset="100%" stopColor="#1db884" stopOpacity={0.03} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="4 6" vertical={false} stroke={chartTheme.gridColor} />
+                  <XAxis dataKey="attemptDate" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor }} minTickGap={18} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor }} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(value) => `${value}%`} />
+                  {pageSummary.overallAccuracy > 0 ? (
+                    <ReferenceLine y={pageSummary.overallAccuracy} stroke="#f8fafc" strokeOpacity={0.42} strokeDasharray="6 6" label={{ value: `Overall ${pageSummary.overallAccuracy}%`, fill: chartTheme.axisColor, fontSize: 11, position: 'insideTopRight' }} />
+                  ) : null}
+                  <Tooltip formatter={(value, name) => [`${Math.round(Number(value) || 0)}%`, name === 'Overall' ? 'Combined accuracy' : name]} contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 14, boxShadow: chartTheme.isDark ? '0 18px 42px rgba(0,0,0,0.42)' : '0 18px 42px rgba(42,51,86,0.16)' }} labelStyle={{ color: chartTheme.tooltipText, fontWeight: 800 }} />
+                  <Area type="monotone" dataKey="Overall" name="Combined accuracy" stroke="#7c5cff" fill="url(#overallAccuracyArea)" strokeWidth={4} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="empty-state empty-state--compact">
+                <div className="empty-orb" />
+                <h3>No combined trend yet</h3>
+                <p>The overall graph will appear after students submit real MCQ attempts.</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
