@@ -32,11 +32,11 @@ const PLAN_OPTIONS = ['free', 'monthly', 'quarterly', 'premium', 'enterprise']
 const SUBSCRIPTION_OPTIONS = ['none', 'pending', 'active', 'expired', 'cancelled']
 const ACCESS_OPTIONS = ['active', 'restricted', 'expired']
 const cleanTooltipStyle = (chartTheme) => ({
-  background: chartTheme.tooltipBg,
-  color: chartTheme.tooltipText,
-  border: `1px solid ${chartTheme.isDark ? 'rgba(167, 139, 250, 0.24)' : 'rgba(124, 92, 255, 0.18)'}`,
+  background: '#fbfaff',
+  color: '#19172e',
+  border: '1px solid rgba(124, 92, 255, 0.14)',
   borderRadius: 14,
-  boxShadow: chartTheme.isDark ? '0 18px 42px rgba(0,0,0,0.42)' : '0 18px 42px rgba(42,51,86,0.16)',
+  boxShadow: chartTheme.isDark ? '0 20px 48px rgba(0, 0, 0, 0.38)' : '0 18px 42px rgba(42,51,86,0.16)',
 })
 
 function ChartTooltip({ active, label, payload, chartTheme, valueSuffix = '', valueLabel = 'Value' }) {

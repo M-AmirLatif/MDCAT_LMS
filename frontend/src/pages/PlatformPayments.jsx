@@ -9,6 +9,7 @@ const fallbackMethods = [
   { id: 'JazzCash', name: 'JazzCash', number: '03006575463', accountName: 'Muhammad Shafiq' },
   { id: 'Easypaisa', name: 'Easypaisa', number: '03350631487', accountName: 'Muhammad Amir' },
 ]
+const SUBJECT_FEE = 250
 
 function formatDate(value) {
   if (!value) return 'Not set'
@@ -42,7 +43,7 @@ function PaymentMethod({ method }) {
 function StudentPayments() {
   const [subjects, setSubjects] = useState(fallbackSubjects)
   const [methods, setMethods] = useState(fallbackMethods)
-  const [subjectFee, setSubjectFee] = useState(250)
+  const [subjectFee] = useState(SUBJECT_FEE)
   const [selectedSubjects, setSelectedSubjects] = useState([])
   const [paymentMethod, setPaymentMethod] = useState('JazzCash')
   const [transactionId, setTransactionId] = useState('')
@@ -68,7 +69,6 @@ function StudentPayments() {
       ])
       setSubjects(methodsRes.data.subjects || fallbackSubjects)
       setMethods(methodsRes.data.methods || fallbackMethods)
-      setSubjectFee(Number(methodsRes.data.subjectFee) || 250)
       setRequests(requestsRes.data.requests || [])
       setSubscriptions(subscriptionsRes.data.subscriptions || [])
       setPaymentMethod((current) => current || methodsRes.data.methods?.[0]?.id || 'JazzCash')

@@ -106,6 +106,169 @@
   box-shadow: 0 10px 22px rgba(15, 15, 26, 0.12) !important;
 }
 
+/* Final subscription page polish: clean contrast and fewer heavy borders. */
+.payments-student-page .payments-summary-card,
+.payments-student-page .payments-form-card,
+.payments-student-page .payments-history-card {
+  border: 1px solid rgba(174, 185, 214, 0.82) !important;
+  border-top: 3px solid rgba(108, 71, 255, 0.78) !important;
+  background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%) !important;
+  box-shadow: 0 16px 36px rgba(42, 54, 96, 0.1) !important;
+}
+
+.payments-student-page .payments-form-section {
+  border: 1px solid rgba(174, 185, 214, 0.78) !important;
+  background: #f8faff !important;
+  box-shadow: none !important;
+}
+
+.payments-student-page .payments-form-section--subjects {
+  background: #f6f8ff !important;
+}
+
+.payments-student-page .payments-form-section--proof {
+  background: #f7f9ff !important;
+}
+
+.payments-student-page .payments-subject-picker .filter-pill {
+  background: #ffffff !important;
+  border: 1px solid rgba(161, 173, 207, 0.9) !important;
+  color: #10162f !important;
+  -webkit-text-fill-color: #10162f !important;
+  box-shadow: none !important;
+}
+
+.payments-student-page .payments-subject-picker .filter-pill:hover,
+.payments-student-page .payments-subject-picker .filter-pill:focus-visible {
+  background: #f2f5ff !important;
+  border-color: rgba(108, 71, 255, 0.72) !important;
+  color: #10162f !important;
+  -webkit-text-fill-color: #10162f !important;
+  box-shadow: 0 0 0 3px rgba(108, 71, 255, 0.1) !important;
+}
+
+.payments-student-page .payments-subject-picker .filter-pill--active,
+.payments-student-page .payments-subject-picker .filter-pill--active:hover,
+.payments-student-page .payments-subject-picker .filter-pill--active:focus-visible {
+  background: linear-gradient(135deg, #6c47ff 0%, #4a90e2 100%) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.payments-student-page .payments-field input,
+.payments-student-page .payments-field select {
+  background: #ffffff !important;
+  border: 1px solid rgba(161, 173, 207, 0.92) !important;
+  color: #11162f !important;
+  -webkit-text-fill-color: #11162f !important;
+  box-shadow: none !important;
+}
+
+.payments-student-page .payments-amount-card {
+  border: 1px solid rgba(174, 185, 214, 0.86) !important;
+  border-top: 4px solid #2dd99b !important;
+  background: linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%) !important;
+  box-shadow: none !important;
+}
+
+.payments-student-page .payments-submit-btn:disabled,
+.payments-student-page .payments-submit-btn:disabled:hover,
+.payments-student-page .payments-submit-btn:disabled:focus {
+  background: #dce3f2 !important;
+  border: 1px solid rgba(161, 173, 207, 0.9) !important;
+  color: #303950 !important;
+  -webkit-text-fill-color: #303950 !important;
+}
+
+[data-theme='dark'] .payments-student-page {
+  background: #09081a !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-summary-card,
+[data-theme='dark'] .payments-student-page .payments-form-card,
+[data-theme='dark'] .payments-student-page .payments-history-card {
+  border: 1px solid rgba(139, 111, 255, 0.24) !important;
+  border-top: 3px solid rgba(124, 92, 255, 0.72) !important;
+  background: linear-gradient(180deg, #14122d 0%, #100f25 100%) !important;
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.32) !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-form-card .workspace-card-head,
+[data-theme='dark'] .payments-student-page .payments-history-card .workspace-card-head {
+  border-bottom-color: rgba(139, 111, 255, 0.14) !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-form-section {
+  border: 1px solid rgba(139, 111, 255, 0.24) !important;
+  background: #181633 !important;
+  box-shadow: none !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-form-section--subjects {
+  background: #171532 !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-form-section--proof {
+  background: #181633 !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-subject-picker .filter-pill {
+  background: #202044 !important;
+  border: 1px solid rgba(139, 111, 255, 0.36) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-subject-picker .filter-pill:hover,
+[data-theme='dark'] .payments-student-page .payments-subject-picker .filter-pill:focus-visible {
+  background: #282651 !important;
+  border-color: rgba(188, 177, 255, 0.66) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(139, 111, 255, 0.16) !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-subject-picker .filter-pill--active,
+[data-theme='dark'] .payments-student-page .payments-subject-picker .filter-pill--active:hover,
+[data-theme='dark'] .payments-student-page .payments-subject-picker .filter-pill--active:focus-visible {
+  background: linear-gradient(135deg, #7c5cff 0%, #4f92e8 100%) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-field input,
+[data-theme='dark'] .payments-student-page .payments-field select {
+  background: #12102a !important;
+  border: 1px solid rgba(139, 111, 255, 0.34) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-field input::placeholder {
+  color: rgba(232, 228, 255, 0.62) !important;
+  -webkit-text-fill-color: rgba(232, 228, 255, 0.62) !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-amount-card {
+  border: 1px solid rgba(139, 111, 255, 0.26) !important;
+  border-top: 4px solid #2dd99b !important;
+  background: #172238 !important;
+  box-shadow: none !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-submit-btn:disabled,
+[data-theme='dark'] .payments-student-page .payments-submit-btn:disabled:hover,
+[data-theme='dark'] .payments-student-page .payments-submit-btn:disabled:focus {
+  background: #33456a !important;
+  border: 1px solid rgba(188, 177, 255, 0.34) !important;
+  color: #f2efff !important;
+  -webkit-text-fill-color: #f2efff !important;
+}
+
 .notification-hero .workspace-hero-actions .btn-primary {
   background:
     linear-gradient(135deg, rgba(108, 71, 255, 0.82), rgba(74, 144, 226, 0.92))
@@ -4783,6 +4946,12 @@
   min-width: 148px;
   padding: 12px 14px;
   pointer-events: none;
+  overflow: hidden;
+}
+
+.chart-tooltip-clean,
+.chart-tooltip-clean * {
+  box-sizing: border-box;
 }
 
 .chart-tooltip-clean__label {
@@ -4791,6 +4960,8 @@
   font-size: 13px;
   font-weight: 800;
   line-height: 1.2;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 
 .chart-tooltip-clean__row {
@@ -4801,6 +4972,8 @@
   color: inherit;
   font-size: 13px;
   line-height: 1.25;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 
 .chart-tooltip-clean__row + .chart-tooltip-clean__row {
@@ -4817,12 +4990,22 @@
 .chart-tooltip-clean__row strong {
   color: inherit;
   font-weight: 900;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 
 .chart-tooltip-clean__dot {
   width: 8px;
   height: 8px;
   border-radius: 999px;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+[data-theme='dark'] .chart-tooltip-clean {
+  background: #fbfaff !important;
+  color: #19172e !important;
+  border-color: rgba(124, 92, 255, 0.14) !important;
 }
 
 .chart-panel .empty-state,
@@ -8679,6 +8862,169 @@ html[data-theme="dark"] .notification-toolbar-note {
     padding: 0 10px !important;
     font-size: 11px !important;
   }
+}
+
+/* Final subscription page polish: clean contrast and fewer heavy borders. */
+.payments-student-page .payments-summary-card,
+.payments-student-page .payments-form-card,
+.payments-student-page .payments-history-card {
+  border: 1px solid rgba(174, 185, 214, 0.82) !important;
+  border-top: 3px solid rgba(108, 71, 255, 0.78) !important;
+  background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%) !important;
+  box-shadow: 0 16px 36px rgba(42, 54, 96, 0.1) !important;
+}
+
+.payments-student-page .payments-form-section {
+  border: 1px solid rgba(174, 185, 214, 0.78) !important;
+  background: #f8faff !important;
+  box-shadow: none !important;
+}
+
+.payments-student-page .payments-form-section--subjects {
+  background: #f6f8ff !important;
+}
+
+.payments-student-page .payments-form-section--proof {
+  background: #f7f9ff !important;
+}
+
+.payments-student-page .payments-subject-picker .filter-pill {
+  background: #ffffff !important;
+  border: 1px solid rgba(161, 173, 207, 0.9) !important;
+  color: #10162f !important;
+  -webkit-text-fill-color: #10162f !important;
+  box-shadow: none !important;
+}
+
+.payments-student-page .payments-subject-picker .filter-pill:hover,
+.payments-student-page .payments-subject-picker .filter-pill:focus-visible {
+  background: #f2f5ff !important;
+  border-color: rgba(108, 71, 255, 0.72) !important;
+  color: #10162f !important;
+  -webkit-text-fill-color: #10162f !important;
+  box-shadow: 0 0 0 3px rgba(108, 71, 255, 0.1) !important;
+}
+
+.payments-student-page .payments-subject-picker .filter-pill--active,
+.payments-student-page .payments-subject-picker .filter-pill--active:hover,
+.payments-student-page .payments-subject-picker .filter-pill--active:focus-visible {
+  background: linear-gradient(135deg, #6c47ff 0%, #4a90e2 100%) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.payments-student-page .payments-field input,
+.payments-student-page .payments-field select {
+  background: #ffffff !important;
+  border: 1px solid rgba(161, 173, 207, 0.92) !important;
+  color: #11162f !important;
+  -webkit-text-fill-color: #11162f !important;
+  box-shadow: none !important;
+}
+
+.payments-student-page .payments-amount-card {
+  border: 1px solid rgba(174, 185, 214, 0.86) !important;
+  border-top: 4px solid #2dd99b !important;
+  background: linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%) !important;
+  box-shadow: none !important;
+}
+
+.payments-student-page .payments-submit-btn:disabled,
+.payments-student-page .payments-submit-btn:disabled:hover,
+.payments-student-page .payments-submit-btn:disabled:focus {
+  background: #dce3f2 !important;
+  border: 1px solid rgba(161, 173, 207, 0.9) !important;
+  color: #303950 !important;
+  -webkit-text-fill-color: #303950 !important;
+}
+
+[data-theme='dark'] .payments-student-page {
+  background: #09081a !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-summary-card,
+[data-theme='dark'] .payments-student-page .payments-form-card,
+[data-theme='dark'] .payments-student-page .payments-history-card {
+  border: 1px solid rgba(139, 111, 255, 0.24) !important;
+  border-top: 3px solid rgba(124, 92, 255, 0.72) !important;
+  background: linear-gradient(180deg, #14122d 0%, #100f25 100%) !important;
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.32) !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-form-card .workspace-card-head,
+[data-theme='dark'] .payments-student-page .payments-history-card .workspace-card-head {
+  border-bottom-color: rgba(139, 111, 255, 0.14) !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-form-section {
+  border: 1px solid rgba(139, 111, 255, 0.24) !important;
+  background: #181633 !important;
+  box-shadow: none !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-form-section--subjects {
+  background: #171532 !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-form-section--proof {
+  background: #181633 !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-subject-picker .filter-pill {
+  background: #202044 !important;
+  border: 1px solid rgba(139, 111, 255, 0.36) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-subject-picker .filter-pill:hover,
+[data-theme='dark'] .payments-student-page .payments-subject-picker .filter-pill:focus-visible {
+  background: #282651 !important;
+  border-color: rgba(188, 177, 255, 0.66) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(139, 111, 255, 0.16) !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-subject-picker .filter-pill--active,
+[data-theme='dark'] .payments-student-page .payments-subject-picker .filter-pill--active:hover,
+[data-theme='dark'] .payments-student-page .payments-subject-picker .filter-pill--active:focus-visible {
+  background: linear-gradient(135deg, #7c5cff 0%, #4f92e8 100%) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-field input,
+[data-theme='dark'] .payments-student-page .payments-field select {
+  background: #12102a !important;
+  border: 1px solid rgba(139, 111, 255, 0.34) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-field input::placeholder {
+  color: rgba(232, 228, 255, 0.62) !important;
+  -webkit-text-fill-color: rgba(232, 228, 255, 0.62) !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-amount-card {
+  border: 1px solid rgba(139, 111, 255, 0.26) !important;
+  border-top: 4px solid #2dd99b !important;
+  background: #172238 !important;
+  box-shadow: none !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-submit-btn:disabled,
+[data-theme='dark'] .payments-student-page .payments-submit-btn:disabled:hover,
+[data-theme='dark'] .payments-student-page .payments-submit-btn:disabled:focus {
+  background: #33456a !important;
+  border: 1px solid rgba(188, 177, 255, 0.34) !important;
+  color: #f2efff !important;
+  -webkit-text-fill-color: #f2efff !important;
 }
 
 
