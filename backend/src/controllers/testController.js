@@ -202,7 +202,7 @@ exports.getMyTestHistory = async (req, res) => {
     }
 
     const page = Math.max(1, parseInt(req.query.page, 10) || 1)
-    const limit = Math.min(200, Math.max(1, parseInt(req.query.limit, 10) || 20))
+    const limit = Math.min(1000, Math.max(1, parseInt(req.query.limit, 10) || 20))
 
     const [total, sessions] = await Promise.all([
       TestSession.countDocuments(filter),

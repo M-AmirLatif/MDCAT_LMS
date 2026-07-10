@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import API from '../services/api'
 
 const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English']
@@ -156,15 +156,18 @@ const buildAnalyticsData = (sessions = [], subjects = []) => {
   }
 }
 
+const hasAnalyticsAttempts = (analytics) => Number(analytics?.summary?.totalAttempts) > 0
+
 export default function useTeacherAnalyticsData() {
   const [data, setData] = useState(EMPTY)
   const [loading, setLoading] = useState(true)
+  const lastGoodDataRef = useRef(null)
 
   useEffect(() => {
     let alive = true
 
     const load = async () => {
-      setLoading((current) => (data === EMPTY ? true : current))
+      setLoading((current) => (!lastGoodDataRef.current ? true : current))
       try {
         const [historyRes, summaryRes] = await Promise.all([
           API.get('/tests/my', { params: { page: 1, limit: 1000 } }),
@@ -173,14 +176,21 @@ export default function useTeacherAnalyticsData() {
 
         if (!alive) return
 
-        setData(
-          buildAnalyticsData(
-            historyRes.data?.sessions || [],
-            summaryRes.data?.subjects || [],
-          ),
+        const nextData = buildAnalyticsData(
+          historyRes.data?.sessions || [],
+          summaryRes.data?.subjects || [],
         )
+
+        if (hasAnalyticsAttempts(nextData)) {
+          lastGoodDataRef.current = nextData
+          setData(nextData)
+          return
+        }
+
+        // Avoid flashing "No submissions" during transient empty refreshes.
+        setData(lastGoodDataRef.current || nextData)
       } catch {
-        if (alive) setData(EMPTY)
+        if (alive) setData(lastGoodDataRef.current || EMPTY)
       } finally {
         if (alive) setLoading(false)
       }

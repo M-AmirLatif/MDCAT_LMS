@@ -4779,6 +4779,52 @@
   height: 280px;
 }
 
+.chart-tooltip-clean {
+  min-width: 148px;
+  padding: 12px 14px;
+  pointer-events: none;
+}
+
+.chart-tooltip-clean__label {
+  margin-bottom: 8px;
+  color: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.chart-tooltip-clean__row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  color: inherit;
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.chart-tooltip-clean__row + .chart-tooltip-clean__row {
+  margin-top: 6px;
+}
+
+.chart-tooltip-clean__row span:nth-child(2) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.82;
+}
+
+.chart-tooltip-clean__row strong {
+  color: inherit;
+  font-weight: 900;
+}
+
+.chart-tooltip-clean__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+}
+
 .chart-panel .empty-state,
 .chart-panel .empty-state--compact {
   height: 100%;

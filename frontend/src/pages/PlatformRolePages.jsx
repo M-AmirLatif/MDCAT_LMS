@@ -31,6 +31,31 @@ const multiStudentTrend = []
 const PLAN_OPTIONS = ['free', 'monthly', 'quarterly', 'premium', 'enterprise']
 const SUBSCRIPTION_OPTIONS = ['none', 'pending', 'active', 'expired', 'cancelled']
 const ACCESS_OPTIONS = ['active', 'restricted', 'expired']
+const cleanTooltipStyle = (chartTheme) => ({
+  background: chartTheme.tooltipBg,
+  color: chartTheme.tooltipText,
+  border: `1px solid ${chartTheme.isDark ? 'rgba(167, 139, 250, 0.24)' : 'rgba(124, 92, 255, 0.18)'}`,
+  borderRadius: 14,
+  boxShadow: chartTheme.isDark ? '0 18px 42px rgba(0,0,0,0.42)' : '0 18px 42px rgba(42,51,86,0.16)',
+})
+
+function ChartTooltip({ active, label, payload, chartTheme, valueSuffix = '', valueLabel = 'Value' }) {
+  if (!active || !payload?.length) return null
+  return (
+    <div className="chart-tooltip-clean" style={cleanTooltipStyle(chartTheme)}>
+      <div className="chart-tooltip-clean__label">{label}</div>
+      {payload
+        .filter((entry) => entry.value !== null && typeof entry.value !== 'undefined')
+        .map((entry) => (
+          <div className="chart-tooltip-clean__row" key={`${entry.name}-${entry.dataKey}`}>
+            <span className="chart-tooltip-clean__dot" style={{ background: entry.color || entry.stroke || entry.fill }} />
+            <span>{entry.dataKey === 'count' ? valueLabel : entry.name || valueLabel}</span>
+            <strong>{Math.round(Number(entry.value) || 0)}{valueSuffix}</strong>
+          </div>
+        ))}
+    </div>
+  )
+}
 
 const formatTitle = (value = '') =>
   String(value || '')
@@ -200,11 +225,13 @@ export function TeacherAssignmentsPage() {
 
 export function TeacherAnalyticsPage() {
   const chartTheme = useThemeMode()
-  const { summary, scoreDistribution, subjectMastery, multiStudentTrend, loading } = useTeacherAnalyticsData()
+  const { summary, scoreDistribution, subjectMastery, multiStudentTrend } = useTeacherAnalyticsData()
   const trendLines = multiStudentTrend.length > 0
     ? Object.keys(multiStudentTrend.reduce((merged, item) => ({ ...merged, ...item }), {})).filter((key) => key !== 'label')
     : []
   const trendColors = ['#6c47ff', '#ff6b6b', '#1db884']
+  const hasDistribution = scoreDistribution.some((item) => item.count > 0)
+  const hasTrend = trendLines.length > 0
 
   return (
     <div className="workspace-page animate-fade-up">
@@ -219,13 +246,13 @@ export function TeacherAnalyticsPage() {
         <div className="workspace-card">
           <div className="workspace-card-head"><div><div className="label-xs">Distribution</div><h2 className="workspace-card-title">Score distribution</h2></div></div>
           <div className="workspace-card-body chart-panel">
-            {!loading && scoreDistribution.some((item) => item.count > 0) ? (
+            {hasDistribution ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={scoreDistribution} margin={{ top: 12, right: 18, left: 0, bottom: 4 }}>
                   <CartesianGrid strokeDasharray="4 6" vertical={false} stroke={chartTheme.gridColor} />
                   <XAxis dataKey="band" axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} />
                   <YAxis axisLine={false} tickLine={false} allowDecimals={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} />
-                  <Tooltip cursor={{ fill: 'rgba(124, 92, 255, 0.08)' }} formatter={(value) => [value, 'Attempts']} contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 14, boxShadow: chartTheme.isDark ? '0 18px 42px rgba(0,0,0,0.42)' : '0 18px 42px rgba(42,51,86,0.16)' }} labelStyle={{ color: chartTheme.tooltipText, fontWeight: 800 }} />
+                  <Tooltip cursor={{ fill: 'rgba(124, 92, 255, 0.08)' }} content={<ChartTooltip chartTheme={chartTheme} valueLabel="Attempts" />} />
                   <Bar dataKey="count" fill="#1db884" radius={[10, 10, 0, 0]} activeBar={{ fill: '#2dd99b', radius: [10, 10, 0, 0] }} />
                 </BarChart>
               </ResponsiveContainer>
@@ -268,13 +295,13 @@ export function TeacherAnalyticsPage() {
       <div className="workspace-card">
         <div className="workspace-card-head"><div><div className="label-xs">Comparison</div><h3 className="workspace-card-title">Multi-student line chart</h3></div></div>
         <div className="workspace-card-body chart-panel">
-          {!loading && trendLines.length > 0 ? (
+          {hasTrend ? (
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={multiStudentTrend} margin={{ top: 12, right: 18, left: 0, bottom: 4 }}>
                 <CartesianGrid strokeDasharray="4 6" vertical={false} stroke={chartTheme.gridColor} />
                 <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} minTickGap={18} />
                 <YAxis axisLine={false} tickLine={false} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(value) => `${value}%`} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} />
-                <Tooltip cursor={{ stroke: '#7c5cff', strokeOpacity: 0.22 }} formatter={(value, name) => [`${Math.round(Number(value) || 0)}%`, name]} contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 14, boxShadow: chartTheme.isDark ? '0 18px 42px rgba(0,0,0,0.42)' : '0 18px 42px rgba(42,51,86,0.16)' }} labelStyle={{ color: chartTheme.tooltipText, fontWeight: 800 }} />
+                <Tooltip cursor={{ stroke: '#7c5cff', strokeOpacity: 0.22 }} content={<ChartTooltip chartTheme={chartTheme} valueSuffix="%" />} />
                 <Legend wrapperStyle={{ color: chartTheme.legendColor }} />
                 {trendLines.map((lineKey, index) => (
                   <Line key={lineKey} type="monotone" dataKey={lineKey} stroke={trendColors[index % trendColors.length]} strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 5 }} connectNulls />
