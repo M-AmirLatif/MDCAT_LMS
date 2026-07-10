@@ -164,10 +164,10 @@ export default function useTeacherAnalyticsData() {
     let alive = true
 
     const load = async () => {
-      setLoading(true)
+      setLoading((current) => (data === EMPTY ? true : current))
       try {
         const [historyRes, summaryRes] = await Promise.all([
-          API.get('/tests/my', { params: { page: 1, limit: 200 } }),
+          API.get('/tests/my', { params: { page: 1, limit: 1000 } }),
           API.get('/mcqs/subjects/summary'),
         ])
 
@@ -187,10 +187,19 @@ export default function useTeacherAnalyticsData() {
     }
 
     load()
+    const interval = window.setInterval(load, 30000)
+    const syncOnFocus = () => {
+      if (document.visibilityState === 'visible') load()
+    }
+    window.addEventListener('focus', load)
+    document.addEventListener('visibilitychange', syncOnFocus)
     return () => {
       alive = false
+      window.clearInterval(interval)
+      window.removeEventListener('focus', load)
+      document.removeEventListener('visibilitychange', syncOnFocus)
     }
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return useMemo(() => ({ ...data, loading }), [data, loading])
 }

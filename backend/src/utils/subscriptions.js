@@ -1,5 +1,5 @@
 const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English']
-const SUBJECT_FEE = 1000
+const SUBJECT_FEE = 250
 
 const SUBJECT_NAME_BY_KEY = new Map(
   SUBJECTS.flatMap((subject) => [

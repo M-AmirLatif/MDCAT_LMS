@@ -20,7 +20,7 @@ const paymentRequestSchema = new mongoose.Schema(
     amount: {
       type: Number,
       required: true,
-      min: 1000,
+      min: 250,
     },
     paymentMethod: {
       type: String,

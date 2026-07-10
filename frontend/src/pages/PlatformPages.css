@@ -4267,6 +4267,173 @@
     #15132f !important;
 }
 
+/* Student payments interaction polish: keep hover states crisp and readable. */
+.payments-student-page .payments-subject-picker .filter-pill,
+.payments-student-page .payments-submit-btn,
+.payments-student-page .payments-field input,
+.payments-student-page .payments-field select,
+.payments-student-page .payments-field input[type="file"]::file-selector-button {
+  filter: none !important;
+  text-shadow: none !important;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.payments-student-page .payments-subject-picker .filter-pill:hover,
+.payments-student-page .payments-subject-picker .filter-pill:focus-visible {
+  transform: translateY(-1px);
+  background:
+    linear-gradient(180deg, rgba(108, 71, 255, 0.1), rgba(74, 144, 226, 0.055)),
+    #ffffff !important;
+  border-color: #6c47ff !important;
+  color: #10162f !important;
+  -webkit-text-fill-color: #10162f !important;
+  box-shadow:
+    0 10px 22px rgba(79, 91, 140, 0.16),
+    0 0 0 3px rgba(108, 71, 255, 0.1) !important;
+}
+
+.payments-student-page .payments-subject-picker .filter-pill:active {
+  transform: translateY(0);
+  box-shadow: 0 5px 14px rgba(79, 91, 140, 0.12) !important;
+}
+
+.payments-student-page .payments-subject-picker .filter-pill--active,
+.payments-student-page .payments-subject-picker .filter-pill--active:hover,
+.payments-student-page .payments-subject-picker .filter-pill--active:focus-visible {
+  transform: translateY(-1px);
+  background:
+    linear-gradient(135deg, #6c47ff 0%, #4a90e2 58%, #1db884 130%) !important;
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow:
+    0 14px 30px rgba(80, 72, 205, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+}
+
+.payments-student-page .payments-submit-btn:not(:disabled),
+.payments-student-page .payments-submit-btn:not(:disabled):hover,
+.payments-student-page .payments-submit-btn:not(:disabled):focus-visible {
+  background:
+    linear-gradient(135deg, #6c47ff 0%, #4a90e2 74%, #2dd99b 132%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.26) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  filter: none !important;
+  text-shadow: none !important;
+  box-shadow:
+    0 16px 34px rgba(76, 92, 210, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+}
+
+.payments-student-page .payments-submit-btn:not(:disabled):hover,
+.payments-student-page .payments-submit-btn:not(:disabled):focus-visible {
+  transform: translateY(-1px);
+}
+
+.payments-student-page .payments-submit-btn:not(:disabled):active {
+  transform: translateY(0);
+  box-shadow:
+    0 9px 20px rgba(76, 92, 210, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
+}
+
+.payments-student-page .payments-submit-btn:disabled,
+.payments-student-page .payments-submit-btn:disabled:hover,
+.payments-student-page .payments-submit-btn:disabled:focus {
+  transform: none !important;
+  filter: none !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+  cursor: not-allowed;
+}
+
+.payments-student-page .payments-field input:hover,
+.payments-student-page .payments-field select:hover,
+.payments-student-page .payments-field input[type="file"]:hover {
+  border-color: #7d8bb4 !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 8px 18px rgba(42, 54, 96, 0.08) !important;
+}
+
+.payments-student-page .payments-field input[type="file"]::file-selector-button:hover {
+  background: #e3dcff !important;
+  color: #4f31f2 !important;
+  -webkit-text-fill-color: #4f31f2 !important;
+}
+
+.payments-student-page .payments-summary-card,
+.payments-student-page .payments-form-card,
+.payments-student-page .payments-history-card {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(108, 71, 255, 0.075), transparent 34%),
+    linear-gradient(180deg, #ffffff 0%, #f7f9ff 100%) !important;
+}
+
+.payments-student-page .payments-form-section {
+  border-width: 1.5px;
+}
+
+[data-theme='dark'] .payments-student-page .payments-subject-picker .filter-pill:hover,
+[data-theme='dark'] .payments-student-page .payments-subject-picker .filter-pill:focus-visible {
+  background:
+    linear-gradient(180deg, rgba(139, 111, 255, 0.24), rgba(74, 144, 226, 0.12)),
+    #2a2f59 !important;
+  border-color: rgba(190, 178, 255, 0.78) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow:
+    0 12px 26px rgba(0, 0, 0, 0.28),
+    0 0 0 3px rgba(139, 111, 255, 0.18) !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-subject-picker .filter-pill--active,
+[data-theme='dark'] .payments-student-page .payments-subject-picker .filter-pill--active:hover,
+[data-theme='dark'] .payments-student-page .payments-subject-picker .filter-pill--active:focus-visible {
+  background:
+    linear-gradient(135deg, #7c5cff 0%, #4f92e8 72%, #2dd99b 135%) !important;
+  border-color: rgba(230, 224, 255, 0.58) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow:
+    0 15px 34px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-submit-btn:not(:disabled),
+[data-theme='dark'] .payments-student-page .payments-submit-btn:not(:disabled):hover,
+[data-theme='dark'] .payments-student-page .payments-submit-btn:not(:disabled):focus-visible {
+  background:
+    linear-gradient(135deg, #7c5cff 0%, #4f92e8 76%, #2dd99b 136%) !important;
+  border-color: rgba(230, 224, 255, 0.32) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow:
+    0 16px 36px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-field input:hover,
+[data-theme='dark'] .payments-student-page .payments-field select:hover,
+[data-theme='dark'] .payments-student-page .payments-field input[type="file"]:hover {
+  border-color: rgba(203, 193, 255, 0.72) !important;
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+[data-theme='dark'] .payments-student-page .payments-field input[type="file"]::file-selector-button:hover {
+  background: rgba(139, 111, 255, 0.38) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
 @media (max-width: 1280px) {
   .payments-content-grid {
     grid-template-columns: 1fr;

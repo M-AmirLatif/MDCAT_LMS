@@ -17,6 +17,7 @@ import toast from 'react-hot-toast'
 import API, { getUserFriendlyErrorMessage } from '../services/api'
 import useAdminPanelData from '../hooks/useAdminPanelData'
 import useTeacherAnalyticsData from '../hooks/useTeacherAnalyticsData'
+import useThemeMode from '../hooks/useThemeMode'
 import './PlatformPages.css'
 import {
   adminTransactions,
@@ -46,6 +47,7 @@ const formatDate = (value) => {
 }
 
 export function TeacherStudentsPage() {
+  const chartTheme = useThemeMode()
   const { studentRows, loading } = useTeacherAnalyticsData()
   const selectedStudent = studentRows[0] || null
 
@@ -122,12 +124,12 @@ export function TeacherStudentsPage() {
             <div className="chart-panel" style={{ height: '180px' }}>
               {selectedStudent ? (
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={selectedStudent.trend}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(108,71,255,0.08)" />
-                    <XAxis dataKey="label" axisLine={false} tickLine={false} />
-                    <YAxis axisLine={false} tickLine={false} domain={[0, 100]} />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="score" stroke="#6c47ff" strokeWidth={3} dot={false} />
+                  <LineChart data={selectedStudent.trend} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="4 6" vertical={false} stroke={chartTheme.gridColor} />
+                    <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} />
+                    <YAxis axisLine={false} tickLine={false} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(value) => `${value}%`} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} />
+                    <Tooltip cursor={{ stroke: '#7c5cff', strokeOpacity: 0.22 }} formatter={(value) => [`${Math.round(Number(value) || 0)}%`, 'Score']} contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 14, boxShadow: chartTheme.isDark ? '0 18px 42px rgba(0,0,0,0.42)' : '0 18px 42px rgba(42,51,86,0.16)' }} labelStyle={{ color: chartTheme.tooltipText, fontWeight: 800 }} />
+                    <Line type="monotone" dataKey="score" stroke="#7c5cff" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 5 }} />
                   </LineChart>
                 </ResponsiveContainer>
               ) : null}
@@ -197,6 +199,7 @@ export function TeacherAssignmentsPage() {
 }
 
 export function TeacherAnalyticsPage() {
+  const chartTheme = useThemeMode()
   const { summary, scoreDistribution, subjectMastery, multiStudentTrend, loading } = useTeacherAnalyticsData()
   const trendLines = multiStudentTrend.length > 0
     ? Object.keys(multiStudentTrend.reduce((merged, item) => ({ ...merged, ...item }), {})).filter((key) => key !== 'label')
@@ -218,12 +221,12 @@ export function TeacherAnalyticsPage() {
           <div className="workspace-card-body chart-panel">
             {!loading && scoreDistribution.some((item) => item.count > 0) ? (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={scoreDistribution}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(108,71,255,0.08)" />
-                  <XAxis dataKey="band" axisLine={false} tickLine={false} />
-                  <YAxis axisLine={false} tickLine={false} />
-                  <Tooltip />
-                  <Bar dataKey="count" fill="#1db884" radius={[8, 8, 0, 0]} />
+                <BarChart data={scoreDistribution} margin={{ top: 12, right: 18, left: 0, bottom: 4 }}>
+                  <CartesianGrid strokeDasharray="4 6" vertical={false} stroke={chartTheme.gridColor} />
+                  <XAxis dataKey="band" axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} />
+                  <YAxis axisLine={false} tickLine={false} allowDecimals={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} />
+                  <Tooltip cursor={{ fill: 'rgba(124, 92, 255, 0.08)' }} formatter={(value) => [value, 'Attempts']} contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 14, boxShadow: chartTheme.isDark ? '0 18px 42px rgba(0,0,0,0.42)' : '0 18px 42px rgba(42,51,86,0.16)' }} labelStyle={{ color: chartTheme.tooltipText, fontWeight: 800 }} />
+                  <Bar dataKey="count" fill="#1db884" radius={[10, 10, 0, 0]} activeBar={{ fill: '#2dd99b', radius: [10, 10, 0, 0] }} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
@@ -267,14 +270,14 @@ export function TeacherAnalyticsPage() {
         <div className="workspace-card-body chart-panel">
           {!loading && trendLines.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={multiStudentTrend}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(108,71,255,0.08)" />
-                <XAxis dataKey="label" axisLine={false} tickLine={false} />
-                <YAxis axisLine={false} tickLine={false} domain={[0, 100]} />
-                <Tooltip />
-                <Legend />
+              <LineChart data={multiStudentTrend} margin={{ top: 12, right: 18, left: 0, bottom: 4 }}>
+                <CartesianGrid strokeDasharray="4 6" vertical={false} stroke={chartTheme.gridColor} />
+                <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} minTickGap={18} />
+                <YAxis axisLine={false} tickLine={false} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(value) => `${value}%`} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} />
+                <Tooltip cursor={{ stroke: '#7c5cff', strokeOpacity: 0.22 }} formatter={(value, name) => [`${Math.round(Number(value) || 0)}%`, name]} contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 14, boxShadow: chartTheme.isDark ? '0 18px 42px rgba(0,0,0,0.42)' : '0 18px 42px rgba(42,51,86,0.16)' }} labelStyle={{ color: chartTheme.tooltipText, fontWeight: 800 }} />
+                <Legend wrapperStyle={{ color: chartTheme.legendColor }} />
                 {trendLines.map((lineKey, index) => (
-                  <Line key={lineKey} type="monotone" dataKey={lineKey} stroke={trendColors[index % trendColors.length]} strokeWidth={3} connectNulls />
+                  <Line key={lineKey} type="monotone" dataKey={lineKey} stroke={trendColors[index % trendColors.length]} strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 5 }} connectNulls />
                 ))}
               </LineChart>
             </ResponsiveContainer>
