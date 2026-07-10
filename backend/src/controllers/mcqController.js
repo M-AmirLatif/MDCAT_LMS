@@ -4,6 +4,10 @@ const TestSession = require('../models/TestSession')
 const ImportBatch = require('../models/ImportBatch')
 const { parse } = require('csv-parse/sync')
 const { hasActiveSubscription } = require('../utils/subscriptions')
+const {
+  getTeacherSubjects,
+  canTeacherAccessSubject,
+} = require('../utils/teacherSubjects')
 
 const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English']
 const SUBJECT_SLUGS = {
@@ -35,14 +39,14 @@ const canManageCourse = (course, user) => {
   const roleName = userRoleName(user)
   if (roleName === 'admin') return true
   if (roleName !== 'teacher' || user.status !== 'active') return false
-  return String(user.assignedSubject || '') === String(course?.category || course?.subject || '')
+  return canTeacherAccessSubject(user, course?.category || course?.subject)
 }
 
 const canManageSubject = (subject, user) => {
   const roleName = userRoleName(user)
   if (roleName === 'admin') return true
   if (roleName !== 'teacher' || user.status !== 'active') return false
-  return String(user.assignedSubject || '') === String(subject || '')
+  return canTeacherAccessSubject(user, subject)
 }
 
 const canAccessSubjectContent = (user, subject, contentIndex = 0) => {
@@ -1126,7 +1130,7 @@ exports.getSubjectSummary = async (req, res) => {
   try {
     const allowedSubjects =
       userRoleName(req.user) === 'teacher'
-        ? SUBJECTS.filter((subject) => subject === req.user.assignedSubject)
+        ? SUBJECTS.filter((subject) => getTeacherSubjects(req.user).includes(subject))
         : SUBJECTS
     const courses = await Course.find({ category: { $in: allowedSubjects } })
       .select('_id category chapters')

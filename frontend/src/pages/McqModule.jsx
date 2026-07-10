@@ -36,6 +36,16 @@ const SUBJECTS = [
   },
 ]
 
+const getAssignedSubjectNames = (user) => {
+  if (user?.role !== 'teacher') return []
+  const assigned = Array.isArray(user.assignedSubjects) && user.assignedSubjects.length
+    ? user.assignedSubjects
+    : user.assignedSubject
+      ? [user.assignedSubject]
+      : []
+  return assigned.map((subject) => String(subject || '').trim()).filter(Boolean)
+}
+
 const emptyMcqForm = {
   question: '',
   questionImages: [],
@@ -380,9 +390,10 @@ function CourseSelection() {
     }
   }, [])
 
+  const teacherSubjects = getAssignedSubjectNames(user)
   const visibleBaseSubjects =
-    user?.role === 'teacher' && user?.assignedSubject
-      ? SUBJECTS.filter((subject) => subject.name === user.assignedSubject)
+    user?.role === 'teacher' && teacherSubjects.length
+      ? SUBJECTS.filter((subject) => teacherSubjects.includes(subject.name))
       : SUBJECTS
 
   const merged = visibleBaseSubjects.map((subject) => ({

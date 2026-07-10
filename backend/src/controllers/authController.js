@@ -4,6 +4,11 @@ const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
 const { sendOtpEmail, sendEmail } = require('../utils/email')
 const { OAuth2Client } = require('google-auth-library')
+const {
+  normalizeSubject,
+  normalizeSubjects,
+  getTeacherSubjects,
+} = require('../utils/teacherSubjects')
 
 const OTP_EXPIRY_MINUTES = 10
 const isDev = process.env.NODE_ENV !== 'production'
@@ -83,13 +88,6 @@ const isGmailAddress = (value) => {
 const normalizeRoleName = (roleName) =>
   roleName === 'superadmin' ? 'admin' : roleName
 
-const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English']
-const normalizeSubject = (value) => {
-  const normalized = normalizeString(value)
-  const match = SUBJECTS.find((subject) => subject.toLowerCase() === normalized.toLowerCase())
-  return match || ''
-}
-
 const shouldReturnDebugOtp = (error) => {
   if (!isDev) return false
   const message = String(error?.message || '').toLowerCase()
@@ -119,6 +117,7 @@ const buildUserResponse = (user, roleDoc, extra = {}) => ({
   isActive: user.isActive,
   status: user.status || 'active',
   assignedSubject: user.assignedSubject || null,
+  assignedSubjects: getTeacherSubjects(user),
   hasLocalPassword: user.hasLocalPassword !== false,
   needsPasswordSetup: user.hasLocalPassword === false,
   ...extra,
@@ -133,7 +132,8 @@ exports.register = async (req, res) => {
     const password = req.body.password
     const roleInput = normalizeString(req.body.role || 'student').toLowerCase()
     const roleName = roleInput === 'teacher' ? 'teacher' : roleInput === 'admin' ? 'admin' : 'student'
-    const assignedSubject = normalizeSubject(req.body.subjectId || req.body.assignedSubject)
+    const assignedSubjects = normalizeSubjects(req.body.subjectIds, req.body.assignedSubjects, req.body.subjectId, req.body.assignedSubject)
+    const assignedSubject = assignedSubjects[0] || ''
 
     if (!firstName || !email || !password) {
       return res.status(400).json({ error: 'Please provide first name, email, and password' })
@@ -151,8 +151,8 @@ exports.register = async (req, res) => {
       return res.status(403).json({ error: 'Admin accounts cannot be created from public registration.' })
     }
 
-    if (roleName === 'teacher' && !assignedSubject) {
-      return res.status(400).json({ error: 'Teacher registration requires a subject' })
+    if (roleName === 'teacher' && !assignedSubjects.length) {
+      return res.status(400).json({ error: 'Teacher registration requires at least one subject' })
     }
 
     const existing = await User.findOne({ email }).select('_id')
@@ -176,6 +176,7 @@ exports.register = async (req, res) => {
       isActive: true,
       status: roleName === 'teacher' ? 'pending' : 'active',
       assignedSubject: roleName === 'teacher' ? assignedSubject : null,
+      assignedSubjects: roleName === 'teacher' ? assignedSubjects : [],
     })
 
     if (roleName === 'teacher') {
@@ -218,7 +219,7 @@ exports.login = async (req, res) => {
     }
 
     const user = await User.findOne({ email }).select(
-      '+password role isActive isEmailVerified firstName lastName email hasLocalPassword status assignedSubject',
+      '+password role isActive isEmailVerified firstName lastName email hasLocalPassword status assignedSubject assignedSubjects',
     )
     if (!user) {
       return res.status(400).json({ error: 'Invalid credentials' })
@@ -304,6 +305,7 @@ exports.getProfile = async (req, res) => {
         needsPasswordSetup: user.hasLocalPassword === false,
         status: user.status || 'active',
         assignedSubject: user.assignedSubject || null,
+        assignedSubjects: getTeacherSubjects(user),
       },
     })
   } catch (error) {
@@ -340,6 +342,7 @@ exports.updateProfile = async (req, res) => {
         needsPasswordSetup: user.hasLocalPassword === false,
         status: user.status || 'active',
         assignedSubject: user.assignedSubject || null,
+        assignedSubjects: getTeacherSubjects(user),
       },
     })
   } catch (error) {
@@ -421,7 +424,7 @@ exports.googleLogin = async (req, res) => {
 
     // Find existing user — single query, no duplicate creation
     let existingUser = await User.findOne({ email }).select(
-      'role isActive isEmailVerified firstName lastName email hasLocalPassword status assignedSubject',
+      'role isActive isEmailVerified firstName lastName email hasLocalPassword status assignedSubject assignedSubjects',
     )
 
     const isNewUser = !existingUser
@@ -508,7 +511,7 @@ exports.setPassword = async (req, res) => {
     }
 
     const user = await User.findById(req.user.id).select(
-      '+password role isActive isEmailVerified firstName lastName email hasLocalPassword status assignedSubject',
+      '+password role isActive isEmailVerified firstName lastName email hasLocalPassword status assignedSubject assignedSubjects',
     )
     if (!user) return res.status(404).json({ error: 'User not found' })
     if (user.isActive === false)

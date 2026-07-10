@@ -91,6 +91,11 @@ const userSchema = new mongoose.Schema(
       enum: ['Biology', 'Chemistry', 'Physics', 'English', null],
       default: null,
     },
+    assignedSubjects: {
+      type: [String],
+      enum: ['Biology', 'Chemistry', 'Physics', 'English'],
+      default: [],
+    },
     approvedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -168,6 +173,7 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 userSchema.index({ email: 1 })
 userSchema.index({ role: 1, isActive: 1 })
 userSchema.index({ role: 1, status: 1, assignedSubject: 1 })
+userSchema.index({ role: 1, status: 1, assignedSubjects: 1 })
 userSchema.index({ 'subscriptions.subjectId': 1, 'subscriptions.endDate': 1 })
 
 module.exports = mongoose.model('User', userSchema)

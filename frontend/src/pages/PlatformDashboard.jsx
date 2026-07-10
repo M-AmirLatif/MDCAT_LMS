@@ -41,6 +41,16 @@ function SubjectGlyph({ subject }) {
   )
 }
 
+const getAssignedSubjectNames = (user) => {
+  if (user?.role !== 'teacher') return []
+  const assigned = Array.isArray(user.assignedSubjects) && user.assignedSubjects.length
+    ? user.assignedSubjects
+    : user.assignedSubject
+      ? [user.assignedSubject]
+      : []
+  return assigned.map((subject) => String(subject || '').trim()).filter(Boolean)
+}
+
 function StudentDashboard({ firstName }) {
   const chartTheme = useThemeMode()
   const { subjects, summary, performanceTrend, loading } = useStudentPerformanceData()
@@ -195,10 +205,20 @@ function StudentDashboard({ firstName }) {
 }
 
 function TeacherDashboard() {
+  const { user } = useAuth()
   const { subjects, totals, teacherSummary } = useMcqSubjectSummary()
   const { summary } = useTeacherAnalyticsData()
-  const totalMcqs = totals.totalMcqs
-  const totalChapters = totals.totalChapters
+  const teacherSubjects = getAssignedSubjectNames(user)
+  const visibleSubjects = teacherSubjects.length
+    ? subjects.filter((subject) => teacherSubjects.includes(subject.name || subject.subject))
+    : subjects
+  const visibleTeacherSummary = teacherSubjects.length
+    ? teacherSummary.filter((item) => teacherSubjects.includes(item.subject))
+    : teacherSummary
+  const visibleTotalMcqs = visibleSubjects.reduce((sum, subject) => sum + (Number(subject.totalMcqs) || 0), 0)
+  const visibleTotalChapters = visibleSubjects.reduce((sum, subject) => sum + (Number(subject.totalChapters) || 0), 0)
+  const totalMcqs = teacherSubjects.length ? visibleTotalMcqs : totals.totalMcqs
+  const totalChapters = teacherSubjects.length ? visibleTotalChapters : totals.totalChapters
 
   return (
     <div className="workspace-page animate-fade-up">
@@ -207,7 +227,7 @@ function TeacherDashboard() {
           <div className="workspace-hero-copy">
             <div className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Teacher Dashboard</div>
             <h1 style={{ color: '#fff' }}>Manage MDCAT chapters, MCQs, and explanations from one focused workspace</h1>
-            <p>Track uploads by subject, monitor student attempts, and keep the Biology, Chemistry, Physics, and English bank clean and exam-relevant.</p>
+            <p>Track uploads, monitor student attempts, and manage only your approved MDCAT subject banks.</p>
             <div className="workspace-hero-actions teacher-hero-actions">
               <Link className="btn btn-primary" to="/teacher/mcqs">Open MCQ Management</Link>
               <Link className="btn btn-secondary" to="/teacher/analytics">View Analytics</Link>
@@ -238,14 +258,14 @@ function TeacherDashboard() {
       <section className="workspace-card">
         <div className="workspace-card-head">
             <div>
-              <div className="label-xs">All MDCAT Subject Banks</div>
-              <h3 className="workspace-card-title">Teacher access covers Biology, Chemistry, Physics, and English</h3>
-            <p>Each subject is organized into chapter based MCQ banks with explanations and difficulty labels.</p>
+              <div className="label-xs">Assigned MDCAT Subject Banks</div>
+              <h3 className="workspace-card-title">Teacher access is limited to assigned subjects</h3>
+            <p>Only approved subjects are shown for management, analytics, and student attempt tracking.</p>
             </div>
         </div>
         <div className="workspace-card-body">
           <div className="card-grid">
-            {subjects.map((subject) => {
+            {visibleSubjects.map((subject) => {
               const style = SUBJECT_STYLES[subject.name]
               return (
                 <article key={subject.id} className={`teacher-subject-bank ${style.className}`}>
@@ -274,7 +294,7 @@ function TeacherDashboard() {
         <div className="workspace-card">
           <div className="workspace-card-head"><div><div className="label-xs">MCQ Coverage</div><h3 className="workspace-card-title">MCQs by subject</h3></div></div>
           <div className="workspace-card-body list-stack">
-            {teacherSummary.map((item) => (
+            {visibleTeacherSummary.map((item) => (
               <div key={item.subject} className="course-manage-card" style={{ padding: '18px' }}>
                 <div className="workspace-card-title-row">
                   <strong>{item.subject}</strong>

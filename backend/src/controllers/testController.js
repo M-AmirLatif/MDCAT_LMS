@@ -1,11 +1,13 @@
 const MCQ = require('../models/MCQ')
 const TestSession = require('../models/TestSession')
 const mongoose = require('mongoose')
+const { getTeacherSubjects } = require('../utils/teacherSubjects')
 
 const buildTestFilter = async (req) => {
   const role = req.user.role?.name || ''
   if (role === 'teacher') {
-    return req.user.assignedSubject ? { subject: req.user.assignedSubject } : { _id: null }
+    const subjects = getTeacherSubjects(req.user)
+    return subjects.length ? { subject: { $in: subjects } } : { _id: null }
   } else if (role === 'admin') {
     return {}
   }

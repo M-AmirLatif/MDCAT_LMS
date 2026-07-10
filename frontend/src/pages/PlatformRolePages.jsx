@@ -15,6 +15,7 @@ import {
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import API, { getUserFriendlyErrorMessage } from '../services/api'
+import { useAuth } from '../context/AuthContext'
 import useAdminPanelData from '../hooks/useAdminPanelData'
 import useTeacherAnalyticsData from '../hooks/useTeacherAnalyticsData'
 import useThemeMode from '../hooks/useThemeMode'
@@ -55,6 +56,25 @@ function ChartTooltip({ active, label, payload, chartTheme, valueSuffix = '', va
         ))}
     </div>
   )
+}
+
+const formatTeacherSubjects = (teacher) => {
+  const subjects = Array.isArray(teacher?.assignedSubjects) && teacher.assignedSubjects.length
+    ? teacher.assignedSubjects
+    : teacher?.assignedSubject
+      ? [teacher.assignedSubject]
+      : []
+  return subjects.length ? subjects.join(', ') : 'No subject'
+}
+
+const getAssignedSubjectNames = (user) => {
+  if (user?.role !== 'teacher') return []
+  const assigned = Array.isArray(user.assignedSubjects) && user.assignedSubjects.length
+    ? user.assignedSubjects
+    : user.assignedSubject
+      ? [user.assignedSubject]
+      : []
+  return assigned.map((subject) => String(subject || '').trim()).filter(Boolean)
 }
 
 const formatTitle = (value = '') =>
@@ -224,8 +244,13 @@ export function TeacherAssignmentsPage() {
 }
 
 export function TeacherAnalyticsPage() {
+  const { user } = useAuth()
   const chartTheme = useThemeMode()
   const { summary, scoreDistribution, subjectMastery, multiStudentTrend } = useTeacherAnalyticsData()
+  const teacherSubjects = getAssignedSubjectNames(user)
+  const visibleSubjectMastery = teacherSubjects.length
+    ? subjectMastery.filter((item) => teacherSubjects.includes(item.subject))
+    : subjectMastery
   const trendLines = multiStudentTrend.length > 0
     ? Object.keys(multiStudentTrend.reduce((merged, item) => ({ ...merged, ...item }), {})).filter((key) => key !== 'label')
     : []
@@ -269,7 +294,7 @@ export function TeacherAnalyticsPage() {
         <div className="workspace-card">
           <div className="workspace-card-head"><div><div className="label-xs">Heatmap</div><h3 className="workspace-card-title">Subject mastery</h3></div></div>
           <div className="workspace-card-body heatmap-grid">
-            {subjectMastery.map((item) => (
+            {visibleSubjectMastery.map((item) => (
               <div
                 key={item.subject}
                 className="heat-cell"
@@ -556,7 +581,7 @@ export function AdminTeachersPage() {
                   <strong>{teacher.firstName} {teacher.lastName}</strong>
                   <span className={`state-chip ${teacher.status === 'active' ? 'state-chip--success' : teacher.status === 'rejected' || teacher.status === 'restricted' ? 'state-chip--warning' : 'state-chip--neutral'}`}>{formatTitle(teacher.status)}</span>
                 </div>
-                <p>{teacher.email} - {teacher.assignedSubject || 'No subject'} - Registered {formatDate(teacher.createdAt)}</p>
+                <p>{teacher.email} - {formatTeacherSubjects(teacher)} - Registered {formatDate(teacher.createdAt)}</p>
                 <div className="inline-actions">
                   {teacher.status === 'pending' ? (
                     <>
@@ -566,15 +591,15 @@ export function AdminTeachersPage() {
                   ) : teacher.status === 'active' ? (
                     <>
                       <button className="btn btn-danger btn-sm" type="button" disabled={savingId === teacher._id} onClick={() => restrict(teacher)}>Restrict</button>
-                      <span className="state-chip state-chip--neutral">{teacher.assignedSubject || 'No subject'}</span>
+                      <span className="state-chip state-chip--neutral">{formatTeacherSubjects(teacher)}</span>
                     </>
                   ) : teacher.status === 'restricted' || teacher.status === 'rejected' ? (
                     <>
                       <button className="btn btn-primary btn-sm" type="button" disabled={savingId === teacher._id} onClick={() => approve(teacher)}>Approve Again</button>
-                      <span className="state-chip state-chip--neutral">{teacher.assignedSubject || 'No subject'}</span>
+                      <span className="state-chip state-chip--neutral">{formatTeacherSubjects(teacher)}</span>
                     </>
                   ) : (
-                    <span className="state-chip state-chip--neutral">{teacher.assignedSubject || 'No subject'}</span>
+                    <span className="state-chip state-chip--neutral">{formatTeacherSubjects(teacher)}</span>
                   )}
                 </div>
               </div>
@@ -590,7 +615,7 @@ export function AdminTeachersPage() {
           <div className="workspace-card-body list-stack">
             <div className="metric-row"><span>Email</span><strong>{selectedTeacher?.email || 'No data'}</strong></div>
             <div className="metric-row"><span>Approval status</span><strong>{formatTitle(selectedTeacher?.status || 'No data')}</strong></div>
-            <div className="metric-row"><span>Assigned subject</span><strong>{selectedTeacher?.assignedSubject || 'No data'}</strong></div>
+            <div className="metric-row"><span>Assigned subjects</span><strong>{formatTeacherSubjects(selectedTeacher)}</strong></div>
             <div className="metric-row"><span>Registered</span><strong>{formatDate(selectedTeacher?.createdAt)}</strong></div>
             {selectedTeacher?.status === 'pending' ? (
               <button className="btn btn-amber" type="button" disabled={savingId === selectedTeacher._id} onClick={() => approve(selectedTeacher)}>Approve Teacher</button>

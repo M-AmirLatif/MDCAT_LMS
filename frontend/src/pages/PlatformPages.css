@@ -269,6 +269,45 @@
   -webkit-text-fill-color: #f2efff !important;
 }
 
+/* Recharts custom tooltip final cleanup: remove inner guide boxes in dark mode. */
+.recharts-tooltip-wrapper .chart-tooltip-clean {
+  background: #fbfaff !important;
+  color: #19172e !important;
+  border: 1px solid rgba(124, 92, 255, 0.14) !important;
+  outline: 0 !important;
+}
+
+.recharts-tooltip-wrapper .chart-tooltip-clean__label,
+.recharts-tooltip-wrapper .chart-tooltip-clean__row,
+.recharts-tooltip-wrapper .chart-tooltip-clean__row span,
+.recharts-tooltip-wrapper .chart-tooltip-clean__row strong {
+  background: transparent !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+[data-theme='dark'] .recharts-tooltip-wrapper .chart-tooltip-clean,
+html[data-theme='dark'] .recharts-tooltip-wrapper .chart-tooltip-clean {
+  background: #fbfaff !important;
+  color: #19172e !important;
+  border: 1px solid rgba(124, 92, 255, 0.14) !important;
+}
+
+[data-theme='dark'] .recharts-tooltip-wrapper .chart-tooltip-clean__label,
+[data-theme='dark'] .recharts-tooltip-wrapper .chart-tooltip-clean__row,
+[data-theme='dark'] .recharts-tooltip-wrapper .chart-tooltip-clean__row span,
+[data-theme='dark'] .recharts-tooltip-wrapper .chart-tooltip-clean__row strong,
+html[data-theme='dark'] .recharts-tooltip-wrapper .chart-tooltip-clean__label,
+html[data-theme='dark'] .recharts-tooltip-wrapper .chart-tooltip-clean__row,
+html[data-theme='dark'] .recharts-tooltip-wrapper .chart-tooltip-clean__row span,
+html[data-theme='dark'] .recharts-tooltip-wrapper .chart-tooltip-clean__row strong {
+  background: transparent !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
 .notification-hero .workspace-hero-actions .btn-primary {
   background:
     linear-gradient(135deg, rgba(108, 71, 255, 0.82), rgba(74, 144, 226, 0.92))

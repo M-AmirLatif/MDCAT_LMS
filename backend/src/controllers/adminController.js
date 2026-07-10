@@ -4,6 +4,11 @@ const Role = require('../models/Role')
 const PaymentRequest = require('../models/PaymentRequest')
 const TestSession = require('../models/TestSession')
 const MCQ = require('../models/MCQ')
+const {
+  normalizeSubject,
+  normalizeSubjects,
+  getTeacherSubjects,
+} = require('../utils/teacherSubjects')
 
 const normalizeString = (value) =>
   typeof value === 'string' ? value.trim() : ''
@@ -21,7 +26,6 @@ const normalizeRoleName = (value) =>
 const VALID_SUBSCRIPTION_PLANS = ['free', 'monthly', 'quarterly', 'premium', 'enterprise']
 const VALID_SUBSCRIPTION_STATUSES = ['none', 'pending', 'active', 'expired', 'cancelled']
 const VALID_ACCESS_STATUSES = ['active', 'restricted', 'expired']
-const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English']
 
 const normalizeEnumValue = (value, allowedValues) => {
   const normalized = String(value || '').trim().toLowerCase()
@@ -34,11 +38,6 @@ const parseOptionalDate = (value) => {
   return Number.isNaN(parsed.getTime()) ? 'invalid' : parsed
 }
 
-const normalizeSubject = (value) => {
-  const raw = normalizeString(value)
-  return SUBJECTS.find((subject) => subject.toLowerCase() === raw.toLowerCase()) || ''
-}
-
 const serializeTeacherRequest = (teacher) => ({
   _id: teacher._id,
   firstName: teacher.firstName,
@@ -46,6 +45,7 @@ const serializeTeacherRequest = (teacher) => ({
   email: teacher.email,
   status: teacher.status || 'active',
   assignedSubject: teacher.assignedSubject || null,
+  assignedSubjects: getTeacherSubjects(teacher),
   approvedBy: teacher.approvedBy || null,
   approvedAt: teacher.approvedAt || null,
   rejectedAt: teacher.rejectedAt || null,
@@ -122,6 +122,7 @@ const serializeUser = (user, metrics = {}) => ({
   subscriptionEndDate: user.subscriptionEndDate || null,
   status: user.status || 'active',
   assignedSubject: user.assignedSubject || null,
+  assignedSubjects: getTeacherSubjects(user),
   approvedAt: user.approvedAt || null,
   rejectedAt: user.rejectedAt || null,
   rejectionReason: user.rejectionReason || '',
@@ -146,7 +147,8 @@ exports.createUser = async (req, res) => {
     const password = req.body.password
     const roleInput = normalizeString(req.body.role)
     const role = roleInput ? normalizeRoleName(roleInput) : 'teacher'
-    const assignedSubject = normalizeSubject(req.body.assignedSubject || req.body.subjectId)
+    const assignedSubjects = normalizeSubjects(req.body.assignedSubjects, req.body.subjectIds, req.body.assignedSubject, req.body.subjectId)
+    const assignedSubject = assignedSubjects[0] || ''
 
     if (!firstName || !lastName || !email || !password) {
       return res
@@ -177,8 +179,8 @@ exports.createUser = async (req, res) => {
       return res.status(403).json({ error: 'Not authorized for this role' })
     }
 
-    if (role === 'teacher' && !assignedSubject) {
-      return res.status(400).json({ error: 'Teacher account requires an assigned subject' })
+    if (role === 'teacher' && !assignedSubjects.length) {
+      return res.status(400).json({ error: 'Teacher account requires at least one assigned subject' })
     }
 
     const existingUser = await User.findOne({ email })
@@ -201,6 +203,7 @@ exports.createUser = async (req, res) => {
       isActive: true,
       status: 'active',
       assignedSubject: role === 'teacher' ? assignedSubject : null,
+      assignedSubjects: role === 'teacher' ? assignedSubjects : [],
       approvedBy: req.user.id,
       approvedAt: new Date(),
     })
@@ -218,6 +221,7 @@ exports.createUser = async (req, res) => {
         isActive: user.isActive,
         status: user.status,
         assignedSubject: user.assignedSubject,
+        assignedSubjects: getTeacherSubjects(user),
       },
     })
   } catch (error) {
@@ -300,6 +304,7 @@ exports.updateUser = async (req, res) => {
       accessStatus,
       status,
       assignedSubject,
+      assignedSubjects,
       rejectionReason,
     } = req.body
 
@@ -375,6 +380,16 @@ exports.updateUser = async (req, res) => {
         return res.status(400).json({ error: 'Invalid assigned subject' })
       }
       user.assignedSubject = normalizedSubject || null
+      user.assignedSubjects = normalizedSubject ? [normalizedSubject] : []
+    }
+
+    if (typeof assignedSubjects !== 'undefined') {
+      const normalizedSubjects = normalizeSubjects(assignedSubjects)
+      if (Array.isArray(assignedSubjects) && assignedSubjects.length && !normalizedSubjects.length) {
+        return res.status(400).json({ error: 'Invalid assigned subjects' })
+      }
+      user.assignedSubjects = normalizedSubjects
+      user.assignedSubject = normalizedSubjects[0] || null
     }
 
     if (typeof subscriptionStartDate !== 'undefined') {
@@ -642,7 +657,7 @@ exports.getPendingTeachers = async (req, res) => {
     }
 
     const teachers = await User.find({ role: teacherRole._id, status: 'pending' })
-      .select('firstName lastName email status assignedSubject createdAt')
+      .select('firstName lastName email status assignedSubject assignedSubjects createdAt')
       .sort({ createdAt: -1 })
       .lean()
 
@@ -668,7 +683,7 @@ exports.getAllTeachersForApproval = async (req, res) => {
     if (['active', 'pending', 'rejected', 'restricted'].includes(status)) filter.status = status
 
     const teachers = await User.find(filter)
-      .select('firstName lastName email status assignedSubject approvedBy approvedAt rejectedAt rejectionReason createdAt')
+      .select('firstName lastName email status assignedSubject assignedSubjects approvedBy approvedAt rejectedAt rejectionReason createdAt')
       .populate('approvedBy', 'firstName lastName email')
       .sort({ createdAt: -1 })
       .lean()
@@ -692,14 +707,15 @@ exports.approveTeacher = async (req, res) => {
 
     if (!teacher) return res.status(404).json({ error: 'Teacher request not found' })
 
-    const assignedSubject = normalizeSubject(req.body.assignedSubject || teacher.assignedSubject)
-    if (!assignedSubject) {
-      return res.status(400).json({ error: 'Teacher must have a valid assigned subject' })
+    const assignedSubjects = normalizeSubjects(req.body.assignedSubjects, req.body.subjectIds, req.body.assignedSubject, teacher.assignedSubjects, teacher.assignedSubject)
+    if (!assignedSubjects.length) {
+      return res.status(400).json({ error: 'Teacher must have at least one valid assigned subject' })
     }
 
     teacher.status = 'active'
     teacher.isActive = true
-    teacher.assignedSubject = assignedSubject
+    teacher.assignedSubject = assignedSubjects[0]
+    teacher.assignedSubjects = assignedSubjects
     teacher.approvedBy = req.user.id
     teacher.approvedAt = new Date()
     teacher.rejectedAt = null

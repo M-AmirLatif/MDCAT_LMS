@@ -26,6 +26,16 @@ function SubjectIcon({ subject }) {
   )
 }
 
+const getAssignedSubjectNames = (user) => {
+  if (user?.role !== 'teacher') return []
+  const assigned = Array.isArray(user.assignedSubjects) && user.assignedSubjects.length
+    ? user.assignedSubjects
+    : user.assignedSubject
+      ? [user.assignedSubject]
+      : []
+  return assigned.map((subject) => String(subject || '').trim()).filter(Boolean)
+}
+
 function StudentSubjects() {
   return (
     <div className="workspace-page animate-fade-up">
@@ -84,12 +94,17 @@ function StudentSubjects() {
 }
 
 function TeacherMcqManagement() {
+  const { user } = useAuth()
+  const teacherSubjects = getAssignedSubjectNames(user)
+  const teacherMdcatSubjects = teacherSubjects.length
+    ? mdcatSubjects.filter((subject) => teacherSubjects.includes(subject.name))
+    : mdcatSubjects
   const [activePanel, setActivePanel] = useState('mcq')
-  const [selectedSubjectId, setSelectedSubjectId] = useState('biology')
+  const [selectedSubjectId, setSelectedSubjectId] = useState(teacherMdcatSubjects[0]?.id || 'biology')
   const [selectedChapterId, setSelectedChapterId] = useState('bio-cell')
   const formRef = useRef(null)
 
-  const selectedSubject = mdcatSubjects.find((subject) => subject.id === selectedSubjectId) || mdcatSubjects[0]
+  const selectedSubject = teacherMdcatSubjects.find((subject) => subject.id === selectedSubjectId) || teacherMdcatSubjects[0] || mdcatSubjects[0]
   const selectedStyle = SUBJECT_STYLES[selectedSubject.name]
   const chapterOptions = useMemo(() => getChaptersBySubject(selectedSubjectId), [selectedSubjectId])
   const selectedChapter = chapterOptions.find((chapter) => chapter.id === selectedChapterId) || chapterOptions[0]
@@ -142,7 +157,7 @@ function TeacherMcqManagement() {
       </section>
 
       <div className="card-grid">
-        {mdcatSubjects.map((subject) => {
+        {teacherMdcatSubjects.map((subject) => {
           const style = SUBJECT_STYLES[subject.name]
           const active = selectedSubjectId === subject.id
           return (
@@ -266,7 +281,7 @@ function TeacherMcqManagement() {
                 <strong>{selectedSubject.name} MCQ Bank</strong>
                 <span>{selectedChapter?.name || 'Choose a chapter'} - add a clean MDCAT-style question with explanation.</span>
               </div>
-              <div className="floating-field"><label htmlFor="mcq-subject">Subject</label><select id="mcq-subject" value={selectedSubjectId} onChange={(event) => chooseSubject(event.target.value)}>{mdcatSubjects.map((subject) => <option key={subject.id} value={subject.id}>{subject.name}</option>)}</select></div>
+              <div className="floating-field"><label htmlFor="mcq-subject">Subject</label><select id="mcq-subject" value={selectedSubjectId} onChange={(event) => chooseSubject(event.target.value)}>{teacherMdcatSubjects.map((subject) => <option key={subject.id} value={subject.id}>{subject.name}</option>)}</select></div>
               <div className="floating-field"><label htmlFor="mcq-chapter">Chapter</label><select id="mcq-chapter" value={selectedChapter?.id || ''} onChange={(event) => setSelectedChapterId(event.target.value)}>{chapterOptions.length === 0 ? <option value="">Create a chapter first</option> : chapterOptions.map((chapter) => <option key={chapter.id} value={chapter.id}>{chapter.name}</option>)}</select></div>
               <div className="floating-field"><label htmlFor="mcq-question">Question</label><textarea id="mcq-question" rows="4" placeholder="Type the MCQ question here..." /></div>
               <div className="floating-grid">
@@ -288,7 +303,7 @@ function TeacherMcqManagement() {
                 <strong>{selectedSubject.name} Chapter Bank</strong>
                 <span>Create a new chapter section before adding MCQs.</span>
               </div>
-              <div className="floating-field"><label htmlFor="chapter-subject">Subject</label><select id="chapter-subject" value={selectedSubjectId} onChange={(event) => chooseSubject(event.target.value)}>{mdcatSubjects.map((subject) => <option key={subject.id} value={subject.id}>{subject.name}</option>)}</select></div>
+              <div className="floating-field"><label htmlFor="chapter-subject">Subject</label><select id="chapter-subject" value={selectedSubjectId} onChange={(event) => chooseSubject(event.target.value)}>{teacherMdcatSubjects.map((subject) => <option key={subject.id} value={subject.id}>{subject.name}</option>)}</select></div>
               <div className="floating-field"><label htmlFor="chapter-name">Chapter Name</label><input id="chapter-name" type="text" placeholder="Enter chapter name" /></div>
               <div className="floating-field"><label htmlFor="chapter-description">Description</label><textarea id="chapter-description" rows="5" placeholder="Add a short chapter summary for students and teachers..." /></div>
               <div className="floating-field"><label htmlFor="chapter-warning">Delete Rule</label><input id="chapter-warning" type="text" value="Delete only when no MCQs exist, otherwise show a warning." readOnly /></div>

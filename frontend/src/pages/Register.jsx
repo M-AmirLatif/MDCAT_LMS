@@ -9,7 +9,7 @@ import './Auth.css'
 
 const roles = [
   { key: 'student', label: 'Student', hint: 'Practice MCQs' },
-  { key: 'teacher', label: 'Teacher', hint: 'Manage one subject' },
+  { key: 'teacher', label: 'Teacher', hint: 'Manage subjects' },
 ]
 
 const subjects = ['Biology', 'Chemistry', 'Physics', 'English']
@@ -35,7 +35,7 @@ export default function Register() {
     lastName: '',
     email: '',
     password: '',
-    assignedSubject: 'Biology',
+    assignedSubjects: ['Biology'],
   })
   const [submitting, setSubmitting] = useState(false)
   const [pendingMessage, setPendingMessage] = useState('')
@@ -44,15 +44,29 @@ export default function Register() {
     setForm((current) => ({ ...current, [field]: value }))
   }
 
+  const toggleTeacherSubject = (subject) => {
+    setForm((current) => {
+      const currentSubjects = current.assignedSubjects || []
+      const nextSubjects = currentSubjects.includes(subject)
+        ? currentSubjects.filter((item) => item !== subject)
+        : [...currentSubjects, subject]
+      return { ...current, assignedSubjects: nextSubjects }
+    })
+  }
+
   const submit = async (event) => {
     event.preventDefault()
     setPendingMessage('')
+    if (role === 'teacher' && !form.assignedSubjects.length) {
+      toast.error('Select at least one subject for teacher access.')
+      return
+    }
     setSubmitting(true)
     try {
       const res = await API.post('/auth/register', {
         ...form,
         role,
-        subjectId: role === 'teacher' ? form.assignedSubject : undefined,
+        assignedSubjects: role === 'teacher' ? form.assignedSubjects : undefined,
       })
 
       if (role === 'teacher') {
@@ -87,12 +101,12 @@ export default function Register() {
           <div className="auth-mobile-stat"><i />MDCAT Prep</div>
           <div className="auth-brand-content">
             <h1>Create Your Account</h1>
-            <p>Register as a student immediately, or request teacher access for a specific MDCAT subject.</p>
+            <p>Register as a student immediately, or request teacher access for selected MDCAT subjects.</p>
             <div className="auth-register-steps">
               {[
                 ['1', 'Choose Role', 'Student access is instant. Teacher access requires admin approval.'],
-                ['2', 'Enter Details', 'Teachers choose one assigned subject during registration.'],
-                ['3', 'Start Securely', 'Approved teachers can manage only their assigned subject.'],
+                ['2', 'Enter Details', 'Teachers choose assigned subjects during registration.'],
+                ['3', 'Start Securely', 'Approved teachers can manage only their assigned subjects.'],
               ].map(([number, title, body]) => (
                 <div className="auth-register-step" key={title}>
                   <span className="auth-register-step-number">{number}</span>
@@ -154,14 +168,25 @@ export default function Register() {
                     <input type="password" value={form.password} onChange={(event) => setField('password', event.target.value)} placeholder="Enter your password" autoComplete="new-password" minLength={6} required />
                   </label>
                   {role === 'teacher' ? (
-                    <label className="auth-field">
-                      <span>Assigned subject</span>
-                      <span className="auth-select-wrap">
-                        <select value={form.assignedSubject} onChange={(event) => setField('assignedSubject', event.target.value)}>
-                          {subjects.map((subject) => <option key={subject} value={subject}>{subject}</option>)}
-                        </select>
-                      </span>
-                    </label>
+                    <div className="auth-field">
+                      <span>Assigned subjects</span>
+                      <div className="auth-subject-checkgrid">
+                        {subjects.map((subject) => {
+                          const checked = form.assignedSubjects.includes(subject)
+                          return (
+                            <button
+                              key={subject}
+                              className={`auth-subject-chip ${checked ? 'auth-subject-chip--active' : ''}`}
+                              type="button"
+                              onClick={() => toggleTeacherSubject(subject)}
+                              aria-pressed={checked}
+                            >
+                              {subject}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
                   ) : null}
                   <button className="auth-submit" type="submit" disabled={submitting}>
                     {submitting ? 'Creating...' : role === 'teacher' ? 'Request teacher access' : 'Create student account'}
