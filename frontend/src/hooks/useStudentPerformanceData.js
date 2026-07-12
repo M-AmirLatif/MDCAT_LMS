@@ -109,11 +109,33 @@ const buildPerformanceData = (subjectSummary = [], sessions = []) => {
   const sortedSubjects = [...attemptedSubjects].sort((a, b) => b.accuracy - a.accuracy)
 
   const latestBySubject = Object.fromEntries(SUBJECTS.map((subject) => [subject.name, null]))
+  const runningBySubject = new Map(
+    SUBJECTS.map((subject) => [
+      subject.name,
+      { correct: 0, total: 0 },
+    ]),
+  )
   const performanceTrend = normalizedSessions.map((session, index) => {
-    latestBySubject[session.subject] = session.score
+    const running = runningBySubject.get(session.subject)
+    if (running) {
+      running.correct += session.correct
+      running.total += session.totalQuestions
+    }
+
+    SUBJECTS.forEach((subject) => {
+      const subjectRunning = runningBySubject.get(subject.name)
+      latestBySubject[subject.name] = subjectRunning?.total
+        ? Math.round((subjectRunning.correct / subjectRunning.total) * 100)
+        : null
+    })
+
     return {
       label: session.chapter || `Attempt ${index + 1}`,
+      attemptLabel: `A${index + 1}`,
+      attemptNumber: index + 1,
       attemptDate: formatAttemptDate(session.submittedAt),
+      subject: session.subject,
+      score: session.score,
       ...latestBySubject,
     }
   })
@@ -125,6 +147,8 @@ const buildPerformanceData = (subjectSummary = [], sessions = []) => {
     runningTotal += session.totalQuestions
     return {
       label: session.chapter || `Attempt ${index + 1}`,
+      attemptLabel: `A${index + 1}`,
+      attemptNumber: index + 1,
       attemptDate: formatAttemptDate(session.submittedAt),
       Overall: runningTotal ? Math.round((runningCorrect / runningTotal) * 100) : 0,
       attemptScore: session.score,

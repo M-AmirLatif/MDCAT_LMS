@@ -74,19 +74,27 @@ export default function PlatformPerformance() {
           <div className="workspace-card-body chart-panel">
             {!loading && performanceTrend.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={performanceTrend} margin={{ top: 12, right: 18, left: 0, bottom: 4 }}>
+                <LineChart data={performanceTrend} margin={{ top: 22, right: 22, left: 4, bottom: 8 }}>
                   <CartesianGrid strokeDasharray="4 6" vertical={false} stroke={chartTheme.gridColor} />
-                  <XAxis dataKey="attemptDate" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor }} minTickGap={18} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor }} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(value) => `${value}%`} />
+                  <XAxis dataKey="attemptLabel" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor, fontWeight: 700 }} minTickGap={14} />
+                  <YAxis width={44} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor, fontWeight: 700 }} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(value) => `${value}%`} />
                   {pageSummary.overallAccuracy > 0 ? (
-                    <ReferenceLine y={pageSummary.overallAccuracy} stroke="#f8fafc" strokeOpacity={0.38} strokeDasharray="6 6" label={{ value: `Overall ${pageSummary.overallAccuracy}%`, fill: chartTheme.axisColor, fontSize: 11, position: 'insideTopRight' }} />
+                    <ReferenceLine y={pageSummary.overallAccuracy} stroke="#a590ff" strokeOpacity={0.6} strokeDasharray="6 6" label={{ value: `Overall ${pageSummary.overallAccuracy}%`, fill: chartTheme.axisColor, fontSize: 11, fontWeight: 800, position: 'insideTopRight' }} />
                   ) : null}
-                  <Tooltip formatter={(value, name) => [`${Math.round(Number(value) || 0)}%`, name]} contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 14, boxShadow: chartTheme.isDark ? '0 18px 42px rgba(0,0,0,0.42)' : '0 18px 42px rgba(42,51,86,0.16)' }} labelStyle={{ color: chartTheme.tooltipText, fontWeight: 800 }} />
-                  <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ color: chartTheme.legendColor, fontSize: 12, paddingBottom: 8 }} />
-                  <Line type="monotone" dataKey="Biology" stroke="#1db884" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 5 }} connectNulls />
-                  <Line type="monotone" dataKey="Chemistry" stroke="#6c47ff" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 5 }} connectNulls />
-                  <Line type="monotone" dataKey="Physics" stroke="#4a90e2" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 5 }} connectNulls />
-                  <Line type="monotone" dataKey="English" stroke="#f59e0b" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 5 }} connectNulls />
+                  <Tooltip
+                    formatter={(value, name) => [`${Math.round(Number(value) || 0)}%`, name]}
+                    labelFormatter={(_, payload) => {
+                      const item = payload?.[0]?.payload
+                      return item ? `${item.attemptLabel} • ${item.attemptDate} • ${item.label}` : ''
+                    }}
+                    contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 14, boxShadow: chartTheme.isDark ? '0 18px 42px rgba(0,0,0,0.42)' : '0 18px 42px rgba(42,51,86,0.16)' }}
+                    labelStyle={{ color: chartTheme.tooltipText, fontWeight: 800 }}
+                  />
+                  <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ color: chartTheme.legendColor, fontSize: 12, fontWeight: 700, paddingBottom: 10 }} />
+                  <Line type="monotone" dataKey="Biology" stroke="#1db884" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6, strokeWidth: 2 }} connectNulls />
+                  <Line type="monotone" dataKey="Chemistry" stroke="#7c5cff" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6, strokeWidth: 2 }} connectNulls />
+                  <Line type="monotone" dataKey="Physics" stroke="#4a90e2" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6, strokeWidth: 2 }} connectNulls />
+                  <Line type="monotone" dataKey="English" stroke="#f59e0b" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6, strokeWidth: 2 }} connectNulls />
                 </LineChart>
               </ResponsiveContainer>
             ) : (
@@ -109,7 +117,7 @@ export default function PlatformPerformance() {
           <div className="workspace-card-body chart-panel">
             {!loading && overallTrend.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={overallTrend} margin={{ top: 12, right: 18, left: 0, bottom: 4 }}>
+                <AreaChart data={overallTrend} margin={{ top: 22, right: 22, left: 4, bottom: 8 }}>
                   <defs>
                     <linearGradient id="overallAccuracyArea" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#7c5cff" stopOpacity={0.34} />
@@ -118,12 +126,20 @@ export default function PlatformPerformance() {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="4 6" vertical={false} stroke={chartTheme.gridColor} />
-                  <XAxis dataKey="attemptDate" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor }} minTickGap={18} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor }} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(value) => `${value}%`} />
+                  <XAxis dataKey="attemptLabel" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor, fontWeight: 700 }} minTickGap={14} />
+                  <YAxis width={44} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor, fontWeight: 700 }} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(value) => `${value}%`} />
                   {pageSummary.overallAccuracy > 0 ? (
-                    <ReferenceLine y={pageSummary.overallAccuracy} stroke="#f8fafc" strokeOpacity={0.42} strokeDasharray="6 6" label={{ value: `Overall ${pageSummary.overallAccuracy}%`, fill: chartTheme.axisColor, fontSize: 11, position: 'insideTopRight' }} />
+                    <ReferenceLine y={pageSummary.overallAccuracy} stroke="#a590ff" strokeOpacity={0.6} strokeDasharray="6 6" label={{ value: `Overall ${pageSummary.overallAccuracy}%`, fill: chartTheme.axisColor, fontSize: 11, fontWeight: 800, position: 'insideTopRight' }} />
                   ) : null}
-                  <Tooltip formatter={(value, name) => [`${Math.round(Number(value) || 0)}%`, name === 'Overall' ? 'Combined accuracy' : name]} contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 14, boxShadow: chartTheme.isDark ? '0 18px 42px rgba(0,0,0,0.42)' : '0 18px 42px rgba(42,51,86,0.16)' }} labelStyle={{ color: chartTheme.tooltipText, fontWeight: 800 }} />
+                  <Tooltip
+                    formatter={(value, name) => [`${Math.round(Number(value) || 0)}%`, name === 'Overall' ? 'Combined accuracy' : name]}
+                    labelFormatter={(_, payload) => {
+                      const item = payload?.[0]?.payload
+                      return item ? `${item.attemptLabel} • ${item.attemptDate} • ${item.label}` : ''
+                    }}
+                    contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 14, boxShadow: chartTheme.isDark ? '0 18px 42px rgba(0,0,0,0.42)' : '0 18px 42px rgba(42,51,86,0.16)' }}
+                    labelStyle={{ color: chartTheme.tooltipText, fontWeight: 800 }}
+                  />
                   <Area type="monotone" dataKey="Overall" name="Combined accuracy" stroke="#7c5cff" fill="url(#overallAccuracyArea)" strokeWidth={4} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6 }} />
                 </AreaChart>
               </ResponsiveContainer>

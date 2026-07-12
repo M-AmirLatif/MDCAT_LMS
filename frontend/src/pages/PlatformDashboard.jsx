@@ -5,8 +5,11 @@ import {
   AreaChart,
   CartesianGrid,
   Legend,
+  Line,
+  LineChart,
   Pie,
   PieChart,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -128,39 +131,28 @@ function StudentDashboard({ firstName }) {
           <div className="workspace-card-body chart-panel">
             {!loading && performanceTrend.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={performanceTrend}>
-                <defs>
-                  <linearGradient id="studentAreaBio" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#1db884" stopOpacity={0.32} />
-                    <stop offset="100%" stopColor="#1db884" stopOpacity={0.02} />
-                  </linearGradient>
-                  <linearGradient id="studentAreaChem" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#6c47ff" stopOpacity={0.28} />
-                    <stop offset="100%" stopColor="#6c47ff" stopOpacity={0.02} />
-                  </linearGradient>
-                  <linearGradient id="studentAreaPhysics" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#4a90e2" stopOpacity={0.28} />
-                    <stop offset="100%" stopColor="#4a90e2" stopOpacity={0.02} />
-                  </linearGradient>
-                  <linearGradient id="studentAreaEnglish" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#f59e0b" stopOpacity={0.26} />
-                    <stop offset="100%" stopColor="#f59e0b" stopOpacity={0.02} />
-                  </linearGradient>
-                </defs>
+              <LineChart data={performanceTrend} margin={{ top: 22, right: 22, left: 4, bottom: 8 }}>
                 <CartesianGrid strokeDasharray="4 6" vertical={false} stroke={chartTheme.gridColor} />
-                <XAxis dataKey="attemptDate" axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} minTickGap={18} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(value) => `${value}%`} />
+                <XAxis dataKey="attemptLabel" axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12, fontWeight: 700 }} minTickGap={14} />
+                <YAxis width={44} axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12, fontWeight: 700 }} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(value) => `${value}%`} />
+                {summary.overallAccuracy > 0 ? (
+                  <ReferenceLine y={summary.overallAccuracy} stroke="#a590ff" strokeOpacity={0.6} strokeDasharray="6 6" label={{ value: `Overall ${summary.overallAccuracy}%`, fill: chartTheme.axisColor, fontSize: 11, fontWeight: 800, position: 'insideTopRight' }} />
+                ) : null}
                 <Tooltip
                   formatter={(value, name) => [`${Math.round(Number(value) || 0)}%`, name]}
+                  labelFormatter={(_, payload) => {
+                    const item = payload?.[0]?.payload
+                    return item ? `${item.attemptLabel} • ${item.attemptDate} • ${item.label}` : ''
+                  }}
                   contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 14, boxShadow: chartTheme.isDark ? '0 18px 42px rgba(0,0,0,0.42)' : '0 18px 42px rgba(42,51,86,0.16)' }}
                   labelStyle={{ color: chartTheme.tooltipText, fontWeight: 800 }}
                 />
-                <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ color: chartTheme.legendColor, fontSize: 12, paddingBottom: 8 }} />
-                <Area type="monotone" dataKey="Biology" stroke="#1db884" fill="url(#studentAreaBio)" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 5 }} connectNulls />
-                <Area type="monotone" dataKey="Chemistry" stroke="#6c47ff" fill="url(#studentAreaChem)" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 5 }} connectNulls />
-                <Area type="monotone" dataKey="Physics" stroke="#4a90e2" fill="url(#studentAreaPhysics)" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 5 }} connectNulls />
-                <Area type="monotone" dataKey="English" stroke="#f59e0b" fill="url(#studentAreaEnglish)" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 5 }} connectNulls />
-              </AreaChart>
+                <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ color: chartTheme.legendColor, fontSize: 12, fontWeight: 700, paddingBottom: 10 }} />
+                <Line type="monotone" dataKey="Biology" stroke="#1db884" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6, strokeWidth: 2 }} connectNulls />
+                <Line type="monotone" dataKey="Chemistry" stroke="#7c5cff" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6, strokeWidth: 2 }} connectNulls />
+                <Line type="monotone" dataKey="Physics" stroke="#4a90e2" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6, strokeWidth: 2 }} connectNulls />
+                <Line type="monotone" dataKey="English" stroke="#f59e0b" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6, strokeWidth: 2 }} connectNulls />
+              </LineChart>
             </ResponsiveContainer>
             ) : (
               <div className="empty-state empty-state--compact">
