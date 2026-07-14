@@ -3454,3 +3454,476 @@ html[data-theme="dark"] .workspace-page--notifications .notification-summary-but
 [data-theme="dark"] .workspace-page--notifications .notification-summary-button {
   border: 2px solid rgba(181, 154, 255, 0.52) !important;
 }
+
+/* Subscription page: high-contrast professional color system. */
+.payments-student-page {
+  background:
+    radial-gradient(circle at 8% 2%, rgba(108, 71, 255, 0.18), transparent 30%),
+    radial-gradient(circle at 92% 8%, rgba(45, 217, 155, 0.14), transparent 28%),
+    linear-gradient(180deg, #E2E7F3 0%, #D5DCEB 100%) !important;
+  color: #0B1020 !important;
+}
+
+.payments-student-page .workspace-card {
+  color: #0B1020 !important;
+}
+
+.payments-student-page .payments-summary-card {
+  background:
+    radial-gradient(circle at 88% 0%, rgba(250, 204, 21, 0.18), transparent 32%),
+    linear-gradient(135deg, #160B3F 0%, #102A5C 62%, #0F766E 100%) !important;
+  border: 2px solid rgba(250, 204, 21, 0.42) !important;
+  border-top: 5px solid #FACC15 !important;
+  box-shadow: 0 24px 58px rgba(15, 23, 42, 0.22) !important;
+  color: #FFFFFF !important;
+}
+
+.payments-student-page .payments-summary-card .workspace-card-title,
+.payments-student-page .payments-summary-card p,
+.payments-student-page .payments-summary-card .label-xs {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+.payments-student-page .payments-summary-card .label-xs {
+  color: #FDE68A !important;
+}
+
+.payments-student-page .payments-summary-card .badge {
+  background: #FEF3C7 !important;
+  border: 1.5px solid rgba(250, 204, 21, 0.75) !important;
+  color: #1F2937 !important;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18) !important;
+}
+
+.payments-student-page .payments-summary-card .metric-row {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.34) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 12px 26px rgba(0, 0, 0, 0.16) !important;
+}
+
+.payments-student-page .payments-summary-card .metric-row span,
+.payments-student-page .payments-summary-card .metric-row strong {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+.payments-student-page .payments-form-card {
+  background: #FFFFFF !important;
+  border: 2px solid #6C47FF !important;
+  border-top: 5px solid #6C47FF !important;
+  box-shadow: 0 22px 52px rgba(53, 64, 108, 0.18) !important;
+  overflow: hidden !important;
+}
+
+.payments-student-page .payments-form-card .workspace-card-head {
+  background: linear-gradient(135deg, #27145F 0%, #16366F 100%) !important;
+  border-bottom: 1.5px solid rgba(124, 92, 255, 0.32) !important;
+  color: #FFFFFF !important;
+}
+
+.payments-student-page .payments-form-card .workspace-card-head .workspace-card-title,
+.payments-student-page .payments-form-card .workspace-card-head .label-xs {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+.payments-student-page .payments-form-card .workspace-card-head .label-xs {
+  color: #FDE68A !important;
+  -webkit-text-fill-color: #FDE68A !important;
+}
+
+.payments-student-page .payments-form-section {
+  box-shadow: 0 16px 34px rgba(42, 52, 94, 0.1) !important;
+}
+
+.payments-student-page .payments-form-section--accounts {
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFEFD5 100%) !important;
+  border: 2px solid #F59E0B !important;
+}
+
+.payments-student-page .payments-form-section--subjects {
+  background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%) !important;
+  border: 2px solid #6C47FF !important;
+}
+
+.payments-student-page .payments-form-section--proof {
+  background: linear-gradient(135deg, #ECFDF5 0%, #DFF7EF 100%) !important;
+  border: 2px solid #10B981 !important;
+}
+
+.payments-student-page .payments-form-section .label-xs,
+.payments-student-page .payments-subject-picker > label,
+.payments-student-page .payments-field > label,
+.payments-student-page .payments-amount-card > span,
+.payments-student-page .payments-history-card .label-xs {
+  color: #4F35FF !important;
+  -webkit-text-fill-color: #4F35FF !important;
+  font-weight: 900 !important;
+}
+
+.payments-student-page .payments-section-head p,
+.payments-student-page .payments-account-name,
+.payments-student-page .payments-amount-card small,
+.payments-student-page .payments-empty-state p {
+  color: #334155 !important;
+  -webkit-text-fill-color: #334155 !important;
+}
+
+.payments-student-page .payments-plan-card {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FFF9EA 100%) !important;
+  border: 2px solid #D97706 !important;
+  box-shadow: 0 12px 28px rgba(245, 158, 11, 0.14) !important;
+}
+
+.payments-student-page .payments-account-number,
+.payments-student-page .payments-account-name {
+  overflow-wrap: anywhere !important;
+}
+
+.payments-student-page .payments-account-number,
+.payments-student-page .payments-form-card .workspace-card-title,
+.payments-student-page .payments-history-card .workspace-card-title,
+.payments-student-page .payments-empty-state h3 {
+  color: #0B1020 !important;
+  -webkit-text-fill-color: #0B1020 !important;
+}
+
+.payments-student-page .payments-subject-picker .filter-pill {
+  background: #FFFFFF !important;
+  border: 2px solid #7483A3 !important;
+  color: #0B1020 !important;
+  -webkit-text-fill-color: #0B1020 !important;
+  box-shadow: 0 8px 18px rgba(42, 52, 94, 0.08) !important;
+}
+
+.payments-student-page .payments-subject-picker .filter-pill:hover,
+.payments-student-page .payments-subject-picker .filter-pill:focus-visible {
+  background: #FEF3C7 !important;
+  border-color: #F59E0B !important;
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+  box-shadow: 0 10px 22px rgba(245, 158, 11, 0.16) !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+.payments-student-page .payments-subject-picker .filter-pill--active,
+.payments-student-page .payments-subject-picker .filter-pill--active:hover,
+.payments-student-page .payments-subject-picker .filter-pill--active:focus-visible {
+  background: linear-gradient(135deg, #6C47FF 0%, #3B82F6 100%) !important;
+  border-color: #4F35FF !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  box-shadow: 0 12px 26px rgba(76, 81, 255, 0.28) !important;
+}
+
+.payments-student-page .payments-field input,
+.payments-student-page .payments-field select {
+  background-color: #FFFFFF !important;
+  border: 2px solid #7C8AA6 !important;
+  color: #0B1020 !important;
+  -webkit-text-fill-color: #0B1020 !important;
+  box-shadow: 0 8px 18px rgba(42, 52, 94, 0.07) !important;
+}
+
+.payments-student-page .payments-field input::placeholder {
+  color: #64748B !important;
+  -webkit-text-fill-color: #64748B !important;
+  opacity: 1 !important;
+}
+
+.payments-student-page .payments-field input:focus,
+.payments-student-page .payments-field select:focus {
+  border-color: #4F35FF !important;
+  box-shadow: 0 0 0 4px rgba(108, 71, 255, 0.16) !important;
+}
+
+.payments-student-page .payments-field input[type="file"]::file-selector-button {
+  background: #EDE9FE !important;
+  border: 1px solid #C4B5FD !important;
+  color: #4F35FF !important;
+  -webkit-text-fill-color: #4F35FF !important;
+}
+
+.payments-student-page .payments-amount-card {
+  background: linear-gradient(135deg, #0B1020 0%, #16366F 100%) !important;
+  border: 2px solid #2DD99B !important;
+  border-top: 5px solid #2DD99B !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 16px 34px rgba(16, 185, 129, 0.16) !important;
+}
+
+.payments-student-page .payments-amount-card > span {
+  color: #BDF7DF !important;
+  -webkit-text-fill-color: #BDF7DF !important;
+}
+
+.payments-student-page .payments-amount-card strong,
+.payments-student-page .payments-amount-card small {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+.payments-student-page .payments-submit-btn:not(:disabled),
+.payments-student-page .payments-submit-btn:not(:disabled):hover,
+.payments-student-page .payments-submit-btn:not(:disabled):focus-visible {
+  background: linear-gradient(135deg, #FACC15 0%, #F97316 100%) !important;
+  border: 2px solid rgba(251, 191, 36, 0.95) !important;
+  color: #170F02 !important;
+  -webkit-text-fill-color: #170F02 !important;
+  box-shadow: 0 14px 30px rgba(249, 115, 22, 0.22) !important;
+  filter: none !important;
+  transform: none !important;
+}
+
+.payments-student-page .payments-submit-btn:disabled,
+.payments-student-page .payments-submit-btn:disabled:hover,
+.payments-student-page .payments-submit-btn:disabled:focus {
+  background: #CBD5E1 !important;
+  border: 2px solid #94A3B8 !important;
+  color: #334155 !important;
+  -webkit-text-fill-color: #334155 !important;
+  opacity: 1 !important;
+  filter: none !important;
+  box-shadow: none !important;
+}
+
+.payments-student-page .payments-history-card {
+  background: #FFFFFF !important;
+  border: 2px solid #2563EB !important;
+  border-top: 5px solid #2563EB !important;
+  box-shadow: 0 22px 52px rgba(37, 99, 235, 0.16) !important;
+  overflow: hidden !important;
+}
+
+.payments-student-page .payments-history-card .workspace-card-head {
+  background: linear-gradient(135deg, #DBEAFE 0%, #EEF2FF 100%) !important;
+  border-bottom: 1.5px solid #AAB7D6 !important;
+}
+
+.payments-student-page .payments-table-wrap {
+  background: #FFFFFF !important;
+  border: 2px solid #AAB7D6 !important;
+  box-shadow: 0 14px 30px rgba(42, 52, 94, 0.08) !important;
+}
+
+.payments-student-page .payments-history-table th {
+  background: #E0E7FF !important;
+  color: #1E1B4B !important;
+  -webkit-text-fill-color: #1E1B4B !important;
+  border-bottom: 1.5px solid #AAB7D6 !important;
+}
+
+.payments-student-page .payments-history-table td {
+  background: #FFFFFF !important;
+  color: #0B1020 !important;
+  -webkit-text-fill-color: #0B1020 !important;
+  border-bottom: 1px solid #D5DCEB !important;
+}
+
+.payments-student-page .payments-empty-state {
+  background: linear-gradient(135deg, #F8FAFC 0%, #EEF2FF 100%) !important;
+  border: 2px solid #AAB7D6 !important;
+  color: #0B1020 !important;
+}
+
+html[data-theme="dark"] .payments-student-page,
+[data-theme="dark"] .payments-student-page {
+  background:
+    radial-gradient(circle at 8% 2%, rgba(250, 204, 21, 0.11), transparent 30%),
+    radial-gradient(circle at 92% 8%, rgba(45, 217, 155, 0.12), transparent 28%),
+    linear-gradient(180deg, #050313 0%, #090A1E 100%) !important;
+  color: #F8FAFC !important;
+}
+
+html[data-theme="dark"] .payments-student-page .workspace-card,
+[data-theme="dark"] .payments-student-page .workspace-card {
+  color: #F8FAFC !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-summary-card,
+[data-theme="dark"] .payments-student-page .payments-summary-card {
+  background:
+    radial-gradient(circle at 90% 0%, rgba(250, 204, 21, 0.18), transparent 34%),
+    linear-gradient(135deg, #12091F 0%, #0B173A 58%, #092E31 100%) !important;
+  border-color: rgba(250, 204, 21, 0.58) !important;
+  border-top-color: #FACC15 !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.48) !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-form-card,
+[data-theme="dark"] .payments-student-page .payments-form-card,
+html[data-theme="dark"] .payments-student-page .payments-history-card,
+[data-theme="dark"] .payments-student-page .payments-history-card {
+  background: #100C26 !important;
+  border-color: rgba(167, 139, 250, 0.68) !important;
+  box-shadow: 0 24px 58px rgba(0, 0, 0, 0.48) !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-form-card .workspace-card-head,
+[data-theme="dark"] .payments-student-page .payments-form-card .workspace-card-head,
+html[data-theme="dark"] .payments-student-page .payments-history-card .workspace-card-head,
+[data-theme="dark"] .payments-student-page .payments-history-card .workspace-card-head {
+  background: linear-gradient(135deg, #1E1545 0%, #091B3A 100%) !important;
+  border-bottom-color: rgba(167, 139, 250, 0.36) !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-form-section--accounts,
+[data-theme="dark"] .payments-student-page .payments-form-section--accounts {
+  background: linear-gradient(135deg, #2A1706 0%, #1B120A 100%) !important;
+  border-color: rgba(245, 158, 11, 0.8) !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-form-section--subjects,
+[data-theme="dark"] .payments-student-page .payments-form-section--subjects {
+  background: linear-gradient(135deg, #1E174A 0%, #151137 100%) !important;
+  border-color: rgba(139, 111, 255, 0.82) !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-form-section--proof,
+[data-theme="dark"] .payments-student-page .payments-form-section--proof {
+  background: linear-gradient(135deg, #06261F 0%, #0E1A2D 100%) !important;
+  border-color: rgba(45, 217, 155, 0.78) !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-plan-card,
+[data-theme="dark"] .payments-student-page .payments-plan-card {
+  background: linear-gradient(135deg, #21153D 0%, #2A1907 100%) !important;
+  border-color: rgba(250, 204, 21, 0.64) !important;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.34) !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-form-section .label-xs,
+[data-theme="dark"] .payments-student-page .payments-form-section .label-xs,
+html[data-theme="dark"] .payments-student-page .payments-subject-picker > label,
+[data-theme="dark"] .payments-student-page .payments-subject-picker > label,
+html[data-theme="dark"] .payments-student-page .payments-field > label,
+[data-theme="dark"] .payments-student-page .payments-field > label,
+html[data-theme="dark"] .payments-student-page .payments-history-card .label-xs,
+[data-theme="dark"] .payments-student-page .payments-history-card .label-xs {
+  color: #FDE68A !important;
+  -webkit-text-fill-color: #FDE68A !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-section-head p,
+[data-theme="dark"] .payments-student-page .payments-section-head p,
+html[data-theme="dark"] .payments-student-page .payments-account-name,
+[data-theme="dark"] .payments-student-page .payments-account-name,
+html[data-theme="dark"] .payments-student-page .payments-empty-state p,
+[data-theme="dark"] .payments-student-page .payments-empty-state p {
+  color: #D6DCF7 !important;
+  -webkit-text-fill-color: #D6DCF7 !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-account-number,
+[data-theme="dark"] .payments-student-page .payments-account-number,
+html[data-theme="dark"] .payments-student-page .payments-form-card .workspace-card-title,
+[data-theme="dark"] .payments-student-page .payments-form-card .workspace-card-title,
+html[data-theme="dark"] .payments-student-page .payments-history-card .workspace-card-title,
+[data-theme="dark"] .payments-student-page .payments-history-card .workspace-card-title,
+html[data-theme="dark"] .payments-student-page .payments-empty-state h3,
+[data-theme="dark"] .payments-student-page .payments-empty-state h3 {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-subject-picker .filter-pill,
+[data-theme="dark"] .payments-student-page .payments-subject-picker .filter-pill {
+  background: #211A4A !important;
+  border-color: rgba(167, 139, 250, 0.72) !important;
+  color: #F8FAFC !important;
+  -webkit-text-fill-color: #F8FAFC !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-subject-picker .filter-pill:hover,
+[data-theme="dark"] .payments-student-page .payments-subject-picker .filter-pill:hover,
+html[data-theme="dark"] .payments-student-page .payments-subject-picker .filter-pill:focus-visible,
+[data-theme="dark"] .payments-student-page .payments-subject-picker .filter-pill:focus-visible {
+  background: #3A2B67 !important;
+  border-color: #FACC15 !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-subject-picker .filter-pill--active,
+[data-theme="dark"] .payments-student-page .payments-subject-picker .filter-pill--active,
+html[data-theme="dark"] .payments-student-page .payments-subject-picker .filter-pill--active:hover,
+[data-theme="dark"] .payments-student-page .payments-subject-picker .filter-pill--active:hover {
+  background: linear-gradient(135deg, #FACC15 0%, #F97316 100%) !important;
+  border-color: #FDE68A !important;
+  color: #170F02 !important;
+  -webkit-text-fill-color: #170F02 !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-field input,
+[data-theme="dark"] .payments-student-page .payments-field input,
+html[data-theme="dark"] .payments-student-page .payments-field select,
+[data-theme="dark"] .payments-student-page .payments-field select {
+  background: #0B0820 !important;
+  border-color: rgba(167, 139, 250, 0.72) !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-field input::placeholder,
+[data-theme="dark"] .payments-student-page .payments-field input::placeholder {
+  color: #B8BFEA !important;
+  -webkit-text-fill-color: #B8BFEA !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-field input[type="file"]::file-selector-button,
+[data-theme="dark"] .payments-student-page .payments-field input[type="file"]::file-selector-button {
+  background: #342267 !important;
+  border-color: rgba(167, 139, 250, 0.72) !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-amount-card,
+[data-theme="dark"] .payments-student-page .payments-amount-card {
+  background: linear-gradient(135deg, #061B2B 0%, #112044 100%) !important;
+  border-color: rgba(45, 217, 155, 0.86) !important;
+  border-top-color: #2DD99B !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-submit-btn:disabled,
+[data-theme="dark"] .payments-student-page .payments-submit-btn:disabled,
+html[data-theme="dark"] .payments-student-page .payments-submit-btn:disabled:hover,
+[data-theme="dark"] .payments-student-page .payments-submit-btn:disabled:hover {
+  background: #2D3854 !important;
+  border-color: #56627F !important;
+  color: #E2E8F0 !important;
+  -webkit-text-fill-color: #E2E8F0 !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-table-wrap,
+[data-theme="dark"] .payments-student-page .payments-table-wrap {
+  background: #0B0820 !important;
+  border-color: rgba(167, 139, 250, 0.66) !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-history-table th,
+[data-theme="dark"] .payments-student-page .payments-history-table th {
+  background: #241B52 !important;
+  color: #FDE68A !important;
+  -webkit-text-fill-color: #FDE68A !important;
+  border-bottom-color: rgba(167, 139, 250, 0.38) !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-history-table td,
+[data-theme="dark"] .payments-student-page .payments-history-table td {
+  background: #100C26 !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  border-bottom-color: rgba(167, 139, 250, 0.2) !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-empty-state,
+[data-theme="dark"] .payments-student-page .payments-empty-state {
+  background: linear-gradient(135deg, #15113A 0%, #0B0820 100%) !important;
+  border-color: rgba(167, 139, 250, 0.66) !important;
+  color: #FFFFFF !important;
+}
