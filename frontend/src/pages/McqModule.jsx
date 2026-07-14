@@ -64,6 +64,39 @@ const emptyMcqForm = {
 
 const letters = ['A', 'B', 'C', 'D']
 
+const getQuizResultStorageKey = (userKey, subject, chapterId) =>
+  `mcq-result-${userKey}-${subject}-${chapterId}`
+
+const getLegacyQuizResultStorageKey = (subject, chapterId) =>
+  `mcq-result-${subject}-${chapterId}`
+
+const readStoredQuizResult = (userKey, subject, chapterId) => {
+  const keys = [
+    getQuizResultStorageKey(userKey, subject, chapterId),
+    getLegacyQuizResultStorageKey(subject, chapterId),
+  ]
+  for (const key of keys) {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(key) || sessionStorage.getItem(key) || 'null')
+      if (parsed) return parsed
+    } catch {
+      // Ignore corrupt browser storage and continue with the next key.
+    }
+  }
+  return null
+}
+
+const clearStoredQuizResult = (userKey, subject, chapterId) => {
+  const keys = [
+    getQuizResultStorageKey(userKey, subject, chapterId),
+    getLegacyQuizResultStorageKey(subject, chapterId),
+  ]
+  keys.forEach((key) => {
+    localStorage.removeItem(key)
+    sessionStorage.removeItem(key)
+  })
+}
+
 const getNumericMcqNumber = (mcq) => {
   const value = mcq?.originalQuestionNumber || mcq?.questionNumber || mcq?.csvRowIndex
   const raw = String(value ?? '').trim()
@@ -1808,6 +1841,7 @@ function McqList() {
 function QuizAttempt() {
   const { subject, chapterId } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const { user } = useAuth()
   const meta = subjectById(subject)
   const [chapter, setChapter] = useState(null)
@@ -1823,6 +1857,7 @@ function QuizAttempt() {
   })
   const [submitting, setSubmitting] = useState(false)
   const [showQuestionPanel, setShowQuestionPanel] = useState(false)
+  const currentIndexRef = useRef(0)
   const quizUserKey = useMemo(
     () => user?.email || user?._id || user?.id || 'guest',
     [user?.email, user?._id, user?.id],
@@ -1832,11 +1867,26 @@ function QuizAttempt() {
   }, [chapterId, quizUserKey, subject])
 
   useEffect(() => {
+    currentIndexRef.current = currentIndex
+  }, [currentIndex])
+  useEffect(() => {
     let alive = true
 
     const loadQuiz = async () => {
       setLoading(true)
       try {
+        if (location.state?.retake) {
+          clearStoredQuizResult(quizUserKey, subject, chapterId)
+        } else {
+          const storedResult = readStoredQuizResult(quizUserKey, subject, chapterId)
+          if (storedResult) {
+            navigate(`/mcqs/${subject}/${chapterId}/result`, {
+              replace: true,
+              state: { result: storedResult },
+            })
+            return
+          }
+        }
         const response = await API.get(`/mcqs/${subject}/${chapterId}`)
 
         if (!alive || !response) return
@@ -1938,7 +1988,7 @@ function QuizAttempt() {
     return () => {
       alive = false
     }
-  }, [chapterId, quizStorageKey, subject])
+  }, [chapterId, location.state?.retake, navigate, quizStorageKey, quizUserKey, subject])
 
   useEffect(() => {
     if (loading || !mcqs.length) return
@@ -1954,6 +2004,23 @@ function QuizAttempt() {
     }
     localStorage.setItem(quizStorageKey, JSON.stringify(draft))
   }, [answers, currentIndex, loading, mcqs, quizStorageKey, quizTiming, remaining, skipped])
+
+  useEffect(() => {
+    if (loading || !mcqs.length) return undefined
+
+    window.history.pushState({ mcqAttempt: true }, '')
+    const handleBack = () => {
+      const current = currentIndexRef.current
+      if (current > 0) {
+        window.history.pushState({ mcqAttempt: true }, '')
+        setShowQuestionPanel(false)
+        setCurrentIndex(current - 1)
+      }
+    }
+
+    window.addEventListener('popstate', handleBack)
+    return () => window.removeEventListener('popstate', handleBack)
+  }, [loading, mcqs.length])
 
   const submit = async ({ force = false } = {}) => {
     if (submitting || !mcqs.length) return
@@ -1994,11 +2061,14 @@ function QuizAttempt() {
       Object.keys(localStorage)
         .filter((key) => key.startsWith('mcq-draft-') && key.endsWith(suffix))
         .forEach((key) => localStorage.removeItem(key))
-      sessionStorage.setItem(
-        `mcq-result-${subject}-${chapterId}`,
-        JSON.stringify(res.data),
-      )
+      const resultPayload = JSON.stringify(res.data)
+      const resultKey = getQuizResultStorageKey(quizUserKey, subject, chapterId)
+      const legacyResultKey = getLegacyQuizResultStorageKey(subject, chapterId)
+      localStorage.setItem(resultKey, resultPayload)
+      sessionStorage.setItem(resultKey, resultPayload)
+      sessionStorage.setItem(legacyResultKey, resultPayload)
       navigate(`/mcqs/${subject}/${chapterId}/result`, {
+        replace: true,
         state: { result: res.data },
       })
     } catch (error) {
@@ -2235,12 +2305,21 @@ function QuizResult() {
   const { subject, chapterId } = useParams()
   const location = useLocation()
   const navigate = useNavigate()
+  const { user } = useAuth()
+  const quizUserKey = useMemo(
+    () => user?.email || user?._id || user?.id || 'guest',
+    [user?.email, user?._id, user?.id],
+  )
   const result =
-    location.state?.result ||
-    JSON.parse(
-      sessionStorage.getItem(`mcq-result-${subject}-${chapterId}`) || 'null',
-    )
+    location.state?.result || readStoredQuizResult(quizUserKey, subject, chapterId)
 
+  const solveAgain = () => {
+    clearStoredQuizResult(quizUserKey, subject, chapterId)
+    navigate(`/mcqs/${subject}/${chapterId}/attempt`, {
+      replace: true,
+      state: { retake: true },
+    })
+  }
   if (!result) {
     return (
       <div className="workspace-page">
@@ -2259,11 +2338,7 @@ function QuizResult() {
       </div>
     )
   }
-
-  const wrongItems = result.detailed.filter(
-    (item) => !item.skipped && !item.isCorrect,
-  )
-  const skippedItems = result.detailed.filter((item) => item.skipped)
+  const answerKeyItems = Array.isArray(result.detailed) ? result.detailed : []
 
   const pct = result.percentage || 0
   const motivation =
@@ -2287,13 +2362,22 @@ function QuizResult() {
               skipped
             </p>
           </div>
-          <button
-            className="btn btn-secondary"
-            type="button"
-            onClick={() => navigate(`/mcqs/${subject}/${chapterId}`)}
-          >
-            Back to MCQs
-          </button>
+          <div className="inline-actions mcq-result-actions">
+            <button
+              className="btn btn-primary"
+              type="button"
+              onClick={solveAgain}
+            >
+              Solve Again
+            </button>
+            <button
+              className="btn btn-secondary"
+              type="button"
+              onClick={() => navigate(`/mcqs/${subject}/${chapterId}`)}
+            >
+              Back to MCQs
+            </button>
+          </div>
         </div>
         <div className="mcq-result-card">
           <div className="mcq-result-score">{result.percentage}%</div>
@@ -2333,8 +2417,7 @@ function QuizResult() {
             <strong>{result.percentage}%</strong>
           </div>
         </div>
-        <ReviewSection title="Wrong Answers" items={wrongItems} />
-        <ReviewSection title="Skipped Questions" items={skippedItems} />
+        <ReviewSection title="Answer Key & Explanations" items={answerKeyItems} />
       </section>
     </div>
   )
@@ -2350,11 +2433,11 @@ function ReviewSection({ title, items }) {
       {items.map((item, index) => (
         <article
           key={String(item.mcqId)}
-          className="review-question-card review-question-card--wrong"
+          className={`review-question-card ${item.skipped ? 'review-question-card--wrong' : item.isCorrect ? 'review-question-card--correct' : 'review-question-card--wrong'}`}
         >
           <div className="review-question-top">
             <span className="review-question-number">
-              {title} {getMcqDisplayNumber(item, index)}
+              Question {getMcqDisplayNumber(item, index)}
             </span>
           </div>
           <div className="review-question-title">
