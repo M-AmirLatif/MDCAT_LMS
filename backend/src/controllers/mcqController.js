@@ -93,6 +93,16 @@ const canAccessSubjectContent = (user, subject, contentIndex = 0) => {
   return hasActiveSubscription(user, subject)
 }
 
+const canAccessChapterTest = (user, subject, contentIndex = 0, testPart = null) => {
+  const roleName = userRoleName(user)
+  if (roleName === 'admin') return true
+  if (roleName === 'teacher') return canManageSubject(subject, user)
+  if (roleName !== 'student') return false
+  const part = normalizeTestPart(testPart)
+  if (contentIndex === 0 && (!part || part === 1)) return true
+  return hasActiveSubscription(user, subject)
+}
+
 const getChapterIndex = (course, chapterId) =>
   (course?.chapters || []).findIndex((chapter) => String(chapter.id) === String(chapterId))
 
@@ -1246,15 +1256,15 @@ exports.getChaptersBySubject = async (req, res) => {
     )
 
     const chapters = (course.chapters || []).flatMap((chapter, index) => {
-      const locked = !canAccessSubjectContent(req.user, subject, index)
+      const baseLocked = !canAccessChapterTest(req.user, subject, index)
       const mcqCount = countByChapter.get(chapter.id) || 0
       const baseChapter = {
         id: chapter.id,
         name: chapter.name,
         description: chapter.description || '',
         mcqCount,
-        isLocked: locked,
-        lockReason: locked
+        isLocked: baseLocked,
+        lockReason: baseLocked
           ? 'Please subscribe to access this test/past paper.'
           : null,
         topics: getChapterTopics(chapter).map((topic) => ({
@@ -1268,12 +1278,17 @@ exports.getChaptersBySubject = async (req, res) => {
       if (teacherRoleNames.has(userRoleName(req.user))) return [baseChapter]
       const virtualTests = buildVirtualChapterTests(chapter, mcqCount)
       if (!virtualTests.length) return [baseChapter]
-      return virtualTests.map((test) => ({
-        ...baseChapter,
-        ...test,
-        originalChapterName: chapter.name,
-        isVirtualTest: true,
-      }))
+      return virtualTests.map((test) => {
+        const locked = !canAccessChapterTest(req.user, subject, index, test.testPart)
+        return {
+          ...baseChapter,
+          ...test,
+          originalChapterName: chapter.name,
+          isVirtualTest: true,
+          isLocked: locked,
+          lockReason: locked ? 'Please subscribe to access this test/past paper.' : null,
+        }
+      })
     })
 
     res
@@ -1620,7 +1635,7 @@ exports.getMcqsByChapter = async (req, res) => {
     }
 
     const chapterIndex = getChapterIndex(context.course, context.chapter.id)
-    if (!canAccessSubjectContent(req.user, context.subject, chapterIndex)) {
+    if (!canAccessChapterTest(req.user, context.subject, chapterIndex, req.query.testPart)) {
       return res.status(403).json({
         error: 'Please subscribe to access this test/past paper.',
         code: 'SUBSCRIPTION_REQUIRED',
@@ -1680,7 +1695,7 @@ exports.createChapterMcq = async (req, res) => {
       return res.status(404).json({ error: 'Chapter not found' })
 
     const chapterIndex = getChapterIndex(context.course, context.chapter.id)
-    if (!canAccessSubjectContent(req.user, context.subject, chapterIndex)) {
+    if (!canAccessChapterTest(req.user, context.subject, chapterIndex, req.query.testPart)) {
       return res.status(403).json({
         error: 'Please subscribe to access this test/past paper.',
         code: 'SUBSCRIPTION_REQUIRED',
@@ -2437,7 +2452,7 @@ exports.submitChapterAttempt = async (req, res) => {
       return res.status(404).json({ error: 'Chapter not found' })
 
     const chapterIndex = getChapterIndex(context.course, context.chapter.id)
-    if (!canAccessSubjectContent(req.user, context.subject, chapterIndex)) {
+    if (!canAccessChapterTest(req.user, context.subject, chapterIndex, req.query.testPart)) {
       return res.status(403).json({
         error: 'Please subscribe to access this test/past paper.',
         code: 'SUBSCRIPTION_REQUIRED',
@@ -2543,6 +2558,9 @@ exports.submitChapterAttempt = async (req, res) => {
     res.status(500).json({ error: error.message })
   }
 }
+
+
+
 
 
 

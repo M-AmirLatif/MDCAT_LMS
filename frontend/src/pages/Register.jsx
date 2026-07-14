@@ -35,7 +35,7 @@ export default function Register() {
     lastName: '',
     email: '',
     password: '',
-    assignedSubjects: ['Biology'],
+    assignedSubjects: [],
   })
   const [submitting, setSubmitting] = useState(false)
   const [pendingMessage, setPendingMessage] = useState('')
@@ -222,3 +222,4 @@ export default function Register() {
     </div>
   )
 }
+
