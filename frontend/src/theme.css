@@ -3110,3 +3110,101 @@ html[data-theme="dark"] .correct-option-box .mcq-option-badge {
 
 
 
+
+/* Final dashboard/notifications dark-mode hero contrast override. */
+html[data-theme="dark"] .workspace-page > .workspace-hero,
+html[data-theme="dark"] .workspace-page > .notification-hero,
+html[data-theme="dark"] .workspace-page > .workspace-hero.workspace-hero--teal,
+[data-theme="dark"] .workspace-page > .workspace-hero,
+[data-theme="dark"] .workspace-page > .notification-hero,
+[data-theme="dark"] .workspace-page > .workspace-hero.workspace-hero--teal {
+  background:
+    radial-gradient(circle at 8% 8%, rgba(250, 204, 21, 0.18) 0%, rgba(250, 204, 21, 0) 28%),
+    radial-gradient(circle at 92% 14%, rgba(124, 92, 255, 0.24) 0%, rgba(124, 92, 255, 0) 34%),
+    linear-gradient(135deg, #070313 0%, #12082D 42%, #071A36 100%) !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 30px 78px rgba(0, 0, 0, 0.48) !important;
+}
+
+html[data-theme="dark"] .workspace-page > .workspace-hero::after,
+html[data-theme="dark"] .workspace-page > .notification-hero::after,
+[data-theme="dark"] .workspace-page > .workspace-hero::after,
+[data-theme="dark"] .workspace-page > .notification-hero::after {
+  background: rgba(250, 204, 21, 0.13) !important;
+  opacity: 0.72 !important;
+}
+
+html[data-theme="dark"] .workspace-page > .notification-hero::before,
+[data-theme="dark"] .workspace-page > .notification-hero::before {
+  background: rgba(124, 92, 255, 0.18) !important;
+  opacity: 0.78 !important;
+}
+
+html[data-theme="dark"] .workspace-page > .workspace-hero .workspace-hero-copy h1,
+html[data-theme="dark"] .workspace-page > .workspace-hero .workspace-hero-copy h2,
+html[data-theme="dark"] .workspace-page > .workspace-hero .workspace-hero-copy h3,
+html[data-theme="dark"] .workspace-page > .notification-hero .workspace-hero-copy h1,
+html[data-theme="dark"] .workspace-page > .notification-hero .workspace-hero-copy h2,
+html[data-theme="dark"] .workspace-page > .notification-hero .workspace-hero-copy h3,
+[data-theme="dark"] .workspace-page > .workspace-hero .workspace-hero-copy h1,
+[data-theme="dark"] .workspace-page > .workspace-hero .workspace-hero-copy h2,
+[data-theme="dark"] .workspace-page > .workspace-hero .workspace-hero-copy h3,
+[data-theme="dark"] .workspace-page > .notification-hero .workspace-hero-copy h1,
+[data-theme="dark"] .workspace-page > .notification-hero .workspace-hero-copy h2,
+[data-theme="dark"] .workspace-page > .notification-hero .workspace-hero-copy h3 {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.5) !important;
+}
+
+html[data-theme="dark"] .workspace-page > .workspace-hero .workspace-hero-copy p,
+html[data-theme="dark"] .workspace-page > .notification-hero .workspace-hero-copy p,
+[data-theme="dark"] .workspace-page > .workspace-hero .workspace-hero-copy p,
+[data-theme="dark"] .workspace-page > .notification-hero .workspace-hero-copy p {
+  color: #F8F5FF !important;
+  -webkit-text-fill-color: #F8F5FF !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="dark"] .workspace-page > .workspace-hero .hero-mini-card,
+html[data-theme="dark"] .workspace-page > .notification-hero .hero-mini-card,
+html[data-theme="dark"] .workspace-page > .notification-hero .notification-hero-panel,
+[data-theme="dark"] .workspace-page > .workspace-hero .hero-mini-card,
+[data-theme="dark"] .workspace-page > .notification-hero .hero-mini-card,
+[data-theme="dark"] .workspace-page > .notification-hero .notification-hero-panel {
+  background: #17102E !important;
+  border-color: rgba(250, 204, 21, 0.34) !important;
+  color: #FFFFFF !important;
+  box-shadow:
+    0 22px 46px rgba(0, 0, 0, 0.46),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+html[data-theme="dark"] .workspace-page > .workspace-hero .hero-mini-card strong,
+html[data-theme="dark"] .workspace-page > .notification-hero .hero-mini-card strong,
+html[data-theme="dark"] .workspace-page > .notification-hero .notification-hero-panel strong,
+[data-theme="dark"] .workspace-page > .workspace-hero .hero-mini-card strong,
+[data-theme="dark"] .workspace-page > .notification-hero .hero-mini-card strong,
+[data-theme="dark"] .workspace-page > .notification-hero .notification-hero-panel strong {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+html[data-theme="dark"] .workspace-page > .workspace-hero .hero-mini-card p,
+html[data-theme="dark"] .workspace-page > .workspace-hero .hero-mini-card span,
+html[data-theme="dark"] .workspace-page > .workspace-hero .hero-mini-card small,
+html[data-theme="dark"] .workspace-page > .notification-hero .hero-mini-card p,
+html[data-theme="dark"] .workspace-page > .notification-hero .hero-mini-card span,
+html[data-theme="dark"] .workspace-page > .notification-hero .hero-mini-card small,
+html[data-theme="dark"] .workspace-page > .notification-hero .notification-hero-panel-row span,
+[data-theme="dark"] .workspace-page > .workspace-hero .hero-mini-card p,
+[data-theme="dark"] .workspace-page > .workspace-hero .hero-mini-card span,
+[data-theme="dark"] .workspace-page > .workspace-hero .hero-mini-card small,
+[data-theme="dark"] .workspace-page > .notification-hero .hero-mini-card p,
+[data-theme="dark"] .workspace-page > .notification-hero .hero-mini-card span,
+[data-theme="dark"] .workspace-page > .notification-hero .hero-mini-card small,
+[data-theme="dark"] .workspace-page > .notification-hero .notification-hero-panel-row span {
+  color: #EFE8FF !important;
+  -webkit-text-fill-color: #EFE8FF !important;
+}
