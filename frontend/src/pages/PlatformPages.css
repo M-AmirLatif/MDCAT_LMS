@@ -8616,50 +8616,88 @@ select:focus,
 .notification-hero,
 .workspace-hero--teal {
   background:
-    radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.26), transparent 28%),
-    radial-gradient(circle at 92% 18%, rgba(45, 217, 155, 0.22), transparent 30%),
-    linear-gradient(135deg, #6f4cff 0%, #4f66d8 48%, #2a9fbd 100%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  box-shadow: 0 24px 58px rgba(68, 74, 190, 0.28);
+    radial-gradient(circle at 9% 0%, rgba(250, 204, 21, 0.22), transparent 26%),
+    radial-gradient(circle at 92% 18%, rgba(124, 92, 255, 0.34), transparent 34%),
+    linear-gradient(135deg, #120A2E 0%, #1C1450 44%, #102B5C 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 28px 70px rgba(14, 20, 54, 0.35) !important;
+  color: #FFFFFF !important;
+}
+
+.workspace-hero-copy h1,
+.workspace-hero-copy h2,
+.workspace-hero-copy h3,
+.notification-hero .workspace-hero-copy h1,
+.notification-hero .workspace-hero-copy h2,
+.notification-hero .workspace-hero-copy h3 {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.36) !important;
 }
 
 .workspace-hero-copy p,
 .notification-hero .workspace-hero-copy p {
-  color: rgba(255, 255, 255, 0.93) !important;
-  -webkit-text-fill-color: rgba(255, 255, 255, 0.93) !important;
+  color: #F4F0FF !important;
+  -webkit-text-fill-color: #F4F0FF !important;
   opacity: 1 !important;
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.22) !important;
 }
 
 .workspace-hero .label-xs,
 .notification-hero .label-xs {
-  color: rgba(255, 255, 255, 0.9) !important;
-  -webkit-text-fill-color: rgba(255, 255, 255, 0.9) !important;
+  color: #FFE08A !important;
+  -webkit-text-fill-color: #FFE08A !important;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.28) !important;
+}
+
+.workspace-hero .btn-primary,
+.notification-hero .btn-primary {
+  background: linear-gradient(135deg, #FACC15 0%, #F97316 100%) !important;
+  border-color: rgba(255, 224, 138, 0.92) !important;
+  color: #191102 !important;
+  -webkit-text-fill-color: #191102 !important;
+  box-shadow: 0 16px 34px rgba(249, 115, 22, 0.26) !important;
+}
+
+.workspace-hero .btn-secondary,
+.notification-hero .btn-secondary {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.56) !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
 }
 
 .hero-mini-card,
 .notification-hero-card,
 .notification-hero-panel {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.13)) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.36) !important;
+    linear-gradient(180deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.075)) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.34) !important;
   box-shadow:
-    0 18px 34px rgba(18, 22, 65, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.24) !important;
+    0 22px 44px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  color: #FFFFFF !important;
+  backdrop-filter: blur(10px);
 }
 
 .hero-mini-card strong,
 .notification-hero-panel strong {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  text-shadow: 0 1px 10px rgba(11, 14, 36, 0.24);
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.35) !important;
 }
 
 .hero-mini-card p,
 .hero-mini-card span,
 .hero-mini-card small,
 .notification-hero-panel-row span {
-  color: rgba(255, 255, 255, 0.91) !important;
-  -webkit-text-fill-color: rgba(255, 255, 255, 0.91) !important;
+  color: #F1ECFF !important;
+  -webkit-text-fill-color: #F1ECFF !important;
+}
+
+.notification-hero-panel-row + .notification-hero-panel-row {
+  border-top-color: rgba(255, 255, 255, 0.2) !important;
 }
 
 .subject-focus-card,
@@ -8668,115 +8706,105 @@ select:focus,
 .notification-summary-card,
 .notification-showcase,
 .notification-summary-panel {
-  border-color: rgba(122, 112, 214, 0.24);
-  box-shadow: 0 16px 36px rgba(39, 46, 95, 0.1);
+  border-color: rgba(72, 61, 139, 0.26) !important;
+  box-shadow: 0 16px 36px rgba(31, 38, 84, 0.12) !important;
 }
 
-.subject-focus-card {
+.subject-focus-card,
+.stat-tile,
+.notification-feed-card,
+.notification-summary-card,
+.notification-showcase,
+.notification-summary-panel {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 247, 255, 0.96));
+    linear-gradient(180deg, #FFFFFF 0%, #F5F7FF 100%) !important;
 }
 
 .subject-focus-metrics div,
 .subject-stats-grid div {
   background:
-    linear-gradient(180deg, rgba(108, 71, 255, 0.075), rgba(74, 144, 226, 0.035)),
-    #f7f9ff;
-  border-color: rgba(122, 112, 214, 0.22);
+    linear-gradient(180deg, rgba(108, 71, 255, 0.09), rgba(250, 204, 21, 0.055)),
+    #F8FAFF !important;
+  border-color: rgba(72, 61, 139, 0.24) !important;
 }
 
 .subject-focus-metrics span,
 .subject-stats-grid span {
-  color: #4d3ab7;
+  color: #35296F !important;
+  -webkit-text-fill-color: #35296F !important;
 }
 
-.stat-tile {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(246, 248, 255, 0.97));
-  border: 1.5px solid rgba(122, 112, 214, 0.2);
-}
-
-.stat-tile-top span:first-child {
-  color: #343a5f;
-  font-weight: 900;
-}
-
-.stat-tile small {
-  color: #4f5876;
-}
-
-.notification-toolbar .filter-pill {
-  background: rgba(255, 255, 255, 0.22) !important;
-  border-color: rgba(255, 255, 255, 0.5) !important;
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
-}
-
-.notification-toolbar .filter-pill--active {
-  background: #ffffff !important;
-  border-color: #ffffff !important;
-  color: #4429c8 !important;
-  -webkit-text-fill-color: #4429c8 !important;
-}
-
-.notification-summary-panel .filter-pill {
-  background: #f4f6ff !important;
-  border-color: rgba(122, 112, 214, 0.28) !important;
-  color: #252b4c !important;
-  -webkit-text-fill-color: #252b4c !important;
-}
-
-.notification-summary-panel .filter-pill--active {
-  background: linear-gradient(135deg, #6c47ff 0%, #4a90e2 100%) !important;
-  border-color: transparent !important;
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-}
-
-.notification-toolbar-note {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  text-shadow: 0 1px 8px rgba(13, 18, 45, 0.28);
-}
-
-.notification-showcase {
-  background:
-    linear-gradient(180deg, rgba(108, 71, 255, 0.08), rgba(255, 255, 255, 0.98)),
-    #ffffff;
-}
-
+.stat-tile-top span:first-child,
 .notification-showcase-body strong,
 .notification-feed-card .workspace-card-title,
 .notification-summary-card .workspace-card-title {
-  color: #171a2f;
+  color: #11142A !important;
+  -webkit-text-fill-color: #11142A !important;
 }
 
+.stat-tile small,
 .notification-showcase-body p,
 .notification-summary-panel p,
 .notification-showcase-top small {
-  color: #4e5875;
+  color: #404863 !important;
+  -webkit-text-fill-color: #404863 !important;
+}
+
+.notification-toolbar .filter-pill {
+  background: #21164F !important;
+  border-color: rgba(255, 255, 255, 0.42) !important;
+  color: #F5F1FF !important;
+  -webkit-text-fill-color: #F5F1FF !important;
+  box-shadow: 0 10px 22px rgba(11, 8, 32, 0.22) !important;
+}
+
+.notification-toolbar .filter-pill--active {
+  background: linear-gradient(135deg, #FACC15 0%, #F97316 100%) !important;
+  border-color: rgba(255, 224, 138, 0.95) !important;
+  color: #171003 !important;
+  -webkit-text-fill-color: #171003 !important;
+}
+
+.notification-summary-panel .filter-pill {
+  background: #F4F6FF !important;
+  border-color: rgba(72, 61, 139, 0.3) !important;
+  color: #1E2444 !important;
+  -webkit-text-fill-color: #1E2444 !important;
+}
+
+.notification-summary-panel .filter-pill--active {
+  background: linear-gradient(135deg, #21164F 0%, #4534A8 100%) !important;
+  border-color: transparent !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+.notification-toolbar-note {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45) !important;
+  font-weight: 900 !important;
 }
 
 html[data-theme="dark"] .workspace-hero,
 html[data-theme="dark"] .notification-hero,
 html[data-theme="dark"] .workspace-hero--teal {
   background:
-    radial-gradient(circle at 10% 0%, rgba(167, 139, 250, 0.42), transparent 28%),
-    radial-gradient(circle at 92% 18%, rgba(45, 217, 155, 0.2), transparent 32%),
-    linear-gradient(135deg, #3922a8 0%, #243a8f 48%, #136d8c 100%) !important;
-  border-color: rgba(167, 139, 250, 0.4);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.42);
+    radial-gradient(circle at 8% 0%, rgba(250, 204, 21, 0.18), transparent 27%),
+    radial-gradient(circle at 92% 18%, rgba(139, 111, 255, 0.28), transparent 34%),
+    linear-gradient(135deg, #09051B 0%, #130D37 44%, #081A3D 100%) !important;
+  border-color: rgba(167, 139, 250, 0.34) !important;
+  box-shadow: 0 28px 76px rgba(0, 0, 0, 0.54) !important;
 }
 
 html[data-theme="dark"] .hero-mini-card,
 html[data-theme="dark"] .notification-hero-card,
 html[data-theme="dark"] .notification-hero-panel {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(139, 111, 255, 0.1)) !important;
-  border-color: rgba(219, 212, 255, 0.32) !important;
+    linear-gradient(180deg, rgba(255, 255, 255, 0.11), rgba(139, 111, 255, 0.075)) !important;
+  border-color: rgba(238, 232, 255, 0.28) !important;
   box-shadow:
-    0 18px 38px rgba(0, 0, 0, 0.34),
+    0 22px 48px rgba(0, 0, 0, 0.46),
     inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
 }
 
@@ -8787,25 +8815,24 @@ html[data-theme="dark"] .notification-summary-card,
 html[data-theme="dark"] .notification-showcase,
 html[data-theme="dark"] .notification-summary-panel {
   background:
-    linear-gradient(180deg, rgba(139, 111, 255, 0.1), rgba(18, 16, 42, 0.96)),
-    #15132f !important;
-  border-color: rgba(167, 139, 250, 0.34) !important;
-  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.34);
+    linear-gradient(180deg, rgba(24, 18, 56, 0.98), rgba(13, 10, 32, 0.98)) !important;
+  border-color: rgba(167, 139, 250, 0.32) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.42) !important;
 }
 
 html[data-theme="dark"] .subject-focus-metrics div,
 html[data-theme="dark"] .subject-stats-grid div {
   background:
-    linear-gradient(180deg, rgba(139, 111, 255, 0.16), rgba(74, 144, 226, 0.08)),
-    #1c1a3c;
-  border-color: rgba(167, 139, 250, 0.3);
+    linear-gradient(180deg, rgba(139, 111, 255, 0.14), rgba(250, 204, 21, 0.055)),
+    #171236 !important;
+  border-color: rgba(167, 139, 250, 0.3) !important;
 }
 
 html[data-theme="dark"] .subject-focus-metrics span,
 html[data-theme="dark"] .subject-stats-grid span,
 html[data-theme="dark"] .stat-tile-top span:first-child {
-  color: rgba(239, 236, 255, 0.86) !important;
-  -webkit-text-fill-color: rgba(239, 236, 255, 0.86) !important;
+  color: #EDE8FF !important;
+  -webkit-text-fill-color: #EDE8FF !important;
 }
 
 html[data-theme="dark"] .subject-focus-metrics strong,
@@ -8815,8 +8842,8 @@ html[data-theme="dark"] .notification-showcase-body strong,
 html[data-theme="dark"] .notification-feed-card .workspace-card-title,
 html[data-theme="dark"] .notification-summary-card .workspace-card-title,
 html[data-theme="dark"] .summary-row strong {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
 }
 
 html[data-theme="dark"] .stat-tile small,
@@ -8824,32 +8851,31 @@ html[data-theme="dark"] .notification-showcase-body p,
 html[data-theme="dark"] .notification-summary-panel p,
 html[data-theme="dark"] .notification-showcase-top small,
 html[data-theme="dark"] .summary-row span {
-  color: rgba(232, 228, 255, 0.78) !important;
-  -webkit-text-fill-color: rgba(232, 228, 255, 0.78) !important;
+  color: #DCD5FF !important;
+  -webkit-text-fill-color: #DCD5FF !important;
 }
 
 html[data-theme="dark"] .notification-toolbar .filter-pill,
 html[data-theme="dark"] .notification-summary-panel .filter-pill {
-  background: rgba(167, 139, 250, 0.16) !important;
-  border-color: rgba(219, 212, 255, 0.34) !important;
-  color: #f4f1ff !important;
-  -webkit-text-fill-color: #f4f1ff !important;
+  background: rgba(18, 12, 48, 0.92) !important;
+  border-color: rgba(238, 232, 255, 0.32) !important;
+  color: #F5F1FF !important;
+  -webkit-text-fill-color: #F5F1FF !important;
 }
 
 html[data-theme="dark"] .notification-toolbar .filter-pill--active,
 html[data-theme="dark"] .notification-summary-panel .filter-pill--active {
-  background: linear-gradient(135deg, #7c5cff 0%, #4f92e8 100%) !important;
-  border-color: rgba(219, 212, 255, 0.5) !important;
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
+  background: linear-gradient(135deg, #FACC15 0%, #F97316 100%) !important;
+  border-color: rgba(255, 224, 138, 0.82) !important;
+  color: #171003 !important;
+  -webkit-text-fill-color: #171003 !important;
 }
 
 html[data-theme="dark"] .notification-toolbar-note {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
   opacity: 1 !important;
 }
-
 @media (max-width: 768px) {
   .mcq-inline-card {
     padding: 16px;
@@ -9306,3 +9332,4 @@ html[data-theme="dark"] .notification-toolbar-note {
     padding: 13px 14px;
   }
 }
+
