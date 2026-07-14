@@ -9680,3 +9680,32 @@ html[data-theme="dark"] .workspace-page--notifications .notification-summary-but
 [data-theme="dark"] .workspace-page--notifications .notification-summary-button {
   border: 2px solid rgba(181, 154, 255, 0.52) !important;
 }
+
+/* Mobile dashboard chart visibility: keep Recharts containers from collapsing. */
+@media (max-width: 768px) {
+  .workspace-page .workspace-section-grid .workspace-card .chart-panel {
+    height: clamp(260px, 72vw, 340px) !important;
+    min-height: 260px !important;
+    padding: 12px !important;
+    overflow: visible !important;
+  }
+
+  .workspace-page .workspace-section-grid .workspace-card:has(.chart-panel) {
+    min-height: 390px !important;
+  }
+
+  .workspace-page .workspace-section-grid .chart-panel .recharts-responsive-container {
+    min-height: 240px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .workspace-page .workspace-section-grid .workspace-card .chart-panel {
+    height: 280px !important;
+    min-height: 280px !important;
+  }
+
+  .workspace-page .workspace-section-grid .workspace-card:has(.chart-panel) {
+    min-height: 405px !important;
+  }
+}
