@@ -53,6 +53,7 @@ const SetPassword = lazyWithRetry(() => import('./pages/SetPassword'), 'SetPassw
 // Platform pages (authenticated)
 const PlatformDashboard = lazyWithRetry(() => import('./pages/PlatformDashboard'), 'PlatformDashboard')
 const PlatformPerformance = lazyWithRetry(() => import('./pages/PlatformPerformance'), 'PlatformPerformance')
+const PlatformLeaderboard = lazyWithRetry(() => import('./pages/PlatformLeaderboard'), 'PlatformLeaderboard')
 const PlatformLiveClasses = lazyWithRetry(() => import('./pages/PlatformLiveClasses'), 'PlatformLiveClasses')
 const PlatformPayments = lazyWithRetry(() => import('./pages/PlatformPayments'), 'PlatformPayments')
 const PlatformNotifications = lazyWithRetry(() => import('./pages/PlatformNotifications'), 'PlatformNotifications')
@@ -183,6 +184,7 @@ function App() {
             <Route path="/mcqs/:subject/:chapterId/attempt" element={<LazyMcqQuizAttempt />} />
             <Route path="/mcqs/:subject/:chapterId/result" element={<LazyMcqQuizResult />} />
             <Route path="/performance" element={<PlatformPerformance />} />
+            <Route path="/leaderboard" element={<PlatformLeaderboard />} />
             <Route path="/live-sessions" element={<PlatformLiveClasses />} />
             <Route path="/payments" element={<PlatformPayments />} />
             <Route path="/notifications" element={<PlatformNotifications />} />

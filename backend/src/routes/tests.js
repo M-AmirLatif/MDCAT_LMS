@@ -5,6 +5,7 @@ const {
   getMyTestSummary,
   getTestDetail,
   getSubjectWisePerformance,
+  getLeaderboard,
 } = require('../controllers/testController')
 const { protect, authorize } = require('../middlewares/auth')
 
@@ -15,6 +16,7 @@ router.post('/submit', protect, authorize('student', 'teacher', 'admin'), submit
 router.get('/my', protect, authorize('student', 'teacher', 'admin'), getMyTestHistory)
 router.get('/summary', protect, authorize('student', 'teacher', 'admin'), getMyTestSummary)
 router.get('/subjects', protect, authorize('student', 'teacher', 'admin'), getSubjectWisePerformance)
+router.get('/leaderboard', protect, authorize('student', 'teacher', 'admin'), getLeaderboard)
 router.get('/:sessionId', protect, authorize('student', 'teacher', 'admin'), getTestDetail)
 
 module.exports = router

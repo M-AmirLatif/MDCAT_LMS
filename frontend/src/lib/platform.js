@@ -24,6 +24,7 @@ export const PLATFORM_NAV = {
         { key: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
         { key: 'courses', label: 'Practice Subjects', path: '/mcqs', icon: 'courses' },
         { key: 'performance', label: 'Performance', path: '/performance', icon: 'performance' },
+        { key: 'leaderboard', label: 'Leaderboard', path: '/leaderboard', icon: 'analytics' },
         { key: 'payments', label: 'Subscriptions', path: '/payments', icon: 'payments' },
         { key: 'notifications', label: 'Notifications', path: '/notifications', icon: 'notifications' },
       ],
@@ -43,6 +44,7 @@ export const PLATFORM_NAV = {
         { key: 'my-courses', label: 'MCQ Management', path: '/teacher/mcqs', icon: 'courses' },
         { key: 'students', label: 'Student Attempts', path: '/teacher/students', icon: 'students' },
         { key: 'analytics', label: 'Performance Analytics', path: '/teacher/analytics', icon: 'analytics' },
+        { key: 'leaderboard', label: 'Leaderboards', path: '/leaderboard', icon: 'analytics' },
       ],
     },
     {
@@ -60,6 +62,7 @@ export const PLATFORM_NAV = {
         { key: 'students', label: 'Students & Access', path: '/admin/students', icon: 'students' },
         { key: 'payments', label: 'Subscriptions & Payments', path: '/admin/payments', icon: 'payments' },
         { key: 'teachers', label: 'Teachers', path: '/admin/teachers', icon: 'teachers' },
+        { key: 'leaderboard', label: 'Leaderboards', path: '/leaderboard', icon: 'analytics' },
       ],
     },
   ],

@@ -1,7 +1,7 @@
 const MCQ = require('../models/MCQ')
 const TestSession = require('../models/TestSession')
 const mongoose = require('mongoose')
-const { getTeacherSubjects } = require('../utils/teacherSubjects')
+const { SUBJECTS, getTeacherSubjects, normalizeSubject } = require('../utils/teacherSubjects')
 
 const buildTestFilter = async (req) => {
   const role = req.user.role?.name || ''
@@ -313,6 +313,173 @@ exports.getTestDetail = async (req, res) => {
   }
 }
 
+const getLeaderboardRows = async (match, currentUserId) => {
+  const rows = await TestSession.aggregate([
+    {
+      $match: {
+        ...match,
+        totalQuestions: { $gt: 0 },
+      },
+    },
+    {
+      $group: {
+        _id: '$studentId',
+        attempts: { $sum: 1 },
+        totalQuestions: { $sum: '$totalQuestions' },
+        totalScore: { $sum: '$finalScore' },
+        averageAttemptPercentage: { $avg: '$percentage' },
+        bestPercentage: { $max: '$percentage' },
+        lastAttemptAt: { $max: '$submittedAt' },
+        subjects: { $addToSet: '$subject' },
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'student',
+      },
+    },
+    { $unwind: '$student' },
+    {
+      $lookup: {
+        from: 'roles',
+        localField: 'student.role',
+        foreignField: '_id',
+        as: 'role',
+      },
+    },
+    { $unwind: '$role' },
+    {
+      $match: {
+        'role.name': 'student',
+        'student.isActive': { $ne: false },
+      },
+    },
+    {
+      $addFields: {
+        accuracy: {
+          $cond: [
+            { $gt: ['$totalQuestions', 0] },
+            { $round: [{ $multiply: [{ $divide: ['$totalScore', '$totalQuestions'] }, 100] }, 0] },
+            0,
+          ],
+        },
+      },
+    },
+    {
+      $sort: {
+        accuracy: -1,
+        totalQuestions: -1,
+        attempts: -1,
+        bestPercentage: -1,
+        lastAttemptAt: -1,
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        studentId: '$_id',
+        firstName: '$student.firstName',
+        lastName: '$student.lastName',
+        email: '$student.email',
+        accuracy: 1,
+        attempts: 1,
+        totalQuestions: 1,
+        totalScore: 1,
+        averageAttemptPercentage: { $round: ['$averageAttemptPercentage', 0] },
+        bestPercentage: 1,
+        lastAttemptAt: 1,
+        subjects: {
+          $filter: {
+            input: '$subjects',
+            as: 'subject',
+            cond: { $ne: ['$$subject', null] },
+          },
+        },
+      },
+    },
+  ])
+
+  return rows.map((row, index) => {
+    const name = `${row.firstName || ''} ${row.lastName || ''}`.trim() || 'Student'
+    return {
+      ...row,
+      studentId: String(row.studentId),
+      rank: index + 1,
+      name,
+      isCurrentUser: currentUserId ? String(row.studentId) === String(currentUserId) : false,
+    }
+  })
+}
+
+// ==================== GET LEADERBOARD ====================
+exports.getLeaderboard = async (req, res) => {
+  try {
+    const role = req.user.role?.name || ''
+    const requestedSubject = normalizeSubject(req.query.subject)
+    const limit = Math.min(100, Math.max(5, parseInt(req.query.limit, 10) || 50))
+    const teacherSubjects = role === 'teacher' ? getTeacherSubjects(req.user) : []
+    const visibleSubjects = role === 'teacher'
+      ? teacherSubjects
+      : SUBJECTS
+
+    if (role === 'teacher' && !visibleSubjects.length) {
+      return res.status(200).json({
+        success: true,
+        overall: [],
+        subjects: [],
+        currentStudent: null,
+        summary: { totalRanked: 0, visibleSubjects: [] },
+      })
+    }
+
+    if (requestedSubject && role === 'teacher' && !visibleSubjects.includes(requestedSubject)) {
+      return res.status(403).json({ error: 'Not authorized to view this subject leaderboard' })
+    }
+
+    const subjectScope = requestedSubject
+      ? [requestedSubject]
+      : visibleSubjects
+    const baseMatch = subjectScope.length ? { subject: { $in: subjectScope } } : {}
+    const currentUserId = role === 'student' ? req.user.id : null
+    const allOverallRows = await getLeaderboardRows(baseMatch, currentUserId)
+    const overall = allOverallRows.slice(0, limit)
+    const currentStudent = currentUserId
+      ? allOverallRows.find((row) => row.isCurrentUser) || null
+      : null
+
+    const subjectLeaderboards = await Promise.all(
+      visibleSubjects.map(async (subject) => {
+        if (requestedSubject && subject !== requestedSubject) return null
+        const rows = await getLeaderboardRows({ subject }, currentUserId)
+        return {
+          subject,
+          rows: rows.slice(0, limit),
+          currentStudent: currentUserId
+            ? rows.find((row) => row.isCurrentUser) || null
+            : null,
+          totalRanked: rows.length,
+        }
+      }),
+    )
+
+    res.status(200).json({
+      success: true,
+      overall,
+      subjects: subjectLeaderboards.filter(Boolean),
+      currentStudent,
+      summary: {
+        totalRanked: allOverallRows.length,
+        visibleSubjects,
+        rankingMethod: 'weighted_accuracy_then_volume',
+      },
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+}
 // ==================== GET SUBJECT-WISE PERFORMANCE ====================
 exports.getSubjectWisePerformance = async (req, res) => {
   try {
