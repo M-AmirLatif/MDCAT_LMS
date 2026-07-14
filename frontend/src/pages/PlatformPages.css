@@ -9333,3 +9333,104 @@ html[data-theme="dark"] .notification-toolbar-note {
   }
 }
 
+
+/* Final hero contrast override for dashboard and notifications. */
+.workspace-page > .workspace-hero,
+.workspace-page > .notification-hero,
+.workspace-page > .workspace-hero.workspace-hero--teal {
+  background:
+    radial-gradient(circle at 8% 8%, rgba(250, 204, 21, 0.18) 0%, rgba(250, 204, 21, 0) 28%),
+    radial-gradient(circle at 92% 14%, rgba(124, 92, 255, 0.24) 0%, rgba(124, 92, 255, 0) 34%),
+    linear-gradient(135deg, #070313 0%, #12082D 42%, #071A36 100%) !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 30px 78px rgba(0, 0, 0, 0.42) !important;
+}
+
+.workspace-page > .workspace-hero::after,
+.workspace-page > .notification-hero::after {
+  background: rgba(250, 204, 21, 0.13) !important;
+  opacity: 0.72 !important;
+}
+
+.workspace-page > .notification-hero::before {
+  background: rgba(124, 92, 255, 0.18) !important;
+  opacity: 0.78 !important;
+}
+
+.workspace-page > .workspace-hero .workspace-hero-copy h1,
+.workspace-page > .workspace-hero .workspace-hero-copy h2,
+.workspace-page > .workspace-hero .workspace-hero-copy h3,
+.workspace-page > .notification-hero .workspace-hero-copy h1,
+.workspace-page > .notification-hero .workspace-hero-copy h2,
+.workspace-page > .notification-hero .workspace-hero-copy h3 {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.5) !important;
+}
+
+.workspace-page > .workspace-hero .workspace-hero-copy p,
+.workspace-page > .notification-hero .workspace-hero-copy p {
+  color: #F8F5FF !important;
+  -webkit-text-fill-color: #F8F5FF !important;
+  opacity: 1 !important;
+}
+
+.workspace-page > .workspace-hero .hero-mini-card,
+.workspace-page > .notification-hero .hero-mini-card,
+.workspace-page > .notification-hero .notification-hero-panel {
+  background: #17102E !important;
+  border-color: rgba(250, 204, 21, 0.34) !important;
+  color: #FFFFFF !important;
+  box-shadow:
+    0 22px 46px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+.workspace-page > .workspace-hero .hero-mini-card strong,
+.workspace-page > .notification-hero .hero-mini-card strong,
+.workspace-page > .notification-hero .notification-hero-panel strong {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+.workspace-page > .workspace-hero .hero-mini-card p,
+.workspace-page > .workspace-hero .hero-mini-card span,
+.workspace-page > .workspace-hero .hero-mini-card small,
+.workspace-page > .notification-hero .hero-mini-card p,
+.workspace-page > .notification-hero .hero-mini-card span,
+.workspace-page > .notification-hero .hero-mini-card small,
+.workspace-page > .notification-hero .notification-hero-panel-row span {
+  color: #EFE8FF !important;
+  -webkit-text-fill-color: #EFE8FF !important;
+}
+
+.workspace-page > .workspace-hero .label-xs,
+.workspace-page > .notification-hero .label-xs {
+  color: #FDE68A !important;
+  -webkit-text-fill-color: #FDE68A !important;
+}
+
+.workspace-page > .workspace-hero .btn-primary,
+.workspace-page > .notification-hero .btn-primary,
+.workspace-page > .notification-hero .filter-pill--active {
+  background: linear-gradient(135deg, #FACC15 0%, #F97316 100%) !important;
+  border-color: rgba(255, 224, 138, 0.9) !important;
+  color: #160E02 !important;
+  -webkit-text-fill-color: #160E02 !important;
+}
+
+.workspace-page > .workspace-hero .btn-secondary,
+.workspace-page > .notification-hero .btn-secondary,
+.workspace-page > .notification-hero .filter-pill:not(.filter-pill--active) {
+  background: #24184D !important;
+  border-color: rgba(255, 255, 255, 0.34) !important;
+  color: #F6F1FF !important;
+  -webkit-text-fill-color: #F6F1FF !important;
+}
+
+.workspace-page > .notification-hero .notification-toolbar-note {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.6) !important;
+}
