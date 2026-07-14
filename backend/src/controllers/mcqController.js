@@ -30,6 +30,41 @@ const slugifyChapter = (name) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
 
+
+const STUDENT_CHAPTER_TEST_SIZE = 70
+
+const normalizeTestPart = (value) => {
+  const part = Number(value)
+  return Number.isInteger(part) && part >= 1 ? part : null
+}
+
+const sliceMcqsForVirtualTest = (mcqs, testPart) => {
+  const part = normalizeTestPart(testPart)
+  if (!part) return mcqs
+  const start = (part - 1) * STUDENT_CHAPTER_TEST_SIZE
+  return mcqs.slice(start, start + STUDENT_CHAPTER_TEST_SIZE)
+}
+
+const buildVirtualChapterTests = (chapter, totalMcqs) => {
+  const count = Number(totalMcqs || 0)
+  if (count <= STUDENT_CHAPTER_TEST_SIZE) return []
+  const parts = Math.ceil(count / STUDENT_CHAPTER_TEST_SIZE)
+  return Array.from({ length: parts }, (_, index) => {
+    const part = index + 1
+    const start = index * STUDENT_CHAPTER_TEST_SIZE + 1
+    const end = Math.min(count, part * STUDENT_CHAPTER_TEST_SIZE)
+    return {
+      id: chapter.id,
+      chapterId: chapter.id,
+      testPart: part,
+      name: `${chapter.name} - Test ${part}`,
+      description: `${chapter.name} MCQs ${start}-${end}`,
+      mcqCount: end - start + 1,
+      rangeStart: start,
+      rangeEnd: end,
+    }
+  })
+}
 const teacherRoleNames = new Set(['teacher', 'admin'])
 
 const userRoleName = (user) =>
@@ -1210,13 +1245,14 @@ exports.getChaptersBySubject = async (req, res) => {
       ]),
     )
 
-    const chapters = (course.chapters || []).map((chapter, index) => {
+    const chapters = (course.chapters || []).flatMap((chapter, index) => {
       const locked = !canAccessSubjectContent(req.user, subject, index)
-      return {
+      const mcqCount = countByChapter.get(chapter.id) || 0
+      const baseChapter = {
         id: chapter.id,
         name: chapter.name,
         description: chapter.description || '',
-        mcqCount: countByChapter.get(chapter.id) || 0,
+        mcqCount,
         isLocked: locked,
         lockReason: locked
           ? 'Please subscribe to access this test/past paper.'
@@ -1228,6 +1264,16 @@ exports.getChaptersBySubject = async (req, res) => {
           mcqCount: topicCountByKey.get(`${chapter.id}:${topic.id}`) || 0,
         })),
       }
+
+      if (teacherRoleNames.has(userRoleName(req.user))) return [baseChapter]
+      const virtualTests = buildVirtualChapterTests(chapter, mcqCount)
+      if (!virtualTests.length) return [baseChapter]
+      return virtualTests.map((test) => ({
+        ...baseChapter,
+        ...test,
+        originalChapterName: chapter.name,
+        isVirtualTest: true,
+      }))
     })
 
     res
@@ -1582,16 +1628,28 @@ exports.getMcqsByChapter = async (req, res) => {
       })
     }
 
-    const mcqs = sortMcqsByOriginalOrder(
+    const allMcqs = sortMcqsByOriginalOrder(
       await MCQ.find(context.filter).sort({ createdAt: 1 }).lean(),
     )
+    const selectedTestPart = teacherRoleNames.has(role) ? null : normalizeTestPart(req.query.testPart)
+    const mcqs = sliceMcqsForVirtualTest(allMcqs, selectedTestPart)
     const safeMcqs = includeFull ? serializeMcqsMedia(mcqs) : stripCorrectOptions(mcqs)
+    const responseChapter = selectedTestPart
+      ? {
+          ...context.chapter,
+          originalName: context.chapter.name,
+          name: `${context.chapter.name} - Test ${selectedTestPart}`,
+          isVirtualTest: true,
+          testPart: selectedTestPart,
+          totalChapterMcqs: allMcqs.length,
+        }
+      : context.chapter
 
     res.status(200).json({
       success: true,
       subject: context.subject,
       courseId: context.course._id,
-      chapter: context.chapter,
+      chapter: responseChapter,
       topics: getChapterTopics(context.chapter),
       selectedTopic: context.topic,
       reviewQueue: getChapterReviewQueue(context.chapter)
@@ -2388,9 +2446,11 @@ exports.submitChapterAttempt = async (req, res) => {
     }
 
     const answers = req.body.answers || {}
-    const mcqs = sortMcqsByOriginalOrder(
+    const allMcqs = sortMcqsByOriginalOrder(
       await MCQ.find(context.filter).sort({ createdAt: 1 }).lean(),
     )
+    const selectedTestPart = normalizeTestPart(req.query.testPart)
+    const mcqs = sliceMcqsForVirtualTest(allMcqs, selectedTestPart)
     if (!mcqs.length)
       return res.status(404).json({ error: 'No MCQs found for this chapter' })
 
@@ -2428,15 +2488,26 @@ exports.submitChapterAttempt = async (req, res) => {
     const wrong = detailed.length - correct - skipped
     const percentage = Math.round((correct / detailed.length) * 100)
     const startedAt = req.body.startedAt ? new Date(req.body.startedAt) : new Date()
+    const responseChapter = selectedTestPart
+      ? {
+          ...context.chapter,
+          originalName: context.chapter.name,
+          name: `${context.chapter.name} - Test ${selectedTestPart}`,
+          isVirtualTest: true,
+          testPart: selectedTestPart,
+          totalChapterMcqs: allMcqs.length,
+        }
+      : context.chapter
+    const attemptChapterName = responseChapter.name || context.chapter.name
 
     const testSession = await TestSession.create({
       studentId: req.user.id,
       courseId: context.course._id,
-      topic: context.topic?.name || context.chapter.name,
+      topic: context.topic?.name || attemptChapterName,
       topicId: context.topic?.id || null,
       subject: context.subject,
       chapterId: context.chapter.id,
-      chapterName: context.chapter.name,
+      chapterName: attemptChapterName,
       totalQuestions: detailed.length,
       score: correct,
       finalScore: correct,
@@ -2458,7 +2529,7 @@ exports.submitChapterAttempt = async (req, res) => {
       success: true,
       testSessionId: testSession._id,
       subject: context.subject,
-      chapter: context.chapter,
+      chapter: responseChapter,
       selectedTopic: context.topic,
       totalQuestions: detailed.length,
       correct,
@@ -2472,4 +2543,8 @@ exports.submitChapterAttempt = async (req, res) => {
     res.status(500).json({ error: error.message })
   }
 }
+
+
+
+
 

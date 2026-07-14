@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import API, { getUserFriendlyErrorMessage } from '../services/api'
 import { useAuth } from '../context/AuthContext'
@@ -674,7 +674,7 @@ function ChapterList() {
       <div className="chapter-browser-grid">
         {chapters.map((chapter) => (
           <article
-            key={chapter.id}
+            key={`${chapter.id}-${chapter.testPart || 'base'}`}
             className={`workspace-card chapter-practice-card ${chapter.isLocked ? 'chapter-practice-card--locked' : ''}`}
           >
             <div className="workspace-card-head">
@@ -700,7 +700,7 @@ function ChapterList() {
                 ) : (
                   <Link
                     className="btn btn-primary btn-sm"
-                    to={`/mcqs/${subject}/${chapter.id}`}
+                    to={`/mcqs/${subject}/${chapter.id}${chapter.testPart ? `?testPart=${chapter.testPart}` : ''}`}
                   >
                     Open MCQs
                   </Link>
@@ -1274,6 +1274,7 @@ function ReviewQueueReadonlyCard({ item, index, onEdit, onApprove, onDelete }) {
 
 function McqList() {
   const { subject, chapterId } = useParams()
+  const [searchParams] = useSearchParams()
   const { isTeacher } = useAuth()
   const meta = subjectById(subject)
   const [lockMessage, setLockMessage] = useState('')
@@ -1286,6 +1287,7 @@ function McqList() {
   const [selectedTopicId, setSelectedTopicId] = useState('')
   const [viewMode, setViewMode] = useState('mcqs')
   const fileRef = useRef(null)
+  const testPart = searchParams.get('testPart')
 
   const selectedTopic =
     topics.find((topic) => topic.id === selectedTopicId) || null
@@ -1297,9 +1299,10 @@ function McqList() {
   const load = async () => {
     setLoading(true)
     try {
-      const query = selectedTopicId
-        ? `?topicId=${encodeURIComponent(selectedTopicId)}`
-        : ''
+      const params = new URLSearchParams()
+      if (selectedTopicId) params.set('topicId', selectedTopicId)
+      if (!isTeacher && testPart) params.set('testPart', testPart)
+      const query = params.toString() ? `?${params.toString()}` : ''
       const res = await API.get(`/mcqs/${subject}/${chapterId}${query}`)
       setLockMessage('')
       setChapter(res.data.chapter)
@@ -1319,7 +1322,7 @@ function McqList() {
 
   useEffect(() => {
     load()
-  }, [subject, chapterId, selectedTopicId]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [subject, chapterId, selectedTopicId, testPart]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const saveTopic = async (payload) => {
     try {
@@ -1605,7 +1608,7 @@ function McqList() {
             {!isTeacher ? (
               <Link
                 className="btn btn-primary"
-                to={`/mcqs/${subject}/${chapterId}/attempt`}
+                to={`/mcqs/${subject}/${chapterId}/attempt${!isTeacher && testPart ? `?testPart=${testPart}` : ''}`}
               >
                 Start Quiz
               </Link>
@@ -1790,7 +1793,7 @@ function McqList() {
                   </div>
                   <Link
                     className="btn btn-primary"
-                    to={`/mcqs/${subject}/${chapterId}/attempt`}
+                    to={`/mcqs/${subject}/${chapterId}/attempt${!isTeacher && testPart ? `?testPart=${testPart}` : ''}`}
                   >
                     Start focused practice
                   </Link>
@@ -1840,10 +1843,14 @@ function McqList() {
 
 function QuizAttempt() {
   const { subject, chapterId } = useParams()
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const location = useLocation()
   const { user } = useAuth()
   const meta = subjectById(subject)
+  const testPart = searchParams.get('testPart')
+  const chapterAttemptId = testPart ? `${chapterId}-part-${testPart}` : chapterId
+  const testPartQuery = testPart ? `?testPart=${encodeURIComponent(testPart)}` : ''
   const [chapter, setChapter] = useState(null)
   const [mcqs, setMcqs] = useState([])
   const [loading, setLoading] = useState(true)
@@ -1863,8 +1870,8 @@ function QuizAttempt() {
     [user?.email, user?._id, user?.id],
   )
   const quizStorageKey = useMemo(() => {
-    return `mcq-draft-${quizUserKey}-${subject}-${chapterId}`
-  }, [chapterId, quizUserKey, subject])
+    return `mcq-draft-${quizUserKey}-${subject}-${chapterAttemptId}`
+  }, [chapterAttemptId, quizUserKey, subject])
 
   useEffect(() => {
     currentIndexRef.current = currentIndex
@@ -1876,18 +1883,18 @@ function QuizAttempt() {
       setLoading(true)
       try {
         if (location.state?.retake) {
-          clearStoredQuizResult(quizUserKey, subject, chapterId)
+          clearStoredQuizResult(quizUserKey, subject, chapterAttemptId)
         } else {
-          const storedResult = readStoredQuizResult(quizUserKey, subject, chapterId)
+          const storedResult = readStoredQuizResult(quizUserKey, subject, chapterAttemptId)
           if (storedResult) {
-            navigate(`/mcqs/${subject}/${chapterId}/result`, {
+            navigate(`/mcqs/${subject}/${chapterId}/result${testPartQuery}`, {
               replace: true,
               state: { result: storedResult },
             })
             return
           }
         }
-        const response = await API.get(`/mcqs/${subject}/${chapterId}`)
+        const response = await API.get(`/mcqs/${subject}/${chapterId}${testPartQuery}`)
 
         if (!alive || !response) return
         const loadedMcqs = response.data.mcqs || []
@@ -1901,7 +1908,7 @@ function QuizAttempt() {
           savedDraft = null
         }
         if (!savedDraft) {
-          const suffix = `-${subject}-${chapterId}`
+          const suffix = `-${subject}-${chapterAttemptId}`
           const matchingDrafts = Object.keys(localStorage)
             .filter(
               (key) => key.startsWith('mcq-draft-') && key.endsWith(suffix),
@@ -1988,7 +1995,7 @@ function QuizAttempt() {
     return () => {
       alive = false
     }
-  }, [chapterId, location.state?.retake, navigate, quizStorageKey, quizUserKey, subject])
+  }, [chapterAttemptId, chapterId, location.state?.retake, navigate, quizStorageKey, quizUserKey, subject, testPartQuery])
 
   useEffect(() => {
     if (loading || !mcqs.length) return
@@ -2048,7 +2055,7 @@ function QuizAttempt() {
         timeLimitSeconds,
         Math.max(0, elapsedSeconds),
       )
-      const res = await API.post(`/mcqs/${subject}/${chapterId}/submit`, {
+      const res = await API.post(`/mcqs/${subject}/${chapterId}/submit${testPartQuery}`, {
         answers,
         timeLimitSeconds,
         timeSpentSeconds,
@@ -2057,17 +2064,17 @@ function QuizAttempt() {
             ? new Date(startedAt).toISOString()
             : undefined,
       })
-      const suffix = `-${subject}-${chapterId}`
+      const suffix = `-${subject}-${chapterAttemptId}`
       Object.keys(localStorage)
         .filter((key) => key.startsWith('mcq-draft-') && key.endsWith(suffix))
         .forEach((key) => localStorage.removeItem(key))
       const resultPayload = JSON.stringify(res.data)
-      const resultKey = getQuizResultStorageKey(quizUserKey, subject, chapterId)
-      const legacyResultKey = getLegacyQuizResultStorageKey(subject, chapterId)
+      const resultKey = getQuizResultStorageKey(quizUserKey, subject, chapterAttemptId)
+      const legacyResultKey = getLegacyQuizResultStorageKey(subject, chapterAttemptId)
       localStorage.setItem(resultKey, resultPayload)
       sessionStorage.setItem(resultKey, resultPayload)
       sessionStorage.setItem(legacyResultKey, resultPayload)
-      navigate(`/mcqs/${subject}/${chapterId}/result`, {
+      navigate(`/mcqs/${subject}/${chapterId}/result${testPartQuery}`, {
         replace: true,
         state: { result: res.data },
       })
@@ -2121,7 +2128,7 @@ function QuizAttempt() {
           action={
             <Link
               className="btn btn-primary"
-              to={`/mcqs/${subject}/${chapterId}`}
+              to={`/mcqs/${subject}/${chapterId}${testPartQuery}`}
             >
               Back to MCQs
             </Link>
@@ -2303,19 +2310,23 @@ function QuizAttempt() {
 
 function QuizResult() {
   const { subject, chapterId } = useParams()
+  const [searchParams] = useSearchParams()
   const location = useLocation()
   const navigate = useNavigate()
   const { user } = useAuth()
+  const testPart = searchParams.get('testPart')
+  const chapterAttemptId = testPart ? `${chapterId}-part-${testPart}` : chapterId
+  const testPartQuery = testPart ? `?testPart=${encodeURIComponent(testPart)}` : ''
   const quizUserKey = useMemo(
     () => user?.email || user?._id || user?.id || 'guest',
     [user?.email, user?._id, user?.id],
   )
   const result =
-    location.state?.result || readStoredQuizResult(quizUserKey, subject, chapterId)
+    location.state?.result || readStoredQuizResult(quizUserKey, subject, chapterAttemptId)
 
   const solveAgain = () => {
-    clearStoredQuizResult(quizUserKey, subject, chapterId)
-    navigate(`/mcqs/${subject}/${chapterId}/attempt`, {
+    clearStoredQuizResult(quizUserKey, subject, chapterAttemptId)
+    navigate(`/mcqs/${subject}/${chapterId}/attempt${testPartQuery}`, {
       replace: true,
       state: { retake: true },
     })
@@ -2329,7 +2340,7 @@ function QuizResult() {
           action={
             <Link
               className="btn btn-primary"
-              to={`/mcqs/${subject}/${chapterId}`}
+              to={`/mcqs/${subject}/${chapterId}${testPartQuery}`}
             >
               Back to MCQs
             </Link>
@@ -2373,7 +2384,7 @@ function QuizResult() {
             <button
               className="btn btn-secondary"
               type="button"
-              onClick={() => navigate(`/mcqs/${subject}/${chapterId}`)}
+              onClick={() => navigate(`/mcqs/${subject}/${chapterId}${testPartQuery}`)}
             >
               Back to MCQs
             </button>
@@ -2485,3 +2496,11 @@ function ReviewSection({ title, items }) {
 export { CourseSelection, ChapterList, McqList, QuizAttempt, QuizResult }
 
 export default CourseSelection
+
+
+
+
+
+
+
+
