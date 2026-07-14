@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 const getInitialTheme = () => {
-  if (typeof document === 'undefined') return 'light'
+  if (typeof document === 'undefined') return 'dark'
   return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
 }
 
@@ -62,3 +62,4 @@ export default function ThemeToggle({ className = '' }) {
     </button>
   )
 }
+

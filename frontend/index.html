@@ -45,10 +45,10 @@
     <script>
       ;(() => {
         try {
-          const saved = localStorage.getItem('mdcat-theme') || 'light'
+          const saved = localStorage.getItem('mdcat-theme') || 'dark'
           document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light')
         } catch {
-          document.documentElement.setAttribute('data-theme', 'light')
+          document.documentElement.setAttribute('data-theme', 'dark')
         }
       })()
     </script>
@@ -58,3 +58,4 @@
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
+

@@ -10182,3 +10182,22 @@ html[data-theme="dark"] .payments-student-page .payments-empty-state,
   border-color: rgba(167, 139, 250, 0.66) !important;
   color: #FFFFFF !important;
 }
+
+/* Subscription summary active badge visibility fix. */
+html[data-theme="dark"] .payments-student-page .payments-summary-card .badge,
+[data-theme="dark"] .payments-student-page .payments-summary-card .badge {
+  background: linear-gradient(135deg, #FACC15 0%, #F97316 100%) !important;
+  border: 2px solid #FDE68A !important;
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+  text-shadow: none !important;
+  opacity: 1 !important;
+  box-shadow: 0 10px 24px rgba(250, 204, 21, 0.24) !important;
+}
+
+html[data-theme="dark"] .payments-student-page .payments-summary-card .badge *,
+[data-theme="dark"] .payments-student-page .payments-summary-card .badge * {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+  text-shadow: none !important;
+}
