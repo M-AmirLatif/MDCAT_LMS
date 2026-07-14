@@ -9434,3 +9434,171 @@ html[data-theme="dark"] .notification-toolbar-note {
   -webkit-text-fill-color: #FFFFFF !important;
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.6) !important;
 }
+
+/* Final notification filter pill consistency. */
+.workspace-page--notifications .notification-toolbar .filter-pills,
+.workspace-page > .notification-hero .notification-toolbar .filter-pills {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  width: min(100%, 980px) !important;
+  align-items: stretch !important;
+}
+
+.workspace-page--notifications .notification-toolbar .filter-pill,
+.workspace-page--notifications .notification-toolbar .filter-pill--active,
+.workspace-page > .notification-hero .notification-toolbar .filter-pill,
+.workspace-page > .notification-hero .notification-toolbar .filter-pill--active,
+html[data-theme="dark"] .workspace-page--notifications .notification-toolbar .filter-pill,
+html[data-theme="dark"] .workspace-page--notifications .notification-toolbar .filter-pill--active,
+html:not([data-theme="dark"]) .workspace-page--notifications .notification-toolbar .filter-pill,
+html:not([data-theme="dark"]) .workspace-page--notifications .notification-toolbar .filter-pill--active {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 52px !important;
+  padding: 0 18px !important;
+  border-radius: 999px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  line-height: 1.15 !important;
+  white-space: nowrap !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+.workspace-page--notifications .notification-toolbar .filter-pill:not(.filter-pill--active),
+.workspace-page > .notification-hero .notification-toolbar .filter-pill:not(.filter-pill--active),
+html[data-theme="dark"] .workspace-page--notifications .notification-toolbar .filter-pill:not(.filter-pill--active),
+html:not([data-theme="dark"]) .workspace-page--notifications .notification-toolbar .filter-pill:not(.filter-pill--active) {
+  background: #24184D !important;
+  border: 1.5px solid rgba(238, 232, 255, 0.34) !important;
+  color: #F6F1FF !important;
+  -webkit-text-fill-color: #F6F1FF !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2) !important;
+}
+
+.workspace-page--notifications .notification-toolbar .filter-pill--active,
+.workspace-page > .notification-hero .notification-toolbar .filter-pill--active,
+html[data-theme="dark"] .workspace-page--notifications .notification-toolbar .filter-pill--active,
+html:not([data-theme="dark"]) .workspace-page--notifications .notification-toolbar .filter-pill--active {
+  background: linear-gradient(135deg, #FACC15 0%, #F97316 100%) !important;
+  border: 1.5px solid rgba(255, 224, 138, 0.92) !important;
+  color: #160E02 !important;
+  -webkit-text-fill-color: #160E02 !important;
+  box-shadow: 0 12px 26px rgba(249, 115, 22, 0.24) !important;
+}
+
+.workspace-page--notifications .notification-toolbar .filter-pill:hover,
+.workspace-page--notifications .notification-toolbar .filter-pill:focus-visible,
+.workspace-page > .notification-hero .notification-toolbar .filter-pill:hover,
+.workspace-page > .notification-hero .notification-toolbar .filter-pill:focus-visible {
+  transform: none !important;
+  filter: none !important;
+}
+
+@media (max-width: 900px) {
+  .workspace-page--notifications .notification-toolbar .filter-pills,
+  .workspace-page > .notification-hero .notification-toolbar .filter-pills {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .workspace-page--notifications .notification-toolbar .filter-pill,
+  .workspace-page > .notification-hero .notification-toolbar .filter-pill {
+    min-height: 46px !important;
+    padding-inline: 12px !important;
+    font-size: 13px !important;
+  }
+}
+
+/* Final notification borders and clean leaderboard rows. */
+.workspace-page--notifications .notification-feed-card,
+.workspace-page--notifications .notification-summary-card,
+.workspace-page--notifications .notification-showcase,
+.workspace-page--notifications .notification-summary-panel,
+.workspace-page--notifications .empty-state,
+.workspace-page--notifications .empty-state--compact {
+  border: 1.5px solid rgba(151, 161, 196, 0.72) !important;
+  box-shadow: 0 16px 34px rgba(31, 38, 84, 0.1) !important;
+}
+
+.workspace-page--notifications .notification-feed-card,
+.workspace-page--notifications .notification-summary-card {
+  border-top: 3px solid rgba(108, 71, 255, 0.64) !important;
+}
+
+.workspace-page--notifications .notification-summary-panel {
+  background: #F7F8FE !important;
+  border-color: rgba(151, 161, 196, 0.86) !important;
+}
+
+.workspace-page--notifications .empty-state,
+.workspace-page--notifications .empty-state--compact {
+  background: #FAFBFF !important;
+  color: #10142A !important;
+}
+
+html[data-theme="dark"] .workspace-page--notifications .notification-feed-card,
+html[data-theme="dark"] .workspace-page--notifications .notification-summary-card,
+html[data-theme="dark"] .workspace-page--notifications .notification-showcase,
+html[data-theme="dark"] .workspace-page--notifications .notification-summary-panel,
+html[data-theme="dark"] .workspace-page--notifications .empty-state,
+html[data-theme="dark"] .workspace-page--notifications .empty-state--compact,
+[data-theme="dark"] .workspace-page--notifications .notification-feed-card,
+[data-theme="dark"] .workspace-page--notifications .notification-summary-card,
+[data-theme="dark"] .workspace-page--notifications .notification-showcase,
+[data-theme="dark"] .workspace-page--notifications .notification-summary-panel,
+[data-theme="dark"] .workspace-page--notifications .empty-state,
+[data-theme="dark"] .workspace-page--notifications .empty-state--compact {
+  background: #151029 !important;
+  border: 1.5px solid rgba(167, 139, 250, 0.44) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.36) !important;
+}
+
+html[data-theme="dark"] .workspace-page--notifications .notification-feed-card,
+html[data-theme="dark"] .workspace-page--notifications .notification-summary-card,
+[data-theme="dark"] .workspace-page--notifications .notification-feed-card,
+[data-theme="dark"] .workspace-page--notifications .notification-summary-card {
+  border-top: 3px solid rgba(250, 204, 21, 0.72) !important;
+}
+
+.leaderboard-table {
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+}
+
+.leaderboard-table th,
+.leaderboard-table td,
+html[data-theme="dark"] .leaderboard-table th,
+html[data-theme="dark"] .leaderboard-table td,
+[data-theme="dark"] .leaderboard-table th,
+[data-theme="dark"] .leaderboard-table td {
+  border-left: 0 !important;
+  border-right: 0 !important;
+  box-shadow: none !important;
+}
+
+.leaderboard-row--me td,
+html[data-theme="dark"] .leaderboard-row--me td,
+[data-theme="dark"] .leaderboard-row--me td {
+  background: rgba(250, 204, 21, 0.12) !important;
+  box-shadow: none !important;
+}
+
+.leaderboard-row--me td:first-child,
+html[data-theme="dark"] .leaderboard-row--me td:first-child,
+[data-theme="dark"] .leaderboard-row--me td:first-child {
+  box-shadow: inset 4px 0 0 #F59E0B !important;
+}
+
+.leaderboard-table tbody tr:hover td,
+html[data-theme="dark"] .leaderboard-table tbody tr:hover td,
+[data-theme="dark"] .leaderboard-table tbody tr:hover td {
+  background: rgba(250, 204, 21, 0.08) !important;
+}
