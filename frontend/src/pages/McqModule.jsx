@@ -1056,7 +1056,7 @@ function TeacherInlineMcqCard({ mcq, index, displayNumberOffset = 0, chapterId, 
   }
 
   return (
-    <article className="workspace-card mcq-inline-card animate-fade-up">
+    <article className="workspace-card mcq-inline-card mcq-managed-parent-card animate-fade-up">
       <div className="mcq-inline-card-header">
         <span className="mcq-inline-card-number">QUESTION {getMcqDisplayNumber(mcq, index, displayNumberOffset)}</span>
         {saving && <span className="mcq-inline-card-status">Saving...</span>}
