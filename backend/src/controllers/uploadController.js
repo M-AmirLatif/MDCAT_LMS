@@ -32,6 +32,12 @@ const upload = multer({
   },
 })
 
+const buildUploadUrl = (req, filename) => {
+  const publicBase = String(process.env.PUBLIC_API_BASE_URL || process.env.API_PUBLIC_URL || '').trim().replace(/\/+$/, '')
+  if (publicBase) return `${publicBase}/uploads/${filename}`
+  return `${req.protocol}://${req.get('host')}/uploads/${filename}`
+}
+
 exports.uploadSingleMiddleware = upload.single('file')
 
 exports.uploadSingle = async (req, res) => {
@@ -54,7 +60,7 @@ exports.uploadSingle = async (req, res) => {
       { upsert: true, new: true, setDefaultsOnInsert: true },
     )
 
-    const fileUrl = `/uploads/${req.file.filename}`
+    const fileUrl = buildUploadUrl(req, req.file.filename)
     res.status(200).json({
       success: true,
       fileUrl,
@@ -81,3 +87,4 @@ exports.serveUpload = async (req, res, next) => {
     next(error)
   }
 }
+

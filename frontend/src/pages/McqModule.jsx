@@ -1509,7 +1509,7 @@ function McqList() {
         },
       )
       toast.success('Review item pushed to main MCQs')
-      setViewMode('mcqs')
+      setViewMode('review')
       load()
     } catch (error) {
       toast.error(getUserFriendlyErrorMessage(error, 'We could not push the review item right now.'))
@@ -1580,9 +1580,18 @@ function McqList() {
             </Link>
             {isTeacher ? (
               <button
-                className={`btn ${viewMode === 'review' ? 'btn-primary' : 'btn-secondary'}`}
+                className="btn btn-secondary"
                 type="button"
-                onClick={() => setViewMode((current) => current === 'review' ? 'mcqs' : 'review')}
+                onClick={() => setViewMode('mcqs')}
+              >
+                MCQs Test
+              </button>
+            ) : null}
+            {isTeacher ? (
+              <button
+                className="btn btn-secondary"
+                type="button"
+                onClick={() => setViewMode('review')}
               >
                 {`Review Queue${reviewQueue.length ? ` (${reviewQueue.length})` : ''}`}
               </button>

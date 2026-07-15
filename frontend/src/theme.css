@@ -3946,3 +3946,478 @@ html[data-theme="dark"] .payments-student-page .payments-summary-card .badge *,
   -webkit-text-fill-color: #111827 !important;
   text-shadow: none !important;
 }
+
+/* Final chapter card polish: equal cards, fixed badge, clear boundaries */
+html .workspace-page .chapter-browser-grid {
+  align-items: stretch !important;
+}
+
+html .workspace-page .chapter-browser-grid > .chapter-practice-card {
+  display: grid !important;
+  grid-template-rows: minmax(178px, 1fr) auto !important;
+  min-height: 318px !important;
+  height: 100% !important;
+  padding: 0 !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
+  background: linear-gradient(145deg, #ffffff 0%, #f1f5ff 54%, #eef3ff 100%) !important;
+  border: 2.5px solid #aeb8d0 !important;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+}
+
+html .workspace-page .chapter-browser-grid > .chapter-practice-card:hover {
+  transform: translateY(-2px) !important;
+  border-color: #724dff !important;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.16), 0 0 0 4px rgba(108, 71, 255, 0.11) !important;
+}
+
+html .workspace-page .chapter-practice-card .workspace-card-head {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 124px !important;
+  align-items: start !important;
+  gap: 20px !important;
+  padding: 30px 34px 12px !important;
+  min-height: 178px !important;
+}
+
+html .workspace-page .chapter-practice-card .workspace-card-head > div {
+  min-width: 0 !important;
+  display: block !important;
+}
+
+html .workspace-page .chapter-practice-card .label-xs {
+  color: #5f38ff !important;
+  font-size: 13px !important;
+  line-height: 1.1 !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+}
+
+html .workspace-page .chapter-practice-card .workspace-card-title {
+  min-height: 66px !important;
+  margin: 12px 0 6px !important;
+  color: #06102d !important;
+  font-size: clamp(22px, 1.45vw, 27px) !important;
+  line-height: 1.22 !important;
+  font-weight: 900 !important;
+  letter-spacing: 0 !important;
+  overflow-wrap: anywhere !important;
+}
+
+html .workspace-page .chapter-practice-card p {
+  margin: 0 !important;
+  color: #273553 !important;
+  font-size: clamp(16px, 1.05vw, 20px) !important;
+  line-height: 1.35 !important;
+  font-weight: 500 !important;
+}
+
+html .workspace-page .chapter-practice-card .state-chip,
+html .workspace-page .chapter-practice-card .state-chip--neutral {
+  box-sizing: border-box !important;
+  width: 124px !important;
+  min-width: 124px !important;
+  max-width: 124px !important;
+  height: 46px !important;
+  padding: 0 10px !important;
+  justify-self: end !important;
+  align-self: start !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
+  border-radius: 999px !important;
+  background: linear-gradient(135deg, #e8ddff 0%, #d7ccff 100%) !important;
+  color: #6036ff !important;
+  border: 1.5px solid rgba(96, 54, 255, 0.24) !important;
+  font-size: 15px !important;
+  line-height: 1 !important;
+  font-weight: 900 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+html .workspace-page .chapter-practice-card .workspace-card-body {
+  margin-top: 0 !important;
+  padding: 18px 34px 30px !important;
+  align-self: end !important;
+}
+
+html .workspace-page .chapter-practice-card .inline-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  flex-wrap: nowrap !important;
+}
+
+html .workspace-page .chapter-practice-card .btn {
+  height: 52px !important;
+  min-height: 52px !important;
+  padding: 0 24px !important;
+  border-radius: 999px !important;
+  font-size: 16px !important;
+  line-height: 1 !important;
+  font-weight: 900 !important;
+  white-space: nowrap !important;
+}
+
+html .workspace-page .chapter-practice-card .btn-primary {
+  min-width: 168px !important;
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #7447ff 0%, #4a90e2 100%) !important;
+  border: 2px solid rgba(255, 255, 255, 0.22) !important;
+}
+
+html .workspace-page .chapter-practice-card .btn-secondary,
+html .workspace-page .chapter-practice-card .btn-ghost {
+  min-width: 96px !important;
+  color: #6338ff !important;
+  background: #ffffff !important;
+  border: 2px solid rgba(108, 71, 255, 0.84) !important;
+}
+
+html .workspace-page .chapter-practice-card .btn-ghost {
+  border-color: #c4cad8 !important;
+  color: #7047ff !important;
+  background: #f7f9ff !important;
+}
+
+html[data-theme="dark"] .workspace-page .chapter-browser-grid > .chapter-practice-card {
+  background: linear-gradient(145deg, #19163a 0%, #111735 58%, #0d122b 100%) !important;
+  border-color: rgba(167, 139, 250, 0.62) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+html[data-theme="dark"] .workspace-page .chapter-browser-grid > .chapter-practice-card:hover {
+  border-color: #b9a7ff !important;
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.44), 0 0 0 4px rgba(167, 139, 250, 0.15) !important;
+}
+
+html[data-theme="dark"] .workspace-page .chapter-practice-card .workspace-card-title {
+  color: #ffffff !important;
+}
+
+html[data-theme="dark"] .workspace-page .chapter-practice-card p {
+  color: rgba(244, 241, 255, 0.88) !important;
+}
+
+html[data-theme="dark"] .workspace-page .chapter-practice-card .state-chip,
+html[data-theme="dark"] .workspace-page .chapter-practice-card .state-chip--neutral {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, rgba(139, 111, 255, 0.46), rgba(74, 144, 226, 0.32)) !important;
+  border-color: rgba(199, 184, 255, 0.54) !important;
+}
+
+html[data-theme="dark"] .workspace-page .chapter-practice-card .btn-secondary,
+html[data-theme="dark"] .workspace-page .chapter-practice-card .btn-ghost {
+  color: #f4f1ff !important;
+  background: rgba(20, 17, 48, 0.92) !important;
+  border-color: rgba(199, 184, 255, 0.72) !important;
+}
+
+@media (max-width: 768px) {
+  html .workspace-page .chapter-browser-grid > .chapter-practice-card {
+    display: block !important;
+    min-height: 0 !important;
+    padding: 18px !important;
+  }
+
+  html .workspace-page .chapter-practice-card .workspace-card-head {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+  }
+
+  html .workspace-page .chapter-practice-card .workspace-card-title {
+    min-height: 0 !important;
+  }
+
+  html .workspace-page .chapter-practice-card .state-chip,
+  html .workspace-page .chapter-practice-card .state-chip--neutral {
+    width: auto !important;
+    min-width: 96px !important;
+    max-width: 100% !important;
+    justify-self: start !important;
+  }
+
+  html .workspace-page .chapter-practice-card .workspace-card-body {
+    padding: 18px 0 0 !important;
+  }
+
+  html .workspace-page .chapter-practice-card .inline-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Teacher dashboard cards: stronger boundaries, alignment, and contrast */
+html .workspace-page .workspace-card:has(.teacher-subject-bank),
+html .workspace-page .workspace-section-grid > .workspace-card {
+  overflow: hidden !important;
+  border: 2px solid #aeb8d0 !important;
+  border-radius: 22px !important;
+  background: linear-gradient(180deg, #ffffff 0%, #f5f7ff 100%) !important;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+}
+
+html .workspace-page .workspace-card:has(.teacher-subject-bank) > .workspace-card-head,
+html .workspace-page .workspace-section-grid > .workspace-card > .workspace-card-head {
+  align-items: start !important;
+  padding: 28px 32px 20px !important;
+  border-bottom: 1.5px solid rgba(148, 163, 184, 0.34) !important;
+  background: linear-gradient(135deg, rgba(108, 71, 255, 0.08), rgba(74, 144, 226, 0.06)) !important;
+}
+
+html .workspace-page .workspace-card:has(.teacher-subject-bank) > .workspace-card-head > div,
+html .workspace-page .workspace-section-grid > .workspace-card > .workspace-card-head > div {
+  display: grid !important;
+  gap: 8px !important;
+  min-width: 0 !important;
+}
+
+html .workspace-page .workspace-card:has(.teacher-subject-bank) .workspace-card-title,
+html .workspace-page .workspace-section-grid > .workspace-card .workspace-card-title {
+  margin: 0 !important;
+  color: #06102d !important;
+  font-weight: 900 !important;
+  line-height: 1.18 !important;
+}
+
+html .workspace-page .workspace-card:has(.teacher-subject-bank) .workspace-card-head p,
+html .workspace-page .workspace-section-grid > .workspace-card .workspace-card-head p {
+  margin: 0 !important;
+  color: #37435f !important;
+  line-height: 1.45 !important;
+  font-weight: 500 !important;
+}
+
+html .workspace-page .workspace-card:has(.teacher-subject-bank) > .workspace-card-body,
+html .workspace-page .workspace-section-grid > .workspace-card > .workspace-card-body {
+  padding: 28px 32px 32px !important;
+  background: linear-gradient(180deg, rgba(248, 250, 255, 0.96), rgba(241, 245, 255, 0.96)) !important;
+}
+
+html .workspace-page .card-grid:has(.teacher-subject-bank) {
+  align-items: stretch !important;
+  gap: 22px !important;
+}
+
+html .workspace-page .teacher-subject-bank {
+  display: grid !important;
+  grid-template-rows: auto 1fr auto !important;
+  gap: 22px !important;
+  min-height: 282px !important;
+  padding: 28px 32px !important;
+  border-radius: 22px !important;
+  border: 2px solid #b6bfd4 !important;
+  background: linear-gradient(145deg, #ffffff 0%, #eef4ff 100%) !important;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.94) !important;
+  color: #06102d !important;
+}
+
+html .workspace-page .teacher-subject-bank .subject-focus-head {
+  display: grid !important;
+  grid-template-columns: 82px minmax(0, 1fr) !important;
+  gap: 24px !important;
+  align-items: center !important;
+}
+
+html .workspace-page .teacher-subject-bank .subject-focus-head > div {
+  display: grid !important;
+  gap: 10px !important;
+  min-width: 0 !important;
+}
+
+html .workspace-page .teacher-subject-bank .subject-focus-icon {
+  width: 70px !important;
+  height: 70px !important;
+  border-radius: 20px !important;
+  background: linear-gradient(135deg, #e7f0ff, #dbeafe) !important;
+  border: 1.5px solid rgba(74, 144, 226, 0.22) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+html .workspace-page .teacher-subject-bank .label-xs {
+  color: #5f38ff !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.14em !important;
+}
+
+html .workspace-page .teacher-subject-bank h4 {
+  margin: 0 !important;
+  color: #06102d !important;
+  font-size: clamp(28px, 2vw, 36px) !important;
+  line-height: 1.1 !important;
+  font-weight: 900 !important;
+}
+
+html .workspace-page .teacher-subject-bank .metric-row {
+  margin: 0 !important;
+  padding: 18px 0 !important;
+  border-top: 1.5px solid rgba(148, 163, 184, 0.30) !important;
+  border-bottom: 1.5px solid rgba(148, 163, 184, 0.30) !important;
+  color: #1f2a44 !important;
+}
+
+html .workspace-page .teacher-subject-bank .metric-row span {
+  color: #37435f !important;
+  font-weight: 700 !important;
+}
+
+html .workspace-page .teacher-subject-bank .metric-row strong {
+  color: #06102d !important;
+  font-weight: 900 !important;
+  font-size: 22px !important;
+}
+
+html .workspace-page .teacher-subject-bank .btn {
+  width: 100% !important;
+  min-height: 54px !important;
+  border-radius: 999px !important;
+  border: 2px solid #6c47ff !important;
+  color: #6338ff !important;
+  background: #ffffff !important;
+  font-weight: 900 !important;
+  box-shadow: none !important;
+}
+
+html .workspace-page .teacher-subject-bank .btn:hover {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #7447ff, #4a90e2) !important;
+  border-color: transparent !important;
+}
+
+html .workspace-page .workspace-section-grid .course-manage-card,
+html .workspace-page .workspace-section-grid .timeline-item,
+html .workspace-page .workspace-section-grid .empty-state {
+  border: 2px solid #b6bfd4 !important;
+  border-radius: 18px !important;
+  background: linear-gradient(145deg, #ffffff, #f0f5ff) !important;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08) !important;
+}
+
+html .workspace-page .workspace-section-grid .course-manage-card {
+  display: grid !important;
+  gap: 16px !important;
+}
+
+html .workspace-page .workspace-section-grid .workspace-card-title-row {
+  align-items: center !important;
+  gap: 16px !important;
+}
+
+html .workspace-page .workspace-section-grid .workspace-card-title-row strong,
+html .workspace-page .workspace-section-grid .timeline-item strong {
+  color: #06102d !important;
+  font-weight: 900 !important;
+}
+
+html .workspace-page .workspace-section-grid .metric-row,
+html .workspace-page .workspace-section-grid .timeline-item p,
+html .workspace-page .workspace-section-grid .timeline-item small,
+html .workspace-page .workspace-section-grid .empty-state p {
+  color: #37435f !important;
+}
+
+html .workspace-page .workspace-section-grid .state-chip {
+  background: #e6ddff !important;
+  color: #6036ff !important;
+  border: 1.5px solid rgba(96, 54, 255, 0.24) !important;
+  white-space: nowrap !important;
+}
+
+html[data-theme="dark"] .workspace-page .workspace-card:has(.teacher-subject-bank),
+html[data-theme="dark"] .workspace-page .workspace-section-grid > .workspace-card {
+  border-color: rgba(167, 139, 250, 0.58) !important;
+  background: linear-gradient(180deg, #171433 0%, #100d29 100%) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+html[data-theme="dark"] .workspace-page .workspace-card:has(.teacher-subject-bank) > .workspace-card-head,
+html[data-theme="dark"] .workspace-page .workspace-section-grid > .workspace-card > .workspace-card-head {
+  border-bottom-color: rgba(167, 139, 250, 0.30) !important;
+  background: linear-gradient(135deg, rgba(139, 111, 255, 0.18), rgba(74, 144, 226, 0.10)) !important;
+}
+
+html[data-theme="dark"] .workspace-page .workspace-card:has(.teacher-subject-bank) > .workspace-card-body,
+html[data-theme="dark"] .workspace-page .workspace-section-grid > .workspace-card > .workspace-card-body {
+  background: linear-gradient(180deg, rgba(18, 15, 43, 0.96), rgba(13, 10, 33, 0.96)) !important;
+}
+
+html[data-theme="dark"] .workspace-page .workspace-card:has(.teacher-subject-bank) .workspace-card-title,
+html[data-theme="dark"] .workspace-page .workspace-section-grid > .workspace-card .workspace-card-title,
+html[data-theme="dark"] .workspace-page .teacher-subject-bank h4,
+html[data-theme="dark"] .workspace-page .workspace-section-grid .workspace-card-title-row strong,
+html[data-theme="dark"] .workspace-page .workspace-section-grid .timeline-item strong {
+  color: #ffffff !important;
+}
+
+html[data-theme="dark"] .workspace-page .workspace-card:has(.teacher-subject-bank) .workspace-card-head p,
+html[data-theme="dark"] .workspace-page .workspace-section-grid > .workspace-card .workspace-card-head p,
+html[data-theme="dark"] .workspace-page .workspace-section-grid .metric-row,
+html[data-theme="dark"] .workspace-page .workspace-section-grid .timeline-item p,
+html[data-theme="dark"] .workspace-page .workspace-section-grid .timeline-item small,
+html[data-theme="dark"] .workspace-page .workspace-section-grid .empty-state p {
+  color: rgba(244, 241, 255, 0.78) !important;
+}
+
+html[data-theme="dark"] .workspace-page .teacher-subject-bank,
+html[data-theme="dark"] .workspace-page .workspace-section-grid .course-manage-card,
+html[data-theme="dark"] .workspace-page .workspace-section-grid .timeline-item,
+html[data-theme="dark"] .workspace-page .workspace-section-grid .empty-state {
+  border-color: rgba(167, 139, 250, 0.42) !important;
+  background: linear-gradient(145deg, #1e1a46, #12102f) !important;
+  color: #f7f4ff !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+html[data-theme="dark"] .workspace-page .teacher-subject-bank .subject-focus-icon {
+  background: linear-gradient(135deg, rgba(139, 111, 255, 0.24), rgba(74, 144, 226, 0.16)) !important;
+  border-color: rgba(167, 139, 250, 0.38) !important;
+}
+
+html[data-theme="dark"] .workspace-page .teacher-subject-bank .metric-row {
+  border-top-color: rgba(167, 139, 250, 0.24) !important;
+  border-bottom-color: rgba(167, 139, 250, 0.24) !important;
+}
+
+html[data-theme="dark"] .workspace-page .teacher-subject-bank .metric-row span,
+html[data-theme="dark"] .workspace-page .teacher-subject-bank .metric-row strong {
+  color: #f7f4ff !important;
+}
+
+html[data-theme="dark"] .workspace-page .teacher-subject-bank .btn {
+  color: #f4f1ff !important;
+  background: rgba(20, 17, 48, 0.92) !important;
+  border-color: rgba(199, 184, 255, 0.72) !important;
+}
+
+@media (max-width: 768px) {
+  html .workspace-page .workspace-card:has(.teacher-subject-bank) > .workspace-card-head,
+  html .workspace-page .workspace-section-grid > .workspace-card > .workspace-card-head,
+  html .workspace-page .workspace-card:has(.teacher-subject-bank) > .workspace-card-body,
+  html .workspace-page .workspace-section-grid > .workspace-card > .workspace-card-body {
+    padding: 20px !important;
+  }
+
+  html .workspace-page .teacher-subject-bank {
+    min-height: 0 !important;
+    padding: 22px !important;
+  }
+
+  html .workspace-page .teacher-subject-bank .subject-focus-head {
+    grid-template-columns: 56px minmax(0, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  html .workspace-page .teacher-subject-bank .subject-focus-icon {
+    width: 52px !important;
+    height: 52px !important;
+    border-radius: 16px !important;
+  }
+}

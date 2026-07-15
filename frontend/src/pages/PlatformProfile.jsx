@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
 import API, { getUserFriendlyErrorMessage } from '../services/api'
+import { getUserProfilePicture, resolveAssetUrl } from '../utils/assetUrl'
 import './PlatformPages.css'
 
 function CameraIcon() {
@@ -39,7 +40,7 @@ export default function PlatformProfile() {
     phone: user?.phone || '+92 300 1234567',
     city: 'Lahore',
     target: 'King Edward Medical University',
-    profilePicture: user?.profilePicture || '',
+    profilePicture: getUserProfilePicture(user),
   })
 
   const initials = `${form.firstName?.[0] || 'U'}${form.lastName?.[0] || ''}`.toUpperCase()
@@ -68,7 +69,7 @@ export default function PlatformProfile() {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
 
-      const profilePicture = uploadRes.data.fileUrl
+      const profilePicture = resolveAssetUrl(uploadRes.data.fileUrl)
       const profileRes = await API.put('/auth/profile', {
         firstName: form.firstName,
         lastName: form.lastName,
@@ -114,7 +115,7 @@ export default function PlatformProfile() {
       phone: user?.phone || '+92 300 1234567',
       city: 'Lahore',
       target: 'King Edward Medical University',
-      profilePicture: user?.profilePicture || '',
+      profilePicture: getUserProfilePicture(user),
     })
   }
 
@@ -215,3 +216,4 @@ export default function PlatformProfile() {
     </div>
   )
 }
+

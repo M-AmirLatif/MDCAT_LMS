@@ -339,3 +339,8 @@
 @media (max-width: 480px) {
   .dash-stats { grid-template-columns: 1fr; }
 }
+
+.side-avatar--image {
+  object-fit: cover;
+  display: block;
+}

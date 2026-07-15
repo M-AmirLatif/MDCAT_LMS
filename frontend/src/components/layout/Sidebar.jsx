@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { getNavigationForRole } from '../../lib/platform'
+import { getUserProfilePicture } from '../../utils/assetUrl'
 import './Sidebar.css'
 
 const ICONS = {
@@ -136,6 +137,7 @@ export default function Sidebar({
   const role = user?.role || 'student'
   const sections = getNavigationForRole(role)
   const initials = `${user?.firstName?.[0] || 'U'}${user?.lastName?.[0] || ''}`.toUpperCase()
+  const profilePicture = getUserProfilePicture(user)
 
   const sidebarClass = useMemo(() => {
     const classes = ['sidebar']
@@ -212,7 +214,11 @@ export default function Sidebar({
 
         <div className="sidebar-footer">
           <button className="sidebar-usercard" type="button" onClick={() => go('/profile/edit')}>
-            <div className="sidebar-usercard-avatar">{initials}</div>
+            {profilePicture ? (
+              <img className="sidebar-usercard-avatar sidebar-usercard-avatar--image" src={profilePicture} alt={user?.firstName || 'Profile'} />
+            ) : (
+              <div className="sidebar-usercard-avatar">{initials}</div>
+            )}
             <div className="sidebar-usercard-meta">
               <div className="sidebar-usercard-name">
                 {user?.firstName ? `${user.firstName} ${user?.lastName || ''}`.trim() : 'MDCAT User'}
@@ -231,3 +237,6 @@ export default function Sidebar({
     </>
   )
 }
+
+
+

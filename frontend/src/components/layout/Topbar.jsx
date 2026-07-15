@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { getPageTitle } from '../../lib/platform'
 import ThemeToggle from '../ThemeToggle'
+import { getUserProfilePicture } from '../../utils/assetUrl'
 import './Topbar.css'
 
 function SearchIcon() {
@@ -42,6 +43,7 @@ export default function Topbar({ onMenuClick }) {
   )
 
   const initials = `${user?.firstName?.[0] || 'U'}${user?.lastName?.[0] || ''}`.toUpperCase()
+  const profilePicture = getUserProfilePicture(user)
   return (
     <header className="topbar">
       <div className="topbar-left">
@@ -83,7 +85,11 @@ export default function Topbar({ onMenuClick }) {
         <ThemeToggle className="theme-toggle--topbar" />
 
         <button className="topbar-user" onClick={() => navigate('/profile/edit')} type="button">
-          <div className="topbar-avatar">{initials}</div>
+          {profilePicture ? (
+            <img className="topbar-avatar topbar-avatar--image" src={profilePicture} alt={user?.firstName || 'Profile'} />
+          ) : (
+            <div className="topbar-avatar">{initials}</div>
+          )}
           <div className="topbar-user-info">
             <span className="topbar-user-name">
               {user?.firstName ? `${user.firstName} ${user?.lastName || ''}`.trim() : 'Guest User'}
@@ -94,3 +100,6 @@ export default function Topbar({ onMenuClick }) {
     </header>
   )
 }
+
+
+

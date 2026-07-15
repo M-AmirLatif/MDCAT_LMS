@@ -111,6 +111,8 @@ const buildUserResponse = (user, roleDoc, extra = {}) => ({
   firstName: user.firstName,
   lastName: user.lastName,
   email: user.email,
+  phone: user.phone || null,
+  profilePicture: user.profilePicture || null,
   role: normalizeRoleName(roleDoc.name),
   roleId: roleDoc._id,
   isEmailVerified: user.isEmailVerified,
@@ -219,7 +221,7 @@ exports.login = async (req, res) => {
     }
 
     const user = await User.findOne({ email }).select(
-      '+password role isActive isEmailVerified firstName lastName email hasLocalPassword status assignedSubject assignedSubjects',
+      '+password role isActive isEmailVerified firstName lastName email phone profilePicture hasLocalPassword status assignedSubject assignedSubjects',
     )
     if (!user) {
       return res.status(400).json({ error: 'Invalid credentials' })
@@ -424,7 +426,7 @@ exports.googleLogin = async (req, res) => {
 
     // Find existing user — single query, no duplicate creation
     let existingUser = await User.findOne({ email }).select(
-      'role isActive isEmailVerified firstName lastName email hasLocalPassword status assignedSubject assignedSubjects',
+      'role isActive isEmailVerified firstName lastName email phone profilePicture hasLocalPassword status assignedSubject assignedSubjects',
     )
 
     const isNewUser = !existingUser
@@ -453,6 +455,7 @@ exports.googleLogin = async (req, res) => {
         isEmailVerified: true,
         isActive: true,
         status: 'active',
+        profilePicture: normalizeString(payload?.picture) || null,
       })
     }
 
@@ -511,7 +514,7 @@ exports.setPassword = async (req, res) => {
     }
 
     const user = await User.findById(req.user.id).select(
-      '+password role isActive isEmailVerified firstName lastName email hasLocalPassword status assignedSubject assignedSubjects',
+      '+password role isActive isEmailVerified firstName lastName email phone profilePicture hasLocalPassword status assignedSubject assignedSubjects',
     )
     if (!user) return res.status(404).json({ error: 'User not found' })
     if (user.isActive === false)
@@ -551,3 +554,5 @@ exports.setPassword = async (req, res) => {
     res.status(500).json({ error: error.message || 'Failed to set password' })
   }
 }
+
+

@@ -424,3 +424,8 @@
   }
 
 }
+
+.sidebar-usercard-avatar--image {
+  object-fit: cover;
+  display: block;
+}

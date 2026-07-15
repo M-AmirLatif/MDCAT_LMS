@@ -10201,3 +10201,440 @@ html[data-theme="dark"] .payments-student-page .payments-summary-card .badge *,
   -webkit-text-fill-color: #111827 !important;
   text-shadow: none !important;
 }
+
+/* Chapter tiles: consistent cards, contrast, and equal action alignment */
+.chapter-browser-grid {
+  align-items: stretch;
+}
+
+.chapter-practice-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 292px;
+  height: 100%;
+  overflow: hidden;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(241, 245, 255, 0.96)) !important;
+  border: 2px solid rgba(148, 163, 184, 0.54) !important;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.82) !important;
+}
+
+.chapter-practice-card:hover {
+  border-color: rgba(108, 71, 255, 0.54) !important;
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.14), 0 0 0 3px rgba(108, 71, 255, 0.10) !important;
+}
+
+.chapter-practice-card .workspace-card-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  padding: 30px 34px 12px !important;
+  flex: 1 1 auto;
+}
+
+.chapter-practice-card .workspace-card-head > div {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 6px;
+}
+
+.chapter-practice-card .label-xs {
+  color: #5b35ff !important;
+  letter-spacing: 0.13em;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.chapter-practice-card .workspace-card-title {
+  margin: 0 !important;
+  color: #07112f !important;
+  font-size: clamp(21px, 1.65vw, 27px);
+  line-height: 1.22;
+  font-weight: 900;
+  letter-spacing: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.chapter-practice-card p {
+  color: #26324f !important;
+  font-size: clamp(16px, 1.15vw, 20px);
+  line-height: 1.35;
+  margin: 0 !important;
+}
+
+.chapter-practice-card .state-chip {
+  min-width: 118px;
+  height: 44px;
+  padding: 0 18px !important;
+  justify-self: end;
+  align-self: start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap !important;
+  text-align: center;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #e8ddff, #d8ccff) !important;
+  color: #6236ff !important;
+  border: 1.5px solid rgba(108, 71, 255, 0.18) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.chapter-practice-card .workspace-card-body {
+  margin-top: auto;
+  padding: 18px 34px 30px !important;
+}
+
+.chapter-practice-card .inline-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.chapter-practice-card .btn {
+  min-height: 48px;
+  border-radius: 999px !important;
+  font-weight: 900;
+  box-shadow: none !important;
+}
+
+.chapter-practice-card .btn-primary {
+  min-width: 168px;
+  background: linear-gradient(135deg, #7447ff, #4a90e2) !important;
+  color: #ffffff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.18) !important;
+}
+
+.chapter-practice-card .btn-secondary,
+.chapter-practice-card .btn-ghost {
+  min-width: 94px;
+  background: rgba(255, 255, 255, 0.72) !important;
+  color: #6338ff !important;
+  border: 2px solid rgba(108, 71, 255, 0.78) !important;
+}
+
+.chapter-practice-card .btn-ghost {
+  color: #7047ff !important;
+  border-color: rgba(148, 163, 184, 0.62) !important;
+}
+
+[data-theme="dark"] .chapter-practice-card {
+  background:
+    linear-gradient(145deg, rgba(24, 20, 58, 0.98), rgba(14, 18, 47, 0.98)) !important;
+  border-color: rgba(139, 111, 255, 0.52) !important;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .chapter-practice-card:hover {
+  border-color: rgba(167, 139, 250, 0.82) !important;
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.38), 0 0 0 3px rgba(139, 111, 255, 0.16) !important;
+}
+
+[data-theme="dark"] .chapter-practice-card .workspace-card-title {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .chapter-practice-card p {
+  color: rgba(239, 236, 255, 0.86) !important;
+}
+
+[data-theme="dark"] .chapter-practice-card .state-chip {
+  background: linear-gradient(135deg, rgba(139, 111, 255, 0.34), rgba(74, 144, 226, 0.24)) !important;
+  color: #f7f3ff !important;
+  border-color: rgba(167, 139, 250, 0.46) !important;
+}
+
+[data-theme="dark"] .chapter-practice-card .btn-secondary,
+[data-theme="dark"] .chapter-practice-card .btn-ghost {
+  background: rgba(20, 17, 48, 0.88) !important;
+  color: #d8ccff !important;
+  border-color: rgba(167, 139, 250, 0.72) !important;
+}
+
+@media (max-width: 768px) {
+  .workspace-page .chapter-practice-card {
+    min-height: 0 !important;
+  }
+
+  .workspace-page .chapter-practice-card .workspace-card-head {
+    padding: 0 !important;
+  }
+
+  .workspace-page .chapter-practice-card .workspace-card-body {
+    padding: 18px 0 0 !important;
+  }
+
+  .workspace-page .chapter-practice-card .state-chip {
+    min-width: 0;
+    height: auto;
+    padding: 8px 14px !important;
+  }
+}
+
+/* Teacher MCQ management: clear card boundaries and section contrast */
+.mcq-inline-card,
+.teacher-mcq-row--editor {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px !important;
+  border: 2px solid rgba(120, 137, 171, 0.62) !important;
+  background:
+    linear-gradient(180deg, #ffffff 0%, #f4f7ff 100%) !important;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.11), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+.mcq-inline-card::before,
+.teacher-mcq-row--editor::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 5px;
+  background: linear-gradient(90deg, #6c47ff, #4a90e2, #1db884);
+}
+
+.mcq-inline-card + .mcq-inline-card,
+.teacher-mcq-row--editor + .teacher-mcq-row--editor {
+  margin-top: 28px;
+}
+
+.mcq-inline-card-header,
+.teacher-mcq-editor-head,
+.review-queue-head {
+  background: linear-gradient(135deg, rgba(108, 71, 255, 0.10), rgba(74, 144, 226, 0.08)) !important;
+  border-bottom: 1.5px solid rgba(120, 137, 171, 0.34) !important;
+}
+
+.mcq-inline-card-number {
+  color: #5630e8 !important;
+  letter-spacing: 0.12em;
+  font-weight: 900;
+}
+
+.mcq-inline-card-form,
+.teacher-mcq-row--editor {
+  color: #08122f !important;
+}
+
+.mcq-section-container,
+.mcq-options-section,
+.mcq-meta-box,
+.teacher-review-render-card,
+.teacher-mcq-option-field,
+.teacher-mcq-editor-bottom .floating-field,
+.review-validation-list {
+  border: 1.75px solid rgba(130, 146, 181, 0.52) !important;
+  background: linear-gradient(180deg, #f9fbff 0%, #eef3ff 100%) !important;
+  border-radius: 18px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.92), 0 8px 20px rgba(15, 23, 42, 0.05) !important;
+}
+
+.mcq-section-container,
+.mcq-options-section,
+.mcq-meta-box {
+  padding: 22px !important;
+}
+
+.mcq-section-label,
+.teacher-review-render-label,
+.teacher-mcq-option-field label,
+.teacher-mcq-editor-bottom label,
+.floating-field label {
+  color: #53617a !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.12em !important;
+}
+
+.mcq-inline-statement-textarea,
+.mcq-inline-explanation-textarea,
+.mcq-inline-option-input,
+.mcq-inline-select,
+.teacher-mcq-row--editor textarea,
+.teacher-review-render-content,
+.mcq-image-manager,
+.mcq-image-paste-zone {
+  color: #07112f !important;
+  background: #ffffff !important;
+  border: 1.5px solid rgba(148, 163, 184, 0.58) !important;
+  box-shadow: none !important;
+}
+
+.mcq-inline-statement-textarea:focus,
+.mcq-inline-explanation-textarea:focus,
+.mcq-inline-option-input:focus,
+.mcq-inline-select:focus,
+.teacher-mcq-row--editor textarea:focus {
+  border-color: #6c47ff !important;
+  box-shadow: 0 0 0 4px rgba(108, 71, 255, 0.14) !important;
+}
+
+.mcq-inline-options-list {
+  gap: 14px !important;
+}
+
+.mcq-inline-option-row {
+  background: #ffffff !important;
+  border: 1.75px solid rgba(148, 163, 184, 0.62) !important;
+  border-radius: 16px !important;
+}
+
+.mcq-inline-option-row:hover,
+.mcq-inline-option-row:focus-within {
+  background: #f7f4ff !important;
+  border-color: rgba(108, 71, 255, 0.70) !important;
+  box-shadow: 0 0 0 4px rgba(108, 71, 255, 0.10) !important;
+}
+
+.mcq-inline-option-row--correct {
+  background: linear-gradient(135deg, #e9fff6, #f5fffb) !important;
+  border-color: #10b981 !important;
+  box-shadow: inset 4px 0 0 #10b981 !important;
+}
+
+.mcq-correct-box {
+  background: linear-gradient(180deg, #ecfff8 0%, #f5fffb 100%) !important;
+  border-color: #10b981 !important;
+}
+
+.mcq-explanation-box {
+  background: linear-gradient(180deg, #f4f2ff 0%, #f9fbff 100%) !important;
+  border-color: rgba(108, 71, 255, 0.44) !important;
+}
+
+.teacher-mcq-option-grid,
+.teacher-mcq-editor-bottom,
+.mcq-inline-meta-grid {
+  gap: 22px !important;
+}
+
+.teacher-review-render-content {
+  padding: 16px 18px !important;
+  border-radius: 14px !important;
+  min-height: 64px;
+}
+
+.review-validation-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 16px !important;
+  background: #fff7ed !important;
+  border-color: rgba(245, 158, 11, 0.55) !important;
+}
+
+.review-queue-card {
+  border: 2px solid rgba(245, 158, 11, 0.42) !important;
+  background: linear-gradient(180deg, #fffaf0, #ffffff) !important;
+}
+
+.review-queue-card .workspace-card-title,
+.review-queue-card h2,
+.review-queue-card h3 {
+  color: #111827 !important;
+}
+
+.review-queue-action-row,
+.mcq-inline-card-actions,
+.teacher-mcq-action-row {
+  border-top: 1.5px solid rgba(120, 137, 171, 0.30) !important;
+  padding-top: 20px !important;
+  background: transparent !important;
+}
+
+[data-theme="dark"] .mcq-inline-card,
+[data-theme="dark"] .teacher-mcq-row--editor {
+  border-color: rgba(167, 139, 250, 0.58) !important;
+  background: linear-gradient(180deg, #171433 0%, #100d29 100%) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .mcq-inline-card-header,
+[data-theme="dark"] .teacher-mcq-editor-head,
+[data-theme="dark"] .review-queue-head {
+  background: linear-gradient(135deg, rgba(139, 111, 255, 0.20), rgba(74, 144, 226, 0.12)) !important;
+  border-bottom-color: rgba(167, 139, 250, 0.28) !important;
+}
+
+[data-theme="dark"] .mcq-inline-card-number {
+  color: #c7b8ff !important;
+}
+
+[data-theme="dark"] .mcq-section-container,
+[data-theme="dark"] .mcq-options-section,
+[data-theme="dark"] .mcq-meta-box,
+[data-theme="dark"] .teacher-review-render-card,
+[data-theme="dark"] .teacher-mcq-option-field,
+[data-theme="dark"] .teacher-mcq-editor-bottom .floating-field,
+[data-theme="dark"] .review-validation-list {
+  border-color: rgba(167, 139, 250, 0.42) !important;
+  background: linear-gradient(180deg, rgba(31, 27, 66, 0.98), rgba(20, 17, 48, 0.98)) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.24) !important;
+}
+
+[data-theme="dark"] .mcq-section-label,
+[data-theme="dark"] .teacher-review-render-label,
+[data-theme="dark"] .teacher-mcq-option-field label,
+[data-theme="dark"] .teacher-mcq-editor-bottom label,
+[data-theme="dark"] .floating-field label {
+  color: #b7a8ff !important;
+}
+
+[data-theme="dark"] .mcq-inline-statement-textarea,
+[data-theme="dark"] .mcq-inline-explanation-textarea,
+[data-theme="dark"] .mcq-inline-option-input,
+[data-theme="dark"] .mcq-inline-select,
+[data-theme="dark"] .teacher-mcq-row--editor textarea,
+[data-theme="dark"] .teacher-review-render-content,
+[data-theme="dark"] .mcq-image-manager,
+[data-theme="dark"] .mcq-image-paste-zone {
+  color: #f7f4ff !important;
+  background: #0f0c28 !important;
+  border-color: rgba(167, 139, 250, 0.36) !important;
+}
+
+[data-theme="dark"] .mcq-inline-option-row {
+  background: #18133c !important;
+  border-color: rgba(167, 139, 250, 0.34) !important;
+}
+
+[data-theme="dark"] .mcq-inline-option-row:hover,
+[data-theme="dark"] .mcq-inline-option-row:focus-within {
+  background: #22194e !important;
+  border-color: rgba(199, 184, 255, 0.72) !important;
+}
+
+[data-theme="dark"] .mcq-inline-option-row--correct {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(15, 12, 40, 0.98)) !important;
+  border-color: #34d399 !important;
+  box-shadow: inset 4px 0 0 #34d399 !important;
+}
+
+[data-theme="dark"] .mcq-correct-box {
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.16), rgba(15, 12, 40, 0.98)) !important;
+  border-color: rgba(52, 211, 153, 0.72) !important;
+}
+
+[data-theme="dark"] .mcq-explanation-box {
+  background: linear-gradient(180deg, rgba(108, 71, 255, 0.18), rgba(15, 12, 40, 0.98)) !important;
+  border-color: rgba(167, 139, 250, 0.58) !important;
+}
+
+[data-theme="dark"] .review-validation-list {
+  background: rgba(245, 158, 11, 0.12) !important;
+  border-color: rgba(245, 158, 11, 0.54) !important;
+}
+
+[data-theme="dark"] .review-queue-card {
+  border-color: rgba(245, 158, 11, 0.52) !important;
+  background: linear-gradient(180deg, #181231, #100d29) !important;
+}
+
+[data-theme="dark"] .review-queue-card .workspace-card-title,
+[data-theme="dark"] .review-queue-card h2,
+[data-theme="dark"] .review-queue-card h3 {
+  color: #ffffff !important;
+}

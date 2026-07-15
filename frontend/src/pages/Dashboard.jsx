@@ -11,6 +11,7 @@ import {
 } from 'recharts'
 import API from '../services/api'
 import { getAuthToken } from '../services/authStorage'
+import { getUserProfilePicture } from '../utils/assetUrl'
 import './Dashboard.css'
 
 export default function Dashboard() {
@@ -91,6 +92,7 @@ export default function Dashboard() {
   }
 
   const isTeacher = ['teacher', 'admin'].includes(user?.role)
+  const profilePicture = getUserProfilePicture(user)
   const shownCourses = enrolledCourses.slice(0, 3)
 
   const courseCards = (() => {
@@ -193,7 +195,11 @@ export default function Dashboard() {
         <div className="dash-area dash-area--profile">
           <div className="dash-widget side-profile">
             <div className="side-avatar-container">
-              <div className="side-avatar">{user?.firstName?.charAt(0) || 'U'}</div>
+              {profilePicture ? (
+                <img className="side-avatar side-avatar--image" src={profilePicture} alt={user?.firstName || 'Profile'} />
+              ) : (
+                <div className="side-avatar">{user?.firstName?.charAt(0) || 'U'}</div>
+              )}
             </div>
             <h4 className="side-name">{user?.firstName} {user?.lastName}</h4>
             <p className="side-role">{user?.role === 'student' ? 'MDCAT Aspirant' : user?.role}</p>
@@ -298,3 +304,5 @@ export default function Dashboard() {
     </div>
   )
 }
+
+
