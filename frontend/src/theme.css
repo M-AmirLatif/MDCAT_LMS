@@ -5595,3 +5595,119 @@ html[data-theme="dark"] .mcq-attempt-layout .mcq-option-card.mcq-option-card--se
   color: #2f2acb !important;
   -webkit-text-fill-color: #2f2acb !important;
 }
+
+/* Review queue readability cleanup: no nested option text pills, clean explanation labels */
+html .teacher-mcq-row--editor .teacher-mcq-option-field,
+html[data-theme="dark"] .teacher-mcq-row--editor .teacher-mcq-option-field {
+  align-items: center !important;
+  padding: 22px 26px !important;
+  gap: 22px !important;
+  min-height: 96px !important;
+}
+
+html .teacher-mcq-row--editor .teacher-mcq-option-field label,
+html[data-theme="dark"] .teacher-mcq-row--editor .teacher-mcq-option-field label {
+  flex: 0 0 110px !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+
+html .teacher-mcq-row--editor .teacher-mcq-option-field .teacher-review-render-content,
+html[data-theme="dark"] .teacher-mcq-row--editor .teacher-mcq-option-field .teacher-review-render-content {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  padding: 6px 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+html .teacher-mcq-row--editor .teacher-mcq-option-field .mcq-renderer,
+html[data-theme="dark"] .teacher-mcq-row--editor .teacher-mcq-option-field .mcq-renderer {
+  font-size: clamp(18px, 1.35vw, 24px) !important;
+  line-height: 1.5 !important;
+}
+
+html .review-explanation-box,
+html[data-theme="dark"] .review-explanation-box {
+  position: relative !important;
+  padding: 30px 28px 26px !important;
+  overflow: visible !important;
+}
+
+html .review-explanation-box strong,
+html[data-theme="dark"] .review-explanation-box strong {
+  position: static !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  width: auto !important;
+  margin: 0 0 14px 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  line-height: 1.2 !important;
+  z-index: auto !important;
+}
+
+html .review-explanation-box .review-explanation-text,
+html[data-theme="dark"] .review-explanation-box .review-explanation-text {
+  padding: 22px 26px !important;
+  border-radius: 18px !important;
+  margin: 0 !important;
+}
+
+html .review-explanation-box::before,
+html .review-explanation-box::after,
+html .review-explanation-box strong::before,
+html .review-explanation-box strong::after,
+html[data-theme="dark"] .review-explanation-box::before,
+html[data-theme="dark"] .review-explanation-box::after,
+html[data-theme="dark"] .review-explanation-box strong::before,
+html[data-theme="dark"] .review-explanation-box strong::after {
+  display: none !important;
+  content: none !important;
+}
+
+html .teacher-mcq-row--editor .floating-field,
+html[data-theme="dark"] .teacher-mcq-row--editor .floating-field {
+  padding: 22px 26px !important;
+  border-radius: 18px !important;
+}
+
+html .teacher-mcq-row--editor .floating-field label,
+html[data-theme="dark"] .teacher-mcq-row--editor .floating-field label {
+  position: static !important;
+  display: block !important;
+  margin: 0 0 12px 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+html .teacher-mcq-row--editor .floating-field textarea,
+html[data-theme="dark"] .teacher-mcq-row--editor .floating-field textarea {
+  padding: 18px 22px !important;
+  min-height: 76px !important;
+  line-height: 1.5 !important;
+}
+
+html .teacher-mcq-row--editor .review-validation-list,
+html[data-theme="dark"] .teacher-mcq-row--editor .review-validation-list {
+  padding: 16px 20px !important;
+  gap: 10px !important;
+  border-radius: 16px !important;
+}
+
+@media (max-width: 768px) {
+  html .teacher-mcq-row--editor .teacher-mcq-option-field,
+  html[data-theme="dark"] .teacher-mcq-row--editor .teacher-mcq-option-field {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+    padding: 18px !important;
+  }
+
+  html .teacher-mcq-row--editor .teacher-mcq-option-field label,
+  html[data-theme="dark"] .teacher-mcq-row--editor .teacher-mcq-option-field label {
+    flex: none !important;
+  }
+}
