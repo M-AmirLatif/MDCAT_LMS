@@ -11742,3 +11742,440 @@ html body .mcq-attempt-layout .mcq-question-card::after {
     min-width: 0 !important;
   }
 }
+
+/* Mobile teacher analytics: keep standalone multi-student Recharts panel visible. */
+@media (max-width: 768px) {
+  html body .workspace-page > .workspace-card .chart-panel,
+  html body .workspace-page .workspace-card .chart-panel {
+    display: block !important;
+    width: 100% !important;
+    height: clamp(280px, 78vw, 360px) !important;
+    min-height: 280px !important;
+    padding: 12px !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+  }
+
+  html body .workspace-page > .workspace-card:has(.chart-panel),
+  html body .workspace-page .workspace-card:has(.chart-panel) {
+    min-height: 420px !important;
+    overflow: visible !important;
+  }
+
+  html body .workspace-page .chart-panel .recharts-responsive-container {
+    width: 100% !important;
+    min-width: 100% !important;
+    height: 100% !important;
+    min-height: 260px !important;
+  }
+
+  html body .workspace-page .chart-panel .recharts-wrapper,
+  html body .workspace-page .chart-panel svg.recharts-surface {
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 420px) {
+  html body .workspace-page > .workspace-card .chart-panel,
+  html body .workspace-page .workspace-card .chart-panel {
+    height: 300px !important;
+    min-height: 300px !important;
+  }
+
+  html body .workspace-page > .workspace-card:has(.chart-panel),
+  html body .workspace-page .workspace-card:has(.chart-panel) {
+    min-height: 440px !important;
+  }
+}
+
+/* MCQ subject overview: clear learning path instead of crowded arrow title. */
+.subject-browser-hero .workspace-card-head {
+  align-items: flex-start !important;
+}
+
+.subject-browser-hero .mcq-learning-flow {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 10px 28px !important;
+  margin: 14px 0 12px !important;
+  max-width: 100% !important;
+}
+
+.subject-browser-hero .mcq-learning-flow span {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  min-height: 38px !important;
+  padding: 8px 14px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  background: rgba(255, 255, 255, 0.10) !important;
+  color: #ffffff !important;
+  font-size: clamp(13px, 2vw, 15px) !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+.subject-browser-hero .mcq-learning-flow span:not(:last-child)::after {
+  content: "" !important;
+  position: absolute !important;
+  right: -21px !important;
+  width: 12px !important;
+  height: 2px !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.70) !important;
+}
+
+html:not([data-theme="dark"]) .subject-browser-hero .mcq-learning-flow span {
+  border-color: rgba(99, 102, 241, 0.22) !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  color: #14112f !important;
+  box-shadow: 0 10px 22px rgba(49, 46, 129, 0.10) !important;
+}
+
+html:not([data-theme="dark"]) .subject-browser-hero .mcq-learning-flow span:not(:last-child)::after {
+  background: rgba(99, 102, 241, 0.55) !important;
+}
+
+@media (max-width: 760px) {
+  html body .subject-browser-hero .workspace-card-title {
+    font-size: clamp(30px, 9vw, 40px) !important;
+    line-height: 1.05 !important;
+    margin-bottom: 8px !important;
+  }
+
+  html body .subject-browser-hero .mcq-learning-flow {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    margin: 16px 0 !important;
+  }
+
+  html body .subject-browser-hero .mcq-learning-flow span {
+    width: 100% !important;
+    justify-content: space-between !important;
+    min-height: 42px !important;
+    padding: 10px 14px !important;
+    font-size: 14px !important;
+  }
+
+  html body .subject-browser-hero .mcq-learning-flow span:not(:last-child)::after {
+    content: "Next" !important;
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    margin-left: 12px !important;
+    background: transparent !important;
+    color: rgba(255, 255, 255, 0.78) !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+  }
+
+  html:not([data-theme="dark"]) body .subject-browser-hero .mcq-learning-flow span:not(:last-child)::after {
+    color: rgba(79, 70, 229, 0.78) !important;
+  }
+}
+
+/* Mobile chapter cards must not inherit the premium start-section hero styling. */
+@media (max-width: 760px) {
+  html body .workspace-page .chapter-practice-card,
+  html body .workspace-page .chapter-practice-card:first-child,
+  html body .workspace-page .chapter-practice-card:first-of-type {
+    position: relative !important;
+    overflow: hidden !important;
+    width: 100% !important;
+    border-radius: 20px !important;
+    border: 2px solid rgba(180, 193, 217, 0.95) !important;
+    background: #ffffff !important;
+    background-image: none !important;
+    box-shadow: 0 12px 26px rgba(49, 46, 129, 0.12) !important;
+    color: #07122f !important;
+  }
+
+  html[data-theme="dark"] body .workspace-page .chapter-practice-card,
+  html[data-theme="dark"] body .workspace-page .chapter-practice-card:first-child,
+  html[data-theme="dark"] body .workspace-page .chapter-practice-card:first-of-type {
+    border-color: rgba(139, 124, 214, 0.86) !important;
+    background: #11162e !important;
+    background-image: none !important;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.34) !important;
+    color: #ffffff !important;
+  }
+
+  html body .workspace-page .chapter-practice-card::after,
+  html body .workspace-page .chapter-practice-card:first-child::after,
+  html body .workspace-page .chapter-practice-card:first-of-type::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  html body .workspace-page .chapter-practice-card .workspace-card-title,
+  html body .workspace-page .chapter-practice-card:first-child .workspace-card-title,
+  html body .workspace-page .chapter-practice-card:first-of-type .workspace-card-title {
+    color: inherit !important;
+    font-size: clamp(20px, 6vw, 26px) !important;
+    line-height: 1.14 !important;
+    letter-spacing: 0 !important;
+  }
+
+  html body .workspace-page .chapter-practice-card p,
+  html body .workspace-page .chapter-practice-card:first-child p,
+  html body .workspace-page .chapter-practice-card:first-of-type p {
+    color: rgba(15, 23, 42, 0.78) !important;
+  }
+
+  html[data-theme="dark"] body .workspace-page .chapter-practice-card p,
+  html[data-theme="dark"] body .workspace-page .chapter-practice-card:first-child p,
+  html[data-theme="dark"] body .workspace-page .chapter-practice-card:first-of-type p {
+    color: rgba(255, 255, 255, 0.76) !important;
+  }
+
+  html body .workspace-page .chapter-practice-card .inline-actions,
+  html body .workspace-page .chapter-practice-card:first-child .inline-actions,
+  html body .workspace-page .chapter-practice-card:first-of-type .inline-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    width: 100% !important;
+    margin-top: auto !important;
+  }
+
+  html body .workspace-page .chapter-practice-card .inline-actions .btn,
+  html body .workspace-page .chapter-practice-card:first-child .inline-actions .btn,
+  html body .workspace-page .chapter-practice-card:first-of-type .inline-actions .btn {
+    width: auto !important;
+    min-width: 112px !important;
+    height: 44px !important;
+    color: inherit !important;
+    box-shadow: none !important;
+  }
+
+  html body .workspace-page .chapter-practice-card .inline-actions .btn-primary,
+  html body .workspace-page .chapter-practice-card:first-child .inline-actions .btn-primary,
+  html body .workspace-page .chapter-practice-card:first-of-type .inline-actions .btn-primary {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #7447ff 0%, #4a90e2 100%) !important;
+  }
+}
+
+/* Final mobile teacher MCQ editor cleanup: remove side bands and compact nested cards. */
+@media (max-width: 900px) {
+  html body .workspace-page--mcq-list,
+  html body .workspace-page--mcq-list .workspace-card,
+  html body .workspace-page--mcq-list .workspace-card-body,
+  html body .teacher-mcq-list,
+  html body .teacher-mcq-list--editable,
+  html body .review-queue-card,
+  html body .review-queue-card .workspace-card-body {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  html body .workspace-page--mcq-list article.mcq-managed-parent-card,
+  html body .workspace-page--mcq-list article.mcq-review-parent-card,
+  html body .teacher-mcq-list > article.mcq-managed-parent-card,
+  html body .teacher-mcq-list--editable > article.mcq-review-parent-card,
+  html body .review-queue-card article.mcq-review-parent-card,
+  html body article.teacher-mcq-row--editor.mcq-review-parent-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 14px 0 !important;
+    padding: 12px !important;
+    border-radius: 18px !important;
+    border: 2px solid rgba(99, 102, 241, 0.55) !important;
+    background: #ffffff !important;
+    background-image: none !important;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.10) !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  html[data-theme="dark"] body .workspace-page--mcq-list article.mcq-managed-parent-card,
+  html[data-theme="dark"] body .workspace-page--mcq-list article.mcq-review-parent-card,
+  html[data-theme="dark"] body .teacher-mcq-list > article.mcq-managed-parent-card,
+  html[data-theme="dark"] body .teacher-mcq-list--editable > article.mcq-review-parent-card,
+  html[data-theme="dark"] body .review-queue-card article.mcq-review-parent-card,
+  html[data-theme="dark"] body article.teacher-mcq-row--editor.mcq-review-parent-card {
+    border-color: rgba(139, 124, 214, 0.72) !important;
+    background: #141132 !important;
+    background-image: none !important;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.32) !important;
+  }
+
+  html body .workspace-page--mcq-list article.mcq-managed-parent-card::before,
+  html body .workspace-page--mcq-list article.mcq-managed-parent-card::after,
+  html body .workspace-page--mcq-list article.mcq-review-parent-card::before,
+  html body .workspace-page--mcq-list article.mcq-review-parent-card::after,
+  html body .teacher-mcq-list > article.mcq-managed-parent-card::before,
+  html body .teacher-mcq-list > article.mcq-managed-parent-card::after,
+  html body .teacher-mcq-list--editable > article.mcq-review-parent-card::before,
+  html body .teacher-mcq-list--editable > article.mcq-review-parent-card::after,
+  html body .review-queue-card article.mcq-review-parent-card::before,
+  html body .review-queue-card article.mcq-review-parent-card::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  html body .workspace-page--mcq-list article.mcq-managed-parent-card > *,
+  html body .workspace-page--mcq-list article.mcq-review-parent-card > *,
+  html body .teacher-mcq-list > article.mcq-managed-parent-card > *,
+  html body .teacher-mcq-list--editable > article.mcq-review-parent-card > *,
+  html body .review-queue-card article.mcq-review-parent-card > * {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  html body .workspace-page--mcq-list .mcq-inline-card-header,
+  html body .workspace-page--mcq-list .mcq-inline-card-form,
+  html body .workspace-page--mcq-list .teacher-mcq-editor-head,
+  html body .workspace-page--mcq-list .review-validation-list,
+  html body .workspace-page--mcq-list .teacher-review-render-block,
+  html body .workspace-page--mcq-list .teacher-mcq-option-grid,
+  html body .workspace-page--mcq-list .teacher-mcq-editor-bottom,
+  html body .workspace-page--mcq-list .teacher-mcq-action-row,
+  html body .review-queue-card .teacher-mcq-editor-head,
+  html body .review-queue-card .review-validation-list,
+  html body .review-queue-card .teacher-review-render-block,
+  html body .review-queue-card .teacher-mcq-option-grid,
+  html body .review-queue-card .teacher-mcq-editor-bottom,
+  html body .review-queue-card .teacher-mcq-action-row {
+    padding: 10px !important;
+    margin: 8px 0 !important;
+    border-radius: 14px !important;
+    border-width: 1px !important;
+    background-image: none !important;
+    overflow-x: hidden !important;
+  }
+
+  html body .workspace-page--mcq-list .teacher-review-render-card,
+  html body .workspace-page--mcq-list .teacher-review-render-content,
+  html body .workspace-page--mcq-list .teacher-mcq-option-field,
+  html body .workspace-page--mcq-list .teacher-mcq-editor-bottom > .floating-field,
+  html body .workspace-page--mcq-list .floating-field,
+  html body .workspace-page--mcq-list .mcq-image-paste-zone,
+  html body .workspace-page--mcq-list .mcq-image-url-row,
+  html body .review-queue-card .teacher-review-render-card,
+  html body .review-queue-card .teacher-review-render-content,
+  html body .review-queue-card .teacher-mcq-option-field,
+  html body .review-queue-card .teacher-mcq-editor-bottom > .floating-field,
+  html body .review-queue-card .floating-field,
+  html body .review-queue-card .mcq-image-paste-zone,
+  html body .review-queue-card .mcq-image-url-row {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 8px 0 !important;
+    padding: 10px !important;
+    border-radius: 12px !important;
+    background-image: none !important;
+    overflow-x: hidden !important;
+    overflow-wrap: anywhere !important;
+    box-sizing: border-box !important;
+  }
+
+  html body .workspace-page--mcq-list .mcq-image-url-row,
+  html body .review-queue-card .mcq-image-url-row,
+  html body .workspace-page--mcq-list .teacher-mcq-image-tools,
+  html body .review-queue-card .teacher-mcq-image-tools {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  html body .workspace-page--mcq-list .mcq-image-url-row input,
+  html body .review-queue-card .mcq-image-url-row input,
+  html body .workspace-page--mcq-list textarea,
+  html body .workspace-page--mcq-list input,
+  html body .review-queue-card textarea,
+  html body .review-queue-card input {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  html body .workspace-page--mcq-list .teacher-mcq-option-grid,
+  html body .review-queue-card .teacher-mcq-option-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  html body .workspace-page--mcq-list .teacher-mcq-option-field,
+  html body .review-queue-card .teacher-mcq-option-field {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  html body .workspace-page--mcq-list .teacher-mcq-action-row,
+  html body .review-queue-card .teacher-mcq-action-row {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  html body .workspace-page--mcq-list .teacher-mcq-action-row .btn,
+  html body .review-queue-card .teacher-mcq-action-row .btn,
+  html body .workspace-page--mcq-list .teacher-mcq-image-tools .btn,
+  html body .review-queue-card .teacher-mcq-image-tools .btn,
+  html body .workspace-page--mcq-list .mcq-image-url-row .btn,
+  html body .review-queue-card .mcq-image-url-row .btn {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 42px !important;
+  }
+}
+
+/* MCQ bank mobile header: keep light-mode action buttons readable on the dark hero panel. */
+@media (max-width: 760px) {
+  html:not([data-theme="dark"]) body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn.btn-secondary,
+  html:not([data-theme="dark"]) body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn.btn-secondary:visited {
+    color: #ffffff !important;
+    background: rgba(39, 24, 86, 0.92) !important;
+    border: 1.5px solid rgba(190, 174, 255, 0.72) !important;
+    box-shadow: 0 10px 22px rgba(20, 13, 48, 0.28) !important;
+    opacity: 1 !important;
+    text-shadow: none !important;
+  }
+
+  html:not([data-theme="dark"]) body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn.btn-secondary:first-child,
+  html:not([data-theme="dark"]) body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn.btn-secondary:first-child:visited {
+    color: #111827 !important;
+    background: linear-gradient(135deg, #facc15 0%, #fb923c 100%) !important;
+    border-color: rgba(255, 255, 255, 0.72) !important;
+    box-shadow: 0 14px 26px rgba(234, 88, 12, 0.28) !important;
+  }
+
+  html:not([data-theme="dark"]) body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn.btn-secondary:hover,
+  html:not([data-theme="dark"]) body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn.btn-secondary:focus-visible {
+    color: #ffffff !important;
+    background: rgba(58, 39, 126, 0.98) !important;
+    border-color: rgba(224, 214, 255, 0.95) !important;
+    filter: none !important;
+    transform: none !important;
+  }
+
+  html:not([data-theme="dark"]) body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn.btn-secondary:first-child:hover,
+  html:not([data-theme="dark"]) body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn.btn-secondary:first-child:focus-visible {
+    color: #111827 !important;
+    background: linear-gradient(135deg, #facc15 0%, #fb923c 100%) !important;
+  }
+}

@@ -129,6 +129,21 @@ export default function PlatformProfile() {
     setForm(buildFormFromUser(user))
   }
 
+  const displayProfilePicture = useMemo(() => {
+    if (!form.profilePicture) return ''
+    if (!photoRetry) return form.profilePicture
+    const separator = form.profilePicture.includes('?') ? '&' : '?'
+    return `${form.profilePicture}${separator}retry=${photoRetry}`
+  }, [form.profilePicture, photoRetry])
+
+  const handlePhotoError = () => {
+    if (form.profilePicture && photoRetry < 1) {
+      setPhotoRetry((current) => current + 1)
+      return
+    }
+    setPhotoError(true)
+  }
+
   const showProfilePhoto = Boolean(form.profilePicture && !photoError)
 
   return (
@@ -157,9 +172,9 @@ export default function PlatformProfile() {
                 {showProfilePhoto ? (
                   <img
                     className="avatar-circle avatar-circle--image"
-                    src={form.profilePicture}
+                    src={displayProfilePicture}
                     alt={displayName}
-                    onError={() => setPhotoError(true)}
+                    onError={handlePhotoError}
                     onLoad={() => setPhotoError(false)}
                   />
                 ) : (
@@ -178,7 +193,7 @@ export default function PlatformProfile() {
                     {uploading ? 'Uploading...' : 'Upload New Photo'}
                   </button>
                   {showProfilePhoto ? (
-                    <a className="btn btn-secondary profile-view-photo-btn" href={form.profilePicture} target="_blank" rel="noreferrer">
+                    <a className="btn btn-secondary profile-view-photo-btn" href={displayProfilePicture || form.profilePicture} target="_blank" rel="noreferrer">
                       View Photo
                     </a>
                   ) : null}

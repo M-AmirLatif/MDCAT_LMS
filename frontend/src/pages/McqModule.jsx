@@ -440,12 +440,16 @@ function CourseSelection() {
         <div className="workspace-card-head">
           <div>
             <div className="label-xs">MDCAT MCQ Bank</div>
-            <h2 className="workspace-card-title">
-              Courses → Chapters → MCQs → Quiz Attempt → Result
-            </h2>
+            <h2 className="workspace-card-title">MCQ Practice Path</h2>
+            <div className="mcq-learning-flow" aria-label="MCQ practice path">
+              <span>Courses</span>
+              <span>Chapters</span>
+              <span>MCQs</span>
+              <span>Quiz Attempt</span>
+              <span>Result</span>
+            </div>
             <p>
-              Select one of the four MDCAT subjects. Chapters and questions open
-              step by step.
+              Choose a subject, open its chapters, solve MCQs, and review your result.
             </p>
           </div>
         </div>
@@ -2575,6 +2579,7 @@ function ReviewSection({ title, items }) {
 export { CourseSelection, ChapterList, McqList, QuizAttempt, QuizResult }
 
 export default CourseSelection
+
 
 
 

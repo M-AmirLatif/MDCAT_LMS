@@ -60,11 +60,14 @@ exports.uploadSingle = async (req, res) => {
       { upsert: true, new: true, setDefaultsOnInsert: true },
     )
 
-    const fileUrl = buildUploadUrl(req, req.file.filename)
+    const uploadPath = `/uploads/${req.file.filename}`
+    const absoluteUrl = buildUploadUrl(req, req.file.filename)
     res.status(200).json({
       success: true,
-      fileUrl,
-      url: fileUrl,
+      // Store relative paths in profile/MCQ data so deployed host changes do not break images.
+      fileUrl: uploadPath,
+      url: uploadPath,
+      absoluteUrl,
       fileName: req.file.originalname,
     })
   } catch (error) {
@@ -87,4 +90,5 @@ exports.serveUpload = async (req, res, next) => {
     next(error)
   }
 }
+
 
