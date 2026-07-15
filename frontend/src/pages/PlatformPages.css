@@ -11019,3 +11019,40 @@ html[data-theme="dark"] body article.mcq-managed-parent-card .mcq-correct-box {
     padding: 18px !important;
   }
 }
+
+/* Final light-mode force for managed/review MCQ parent cards */
+html:not([data-theme="dark"]) body article.mcq-managed-parent-card,
+html:not([data-theme="dark"]) body article.mcq-review-parent-card,
+html:not([data-theme="dark"]) body .teacher-mcq-list > article.mcq-managed-parent-card,
+html:not([data-theme="dark"]) body .teacher-mcq-list--editable > article.mcq-review-parent-card {
+  border: 5px solid rgba(99, 80, 255, 0.95) !important;
+  border-top-color: #654cff !important;
+  border-radius: 32px !important;
+  background:
+    linear-gradient(90deg, rgba(101, 76, 255, 0.30) 0 34px, transparent 34px calc(100% - 34px), rgba(20, 184, 166, 0.25) calc(100% - 34px)),
+    radial-gradient(circle at 8% 8%, rgba(250, 204, 21, 0.24), transparent 28%),
+    linear-gradient(135deg, #eee8ff 0%, #e9f6ff 52%, #e7fff8 100%) !important;
+  box-shadow: 0 24px 58px rgba(49, 46, 129, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.98) !important;
+}
+
+html:not([data-theme="dark"]) body article.mcq-managed-parent-card:nth-child(even),
+html:not([data-theme="dark"]) body article.mcq-review-parent-card:nth-child(even) {
+  border-color: rgba(20, 184, 166, 0.92) !important;
+  border-top-color: #14b8a6 !important;
+  background:
+    linear-gradient(90deg, rgba(20, 184, 166, 0.30) 0 34px, transparent 34px calc(100% - 34px), rgba(101, 76, 255, 0.24) calc(100% - 34px)),
+    radial-gradient(circle at 8% 8%, rgba(251, 146, 60, 0.22), transparent 28%),
+    linear-gradient(135deg, #e6fff8 0%, #edf4ff 52%, #f0eaff 100%) !important;
+}
+
+html:not([data-theme="dark"]) body article.mcq-managed-parent-card > .mcq-inline-card-header,
+html:not([data-theme="dark"]) body article.mcq-review-parent-card > .teacher-mcq-editor-head,
+html:not([data-theme="dark"]) body article.mcq-managed-parent-card > .mcq-inline-card-form,
+html:not([data-theme="dark"]) body article.mcq-review-parent-card > .review-validation-list,
+html:not([data-theme="dark"]) body article.mcq-review-parent-card > .floating-field,
+html:not([data-theme="dark"]) body article.mcq-review-parent-card > .teacher-review-render-block,
+html:not([data-theme="dark"]) body article.mcq-review-parent-card > .teacher-mcq-option-grid,
+html:not([data-theme="dark"]) body article.mcq-review-parent-card > .teacher-mcq-editor-bottom {
+  border-color: rgba(99, 102, 241, 0.48) !important;
+  background: rgba(255, 255, 255, 0.86) !important;
+}

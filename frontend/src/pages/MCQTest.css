@@ -449,3 +449,58 @@ html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-question-card .mcq-option
   color: #2f2acb !important;
   box-shadow: 0 8px 18px rgba(234, 88, 12, 0.18) !important;
 }
+
+/* Final light-mode MCQ test card: same highlighted parent treatment as dark mode */
+html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-question-card {
+  overflow: hidden !important;
+  margin: 28px auto !important;
+  padding: 34px 36px !important;
+  border-radius: 32px !important;
+  border: 5px solid rgba(99, 80, 255, 0.92) !important;
+  border-top-color: #654cff !important;
+  background:
+    linear-gradient(90deg, rgba(101, 76, 255, 0.26) 0 34px, transparent 34px calc(100% - 34px), rgba(20, 184, 166, 0.22) calc(100% - 34px)),
+    radial-gradient(circle at 8% 8%, rgba(250, 204, 21, 0.22), transparent 28%),
+    linear-gradient(135deg, #f0ebff 0%, #edf7ff 54%, #e9fff8 100%) !important;
+  box-shadow: 0 24px 58px rgba(49, 46, 129, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.96) !important;
+}
+
+html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-question-card .mcq-attempt-question-label,
+html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-question-card .mcq-section-label {
+  color: #34415f !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.14em !important;
+}
+
+html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-question-card .mcq-question-title {
+  margin: 14px 0 24px !important;
+  padding: 24px 28px !important;
+  border-radius: 24px !important;
+  border: 3px solid #aebbd4 !important;
+  background: rgba(238, 244, 255, 0.94) !important;
+  color: #020b22 !important;
+  box-shadow: 0 12px 26px rgba(49, 46, 129, 0.10) !important;
+}
+
+html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-question-card .mcq-options-grid {
+  margin-top: 22px !important;
+  border: 3px solid #aebbd4 !important;
+  border-radius: 24px !important;
+  background: rgba(248, 250, 255, 0.90) !important;
+  box-shadow: 0 16px 34px rgba(49, 46, 129, 0.10) !important;
+}
+
+@media (max-width: 720px) {
+  html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-question-card {
+    margin: 18px auto !important;
+    padding: 18px !important;
+    border-width: 4px !important;
+    border-radius: 24px !important;
+  }
+
+  html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-question-card .mcq-question-title,
+  html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-question-card .mcq-options-grid {
+    padding: 16px !important;
+    border-radius: 18px !important;
+  }
+}
