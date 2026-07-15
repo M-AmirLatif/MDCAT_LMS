@@ -5949,3 +5949,40 @@ html[data-theme="dark"] .teacher-mcq-row--editor .teacher-mcq-option-field--corr
     width: 100% !important;
   }
 }
+
+/* MCQ attempt: wider desktop layout and visible light-mode option borders */
+@media (min-width: 1024px) {
+  html .mcq-attempt-layout .mcq-question-card,
+  html[data-theme="dark"] .mcq-attempt-layout .mcq-question-card {
+    width: min(96%, 1360px) !important;
+  }
+}
+
+html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-question-card {
+  border: 3px solid #b8c3da !important;
+  border-radius: 26px !important;
+}
+
+html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-question-title {
+  border: 3px solid #b8c3da !important;
+  border-radius: 22px !important;
+}
+
+html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-options-grid {
+  border: 3px solid #c5cfe3 !important;
+  border-radius: 22px !important;
+}
+
+html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-option-card {
+  border: 3px solid #c5cfe3 !important;
+  border-radius: 20px !important;
+  box-shadow: none !important;
+}
+
+html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-option-letter {
+  border: 2px solid #b8c3da !important;
+}
+
+html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-nav-actions {
+  width: 100% !important;
+}
