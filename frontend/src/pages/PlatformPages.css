@@ -11268,3 +11268,153 @@ html body article.mcq-review-parent-card > * {
   position: relative !important;
   z-index: 1 !important;
 }
+
+/* Student quiz cards are one-by-one, so remove teacher/review parent color bands here. */
+html body .mcq-attempt-layout .mcq-question-card,
+html:not([data-theme="dark"]) body .mcq-attempt-layout .mcq-question-card {
+  background: #ffffff !important;
+  border: 3px solid rgba(180, 193, 217, 0.95) !important;
+  border-radius: 28px !important;
+  box-shadow: 0 18px 40px rgba(49, 46, 129, 0.12) !important;
+  overflow: hidden !important;
+}
+
+html[data-theme="dark"] body .mcq-attempt-layout .mcq-question-card {
+  background: #141132 !important;
+  border: 3px solid rgba(124, 104, 190, 0.78) !important;
+  border-radius: 28px !important;
+  box-shadow: 0 22px 52px rgba(0, 0, 0, 0.38) !important;
+  overflow: hidden !important;
+}
+
+html body .mcq-attempt-layout .mcq-question-card::before,
+html body .mcq-attempt-layout .mcq-question-card::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Mobile MCQ management/review: remove side color bands and use full-width clean cards. */
+@media (max-width: 760px) {
+  html body .workspace-page.workspace-page--mcq-list {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    gap: 18px !important;
+    overflow-x: hidden !important;
+  }
+
+  html body .workspace-page--mcq-list .workspace-header-sticky,
+  html body .workspace-page--mcq-list > .workspace-card:first-of-type {
+    width: 100% !important;
+    margin-inline: 0 !important;
+    border-radius: 24px !important;
+    border: 2px solid rgba(129, 140, 248, 0.72) !important;
+    background:
+      radial-gradient(circle at 88% 10%, rgba(45, 212, 191, 0.22), transparent 30%),
+      linear-gradient(135deg, #ffffff 0%, #f4f1ff 48%, #eef8ff 100%) !important;
+    box-shadow: 0 18px 38px rgba(49, 46, 129, 0.18) !important;
+  }
+
+  html[data-theme="dark"] body .workspace-page--mcq-list .workspace-header-sticky,
+  html[data-theme="dark"] body .workspace-page--mcq-list > .workspace-card:first-of-type {
+    border-color: rgba(139, 92, 246, 0.82) !important;
+    background:
+      radial-gradient(circle at 90% 8%, rgba(45, 212, 191, 0.18), transparent 32%),
+      linear-gradient(135deg, #21184a 0%, #121028 52%, #0d2333 100%) !important;
+    box-shadow: 0 22px 44px rgba(0, 0, 0, 0.36) !important;
+  }
+
+  html body .workspace-page--mcq-list .workspace-card-head.workspace-card-head--aligned {
+    padding: 26px 20px !important;
+    border-radius: 22px !important;
+  }
+
+  html body .workspace-page--mcq-list .workspace-card:first-of-type .workspace-card-title,
+  html body .workspace-page--mcq-list .workspace-card:first-of-type .workspace-card-subtitle,
+  html body .workspace-page--mcq-list .workspace-header-date {
+    color: #070b25 !important;
+  }
+
+  html[data-theme="dark"] body .workspace-page--mcq-list .workspace-card:first-of-type .workspace-card-title,
+  html[data-theme="dark"] body .workspace-page--mcq-list .workspace-card:first-of-type .workspace-card-subtitle,
+  html[data-theme="dark"] body .workspace-page--mcq-list .workspace-header-date {
+    color: #ffffff !important;
+  }
+
+  html body .workspace-page--mcq-list .workspace-card-head .inline-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  html body .workspace-page--mcq-list .workspace-card-head .inline-actions .btn,
+  html body .workspace-page--mcq-list .workspace-card-head .inline-actions > * {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 48px !important;
+    border-radius: 999px !important;
+  }
+
+  html body article.mcq-managed-parent-card,
+  html body article.mcq-managed-parent-card:nth-child(even),
+  html body article.mcq-managed-parent-card:nth-of-type(even),
+  html body .teacher-mcq-list > article.mcq-managed-parent-card,
+  html body .teacher-mcq-list > article.mcq-managed-parent-card:nth-child(even),
+  html body .teacher-mcq-list--editable > article.mcq-managed-parent-card,
+  html body .teacher-mcq-list--editable > article.mcq-managed-parent-card:nth-child(even),
+  html body article.mcq-review-parent-card,
+  html body article.mcq-review-parent-card:nth-child(even),
+  html body article.mcq-review-parent-card:nth-of-type(even),
+  html body .review-queue-card article.mcq-review-parent-card,
+  html body .review-queue-card article.mcq-review-parent-card:nth-child(even),
+  html body article.teacher-mcq-row--editor.mcq-review-parent-card,
+  html body article.teacher-mcq-row--editor.mcq-review-parent-card:nth-child(even) {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 16px 0 !important;
+    padding: 12px !important;
+    border: 3px solid rgba(79, 70, 229, 0.78) !important;
+    border-top: 4px solid rgba(79, 70, 229, 0.92) !important;
+    border-radius: 22px !important;
+    background: #ffffff !important;
+    box-shadow: 0 14px 28px rgba(49, 46, 129, 0.14) !important;
+    overflow: hidden !important;
+  }
+
+  html[data-theme="dark"] body article.mcq-managed-parent-card,
+  html[data-theme="dark"] body article.mcq-managed-parent-card:nth-child(even),
+  html[data-theme="dark"] body article.mcq-managed-parent-card:nth-of-type(even),
+  html[data-theme="dark"] body .teacher-mcq-list > article.mcq-managed-parent-card,
+  html[data-theme="dark"] body .teacher-mcq-list > article.mcq-managed-parent-card:nth-child(even),
+  html[data-theme="dark"] body .teacher-mcq-list--editable > article.mcq-managed-parent-card,
+  html[data-theme="dark"] body .teacher-mcq-list--editable > article.mcq-managed-parent-card:nth-child(even),
+  html[data-theme="dark"] body article.mcq-review-parent-card,
+  html[data-theme="dark"] body article.mcq-review-parent-card:nth-child(even),
+  html[data-theme="dark"] body article.mcq-review-parent-card:nth-of-type(even),
+  html[data-theme="dark"] body .review-queue-card article.mcq-review-parent-card,
+  html[data-theme="dark"] body .review-queue-card article.mcq-review-parent-card:nth-child(even),
+  html[data-theme="dark"] body article.teacher-mcq-row--editor.mcq-review-parent-card,
+  html[data-theme="dark"] body article.teacher-mcq-row--editor.mcq-review-parent-card:nth-child(even) {
+    border-color: rgba(139, 92, 246, 0.82) !important;
+    border-top-color: rgba(139, 92, 246, 0.96) !important;
+    background: #141132 !important;
+    box-shadow: 0 18px 34px rgba(0, 0, 0, 0.34) !important;
+  }
+
+  html body article.mcq-managed-parent-card > .mcq-inline-card-header,
+  html body article.mcq-review-parent-card > .teacher-mcq-editor-head,
+  html body article.mcq-managed-parent-card > .mcq-inline-card-form {
+    margin: 0 0 14px !important;
+    padding: 16px !important;
+    border-radius: 18px !important;
+  }
+
+  html body .teacher-mcq-list,
+  html body .teacher-mcq-list--editable,
+  html body .review-queue-card .workspace-card-body {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
