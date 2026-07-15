@@ -6398,3 +6398,59 @@ html[data-theme="dark"] .mcq-inline-card:nth-of-type(even) {
     #101a3b !important;
   border-color: rgba(52, 211, 153, 0.80) !important;
 }
+
+/* Strong highlighted parent background for each complete teacher/review MCQ block */
+html body .workspace-page--mcq-list .mcq-inline-card,
+html body .workspace-page--mcq-list .teacher-mcq-row--editor,
+html body .review-queue-card .teacher-mcq-row--editor,
+html body .teacher-mcq-list--editable > .teacher-mcq-row--editor {
+  background:
+    radial-gradient(circle at 8% 0%, rgba(255, 184, 0, 0.28), transparent 30%),
+    linear-gradient(135deg, #d9e7ff 0%, #ddd6ff 46%, #c9fff1 100%) !important;
+  border: 4px solid #5b35ff !important;
+  border-radius: 28px !important;
+  box-shadow:
+    0 24px 60px rgba(71, 48, 180, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92) !important;
+  padding: 26px !important;
+}
+
+html body .workspace-page--mcq-list .mcq-inline-card:nth-of-type(even),
+html body .workspace-page--mcq-list .teacher-mcq-row--editor:nth-of-type(even),
+html body .review-queue-card .teacher-mcq-row--editor:nth-of-type(even),
+html body .teacher-mcq-list--editable > .teacher-mcq-row--editor:nth-of-type(even) {
+  background:
+    radial-gradient(circle at 8% 0%, rgba(29, 184, 132, 0.30), transparent 30%),
+    linear-gradient(135deg, #d8fff2 0%, #dcecff 48%, #eadcff 100%) !important;
+  border-color: #10a875 !important;
+}
+
+html body .workspace-page--mcq-list .mcq-inline-card-form,
+html body .workspace-page--mcq-list .teacher-mcq-row--editor form,
+html body .review-queue-card .teacher-mcq-row--editor form {
+  background: transparent !important;
+}
+
+html[data-theme="dark"] body .workspace-page--mcq-list .mcq-inline-card,
+html[data-theme="dark"] body .workspace-page--mcq-list .teacher-mcq-row--editor,
+html[data-theme="dark"] body .review-queue-card .teacher-mcq-row--editor,
+html[data-theme="dark"] body .teacher-mcq-list--editable > .teacher-mcq-row--editor {
+  background:
+    radial-gradient(circle at 8% 0%, rgba(255, 184, 0, 0.22), transparent 32%),
+    linear-gradient(135deg, #33206f 0%, #142b67 48%, #083d48 100%) !important;
+  border: 4px solid #b9a7ff !important;
+  border-radius: 28px !important;
+  box-shadow:
+    0 26px 70px rgba(0, 0, 0, 0.56),
+    0 0 0 1px rgba(255, 255, 255, 0.10) inset !important;
+}
+
+html[data-theme="dark"] body .workspace-page--mcq-list .mcq-inline-card:nth-of-type(even),
+html[data-theme="dark"] body .workspace-page--mcq-list .teacher-mcq-row--editor:nth-of-type(even),
+html[data-theme="dark"] body .review-queue-card .teacher-mcq-row--editor:nth-of-type(even),
+html[data-theme="dark"] body .teacher-mcq-list--editable > .teacher-mcq-row--editor:nth-of-type(even) {
+  background:
+    radial-gradient(circle at 8% 0%, rgba(52, 211, 153, 0.22), transparent 32%),
+    linear-gradient(135deg, #063f48 0%, #172d68 48%, #35206f 100%) !important;
+  border-color: #34d399 !important;
+}
