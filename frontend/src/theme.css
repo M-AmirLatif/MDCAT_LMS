@@ -5540,3 +5540,58 @@ html[data-theme="dark"] .mcq-attempt-layout .mcq-option-card--selected .mcq-opti
     font-size: 18px !important;
   }
 }
+
+/* Final selected MCQ option readability override */
+html .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected,
+html .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected:hover,
+html .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected:focus-visible {
+  background: #ffe08a !important;
+  border-color: #f59e0b !important;
+  border-left: 10px solid #ea580c !important;
+}
+
+html .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected,
+html .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected > *:not(.mcq-option-letter),
+html .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected .mcq-option-text,
+html .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected .mcq-option-text *,
+html .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected .mcq-renderer,
+html .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected .mcq-renderer *,
+html .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected p,
+html .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected span:not(.mcq-option-letter),
+html .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected .katex,
+html .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected .katex * {
+  color: #07122f !important;
+  -webkit-text-fill-color: #07122f !important;
+}
+
+html[data-theme="dark"] .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected,
+html[data-theme="dark"] .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected:hover,
+html[data-theme="dark"] .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected:focus-visible {
+  background: #fff3c4 !important;
+  border-color: #f59e0b !important;
+  border-left: 10px solid #f97316 !important;
+}
+
+html[data-theme="dark"] .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected,
+html[data-theme="dark"] .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected > *:not(.mcq-option-letter),
+html[data-theme="dark"] .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected .mcq-option-text,
+html[data-theme="dark"] .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected .mcq-option-text *,
+html[data-theme="dark"] .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected .mcq-renderer,
+html[data-theme="dark"] .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected .mcq-renderer *,
+html[data-theme="dark"] .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected p,
+html[data-theme="dark"] .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected span:not(.mcq-option-letter),
+html[data-theme="dark"] .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected .katex,
+html[data-theme="dark"] .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected .katex * {
+  color: #07122f !important;
+  -webkit-text-fill-color: #07122f !important;
+}
+
+html .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected .mcq-option-letter,
+html .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected .mcq-option-letter *,
+html[data-theme="dark"] .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected .mcq-option-letter,
+html[data-theme="dark"] .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected .mcq-option-letter * {
+  background: #ffffff !important;
+  border-color: #f97316 !important;
+  color: #2f2acb !important;
+  -webkit-text-fill-color: #2f2acb !important;
+}
