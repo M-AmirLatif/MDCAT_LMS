@@ -11418,3 +11418,327 @@ html body .mcq-attempt-layout .mcq-question-card::after {
     padding-right: 0 !important;
   }
 }
+
+/* Mobile premium start-section treatment for workspace page headers. */
+@media (max-width: 760px) {
+  html body .workspace-page > .workspace-hero,
+  html body .workspace-page > .notification-hero,
+  html body .workspace-page > .workspace-card:first-child,
+  html body .workspace-page > .workspace-card:first-of-type.workspace-header-sticky,
+  html body .workspace-page--mcq-list .workspace-header-sticky,
+  html body .workspace-page .chapter-practice-card:first-child {
+    position: relative !important;
+    overflow: hidden !important;
+    border-radius: 24px !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    background:
+      radial-gradient(circle at 0% 12%, rgba(251, 146, 60, 0.20), transparent 28%),
+      radial-gradient(circle at 96% 90%, rgba(45, 212, 191, 0.18), transparent 32%),
+      linear-gradient(135deg, #251548 0%, #090821 48%, #071d2c 100%) !important;
+    box-shadow: 0 22px 46px rgba(8, 7, 26, 0.34) !important;
+    color: #ffffff !important;
+  }
+
+  html body .workspace-page > .workspace-card:first-child::after,
+  html body .workspace-page > .workspace-card:first-of-type.workspace-header-sticky::after,
+  html body .workspace-page--mcq-list .workspace-header-sticky::after,
+  html body .workspace-page .chapter-practice-card:first-child::after {
+    content: "" !important;
+    position: absolute !important;
+    right: -72px !important;
+    bottom: -88px !important;
+    width: 210px !important;
+    height: 210px !important;
+    border-radius: 50% !important;
+    background: rgba(45, 212, 191, 0.14) !important;
+    pointer-events: none !important;
+  }
+
+  html body .workspace-page > .workspace-card:first-child > *,
+  html body .workspace-page > .workspace-card:first-of-type.workspace-header-sticky > *,
+  html body .workspace-page--mcq-list .workspace-header-sticky > *,
+  html body .workspace-page .chapter-practice-card:first-child > * {
+    position: relative !important;
+    z-index: 1 !important;
+  }
+
+  html body .workspace-page > .workspace-card:first-child .workspace-card-head,
+  html body .workspace-page > .workspace-card:first-of-type.workspace-header-sticky .workspace-card-head,
+  html body .workspace-page--mcq-list .workspace-header-sticky .workspace-card-head,
+  html body .workspace-page .chapter-practice-card:first-child .workspace-card-head {
+    padding: 26px 20px !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  html body .workspace-page > .workspace-card:first-child .label-xs,
+  html body .workspace-page > .workspace-card:first-of-type.workspace-header-sticky .label-xs,
+  html body .workspace-page--mcq-list .workspace-header-sticky .label-xs,
+  html body .workspace-page .chapter-practice-card:first-child .label-xs {
+    color: #facc15 !important;
+    text-shadow: none !important;
+  }
+
+  html body .workspace-page > .workspace-card:first-child h1,
+  html body .workspace-page > .workspace-card:first-child h2,
+  html body .workspace-page > .workspace-card:first-child h3,
+  html body .workspace-page > .workspace-card:first-child .workspace-card-title,
+  html body .workspace-page > .workspace-card:first-of-type.workspace-header-sticky h1,
+  html body .workspace-page > .workspace-card:first-of-type.workspace-header-sticky h2,
+  html body .workspace-page > .workspace-card:first-of-type.workspace-header-sticky h3,
+  html body .workspace-page > .workspace-card:first-of-type.workspace-header-sticky .workspace-card-title,
+  html body .workspace-page--mcq-list .workspace-header-sticky .workspace-card-title,
+  html body .workspace-page .chapter-practice-card:first-child .workspace-card-title {
+    color: #ffffff !important;
+    font-size: clamp(28px, 8vw, 38px) !important;
+    line-height: 1.08 !important;
+    letter-spacing: -0.02em !important;
+  }
+
+  html body .workspace-page > .workspace-card:first-child p,
+  html body .workspace-page > .workspace-card:first-child .workspace-card-subtitle,
+  html body .workspace-page > .workspace-card:first-of-type.workspace-header-sticky p,
+  html body .workspace-page > .workspace-card:first-of-type.workspace-header-sticky .workspace-card-subtitle,
+  html body .workspace-page--mcq-list .workspace-header-sticky .workspace-card-subtitle,
+  html body .workspace-page--mcq-list .workspace-header-sticky .workspace-header-date,
+  html body .workspace-page .chapter-practice-card:first-child p {
+    color: rgba(255, 255, 255, 0.90) !important;
+    line-height: 1.45 !important;
+  }
+
+  html body .workspace-page > .workspace-card:first-child .inline-actions,
+  html body .workspace-page > .workspace-card:first-of-type.workspace-header-sticky .inline-actions,
+  html body .workspace-page--mcq-list .workspace-header-sticky .inline-actions,
+  html body .workspace-page .chapter-practice-card:first-child .inline-actions,
+  html body .workspace-page > .workspace-hero .workspace-hero-actions,
+  html body .workspace-page > .notification-hero .workspace-hero-actions {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+    width: 100% !important;
+    margin-top: 22px !important;
+  }
+
+  html body .workspace-page > .workspace-card:first-child .inline-actions .btn,
+  html body .workspace-page > .workspace-card:first-of-type.workspace-header-sticky .inline-actions .btn,
+  html body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn,
+  html body .workspace-page .chapter-practice-card:first-child .inline-actions .btn,
+  html body .workspace-page > .workspace-hero .workspace-hero-actions .btn,
+  html body .workspace-page > .notification-hero .workspace-hero-actions .btn {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 48px !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    color: #ffffff !important;
+    background: rgba(42, 28, 89, 0.78) !important;
+    box-shadow: none !important;
+  }
+
+  html body .workspace-page > .workspace-card:first-child .inline-actions .btn:first-child,
+  html body .workspace-page > .workspace-card:first-of-type.workspace-header-sticky .inline-actions .btn:first-child,
+  html body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn:first-child,
+  html body .workspace-page .chapter-practice-card:first-child .inline-actions .btn:first-child,
+  html body .workspace-page > .workspace-hero .workspace-hero-actions .btn:first-child,
+  html body .workspace-page > .notification-hero .workspace-hero-actions .btn:first-child {
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.72) !important;
+    background: linear-gradient(135deg, #facc15 0%, #fb923c 50%, #f97316 100%) !important;
+    box-shadow: 0 16px 28px rgba(249, 115, 22, 0.30) !important;
+  }
+
+  html body .workspace-page > .workspace-card:first-child .inline-actions .btn:only-child,
+  html body .workspace-page > .workspace-card:first-of-type.workspace-header-sticky .inline-actions .btn:only-child,
+  html body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn:only-child,
+  html body .workspace-page .chapter-practice-card:first-child .inline-actions .btn:only-child {
+    grid-column: 1 / -1 !important;
+  }
+
+  html body .workspace-page > .workspace-card:first-child .hero-mini-card,
+  html body .workspace-page > .workspace-hero .hero-mini-card,
+  html body .workspace-page > .notification-hero .hero-mini-card,
+  html body .workspace-page > .notification-hero .notification-hero-panel {
+    background: #f8fafc !important;
+    border: 2px solid rgba(203, 213, 225, 0.95) !important;
+    color: #0f172a !important;
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.14) !important;
+  }
+
+  html body .workspace-page > .workspace-card:first-child .hero-mini-card *,
+  html body .workspace-page > .workspace-hero .hero-mini-card *,
+  html body .workspace-page > .notification-hero .hero-mini-card *,
+  html body .workspace-page > .notification-hero .notification-hero-panel * {
+    color: inherit !important;
+  }
+}
+
+/* Mobile-only MCQ editor cleanup: remove nested layering so content gets full width. */
+@media (max-width: 760px) {
+  html body .workspace-page--mcq-list {
+    padding-inline: 6px !important;
+    overflow-x: hidden !important;
+  }
+
+  html body .workspace-page--mcq-list .workspace-card,
+  html body .workspace-page--mcq-list .workspace-card-body,
+  html body .teacher-mcq-list,
+  html body .teacher-mcq-list--editable,
+  html body .review-queue-card,
+  html body .review-queue-card .workspace-card-body {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-inline: 0 !important;
+    margin-inline: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  html body article.mcq-managed-parent-card,
+  html body article.mcq-managed-parent-card:nth-child(even),
+  html body article.mcq-managed-parent-card:nth-of-type(even),
+  html body article.mcq-review-parent-card,
+  html body article.mcq-review-parent-card:nth-child(even),
+  html body article.mcq-review-parent-card:nth-of-type(even),
+  html body article.teacher-mcq-row--editor.mcq-review-parent-card,
+  html body .teacher-mcq-list > article.mcq-managed-parent-card,
+  html body .teacher-mcq-list--editable > article.mcq-managed-parent-card,
+  html body .review-queue-card article.mcq-review-parent-card,
+  html[data-theme="dark"] body article.mcq-managed-parent-card,
+  html[data-theme="dark"] body article.mcq-managed-parent-card:nth-child(even),
+  html[data-theme="dark"] body article.mcq-managed-parent-card:nth-of-type(even),
+  html[data-theme="dark"] body article.mcq-review-parent-card,
+  html[data-theme="dark"] body article.mcq-review-parent-card:nth-child(even),
+  html[data-theme="dark"] body article.mcq-review-parent-card:nth-of-type(even),
+  html[data-theme="dark"] body article.teacher-mcq-row--editor.mcq-review-parent-card,
+  html[data-theme="dark"] body .teacher-mcq-list > article.mcq-managed-parent-card,
+  html[data-theme="dark"] body .teacher-mcq-list--editable > article.mcq-managed-parent-card,
+  html[data-theme="dark"] body .review-queue-card article.mcq-review-parent-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 14px 0 !important;
+    padding: 10px !important;
+    border-width: 2px !important;
+    border-style: solid !important;
+    border-color: rgba(124, 104, 190, 0.72) !important;
+    border-radius: 20px !important;
+    background: #ffffff !important;
+    background-image: none !important;
+    box-shadow: 0 10px 22px rgba(49, 46, 129, 0.12) !important;
+    overflow: hidden !important;
+  }
+
+  html[data-theme="dark"] body article.mcq-managed-parent-card,
+  html[data-theme="dark"] body article.mcq-managed-parent-card:nth-child(even),
+  html[data-theme="dark"] body article.mcq-managed-parent-card:nth-of-type(even),
+  html[data-theme="dark"] body article.mcq-review-parent-card,
+  html[data-theme="dark"] body article.mcq-review-parent-card:nth-child(even),
+  html[data-theme="dark"] body article.mcq-review-parent-card:nth-of-type(even),
+  html[data-theme="dark"] body article.teacher-mcq-row--editor.mcq-review-parent-card,
+  html[data-theme="dark"] body .teacher-mcq-list > article.mcq-managed-parent-card,
+  html[data-theme="dark"] body .teacher-mcq-list--editable > article.mcq-managed-parent-card,
+  html[data-theme="dark"] body .review-queue-card article.mcq-review-parent-card {
+    background: #141132 !important;
+    background-image: none !important;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.34) !important;
+  }
+
+  html body article.mcq-managed-parent-card::before,
+  html body article.mcq-managed-parent-card::after,
+  html body article.mcq-review-parent-card::before,
+  html body article.mcq-review-parent-card::after,
+  html body .teacher-review-render-card::before,
+  html body .teacher-review-render-card::after,
+  html body .teacher-mcq-editor-bottom::before,
+  html body .teacher-mcq-editor-bottom::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  html body article.mcq-managed-parent-card > .mcq-inline-card-header,
+  html body article.mcq-managed-parent-card > .mcq-inline-card-form,
+  html body article.mcq-review-parent-card > .teacher-mcq-editor-head,
+  html body article.mcq-review-parent-card > .review-validation-list,
+  html body article.mcq-review-parent-card > .floating-field,
+  html body article.mcq-review-parent-card > .teacher-review-render-block,
+  html body article.mcq-review-parent-card > .teacher-mcq-option-grid,
+  html body article.mcq-review-parent-card > .teacher-mcq-editor-bottom,
+  html body article.mcq-review-parent-card > .teacher-mcq-action-row,
+  html body .teacher-review-render-card,
+  html body .teacher-mcq-editor-bottom,
+  html body .teacher-mcq-editor-bottom .floating-field,
+  html body .teacher-mcq-option-grid,
+  html body .teacher-mcq-option-field,
+  html body .review-validation-list,
+  html body .floating-field {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 10px 0 !important;
+    padding: 12px !important;
+    border-width: 1px !important;
+    border-radius: 16px !important;
+    background-image: none !important;
+    box-shadow: none !important;
+  }
+
+  html[data-theme="dark"] body article.mcq-review-parent-card > .teacher-mcq-editor-head,
+  html[data-theme="dark"] body article.mcq-review-parent-card > .review-validation-list,
+  html[data-theme="dark"] body article.mcq-review-parent-card > .floating-field,
+  html[data-theme="dark"] body article.mcq-review-parent-card > .teacher-review-render-block,
+  html[data-theme="dark"] body article.mcq-review-parent-card > .teacher-mcq-option-grid,
+  html[data-theme="dark"] body article.mcq-review-parent-card > .teacher-mcq-editor-bottom,
+  html[data-theme="dark"] body .teacher-review-render-card,
+  html[data-theme="dark"] body .teacher-mcq-editor-bottom,
+  html[data-theme="dark"] body .teacher-mcq-editor-bottom .floating-field,
+  html[data-theme="dark"] body .teacher-mcq-option-grid,
+  html[data-theme="dark"] body .teacher-mcq-option-field,
+  html[data-theme="dark"] body .review-validation-list,
+  html[data-theme="dark"] body .floating-field {
+    background: #19153a !important;
+    border-color: rgba(124, 104, 190, 0.50) !important;
+  }
+
+  html body .teacher-mcq-option-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  html body .teacher-mcq-editor-bottom {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  html body .teacher-mcq-editor-bottom input,
+  html body .teacher-mcq-editor-bottom textarea,
+  html body .teacher-mcq-editor-bottom select,
+  html body .teacher-review-render-content,
+  html body .teacher-mcq-option-field textarea,
+  html body .teacher-mcq-option-field input,
+  html body .floating-field input,
+  html body .floating-field textarea,
+  html body .floating-field select {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  html body .teacher-mcq-image-tools,
+  html body .teacher-image-tools,
+  html body .image-upload-actions,
+  html body .image-url-row {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  html body .teacher-mcq-image-tools .btn,
+  html body .teacher-image-tools .btn,
+  html body .image-upload-actions .btn,
+  html body .image-url-row .btn {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+}
