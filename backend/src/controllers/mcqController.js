@@ -31,7 +31,8 @@ const slugifyChapter = (name) =>
     .replace(/^-+|-+$/g, '')
 
 
-const STUDENT_CHAPTER_TEST_SIZE = 70
+const STUDENT_CHAPTER_SPLIT_THRESHOLD = 70
+const STUDENT_CHAPTER_TEST_SIZE = 50
 
 const normalizeTestPart = (value) => {
   const part = Number(value)
@@ -47,7 +48,7 @@ const sliceMcqsForVirtualTest = (mcqs, testPart) => {
 
 const buildVirtualChapterTests = (chapter, totalMcqs) => {
   const count = Number(totalMcqs || 0)
-  if (count <= STUDENT_CHAPTER_TEST_SIZE) return []
+  if (count <= STUDENT_CHAPTER_SPLIT_THRESHOLD) return []
   const parts = Math.ceil(count / STUDENT_CHAPTER_TEST_SIZE)
   return Array.from({ length: parts }, (_, index) => {
     const part = index + 1
