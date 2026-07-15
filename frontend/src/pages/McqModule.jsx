@@ -1274,7 +1274,7 @@ function ReviewQueueReadonlyCard({ item, index, onEdit, onApprove, onDelete }) {
 
 function McqList() {
   const { subject, chapterId } = useParams()
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const { isTeacher } = useAuth()
   const meta = subjectById(subject)
   const [lockMessage, setLockMessage] = useState('')
@@ -1285,7 +1285,8 @@ function McqList() {
   const [loading, setLoading] = useState(true)
   const [modal, setModal] = useState(null)
   const [selectedTopicId, setSelectedTopicId] = useState('')
-  const [viewMode, setViewMode] = useState('mcqs')
+  const initialViewMode = searchParams.get('view') === 'review' ? 'review' : 'mcqs'
+  const [viewMode, setViewMode] = useState(initialViewMode)
   const fileRef = useRef(null)
   const testPart = searchParams.get('testPart')
 
@@ -1323,6 +1324,19 @@ function McqList() {
   useEffect(() => {
     load()
   }, [subject, chapterId, selectedTopicId, testPart]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!isTeacher) return
+    setViewMode(searchParams.get('view') === 'review' ? 'review' : 'mcqs')
+  }, [isTeacher, searchParams])
+
+  const updateViewMode = (nextMode) => {
+    setViewMode(nextMode)
+    if (!isTeacher) return
+    const nextParams = new URLSearchParams(searchParams)
+    nextParams.set('view', nextMode)
+    setSearchParams(nextParams, { replace: true })
+  }
 
   const saveTopic = async (payload) => {
     try {
@@ -1509,7 +1523,7 @@ function McqList() {
         },
       )
       toast.success('Review item pushed to main MCQs')
-      setViewMode('review')
+      updateViewMode('review')
       load()
     } catch (error) {
       toast.error(getUserFriendlyErrorMessage(error, 'We could not push the review item right now.'))
@@ -1582,7 +1596,7 @@ function McqList() {
               <button
                 className="btn btn-secondary"
                 type="button"
-                onClick={() => setViewMode('mcqs')}
+                onClick={() => updateViewMode('mcqs')}
               >
                 MCQs Test
               </button>
@@ -1591,14 +1605,14 @@ function McqList() {
               <button
                 className="btn btn-secondary"
                 type="button"
-                onClick={() => setViewMode('review')}
+                onClick={() => updateViewMode('review')}
               >
                 {`Review Queue${reviewQueue.length ? ` (${reviewQueue.length})` : ''}`}
               </button>
             ) : null}
             {isTeacher ? (
               <button
-                className="btn btn-primary"
+                className="btn btn-secondary"
                 type="button"
                 onClick={() => setModal({ type: 'mcq' })}
               >
@@ -1674,7 +1688,7 @@ function McqList() {
                   <button
                     className="btn btn-secondary"
                     type="button"
-                    onClick={() => setViewMode('mcqs')}
+                    onClick={() => updateViewMode('mcqs')}
                   >
                     Back To Main MCQs
                   </button>
@@ -1852,7 +1866,7 @@ function McqList() {
 
 function QuizAttempt() {
   const { subject, chapterId } = useParams()
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
   const location = useLocation()
   const { user } = useAuth()
@@ -2320,7 +2334,7 @@ function QuizAttempt() {
 
 function QuizResult() {
   const { subject, chapterId } = useParams()
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const location = useLocation()
   const navigate = useNavigate()
   const { user } = useAuth()
