@@ -6454,3 +6454,68 @@ html[data-theme="dark"] body .teacher-mcq-list--editable > .teacher-mcq-row--edi
     linear-gradient(135deg, #063f48 0%, #172d68 48%, #35206f 100%) !important;
   border-color: #34d399 !important;
 }
+
+/* Force parent highlight on every teacher MCQ/review article, not only first match */
+html body article.mcq-inline-card,
+html body article.teacher-mcq-row--editor,
+html body .teacher-mcq-list > article.mcq-inline-card,
+html body .teacher-mcq-list > article.teacher-mcq-row--editor,
+html body .teacher-mcq-list--editable > article.teacher-mcq-row--editor {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 184, 0, 0.35), transparent 24%),
+    linear-gradient(135deg, #c7d8ff 0%, #ddd2ff 45%, #bff7ea 100%) !important;
+  border: 5px solid #6c47ff !important;
+  border-top: 7px solid #6c47ff !important;
+  border-radius: 30px !important;
+  padding: 32px !important;
+  margin: 34px 0 !important;
+  box-shadow:
+    0 26px 70px rgba(68, 47, 180, 0.30),
+    0 0 0 6px rgba(108, 71, 255, 0.12) !important;
+  background-clip: padding-box !important;
+}
+
+html body article.mcq-inline-card:nth-child(even),
+html body article.teacher-mcq-row--editor:nth-child(even),
+html body .teacher-mcq-list > article.mcq-inline-card:nth-child(even),
+html body .teacher-mcq-list > article.teacher-mcq-row--editor:nth-child(even),
+html body .teacher-mcq-list--editable > article.teacher-mcq-row--editor:nth-child(even) {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(16, 168, 117, 0.36), transparent 24%),
+    linear-gradient(135deg, #bff7ea 0%, #d7e9ff 45%, #e7d8ff 100%) !important;
+  border-color: #10a875 !important;
+  border-top-color: #10a875 !important;
+  box-shadow:
+    0 26px 70px rgba(16, 168, 117, 0.24),
+    0 0 0 6px rgba(16, 168, 117, 0.12) !important;
+}
+
+html[data-theme="dark"] body article.mcq-inline-card,
+html[data-theme="dark"] body article.teacher-mcq-row--editor,
+html[data-theme="dark"] body .teacher-mcq-list > article.mcq-inline-card,
+html[data-theme="dark"] body .teacher-mcq-list > article.teacher-mcq-row--editor,
+html[data-theme="dark"] body .teacher-mcq-list--editable > article.teacher-mcq-row--editor {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 184, 0, 0.24), transparent 26%),
+    linear-gradient(135deg, #3d247d 0%, #17366f 48%, #064650 100%) !important;
+  border: 5px solid #b9a7ff !important;
+  border-top: 7px solid #b9a7ff !important;
+  box-shadow:
+    0 28px 78px rgba(0, 0, 0, 0.62),
+    0 0 0 6px rgba(185, 167, 255, 0.14) !important;
+}
+
+html[data-theme="dark"] body article.mcq-inline-card:nth-child(even),
+html[data-theme="dark"] body article.teacher-mcq-row--editor:nth-child(even),
+html[data-theme="dark"] body .teacher-mcq-list > article.mcq-inline-card:nth-child(even),
+html[data-theme="dark"] body .teacher-mcq-list > article.teacher-mcq-row--editor:nth-child(even),
+html[data-theme="dark"] body .teacher-mcq-list--editable > article.teacher-mcq-row--editor:nth-child(even) {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(52, 211, 153, 0.24), transparent 26%),
+    linear-gradient(135deg, #064650 0%, #17366f 48%, #3d247d 100%) !important;
+  border-color: #34d399 !important;
+  border-top-color: #34d399 !important;
+  box-shadow:
+    0 28px 78px rgba(0, 0, 0, 0.62),
+    0 0 0 6px rgba(52, 211, 153, 0.14) !important;
+}
