@@ -1189,7 +1189,7 @@ function ReviewQueueReadonlyCard({ item, index, onEdit, onApprove, onDelete }) {
       .match(/[A-D]/)?.[0] || ''
 
   return (
-    <article className="teacher-mcq-row teacher-mcq-row--editor">
+    <article className="teacher-mcq-row teacher-mcq-row--editor mcq-review-parent-card">
       <div className="teacher-mcq-editor-head">
         <span className="state-chip state-chip--neutral">
           MCQ {item.originalQuestionNumber || item.questionNumber || item.row || index + 1}

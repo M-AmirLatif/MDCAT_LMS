@@ -10638,3 +10638,164 @@ html[data-theme="dark"] .payments-student-page .payments-summary-card .badge *,
 [data-theme="dark"] .review-queue-card h3 {
   color: #ffffff !important;
 }
+
+/* Final review queue card polish: clear parent boundary and section separation */
+html body .teacher-mcq-list--editable > article.mcq-review-parent-card,
+html body .review-queue-card article.mcq-review-parent-card,
+html body article.teacher-mcq-row--editor.mcq-review-parent-card {
+  position: relative !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  margin: 34px 0 !important;
+  padding: 32px !important;
+  border-radius: 30px !important;
+  border: 5px solid rgba(98, 70, 255, 0.82) !important;
+  background:
+    linear-gradient(90deg, rgba(108, 71, 255, 0.24) 0 30px, transparent 30px calc(100% - 30px), rgba(20, 184, 166, 0.20) calc(100% - 30px)),
+    linear-gradient(135deg, #efeaff 0%, #e8f7ff 52%, #f2ecff 100%) !important;
+  box-shadow:
+    0 24px 55px rgba(49, 46, 129, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+}
+
+html body .teacher-mcq-list--editable > article.mcq-review-parent-card:nth-child(even),
+html body .review-queue-card article.mcq-review-parent-card:nth-child(even) {
+  border-color: rgba(20, 184, 166, 0.82) !important;
+  background:
+    linear-gradient(90deg, rgba(20, 184, 166, 0.25) 0 30px, transparent 30px calc(100% - 30px), rgba(108, 71, 255, 0.20) calc(100% - 30px)),
+    linear-gradient(135deg, #e7fff8 0%, #edf4ff 52%, #f1edff 100%) !important;
+}
+
+html body article.mcq-review-parent-card > .teacher-mcq-editor-head,
+html body article.mcq-review-parent-card > .review-validation-list,
+html body article.mcq-review-parent-card > .floating-field,
+html body article.mcq-review-parent-card > .teacher-review-render-block,
+html body article.mcq-review-parent-card > .teacher-mcq-option-grid,
+html body article.mcq-review-parent-card > .teacher-mcq-editor-bottom,
+html body article.mcq-review-parent-card > .teacher-mcq-action-row {
+  width: auto !important;
+  margin: 0 28px 26px !important;
+  box-sizing: border-box !important;
+}
+
+html body article.mcq-review-parent-card > .teacher-mcq-editor-head {
+  padding: 22px 28px !important;
+  border-radius: 22px !important;
+  border: 2px solid rgba(98, 70, 255, 0.34) !important;
+  background: rgba(255, 255, 255, 0.76) !important;
+}
+
+html body article.mcq-review-parent-card > .review-validation-list,
+html body article.mcq-review-parent-card > .floating-field,
+html body article.mcq-review-parent-card > .teacher-review-render-block,
+html body article.mcq-review-parent-card > .teacher-mcq-option-grid,
+html body article.mcq-review-parent-card > .teacher-mcq-editor-bottom {
+  padding: 28px !important;
+  border-radius: 24px !important;
+  border: 2.5px solid rgba(99, 102, 241, 0.34) !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+  box-shadow: 0 14px 30px rgba(49, 46, 129, 0.10) !important;
+}
+
+html body article.mcq-review-parent-card > .review-validation-list {
+  border-color: rgba(245, 158, 11, 0.72) !important;
+  background: linear-gradient(135deg, #fff7ed, #fffaf0) !important;
+}
+
+html body article.mcq-review-parent-card .teacher-review-render-card,
+html body article.mcq-review-parent-card .teacher-mcq-option-field,
+html body article.mcq-review-parent-card .teacher-mcq-editor-bottom > .floating-field {
+  border-radius: 22px !important;
+  border: 2px solid rgba(148, 163, 184, 0.56) !important;
+  background: rgba(248, 250, 252, 0.94) !important;
+}
+
+html body article.mcq-review-parent-card .teacher-review-render-content,
+html body article.mcq-review-parent-card textarea {
+  border-radius: 18px !important;
+  border: 2px solid rgba(148, 163, 184, 0.52) !important;
+  background: #eef4ff !important;
+  color: #071129 !important;
+}
+
+html body article.mcq-review-parent-card .teacher-mcq-option-field--correct {
+  border-color: #10b981 !important;
+  background: linear-gradient(135deg, #dcfff1, #f0fff8) !important;
+  box-shadow: inset 8px 0 0 #10b981 !important;
+}
+
+html[data-theme="dark"] body .teacher-mcq-list--editable > article.mcq-review-parent-card,
+html[data-theme="dark"] body .review-queue-card article.mcq-review-parent-card,
+html[data-theme="dark"] body article.teacher-mcq-row--editor.mcq-review-parent-card {
+  border-color: rgba(167, 139, 250, 0.95) !important;
+  background:
+    linear-gradient(90deg, rgba(124, 58, 237, 0.34) 0 30px, transparent 30px calc(100% - 30px), rgba(20, 184, 166, 0.22) calc(100% - 30px)),
+    linear-gradient(135deg, #25184f 0%, #151238 55%, #0f2239 100%) !important;
+  box-shadow:
+    0 26px 60px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+html[data-theme="dark"] body .teacher-mcq-list--editable > article.mcq-review-parent-card:nth-child(even),
+html[data-theme="dark"] body .review-queue-card article.mcq-review-parent-card:nth-child(even) {
+  border-color: rgba(45, 212, 191, 0.88) !important;
+  background:
+    linear-gradient(90deg, rgba(20, 184, 166, 0.26) 0 30px, transparent 30px calc(100% - 30px), rgba(124, 58, 237, 0.26) calc(100% - 30px)),
+    linear-gradient(135deg, #122f3a 0%, #171238 55%, #25184f 100%) !important;
+}
+
+html[data-theme="dark"] body article.mcq-review-parent-card > .teacher-mcq-editor-head,
+html[data-theme="dark"] body article.mcq-review-parent-card > .review-validation-list,
+html[data-theme="dark"] body article.mcq-review-parent-card > .floating-field,
+html[data-theme="dark"] body article.mcq-review-parent-card > .teacher-review-render-block,
+html[data-theme="dark"] body article.mcq-review-parent-card > .teacher-mcq-option-grid,
+html[data-theme="dark"] body article.mcq-review-parent-card > .teacher-mcq-editor-bottom {
+  border-color: rgba(167, 139, 250, 0.56) !important;
+  background: rgba(16, 13, 42, 0.82) !important;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.28) !important;
+}
+
+html[data-theme="dark"] body article.mcq-review-parent-card > .review-validation-list {
+  border-color: rgba(245, 158, 11, 0.72) !important;
+  background: rgba(120, 53, 15, 0.24) !important;
+}
+
+html[data-theme="dark"] body article.mcq-review-parent-card .teacher-review-render-card,
+html[data-theme="dark"] body article.mcq-review-parent-card .teacher-mcq-option-field,
+html[data-theme="dark"] body article.mcq-review-parent-card .teacher-mcq-editor-bottom > .floating-field {
+  border-color: rgba(167, 139, 250, 0.50) !important;
+  background: rgba(31, 27, 66, 0.92) !important;
+}
+
+html[data-theme="dark"] body article.mcq-review-parent-card .teacher-review-render-content,
+html[data-theme="dark"] body article.mcq-review-parent-card textarea {
+  border-color: rgba(167, 139, 250, 0.46) !important;
+  background: #120f31 !important;
+  color: #f8f7ff !important;
+}
+
+html[data-theme="dark"] body article.mcq-review-parent-card .teacher-mcq-option-field--correct {
+  border-color: #34d399 !important;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.24), rgba(18, 15, 49, 0.96)) !important;
+  box-shadow: inset 8px 0 0 #34d399 !important;
+}
+
+@media (max-width: 720px) {
+  html body article.mcq-review-parent-card {
+    padding: 18px !important;
+    border-radius: 24px !important;
+    border-width: 4px !important;
+  }
+
+  html body article.mcq-review-parent-card > .teacher-mcq-editor-head,
+  html body article.mcq-review-parent-card > .review-validation-list,
+  html body article.mcq-review-parent-card > .floating-field,
+  html body article.mcq-review-parent-card > .teacher-review-render-block,
+  html body article.mcq-review-parent-card > .teacher-mcq-option-grid,
+  html body article.mcq-review-parent-card > .teacher-mcq-editor-bottom,
+  html body article.mcq-review-parent-card > .teacher-mcq-action-row {
+    margin: 0 10px 18px !important;
+    padding: 18px !important;
+  }
+}
