@@ -128,7 +128,7 @@ function StudentDashboard({ firstName }) {
               <h3 className="workspace-card-title">Subject momentum</h3>
             </div>
           </div>
-          <div className="workspace-card-body chart-panel">
+          <div className="workspace-card-body chart-panel dashboard-momentum-chart">
             {!loading && performanceTrend.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={performanceTrend} margin={{ top: 22, right: 22, left: 4, bottom: 8 }}>
@@ -418,3 +418,5 @@ export default function PlatformDashboard() {
 
   return content
 }
+
+

@@ -5,6 +5,12 @@ import API, { getUserFriendlyErrorMessage } from '../services/api'
 import { getUserProfilePicture, normalizeProfilePictureForStorage, resolveAssetUrl } from '../utils/assetUrl'
 import './PlatformPages.css'
 
+const safeText = (value, fallback = '') => {
+  if (typeof value === 'string') return value
+  if (value === null || value === undefined) return fallback
+  return String(value)
+}
+
 function CameraIcon() {
   return (
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
@@ -15,11 +21,14 @@ function CameraIcon() {
 }
 
 export default function PlatformProfile() {
-  const { user, updateUser } = useAuth()
+  const auth = useAuth()
+  const user = auth?.user || null
+  const updateUser = typeof auth?.updateUser === 'function' ? auth.updateUser : () => {}
   const fileInputRef = useRef(null)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [photoError, setPhotoError] = useState(false)
+  const [photoRetry, setPhotoRetry] = useState(0)
   const [preferences, setPreferences] = useState({
     pushReminders: true,
     emailSummaries: true,
@@ -27,10 +36,10 @@ export default function PlatformProfile() {
   })
 
   const buildFormFromUser = (sourceUser = user) => ({
-    firstName: sourceUser?.firstName || '',
-    lastName: sourceUser?.lastName || '',
-    email: sourceUser?.email || 'student@mdcat.pk',
-    phone: sourceUser?.phone || '+92 300 1234567',
+    firstName: safeText(sourceUser?.firstName),
+    lastName: safeText(sourceUser?.lastName),
+    email: safeText(sourceUser?.email, 'student@mdcat.pk'),
+    phone: safeText(sourceUser?.phone, '+92 300 1234567'),
     city: 'Lahore',
     target: 'King Edward Medical University',
     profilePicture: getUserProfilePicture(sourceUser),
@@ -40,12 +49,13 @@ export default function PlatformProfile() {
 
   useEffect(() => {
     setPhotoError(false)
+    setPhotoRetry(0)
     setForm((current) => ({
       ...current,
-      firstName: user?.firstName || '',
-      lastName: user?.lastName || '',
-      email: user?.email || 'student@mdcat.pk',
-      phone: user?.phone || '+92 300 1234567',
+      firstName: safeText(user?.firstName),
+      lastName: safeText(user?.lastName),
+      email: safeText(user?.email, 'student@mdcat.pk'),
+      phone: safeText(user?.phone, '+92 300 1234567'),
       profilePicture: getUserProfilePicture(user),
     }))
   }, [user])
@@ -96,7 +106,8 @@ export default function PlatformProfile() {
       const nextUser = profileRes.data.user
       updateUser(nextUser)
       setPhotoError(false)
-      setForm((current) => ({ ...current, profilePicture }))
+    setPhotoRetry(0)
+    setForm((current) => ({ ...current, profilePicture }))
       toast.success('Profile photo updated.')
     } catch (error) {
       toast.error(getUserFriendlyErrorMessage(error, 'We could not update the profile photo right now.'))
@@ -126,25 +137,27 @@ export default function PlatformProfile() {
 
   const discardChanges = () => {
     setPhotoError(false)
+    setPhotoRetry(0)
     setForm(buildFormFromUser(user))
   }
 
   const displayProfilePicture = useMemo(() => {
-    if (!form.profilePicture) return ''
-    if (!photoRetry) return form.profilePicture
-    const separator = form.profilePicture.includes('?') ? '&' : '?'
-    return `${form.profilePicture}${separator}retry=${photoRetry}`
+    const currentPicture = safeText(form.profilePicture).trim()
+    if (!currentPicture) return ''
+    if (!photoRetry) return currentPicture
+    const separator = currentPicture.includes('?') ? '&' : '?'
+    return `${currentPicture}${separator}retry=${photoRetry}`
   }, [form.profilePicture, photoRetry])
 
   const handlePhotoError = () => {
-    if (form.profilePicture && photoRetry < 1) {
+    if (safeText(form.profilePicture).trim() && photoRetry < 1) {
       setPhotoRetry((current) => current + 1)
       return
     }
     setPhotoError(true)
   }
 
-  const showProfilePhoto = Boolean(form.profilePicture && !photoError)
+  const showProfilePhoto = Boolean(safeText(form.profilePicture).trim() && !photoError)
 
   return (
     <div className="workspace-page animate-fade-up">
@@ -193,7 +206,7 @@ export default function PlatformProfile() {
                     {uploading ? 'Uploading...' : 'Upload New Photo'}
                   </button>
                   {showProfilePhoto ? (
-                    <a className="btn btn-secondary profile-view-photo-btn" href={displayProfilePicture || form.profilePicture} target="_blank" rel="noreferrer">
+                    <a className="btn btn-secondary profile-view-photo-btn" href={displayProfilePicture || safeText(form.profilePicture)} target="_blank" rel="noreferrer">
                       View Photo
                     </a>
                   ) : null}
@@ -257,3 +270,8 @@ export default function PlatformProfile() {
     </div>
   )
 }
+
+
+
+
+

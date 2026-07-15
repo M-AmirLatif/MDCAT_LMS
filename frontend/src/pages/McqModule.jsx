@@ -164,13 +164,11 @@ async function uploadMcqImage(file) {
 }
 
 function McqImageManager({ id, label, images = [], onChange }) {
-  const [url, setUrl] = useState('')
   const [uploading, setUploading] = useState(false)
   const addImage = (nextUrl) => {
     const clean = String(nextUrl || '').trim()
     if (!clean) return
     onChange([...(images || []), clean])
-    setUrl('')
   }
 
   const uploadFile = async (file, sourceLabel = label) => {
@@ -271,12 +269,6 @@ function McqImageManager({ id, label, images = [], onChange }) {
           ))}
         </div>
       ) : null}
-      <div className="mcq-image-url-row">
-        <input value={url} onChange={(event) => setUrl(event.target.value)} placeholder="Paste image URL" />
-        <button className="btn btn-ghost btn-sm" type="button" onClick={() => addImage(url)}>
-          Add URL
-        </button>
-      </div>
     </div>
   )
 }
@@ -2248,7 +2240,7 @@ function QuizAttempt() {
             </div>
             <h1>Quiz Attempt</h1>
             <p>
-              Question {getMcqDisplayNumber(current, currentIndex, mcqDisplayNumberOffset)} • {currentIndex + 1} of {mcqs.length}
+              Question {currentIndex + 1} of {mcqs.length}
             </p>
           </div>
           <div className="mcq-practice-tools">
@@ -2579,6 +2571,9 @@ function ReviewSection({ title, items }) {
 export { CourseSelection, ChapterList, McqList, QuizAttempt, QuizResult }
 
 export default CourseSelection
+
+
+
 
 
 
