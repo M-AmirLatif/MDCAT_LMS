@@ -11187,3 +11187,84 @@ html[data-theme="dark"] body article.mcq-review-parent-card > .teacher-mcq-actio
     font-size: clamp(11px, 3vw, 13px) !important;
   }
 }
+
+/* Final unified MCQ parent shell: every MCQ card must match the first card. */
+html:not([data-theme="dark"]) body article.mcq-managed-parent-card,
+html:not([data-theme="dark"]) body article.mcq-managed-parent-card:nth-child(even),
+html:not([data-theme="dark"]) body article.mcq-managed-parent-card:nth-of-type(even),
+html:not([data-theme="dark"]) body .teacher-mcq-list > article.mcq-managed-parent-card,
+html:not([data-theme="dark"]) body .teacher-mcq-list > article.mcq-managed-parent-card:nth-child(even),
+html:not([data-theme="dark"]) body .teacher-mcq-list > article.mcq-managed-parent-card:nth-of-type(even),
+html:not([data-theme="dark"]) body .teacher-mcq-list--editable > article.mcq-managed-parent-card,
+html:not([data-theme="dark"]) body .teacher-mcq-list--editable > article.mcq-managed-parent-card:nth-child(even),
+html:not([data-theme="dark"]) body .teacher-mcq-list--editable > article.mcq-managed-parent-card:nth-of-type(even),
+html:not([data-theme="dark"]) body article.mcq-review-parent-card,
+html:not([data-theme="dark"]) body article.mcq-review-parent-card:nth-child(even),
+html:not([data-theme="dark"]) body article.mcq-review-parent-card:nth-of-type(even),
+html:not([data-theme="dark"]) body .review-queue-card article.mcq-review-parent-card,
+html:not([data-theme="dark"]) body .review-queue-card article.mcq-review-parent-card:nth-child(even),
+html:not([data-theme="dark"]) body .review-queue-card article.mcq-review-parent-card:nth-of-type(even),
+html:not([data-theme="dark"]) body article.teacher-mcq-row--editor.mcq-review-parent-card,
+html:not([data-theme="dark"]) body article.teacher-mcq-row--editor.mcq-review-parent-card:nth-child(even),
+html:not([data-theme="dark"]) body article.teacher-mcq-row--editor.mcq-review-parent-card:nth-of-type(even) {
+  position: relative !important;
+  isolation: isolate !important;
+  overflow: hidden !important;
+  border: 5px solid #654cff !important;
+  border-top: 7px solid #654cff !important;
+  border-radius: 32px !important;
+  background:
+    linear-gradient(90deg, rgba(101, 76, 255, 0.28) 0 46px, transparent 46px calc(100% - 46px), rgba(20, 184, 166, 0.24) calc(100% - 46px) 100%),
+    radial-gradient(circle at 7% 8%, rgba(250, 204, 21, 0.24), transparent 30%),
+    linear-gradient(135deg, #f2edff 0%, #edf7ff 54%, #e8fff9 100%) !important;
+  box-shadow:
+    0 26px 64px rgba(49, 46, 129, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.96) !important;
+}
+
+html[data-theme="dark"] body article.mcq-managed-parent-card,
+html[data-theme="dark"] body article.mcq-managed-parent-card:nth-child(even),
+html[data-theme="dark"] body article.mcq-managed-parent-card:nth-of-type(even),
+html[data-theme="dark"] body .teacher-mcq-list > article.mcq-managed-parent-card,
+html[data-theme="dark"] body .teacher-mcq-list > article.mcq-managed-parent-card:nth-child(even),
+html[data-theme="dark"] body .teacher-mcq-list > article.mcq-managed-parent-card:nth-of-type(even),
+html[data-theme="dark"] body .teacher-mcq-list--editable > article.mcq-managed-parent-card,
+html[data-theme="dark"] body .teacher-mcq-list--editable > article.mcq-managed-parent-card:nth-child(even),
+html[data-theme="dark"] body .teacher-mcq-list--editable > article.mcq-managed-parent-card:nth-of-type(even),
+html[data-theme="dark"] body article.mcq-review-parent-card,
+html[data-theme="dark"] body article.mcq-review-parent-card:nth-child(even),
+html[data-theme="dark"] body article.mcq-review-parent-card:nth-of-type(even),
+html[data-theme="dark"] body .review-queue-card article.mcq-review-parent-card,
+html[data-theme="dark"] body .review-queue-card article.mcq-review-parent-card:nth-child(even),
+html[data-theme="dark"] body .review-queue-card article.mcq-review-parent-card:nth-of-type(even),
+html[data-theme="dark"] body article.teacher-mcq-row--editor.mcq-review-parent-card,
+html[data-theme="dark"] body article.teacher-mcq-row--editor.mcq-review-parent-card:nth-child(even),
+html[data-theme="dark"] body article.teacher-mcq-row--editor.mcq-review-parent-card:nth-of-type(even) {
+  position: relative !important;
+  isolation: isolate !important;
+  overflow: hidden !important;
+  border: 5px solid rgba(167, 139, 250, 0.94) !important;
+  border-top: 7px solid #8b5cf6 !important;
+  border-radius: 32px !important;
+  background:
+    linear-gradient(90deg, rgba(139, 92, 246, 0.32) 0 46px, transparent 46px calc(100% - 46px), rgba(45, 212, 191, 0.18) calc(100% - 46px) 100%),
+    radial-gradient(circle at 7% 8%, rgba(245, 158, 11, 0.16), transparent 30%),
+    linear-gradient(135deg, #25184f 0%, #171238 56%, #0f2239 100%) !important;
+  box-shadow:
+    0 26px 64px rgba(0, 0, 0, 0.44),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+html body article.mcq-managed-parent-card::before,
+html body article.mcq-managed-parent-card::after,
+html body article.mcq-review-parent-card::before,
+html body article.mcq-review-parent-card::after {
+  content: none !important;
+  display: none !important;
+}
+
+html body article.mcq-managed-parent-card > *,
+html body article.mcq-review-parent-card > * {
+  position: relative !important;
+  z-index: 1 !important;
+}

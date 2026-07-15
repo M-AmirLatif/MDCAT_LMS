@@ -618,6 +618,14 @@ function ChapterList() {
     }
   }
 
+  const buildChapterMcqPath = (chapter) => {
+    const params = new URLSearchParams()
+    if (chapter.topicId) params.set('topicId', chapter.topicId)
+    if (chapter.testPart) params.set('testPart', chapter.testPart)
+    const query = params.toString()
+    return `/mcqs/${subject}/${chapter.id}${query ? `?${query}` : ''}`
+  }
+
   const deleteChapter = async (chapter) => {
     if (
       !window.confirm(
@@ -674,7 +682,7 @@ function ChapterList() {
       <div className="chapter-browser-grid">
         {chapters.map((chapter) => (
           <article
-            key={`${chapter.id}-${chapter.testPart || 'base'}`}
+            key={`${chapter.id}-${chapter.topicId || 'chapter'}-${chapter.testPart || 'base'}`}
             className={`workspace-card chapter-practice-card ${chapter.isLocked ? 'chapter-practice-card--locked' : ''}`}
           >
             <div className="workspace-card-head">
@@ -700,7 +708,7 @@ function ChapterList() {
                 ) : (
                   <Link
                     className="btn btn-primary btn-sm"
-                    to={`/mcqs/${subject}/${chapter.id}${chapter.testPart ? `?testPart=${chapter.testPart}` : ''}`}
+                    to={buildChapterMcqPath(chapter)}
                   >
                     Open MCQs
                   </Link>
@@ -1296,11 +1304,20 @@ function McqList() {
   const [reviewQueue, setReviewQueue] = useState([])
   const [loading, setLoading] = useState(true)
   const [modal, setModal] = useState(null)
-  const [selectedTopicId, setSelectedTopicId] = useState('')
+  const [selectedTopicId, setSelectedTopicId] = useState(searchParams.get('topicId') || '')
   const initialViewMode = searchParams.get('view') === 'review' ? 'review' : 'mcqs'
   const [viewMode, setViewMode] = useState(initialViewMode)
   const fileRef = useRef(null)
   const testPart = searchParams.get('testPart')
+  const topicIdParam = searchParams.get('topicId')
+  const studentMcqQuery = useMemo(() => {
+    const params = new URLSearchParams()
+    const activeTopicId = selectedTopicId || topicIdParam
+    if (activeTopicId) params.set('topicId', activeTopicId)
+    if (testPart) params.set('testPart', testPart)
+    const query = params.toString()
+    return query ? `?${query}` : ''
+  }, [selectedTopicId, testPart, topicIdParam])
 
   const selectedTopic =
     topics.find((topic) => topic.id === selectedTopicId) || null
@@ -1643,7 +1660,7 @@ function McqList() {
             {!isTeacher ? (
               <Link
                 className="btn btn-primary"
-                to={`/mcqs/${subject}/${chapterId}/attempt${!isTeacher && testPart ? `?testPart=${testPart}` : ''}`}
+                to={`/mcqs/${subject}/${chapterId}/attempt${!isTeacher ? studentMcqQuery : ''}`}
               >
                 Start Quiz
               </Link>
@@ -1828,7 +1845,7 @@ function McqList() {
                   </div>
                   <Link
                     className="btn btn-primary"
-                    to={`/mcqs/${subject}/${chapterId}/attempt${!isTeacher && testPart ? `?testPart=${testPart}` : ''}`}
+                    to={`/mcqs/${subject}/${chapterId}/attempt${!isTeacher ? studentMcqQuery : ''}`}
                   >
                     Start focused practice
                   </Link>
@@ -1884,8 +1901,21 @@ function QuizAttempt() {
   const { user } = useAuth()
   const meta = subjectById(subject)
   const testPart = searchParams.get('testPart')
-  const chapterAttemptId = testPart ? `${chapterId}-part-${testPart}` : chapterId
-  const testPartQuery = testPart ? `?testPart=${encodeURIComponent(testPart)}` : ''
+  const topicIdParam = searchParams.get('topicId')
+  const chapterAttemptId = [
+    chapterId,
+    topicIdParam ? `topic-${topicIdParam}` : null,
+    testPart ? `part-${testPart}` : null,
+  ]
+    .filter(Boolean)
+    .join('-')
+  const testPartQuery = (() => {
+    const params = new URLSearchParams()
+    if (topicIdParam) params.set('topicId', topicIdParam)
+    if (testPart) params.set('testPart', testPart)
+    const query = params.toString()
+    return query ? `?${query}` : ''
+  })()
   const [chapter, setChapter] = useState(null)
   const [mcqs, setMcqs] = useState([])
   const [loading, setLoading] = useState(true)
@@ -2351,8 +2381,21 @@ function QuizResult() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const testPart = searchParams.get('testPart')
-  const chapterAttemptId = testPart ? `${chapterId}-part-${testPart}` : chapterId
-  const testPartQuery = testPart ? `?testPart=${encodeURIComponent(testPart)}` : ''
+  const topicIdParam = searchParams.get('topicId')
+  const chapterAttemptId = [
+    chapterId,
+    topicIdParam ? `topic-${topicIdParam}` : null,
+    testPart ? `part-${testPart}` : null,
+  ]
+    .filter(Boolean)
+    .join('-')
+  const testPartQuery = (() => {
+    const params = new URLSearchParams()
+    if (topicIdParam) params.set('topicId', topicIdParam)
+    if (testPart) params.set('testPart', testPart)
+    const query = params.toString()
+    return query ? `?${query}` : ''
+  })()
   const quizUserKey = useMemo(
     () => user?.email || user?._id || user?.id || 'guest',
     [user?.email, user?._id, user?.id],
@@ -2532,6 +2575,11 @@ function ReviewSection({ title, items }) {
 export { CourseSelection, ChapterList, McqList, QuizAttempt, QuizResult }
 
 export default CourseSelection
+
+
+
+
+
 
 
 
