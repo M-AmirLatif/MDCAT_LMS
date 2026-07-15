@@ -5926,3 +5926,26 @@ html .teacher-mcq-row--editor .teacher-mcq-option-field--correct .teacher-review
 html[data-theme="dark"] .teacher-mcq-row--editor .teacher-mcq-option-field--correct .teacher-review-render-content {
   color: var(--mcq-ui-text) !important;
 }
+
+/* MCQ attempt: restore horizontal space while keeping compact internals */
+@media (min-width: 1024px) {
+  html .mcq-attempt-layout .mcq-question-card,
+  html[data-theme="dark"] .mcq-attempt-layout .mcq-question-card {
+    width: min(86%, 1120px) !important;
+  }
+
+  html .mcq-attempt-layout .mcq-question-title,
+  html[data-theme="dark"] .mcq-attempt-layout .mcq-question-title,
+  html .mcq-attempt-layout .mcq-options-grid,
+  html[data-theme="dark"] .mcq-attempt-layout .mcq-options-grid,
+  html .mcq-attempt-layout .mcq-nav-actions,
+  html[data-theme="dark"] .mcq-attempt-layout .mcq-nav-actions {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  html .mcq-attempt-layout .mcq-option-card,
+  html[data-theme="dark"] .mcq-attempt-layout .mcq-option-card {
+    width: 100% !important;
+  }
+}
