@@ -11090,3 +11090,100 @@ html:not([data-theme="dark"]) body article.mcq-review-parent-card > .teacher-mcq
     width: 100% !important;
   }
 }
+
+/* Profile photo action button sizing/alignment fix */
+.profile-hero-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  flex-wrap: wrap !important;
+}
+
+.profile-hero-actions .profile-upload-btn,
+.profile-hero-actions .profile-view-photo-btn {
+  width: auto !important;
+  min-width: 150px !important;
+  max-width: 100% !important;
+  min-height: 46px !important;
+  padding: 0 22px !important;
+  border-radius: 999px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
+  line-height: 1 !important;
+  text-align: center !important;
+}
+
+.profile-hero-actions .profile-view-photo-btn {
+  min-width: 128px !important;
+}
+
+@media (max-width: 520px) {
+  .profile-hero-actions {
+    width: 100% !important;
+  }
+
+  .profile-hero-actions .profile-upload-btn,
+  .profile-hero-actions .profile-view-photo-btn {
+    flex: 1 1 160px !important;
+    min-width: 0 !important;
+  }
+}
+
+/* Final review queue action spacing */
+html body .teacher-mcq-row--editor .teacher-mcq-action-row.review-queue-action-row,
+html body article.mcq-review-parent-card > .teacher-mcq-action-row.review-queue-action-row {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: clamp(16px, 2vw, 28px) !important;
+  flex-wrap: wrap !important;
+  padding: 28px 40px !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  border-top: 2px solid rgba(139, 111, 255, 0.28) !important;
+  background: rgba(74, 144, 226, 0.10) !important;
+}
+
+html body .teacher-mcq-row--editor .teacher-mcq-action-row.review-queue-action-row .btn,
+html body article.mcq-review-parent-card > .teacher-mcq-action-row.review-queue-action-row .btn {
+  min-width: clamp(150px, 15vw, 240px) !important;
+  height: 56px !important;
+  padding: 0 28px !important;
+  border-radius: 14px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+  font-weight: 900 !important;
+}
+
+html[data-theme="dark"] body .teacher-mcq-row--editor .teacher-mcq-action-row.review-queue-action-row,
+html[data-theme="dark"] body article.mcq-review-parent-card > .teacher-mcq-action-row.review-queue-action-row {
+  border-top-color: rgba(167, 139, 250, 0.34) !important;
+  background: rgba(74, 144, 226, 0.16) !important;
+}
+
+@media (max-width: 760px) {
+  html body .teacher-mcq-row--editor .teacher-mcq-action-row.review-queue-action-row,
+  html body article.mcq-review-parent-card > .teacher-mcq-action-row.review-queue-action-row {
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 16px 12px !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+  }
+
+  html body .teacher-mcq-row--editor .teacher-mcq-action-row.review-queue-action-row .btn,
+  html body article.mcq-review-parent-card > .teacher-mcq-action-row.review-queue-action-row .btn {
+    min-width: 0 !important;
+    flex: 1 1 0 !important;
+    height: 44px !important;
+    padding: 0 10px !important;
+    border-radius: 12px !important;
+    font-size: clamp(11px, 3vw, 13px) !important;
+  }
+}

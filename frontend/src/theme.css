@@ -6519,3 +6519,73 @@ html[data-theme="dark"] body .teacher-mcq-list--editable > article.teacher-mcq-r
     0 28px 78px rgba(0, 0, 0, 0.62),
     0 0 0 6px rgba(52, 211, 153, 0.14) !important;
 }
+
+/* Final teacher assigned-subject card readability fix */
+html .workspace-page .teacher-subject-bank {
+  position: relative !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(232, 239, 255, 0.98)) !important;
+  border: 2.5px solid #9aa9c8 !important;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.96) !important;
+}
+
+html .workspace-page .teacher-subject-bank .state-chip,
+html .workspace-page .teacher-subject-bank .state-chip--neutral,
+html .workspace-page .teacher-subject-bank .subject-focus-head .state-chip,
+html .workspace-page .teacher-subject-bank .subject-focus-head .state-chip--neutral {
+  background: linear-gradient(135deg, #d9ceff 0%, #c6d7ff 100%) !important;
+  border: 2px solid #8b6fff !important;
+  color: #28135f !important;
+  -webkit-text-fill-color: #28135f !important;
+  text-shadow: none !important;
+  opacity: 1 !important;
+  box-shadow: 0 8px 20px rgba(80, 55, 190, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.78) !important;
+  font-weight: 950 !important;
+}
+
+html .workspace-page .teacher-subject-bank .subject-focus-head .state-chip *,
+html .workspace-page .teacher-subject-bank .subject-focus-head .state-chip--neutral * {
+  color: #28135f !important;
+  -webkit-text-fill-color: #28135f !important;
+}
+
+html .workspace-page .teacher-subject-bank .metric-row strong,
+html .workspace-page .teacher-subject-bank .metric-row span,
+html .workspace-page .teacher-subject-bank h4 {
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+html[data-theme="dark"] .workspace-page .teacher-subject-bank,
+[data-theme="dark"] .workspace-page .teacher-subject-bank {
+  background:
+    linear-gradient(145deg, rgba(29, 24, 72, 0.98), rgba(12, 13, 36, 0.98)) !important;
+  border: 2.5px solid rgba(178, 158, 255, 0.72) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.40), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+html[data-theme="dark"] .workspace-page .teacher-subject-bank .state-chip,
+html[data-theme="dark"] .workspace-page .teacher-subject-bank .state-chip--neutral,
+html[data-theme="dark"] .workspace-page .teacher-subject-bank .subject-focus-head .state-chip,
+html[data-theme="dark"] .workspace-page .teacher-subject-bank .subject-focus-head .state-chip--neutral,
+[data-theme="dark"] .workspace-page .teacher-subject-bank .state-chip,
+[data-theme="dark"] .workspace-page .teacher-subject-bank .state-chip--neutral,
+[data-theme="dark"] .workspace-page .teacher-subject-bank .subject-focus-head .state-chip,
+[data-theme="dark"] .workspace-page .teacher-subject-bank .subject-focus-head .state-chip--neutral {
+  background: linear-gradient(135deg, #facc15 0%, #fde68a 100%) !important;
+  border: 2px solid #fff1a6 !important;
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+  text-shadow: none !important;
+  opacity: 1 !important;
+  box-shadow: 0 12px 26px rgba(250, 204, 21, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+  font-weight: 950 !important;
+}
+
+html[data-theme="dark"] .workspace-page .teacher-subject-bank .subject-focus-head .state-chip *,
+html[data-theme="dark"] .workspace-page .teacher-subject-bank .subject-focus-head .state-chip--neutral *,
+[data-theme="dark"] .workspace-page .teacher-subject-bank .subject-focus-head .state-chip *,
+[data-theme="dark"] .workspace-page .teacher-subject-bank .subject-focus-head .state-chip--neutral * {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+}

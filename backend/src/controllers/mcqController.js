@@ -32,28 +32,41 @@ const slugifyChapter = (name) =>
 
 
 const STUDENT_CHAPTER_SPLIT_THRESHOLD = 70
-const STUDENT_CHAPTER_TEST_SIZE = 50
 
 const normalizeTestPart = (value) => {
   const part = Number(value)
   return Number.isInteger(part) && part >= 1 ? part : null
 }
 
-const sliceMcqsForVirtualTest = (mcqs, testPart) => {
+const getBalancedChapterTestRange = (totalMcqs, testPart) => {
+  const count = Number(totalMcqs || 0)
   const part = normalizeTestPart(testPart)
-  if (!part) return mcqs
-  const start = (part - 1) * STUDENT_CHAPTER_TEST_SIZE
-  return mcqs.slice(start, start + STUDENT_CHAPTER_TEST_SIZE)
+  if (!part || count <= STUDENT_CHAPTER_SPLIT_THRESHOLD) return null
+  if (part > 2) return { startIndex: count, endIndex: count, start: count + 1, end: count }
+  const firstCount = Math.ceil(count / 2)
+  const startIndex = part === 1 ? 0 : firstCount
+  const endIndex = part === 1 ? firstCount : count
+  return {
+    startIndex,
+    endIndex,
+    start: startIndex + 1,
+    end: endIndex,
+  }
+}
+
+const sliceMcqsForVirtualTest = (mcqs, testPart) => {
+  const range = getBalancedChapterTestRange(mcqs.length, testPart)
+  if (!range) return mcqs
+  return mcqs.slice(range.startIndex, range.endIndex)
 }
 
 const buildVirtualChapterTests = (chapter, totalMcqs) => {
   const count = Number(totalMcqs || 0)
   if (count <= STUDENT_CHAPTER_SPLIT_THRESHOLD) return []
-  const parts = Math.ceil(count / STUDENT_CHAPTER_TEST_SIZE)
+  const parts = 2
   return Array.from({ length: parts }, (_, index) => {
     const part = index + 1
-    const start = index * STUDENT_CHAPTER_TEST_SIZE + 1
-    const end = Math.min(count, part * STUDENT_CHAPTER_TEST_SIZE)
+    const { start, end } = getBalancedChapterTestRange(count, part)
     return {
       id: chapter.id,
       chapterId: chapter.id,
@@ -2559,6 +2572,7 @@ exports.submitChapterAttempt = async (req, res) => {
     res.status(500).json({ error: error.message })
   }
 }
+
 
 
 
