@@ -1,8 +1,8 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
 import API, { getUserFriendlyErrorMessage } from '../services/api'
-import { getUserProfilePicture, resolveAssetUrl } from '../utils/assetUrl'
+import { getUserProfilePicture, normalizeProfilePictureForStorage, resolveAssetUrl } from '../utils/assetUrl'
 import './PlatformPages.css'
 
 function CameraIcon() {
@@ -19,11 +19,36 @@ export default function PlatformProfile() {
   const fileInputRef = useRef(null)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [photoError, setPhotoError] = useState(false)
   const [preferences, setPreferences] = useState({
     pushReminders: true,
     emailSummaries: true,
     profileVisibility: false,
   })
+
+  const buildFormFromUser = (sourceUser = user) => ({
+    firstName: sourceUser?.firstName || '',
+    lastName: sourceUser?.lastName || '',
+    email: sourceUser?.email || 'student@mdcat.pk',
+    phone: sourceUser?.phone || '+92 300 1234567',
+    city: 'Lahore',
+    target: 'King Edward Medical University',
+    profilePicture: getUserProfilePicture(sourceUser),
+  })
+
+  const [form, setForm] = useState(() => buildFormFromUser(user))
+
+  useEffect(() => {
+    setPhotoError(false)
+    setForm((current) => ({
+      ...current,
+      firstName: user?.firstName || '',
+      lastName: user?.lastName || '',
+      email: user?.email || 'student@mdcat.pk',
+      phone: user?.phone || '+92 300 1234567',
+      profilePicture: getUserProfilePicture(user),
+    }))
+  }, [user])
 
   const togglePreference = (key) => {
     setPreferences((prev) => ({
@@ -32,16 +57,6 @@ export default function PlatformProfile() {
     }))
     toast.success('Preference updated successfully.')
   }
-
-  const [form, setForm] = useState({
-    firstName: user?.firstName || '',
-    lastName: user?.lastName || '',
-    email: user?.email || 'student@mdcat.pk',
-    phone: user?.phone || '+92 300 1234567',
-    city: 'Lahore',
-    target: 'King Edward Medical University',
-    profilePicture: getUserProfilePicture(user),
-  })
 
   const initials = `${form.firstName?.[0] || 'U'}${form.lastName?.[0] || ''}`.toUpperCase()
   const displayName = useMemo(
@@ -69,16 +84,18 @@ export default function PlatformProfile() {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
 
-      const profilePicture = resolveAssetUrl(uploadRes.data.fileUrl)
+      const storedProfilePicture = normalizeProfilePictureForStorage(uploadRes.data.fileUrl || uploadRes.data.url)
+      const profilePicture = resolveAssetUrl(storedProfilePicture)
       const profileRes = await API.put('/auth/profile', {
         firstName: form.firstName,
         lastName: form.lastName,
         phone: form.phone,
-        profilePicture,
+        profilePicture: storedProfilePicture,
       })
 
       const nextUser = profileRes.data.user
       updateUser(nextUser)
+      setPhotoError(false)
       setForm((current) => ({ ...current, profilePicture }))
       toast.success('Profile photo updated.')
     } catch (error) {
@@ -96,7 +113,7 @@ export default function PlatformProfile() {
         firstName: form.firstName,
         lastName: form.lastName,
         phone: form.phone,
-        profilePicture: form.profilePicture || null,
+        profilePicture: normalizeProfilePictureForStorage(form.profilePicture) || null,
       })
       updateUser(res.data.user)
       toast.success('Profile updated successfully.')
@@ -108,16 +125,11 @@ export default function PlatformProfile() {
   }
 
   const discardChanges = () => {
-    setForm({
-      firstName: user?.firstName || '',
-      lastName: user?.lastName || '',
-      email: user?.email || 'student@mdcat.pk',
-      phone: user?.phone || '+92 300 1234567',
-      city: 'Lahore',
-      target: 'King Edward Medical University',
-      profilePicture: getUserProfilePicture(user),
-    })
+    setPhotoError(false)
+    setForm(buildFormFromUser(user))
   }
+
+  const showProfilePhoto = Boolean(form.profilePicture && !photoError)
 
   return (
     <div className="workspace-page animate-fade-up">
@@ -142,8 +154,14 @@ export default function PlatformProfile() {
           <div className="workspace-card-body form-shell profile-form">
             <div className="avatar-editor avatar-editor--profile">
               <div className="avatar-stack">
-                {form.profilePicture ? (
-                  <img className="avatar-circle avatar-circle--image" src={form.profilePicture} alt={displayName} />
+                {showProfilePhoto ? (
+                  <img
+                    className="avatar-circle avatar-circle--image"
+                    src={form.profilePicture}
+                    alt={displayName}
+                    onError={() => setPhotoError(true)}
+                    onLoad={() => setPhotoError(false)}
+                  />
                 ) : (
                   <div className="avatar-circle">{initials}</div>
                 )}
@@ -159,7 +177,15 @@ export default function PlatformProfile() {
                   <button className="btn btn-secondary profile-upload-btn" type="button" onClick={onUploadClick} disabled={uploading}>
                     {uploading ? 'Uploading...' : 'Upload New Photo'}
                   </button>
+                  {showProfilePhoto ? (
+                    <a className="btn btn-secondary profile-view-photo-btn" href={form.profilePicture} target="_blank" rel="noreferrer">
+                      View Photo
+                    </a>
+                  ) : null}
                 </div>
+                {form.profilePicture && photoError ? (
+                  <p className="profile-photo-warning">Saved photo could not be loaded. Upload a new photo to replace it.</p>
+                ) : null}
               </div>
 
               <input ref={fileInputRef} type="file" accept="image/*" onChange={onPhotoSelected} hidden />
@@ -216,4 +242,3 @@ export default function PlatformProfile() {
     </div>
   )
 }
-

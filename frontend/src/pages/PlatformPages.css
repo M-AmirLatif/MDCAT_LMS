@@ -11056,3 +11056,37 @@ html:not([data-theme="dark"]) body article.mcq-review-parent-card > .teacher-mcq
   border-color: rgba(99, 102, 241, 0.48) !important;
   background: rgba(255, 255, 255, 0.86) !important;
 }
+
+/* Profile photo actions and fallback message */
+.profile-hero-actions .profile-view-photo-btn {
+  text-decoration: none !important;
+  min-height: 46px !important;
+  padding-inline: 22px !important;
+}
+
+.profile-photo-warning {
+  margin-top: 6px !important;
+  color: #f59e0b !important;
+  font-weight: 800 !important;
+  font-size: 0.92rem !important;
+  line-height: 1.35 !important;
+}
+
+.avatar-circle--image {
+  display: block !important;
+  object-fit: cover !important;
+  color: transparent !important;
+  text-indent: -9999px !important;
+  overflow: hidden !important;
+}
+
+@media (max-width: 720px) {
+  .profile-hero-actions {
+    flex-wrap: wrap !important;
+  }
+
+  .profile-hero-actions .profile-upload-btn,
+  .profile-hero-actions .profile-view-photo-btn {
+    width: 100% !important;
+  }
+}
