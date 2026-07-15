@@ -4421,3 +4421,412 @@ html[data-theme="dark"] .workspace-page .teacher-subject-bank .btn {
     border-radius: 16px !important;
   }
 }
+
+/* MCQ system visual polish: shared contrast, spacing, borders, and readable states */
+html {
+  --mcq-ui-card: #ffffff;
+  --mcq-ui-card-2: #f6f8ff;
+  --mcq-ui-panel: #eef3ff;
+  --mcq-ui-border: #b8c3da;
+  --mcq-ui-border-strong: #8f9fbd;
+  --mcq-ui-text: #07122f;
+  --mcq-ui-muted: #536079;
+  --mcq-ui-accent: #6c47ff;
+  --mcq-ui-accent-soft: rgba(108, 71, 255, 0.10);
+  --mcq-ui-selected-bg: #fff0c2;
+  --mcq-ui-selected-border: #f59e0b;
+  --mcq-ui-correct-bg: #e8fff6;
+  --mcq-ui-correct-border: #16a874;
+  --mcq-ui-wrong-bg: #fff0f0;
+  --mcq-ui-wrong-border: #ef4444;
+  --mcq-ui-warning-bg: #fff7da;
+  --mcq-ui-radius: 18px;
+  --mcq-ui-shadow: 0 14px 34px rgba(15, 23, 42, 0.10);
+}
+
+html[data-theme="dark"] {
+  --mcq-ui-card: #14112e;
+  --mcq-ui-card-2: #1d1844;
+  --mcq-ui-panel: #231d51;
+  --mcq-ui-border: rgba(178, 161, 255, 0.38);
+  --mcq-ui-border-strong: rgba(199, 184, 255, 0.68);
+  --mcq-ui-text: #f8f6ff;
+  --mcq-ui-muted: #c9c1ec;
+  --mcq-ui-accent: #a78bfa;
+  --mcq-ui-accent-soft: rgba(167, 139, 250, 0.16);
+  --mcq-ui-selected-bg: rgba(245, 158, 11, 0.24);
+  --mcq-ui-selected-border: #fbbf24;
+  --mcq-ui-correct-bg: rgba(34, 197, 142, 0.17);
+  --mcq-ui-correct-border: #34d399;
+  --mcq-ui-wrong-bg: rgba(248, 113, 113, 0.18);
+  --mcq-ui-wrong-border: #fb7185;
+  --mcq-ui-warning-bg: rgba(245, 158, 11, 0.16);
+  --mcq-ui-shadow: 0 18px 42px rgba(0, 0, 0, 0.32);
+}
+
+html .mcq-practice-shell,
+html .mcq-review-shell,
+html .workspace-page--mcq-list,
+html .create-mcq-container {
+  color: var(--mcq-ui-text) !important;
+}
+
+html .mcq-practice-top,
+html .mcq-progress-card,
+html .mcq-question-card,
+html .mcq-result-card,
+html .mcq-review-top,
+html .review-question-card,
+html .mcq-inline-card,
+html .teacher-mcq-row--editor,
+html .review-queue-card,
+html .mcq-modal,
+html .mcq-form {
+  background: linear-gradient(180deg, var(--mcq-ui-card), var(--mcq-ui-card-2)) !important;
+  border: 2px solid var(--mcq-ui-border) !important;
+  border-radius: 22px !important;
+  box-shadow: var(--mcq-ui-shadow) !important;
+  color: var(--mcq-ui-text) !important;
+}
+
+html .mcq-practice-top,
+html .mcq-review-top,
+html .mcq-inline-card-header,
+html .teacher-mcq-editor-head,
+html .review-queue-head {
+  border-bottom: 2px solid var(--mcq-ui-border) !important;
+  background: linear-gradient(135deg, var(--mcq-ui-accent-soft), transparent) !important;
+}
+
+html .mcq-section-label,
+html .mcq-attempt-question-label,
+html .teacher-review-render-label,
+html .review-question-number,
+html .mcq-inline-card-number,
+html .mcq-form label,
+html .create-mcq-container label {
+  display: block !important;
+  color: var(--mcq-ui-accent) !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+  margin-bottom: 12px !important;
+}
+
+html .mcq-question-title,
+html .review-question-title,
+html .teacher-review-render-content,
+html .mcq-inline-statement-textarea,
+html .mcq-inline-explanation-textarea,
+html .mcq-inline-option-input,
+html .mcq-inline-select,
+html .mcq-form input,
+html .mcq-form textarea,
+html .mcq-form select,
+html .teacher-mcq-row--editor textarea,
+html .mcq-image-manager,
+html .mcq-image-paste-zone {
+  background: var(--mcq-ui-panel) !important;
+  border: 1.5px solid var(--mcq-ui-border) !important;
+  border-radius: var(--mcq-ui-radius) !important;
+  color: var(--mcq-ui-text) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+}
+
+html .mcq-question-title,
+html .review-question-title,
+html .teacher-review-render-content {
+  padding: 20px 22px !important;
+  line-height: 1.65 !important;
+  white-space: pre-wrap !important;
+  overflow-wrap: anywhere !important;
+}
+
+html .mcq-question-title .mcq-renderer,
+html .review-question-title .mcq-renderer,
+html .teacher-review-render-content .mcq-renderer,
+html .mcq-option-text .mcq-renderer,
+html .review-option-text .mcq-renderer,
+html .review-explanation-text .mcq-renderer {
+  color: inherit !important;
+  max-width: 100% !important;
+  overflow-wrap: anywhere !important;
+  white-space: pre-wrap !important;
+}
+
+html .mcq-options-grid,
+html .review-options-list,
+html .mcq-inline-options-list,
+html .teacher-mcq-option-grid {
+  display: grid !important;
+  gap: 14px !important;
+}
+
+html .mcq-option-card,
+html .review-option-row,
+html .mcq-inline-option-row,
+html .teacher-mcq-option-field,
+html .option-row {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  padding: 16px 18px !important;
+  background: var(--mcq-ui-card) !important;
+  border: 1.5px solid var(--mcq-ui-border) !important;
+  border-radius: var(--mcq-ui-radius) !important;
+  color: var(--mcq-ui-text) !important;
+  box-shadow: none !important;
+  text-align: left !important;
+  overflow: hidden !important;
+}
+
+html .mcq-option-card:not(:last-child)::after {
+  display: none !important;
+}
+
+html .mcq-option-card:hover,
+html .mcq-option-card:focus-visible,
+html .review-option-row:hover,
+html .mcq-inline-option-row:hover,
+html .mcq-inline-option-row:focus-within,
+html .teacher-mcq-option-field:focus-within,
+html .option-row:focus-within {
+  border-color: var(--mcq-ui-border-strong) !important;
+  background: var(--mcq-ui-card-2) !important;
+  box-shadow: 0 10px 22px rgba(108, 71, 255, 0.10) !important;
+  outline: none !important;
+}
+
+html .mcq-option-card--selected,
+html .mcq-option-card--selected:hover,
+html .mcq-option-card--selected:focus-visible {
+  background: var(--mcq-ui-selected-bg) !important;
+  border-color: var(--mcq-ui-selected-border) !important;
+  box-shadow: inset 6px 0 0 var(--mcq-ui-selected-border), 0 10px 24px rgba(245, 158, 11, 0.16) !important;
+}
+
+html .mcq-option-letter,
+html .review-option-letter,
+html .mcq-option-badge {
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  border-radius: 14px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1.5px solid var(--mcq-ui-border-strong) !important;
+  background: var(--mcq-ui-accent-soft) !important;
+  color: var(--mcq-ui-accent) !important;
+  font-size: 18px !important;
+  font-weight: 900 !important;
+  text-shadow: none !important;
+}
+
+html .mcq-option-text,
+html .review-option-text,
+html .mcq-inline-option-input,
+html .teacher-mcq-option-field textarea,
+html .option-row input {
+  min-width: 0 !important;
+  color: var(--mcq-ui-text) !important;
+  font-size: clamp(16px, 1.35vw, 22px) !important;
+  line-height: 1.55 !important;
+  overflow-wrap: anywhere !important;
+}
+
+html .review-option-row--correct,
+html .mcq-inline-option-row--correct {
+  background: var(--mcq-ui-correct-bg) !important;
+  border-color: var(--mcq-ui-correct-border) !important;
+  box-shadow: inset 6px 0 0 var(--mcq-ui-correct-border) !important;
+}
+
+html .review-option-row--wrong {
+  background: var(--mcq-ui-wrong-bg) !important;
+  border-color: var(--mcq-ui-wrong-border) !important;
+  box-shadow: inset 6px 0 0 var(--mcq-ui-wrong-border) !important;
+}
+
+html .review-option-row--correct .review-option-letter,
+html .mcq-inline-option-row--correct .mcq-option-badge {
+  background: var(--mcq-ui-correct-bg) !important;
+  border-color: var(--mcq-ui-correct-border) !important;
+  color: var(--mcq-ui-correct-border) !important;
+}
+
+html .review-option-row--wrong .review-option-letter {
+  background: var(--mcq-ui-wrong-bg) !important;
+  border-color: var(--mcq-ui-wrong-border) !important;
+  color: var(--mcq-ui-wrong-border) !important;
+}
+
+html .review-option-tag,
+html .review-option-tag--correct {
+  border: 1.5px solid currentColor !important;
+  font-weight: 900 !important;
+}
+
+html .mcq-correct-box,
+html .review-explanation-box,
+html .mcq-explanation-box,
+html .teacher-mcq-editor-bottom .floating-field,
+html .mcq-meta-box {
+  border: 2px solid var(--mcq-ui-border) !important;
+  border-radius: 20px !important;
+  background: var(--mcq-ui-card-2) !important;
+  color: var(--mcq-ui-text) !important;
+}
+
+html .mcq-correct-box {
+  background: var(--mcq-ui-correct-bg) !important;
+  border-color: var(--mcq-ui-correct-border) !important;
+}
+
+html .review-explanation-box,
+html .mcq-explanation-box,
+html .teacher-mcq-editor-bottom .floating-field:has(textarea) {
+  background: linear-gradient(180deg, var(--mcq-ui-card-2), var(--mcq-ui-panel)) !important;
+}
+
+html .review-explanation-box strong,
+html .review-explanation-text,
+html .mcq-inline-explanation-textarea,
+html .mcq-explanation-box textarea {
+  color: var(--mcq-ui-text) !important;
+  overflow-wrap: anywhere !important;
+  white-space: pre-wrap !important;
+}
+
+html .mcq-image-block {
+  width: 100% !important;
+  max-width: 740px !important;
+  margin: 18px auto !important;
+  padding: 12px !important;
+  border: 1.5px solid var(--mcq-ui-border) !important;
+  border-radius: 18px !important;
+  background: var(--mcq-ui-card) !important;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08) !important;
+}
+
+html .mcq-image-block-media,
+html .mcq-image-block-media--loaded {
+  display: block !important;
+  width: 100% !important;
+  max-width: 700px !important;
+  height: auto !important;
+  object-fit: contain !important;
+  margin: 0 auto !important;
+  border-radius: 14px !important;
+  opacity: 1 !important;
+}
+
+html .mcq-image-block-media--loading {
+  display: block !important;
+  opacity: 0 !important;
+}
+
+html .mcq-image-skeleton,
+html .mcq-image-unavailable {
+  min-height: 180px !important;
+  border-radius: 14px !important;
+  border: 1.5px dashed var(--mcq-ui-border) !important;
+  background: var(--mcq-ui-panel) !important;
+  color: var(--mcq-ui-muted) !important;
+}
+
+html .mcq-image-block-caption {
+  margin-top: 10px !important;
+  color: var(--mcq-ui-muted) !important;
+  text-align: center !important;
+  font-size: 13px !important;
+}
+
+html .mcq-inline-card-actions,
+html .teacher-mcq-action-row,
+html .mcq-nav-actions {
+  border-top: 1.5px solid var(--mcq-ui-border) !important;
+  padding-top: 18px !important;
+  gap: 14px !important;
+}
+
+html[data-theme="dark"] .mcq-practice-top,
+html[data-theme="dark"] .mcq-progress-card,
+html[data-theme="dark"] .mcq-question-card,
+html[data-theme="dark"] .mcq-result-card,
+html[data-theme="dark"] .mcq-review-top,
+html[data-theme="dark"] .review-question-card,
+html[data-theme="dark"] .mcq-inline-card,
+html[data-theme="dark"] .teacher-mcq-row--editor,
+html[data-theme="dark"] .review-queue-card,
+html[data-theme="dark"] .mcq-modal,
+html[data-theme="dark"] .mcq-form {
+  background: linear-gradient(180deg, #18143a, #100d28) !important;
+}
+
+html[data-theme="dark"] .mcq-question-title,
+html[data-theme="dark"] .review-question-title,
+html[data-theme="dark"] .teacher-review-render-content,
+html[data-theme="dark"] .mcq-inline-statement-textarea,
+html[data-theme="dark"] .mcq-inline-explanation-textarea,
+html[data-theme="dark"] .mcq-inline-option-input,
+html[data-theme="dark"] .mcq-inline-select,
+html[data-theme="dark"] .mcq-form input,
+html[data-theme="dark"] .mcq-form textarea,
+html[data-theme="dark"] .mcq-form select,
+html[data-theme="dark"] .teacher-mcq-row--editor textarea,
+html[data-theme="dark"] .mcq-image-manager,
+html[data-theme="dark"] .mcq-image-paste-zone {
+  background: #211b4a !important;
+}
+
+@media (max-width: 768px) {
+  html .mcq-question-card,
+  html .review-question-card,
+  html .mcq-inline-card,
+  html .teacher-mcq-row--editor {
+    padding: 18px !important;
+    border-radius: 18px !important;
+  }
+
+  html .mcq-question-title,
+  html .review-question-title,
+  html .teacher-review-render-content {
+    padding: 16px !important;
+  }
+
+  html .mcq-option-card,
+  html .review-option-row,
+  html .mcq-inline-option-row,
+  html .teacher-mcq-option-field,
+  html .option-row {
+    align-items: flex-start !important;
+    padding: 14px !important;
+    gap: 12px !important;
+  }
+
+  html .mcq-option-letter,
+  html .review-option-letter,
+  html .mcq-option-badge {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    font-size: 16px !important;
+  }
+
+  html .mcq-nav-actions,
+  html .mcq-inline-card-actions,
+  html .teacher-mcq-action-row {
+    flex-direction: column !important;
+  }
+
+  html .mcq-nav-actions .btn,
+  html .mcq-inline-card-actions .btn,
+  html .teacher-mcq-action-row .btn {
+    width: 100% !important;
+  }
+}

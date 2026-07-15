@@ -2207,6 +2207,7 @@ function QuizAttempt() {
 
         <div className="mcq-attempt-layout">
           <div className="mcq-question-card">
+            <div className="mcq-section-label mcq-attempt-question-label">Question Statement</div>
             <div className="mcq-question-title">
               <MCQRenderer text={current.questionText || current.question} images={current.questionImages || []} />
             </div>
