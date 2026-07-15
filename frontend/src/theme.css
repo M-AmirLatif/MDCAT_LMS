@@ -4830,3 +4830,268 @@ html[data-theme="dark"] .mcq-image-paste-zone {
     width: 100% !important;
   }
 }
+
+/* MCQ editor cleanup: remove nested pills and keep sections readable */
+html .mcq-inline-card {
+  border-color: #aebad3 !important;
+  background: #ffffff !important;
+}
+
+html .mcq-inline-card-header {
+  background: #f4f6fd !important;
+  border-bottom-color: #b8c3da !important;
+  padding: 26px 32px !important;
+}
+
+html .mcq-inline-card-form {
+  gap: 26px !important;
+}
+
+html .mcq-section-container,
+html .mcq-options-section,
+html .mcq-meta-box {
+  background: #f7f9ff !important;
+  border: 1.5px solid #bac6dc !important;
+  border-radius: 18px !important;
+  padding: 24px !important;
+  box-shadow: none !important;
+}
+
+html .mcq-inline-statement-textarea,
+html .mcq-inline-explanation-textarea {
+  background: #ffffff !important;
+  border: 1.5px solid #c2cce0 !important;
+  border-radius: 14px !important;
+  padding: 20px 24px !important;
+  color: #07122f !important;
+  box-shadow: none !important;
+}
+
+html .mcq-inline-options-list {
+  gap: 18px !important;
+}
+
+html .mcq-inline-option-row {
+  background: #ffffff !important;
+  border: 1.5px solid #c5cfe3 !important;
+  border-radius: 16px !important;
+  padding: 16px 18px !important;
+  min-height: 82px !important;
+  box-shadow: none !important;
+}
+
+html .mcq-inline-option-row:hover,
+html .mcq-inline-option-row:focus-within {
+  background: #f5f8ff !important;
+  border-color: #91a0bf !important;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08) !important;
+}
+
+html .mcq-inline-option-row--correct,
+html .mcq-inline-option-row--correct:hover,
+html .mcq-inline-option-row--correct:focus-within {
+  background: #ecfff7 !important;
+  border-color: #16b983 !important;
+  box-shadow: inset 4px 0 0 #16b983 !important;
+}
+
+html .mcq-inline-option-input,
+html .mcq-inline-option-input:focus,
+html .teacher-mcq-option-field textarea,
+html .teacher-mcq-option-field textarea:focus {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 0 !important;
+  color: #07122f !important;
+  font-size: 22px !important;
+  line-height: 1.55 !important;
+}
+
+html .mcq-inline-meta-grid {
+  align-items: flex-start !important;
+  grid-template-columns: minmax(220px, 330px) minmax(0, 1fr) !important;
+  gap: 28px !important;
+}
+
+html .mcq-correct-box {
+  align-self: flex-start !important;
+  min-height: 0 !important;
+  background: #ecfff7 !important;
+  border: 2px solid #16b983 !important;
+  box-shadow: none !important;
+}
+
+html .mcq-correct-select-wrapper,
+html .mcq-inline-select {
+  width: 100% !important;
+}
+
+html .mcq-inline-select {
+  background: #ffffff !important;
+  border: 1.5px solid #b8c3da !important;
+  border-radius: 12px !important;
+  color: #07122f !important;
+  box-shadow: none !important;
+}
+
+html .mcq-explanation-box {
+  background: #f7f9ff !important;
+  border: 1.5px solid #bac6dc !important;
+  box-shadow: none !important;
+}
+
+html .mcq-image-manager {
+  background: #f7f9ff !important;
+  border: 1.5px solid #bac6dc !important;
+  border-radius: 16px !important;
+  padding: 18px !important;
+  box-shadow: none !important;
+}
+
+html .mcq-image-paste-zone {
+  background: #ffffff !important;
+  border: 1.5px dashed #96a6c4 !important;
+  border-radius: 14px !important;
+  color: #07122f !important;
+  box-shadow: none !important;
+}
+
+html .mcq-image-url-row input {
+  background: #ffffff !important;
+  border: 1.5px solid #b8c3da !important;
+  border-radius: 12px !important;
+  color: #07122f !important;
+}
+
+html[data-theme="dark"] .mcq-inline-card {
+  border-color: rgba(178, 161, 255, 0.45) !important;
+  background: #14112e !important;
+}
+
+html[data-theme="dark"] .mcq-inline-card-header {
+  background: #1b1640 !important;
+  border-bottom-color: rgba(178, 161, 255, 0.35) !important;
+}
+
+html[data-theme="dark"] .mcq-section-container,
+html[data-theme="dark"] .mcq-options-section,
+html[data-theme="dark"] .mcq-meta-box,
+html[data-theme="dark"] .mcq-explanation-box,
+html[data-theme="dark"] .mcq-image-manager {
+  background: #171436 !important;
+  border-color: rgba(178, 161, 255, 0.38) !important;
+}
+
+html[data-theme="dark"] .mcq-inline-statement-textarea,
+html[data-theme="dark"] .mcq-inline-explanation-textarea,
+html[data-theme="dark"] .mcq-inline-select,
+html[data-theme="dark"] .mcq-image-url-row input {
+  background: #201a49 !important;
+  border-color: rgba(199, 184, 255, 0.42) !important;
+  color: #f8f6ff !important;
+}
+
+html[data-theme="dark"] .mcq-inline-option-row {
+  background: #1d1844 !important;
+  border-color: rgba(178, 161, 255, 0.36) !important;
+}
+
+html[data-theme="dark"] .mcq-inline-option-row:hover,
+html[data-theme="dark"] .mcq-inline-option-row:focus-within {
+  background: #231d51 !important;
+  border-color: rgba(218, 209, 255, 0.62) !important;
+}
+
+html[data-theme="dark"] .mcq-inline-option-row--correct,
+html[data-theme="dark"] .mcq-inline-option-row--correct:hover,
+html[data-theme="dark"] .mcq-inline-option-row--correct:focus-within {
+  background: rgba(34, 197, 142, 0.16) !important;
+  border-color: #34d399 !important;
+  box-shadow: inset 4px 0 0 #34d399 !important;
+}
+
+html[data-theme="dark"] .mcq-inline-option-input,
+html[data-theme="dark"] .mcq-inline-option-input:focus,
+html[data-theme="dark"] .teacher-mcq-option-field textarea,
+html[data-theme="dark"] .teacher-mcq-option-field textarea:focus {
+  color: #f8f6ff !important;
+}
+
+html[data-theme="dark"] .mcq-correct-box {
+  background: rgba(34, 197, 142, 0.15) !important;
+  border-color: #34d399 !important;
+}
+
+html[data-theme="dark"] .mcq-image-paste-zone {
+  background: #201a49 !important;
+  border-color: rgba(199, 184, 255, 0.42) !important;
+  color: #f8f6ff !important;
+}
+
+@media (max-width: 900px) {
+  html .mcq-inline-meta-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* MCQ attempt selected answer: identical visual state in light and dark mode */
+html .mcq-question-card .mcq-option-card--selected,
+html .mcq-question-card .mcq-option-card--selected:hover,
+html .mcq-question-card .mcq-option-card--selected:focus-visible,
+html[data-theme="dark"] .mcq-question-card .mcq-option-card--selected,
+html[data-theme="dark"] .mcq-question-card .mcq-option-card--selected:hover,
+html[data-theme="dark"] .mcq-question-card .mcq-option-card--selected:focus-visible {
+  background: #ffe08a !important;
+  border: 2px solid #f59e0b !important;
+  border-left: 10px solid #ea580c !important;
+  border-radius: 16px !important;
+  color: #07122f !important;
+  box-shadow: 0 12px 26px rgba(234, 88, 12, 0.16) !important;
+}
+
+html .mcq-question-card .mcq-option-card--selected .mcq-option-letter,
+html[data-theme="dark"] .mcq-question-card .mcq-option-card--selected .mcq-option-letter {
+  background: #ffffff !important;
+  border-color: #ea580c !important;
+  color: #2f2acb !important;
+  box-shadow: none !important;
+}
+
+html .mcq-question-card .mcq-option-card--selected .mcq-option-text,
+html .mcq-question-card .mcq-option-card--selected .mcq-renderer,
+html .mcq-question-card .mcq-option-card--selected .mcq-renderer p,
+html .mcq-question-card .mcq-option-card--selected .mcq-renderer span,
+html[data-theme="dark"] .mcq-question-card .mcq-option-card--selected .mcq-option-text,
+html[data-theme="dark"] .mcq-question-card .mcq-option-card--selected .mcq-renderer,
+html[data-theme="dark"] .mcq-question-card .mcq-option-card--selected .mcq-renderer p,
+html[data-theme="dark"] .mcq-question-card .mcq-option-card--selected .mcq-renderer span {
+  color: #07122f !important;
+}
+
+/* MCQ review explanation label: keep border away from heading text */
+html .review-explanation-box {
+  position: relative !important;
+  padding-top: 22px !important;
+}
+
+html .review-explanation-box strong {
+  position: static !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: auto !important;
+  margin: 0 0 14px 0 !important;
+  padding: 0 8px 0 0 !important;
+  background: transparent !important;
+  z-index: 1 !important;
+}
+
+html .review-explanation-box::before,
+html .review-explanation-box strong::before,
+html .review-explanation-box strong::after {
+  display: none !important;
+  content: none !important;
+}
