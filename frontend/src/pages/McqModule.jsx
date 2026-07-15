@@ -1182,6 +1182,12 @@ function TeacherInlineMcqCard({ mcq, index, displayNumberOffset = 0, chapterId, 
 }
 
 function ReviewQueueReadonlyCard({ item, index, onEdit, onApprove, onDelete }) {
+  const correctAnswerLetter =
+    String(item.correctAnswer || '')
+      .trim()
+      .toUpperCase()
+      .match(/[A-D]/)?.[0] || ''
+
   return (
     <article className="teacher-mcq-row teacher-mcq-row--editor">
       <div className="teacher-mcq-editor-head">
@@ -1219,14 +1225,20 @@ function ReviewQueueReadonlyCard({ item, index, onEdit, onApprove, onDelete }) {
         </div>
       </div>
       <div className="teacher-mcq-option-grid">
-        {letters.map((letter, index) => (
-          <div className="teacher-mcq-option-field" key={letter}>
-            <label>{`Option ${letter}`}</label>
-            <div className="teacher-review-render-content">
-              <MCQRenderer text={item[`option${letter}`] || item.options?.[index]?.text || ''} images={item[`option${letter}Images`] || item.options?.[index]?.images || []} />
+        {letters.map((letter, index) => {
+          const isCorrect = correctAnswerLetter === letter
+          return (
+            <div
+              className={`teacher-mcq-option-field ${isCorrect ? 'teacher-mcq-option-field--correct' : ''}`}
+              key={letter}
+            >
+              <label>{`Option ${letter}`}</label>
+              <div className="teacher-review-render-content">
+                <MCQRenderer text={item[`option${letter}`] || item.options?.[index]?.text || ''} images={item[`option${letter}Images`] || item.options?.[index]?.images || []} />
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
       <div className="teacher-mcq-editor-bottom">
         <div className="floating-field">
@@ -2520,6 +2532,7 @@ function ReviewSection({ title, items }) {
 export { CourseSelection, ChapterList, McqList, QuizAttempt, QuizResult }
 
 export default CourseSelection
+
 
 
 

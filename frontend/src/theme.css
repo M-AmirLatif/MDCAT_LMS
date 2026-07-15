@@ -5828,3 +5828,101 @@ html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-option-card {
     padding: 0 4px !important;
   }
 }
+
+/* MCQ attempt true compact desktop sizing */
+@media (min-width: 1024px) {
+  html .mcq-attempt-layout .mcq-question-card,
+  html[data-theme="dark"] .mcq-attempt-layout .mcq-question-card {
+    width: min(58%, 760px) !important;
+    padding: 18px 20px !important;
+    border-radius: 22px !important;
+  }
+
+  html .mcq-attempt-layout .mcq-attempt-question-label,
+  html[data-theme="dark"] .mcq-attempt-layout .mcq-attempt-question-label {
+    font-size: 11px !important;
+    margin-bottom: 8px !important;
+    letter-spacing: 0.12em !important;
+  }
+
+  html .mcq-attempt-layout .mcq-question-title,
+  html[data-theme="dark"] .mcq-attempt-layout .mcq-question-title {
+    padding: 14px 18px !important;
+    margin-bottom: 16px !important;
+    border-radius: 18px !important;
+    font-size: clamp(20px, 1.45vw, 28px) !important;
+    line-height: 1.35 !important;
+  }
+
+  html .mcq-attempt-layout .mcq-options-grid,
+  html[data-theme="dark"] .mcq-attempt-layout .mcq-options-grid {
+    padding: 14px !important;
+    gap: 12px !important;
+    border-radius: 18px !important;
+  }
+
+  html .mcq-attempt-layout .mcq-option-card,
+  html[data-theme="dark"] .mcq-attempt-layout .mcq-option-card {
+    min-height: 58px !important;
+    padding: 10px 16px !important;
+    gap: 14px !important;
+    border-radius: 16px !important;
+    border-width: 2px !important;
+  }
+
+  html .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected,
+  html[data-theme="dark"] .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected {
+    border-left-width: 8px !important;
+  }
+
+  html .mcq-attempt-layout .mcq-option-letter,
+  html[data-theme="dark"] .mcq-attempt-layout .mcq-option-letter {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    border-radius: 12px !important;
+    font-size: 17px !important;
+  }
+
+  html .mcq-attempt-layout .mcq-option-text,
+  html .mcq-attempt-layout .mcq-option-text *,
+  html[data-theme="dark"] .mcq-attempt-layout .mcq-option-text,
+  html[data-theme="dark"] .mcq-attempt-layout .mcq-option-text * {
+    font-size: clamp(16px, 1.05vw, 21px) !important;
+    line-height: 1.35 !important;
+  }
+
+  html .mcq-attempt-layout .mcq-nav-actions,
+  html[data-theme="dark"] .mcq-attempt-layout .mcq-nav-actions {
+    margin-top: 18px !important;
+    padding-top: 16px !important;
+    gap: 12px !important;
+  }
+
+  html .mcq-attempt-layout .mcq-nav-actions .btn,
+  html[data-theme="dark"] .mcq-attempt-layout .mcq-nav-actions .btn {
+    min-height: 42px !important;
+    height: 42px !important;
+    padding: 0 22px !important;
+    border-radius: 999px !important;
+    font-size: 15px !important;
+  }
+}
+
+/* Review queue: show the correct option as selected */
+html .teacher-mcq-row--editor .teacher-mcq-option-field--correct,
+html[data-theme="dark"] .teacher-mcq-row--editor .teacher-mcq-option-field--correct {
+  background: var(--mcq-ui-correct-bg) !important;
+  border-color: var(--mcq-ui-correct-border) !important;
+  box-shadow: inset 7px 0 0 var(--mcq-ui-correct-border) !important;
+}
+
+html .teacher-mcq-row--editor .teacher-mcq-option-field--correct label,
+html[data-theme="dark"] .teacher-mcq-row--editor .teacher-mcq-option-field--correct label {
+  color: var(--mcq-ui-correct-border) !important;
+}
+
+html .teacher-mcq-row--editor .teacher-mcq-option-field--correct .teacher-review-render-content,
+html[data-theme="dark"] .teacher-mcq-row--editor .teacher-mcq-option-field--correct .teacher-review-render-content {
+  color: var(--mcq-ui-text) !important;
+}
