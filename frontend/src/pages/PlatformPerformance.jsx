@@ -16,10 +16,10 @@ function StatIcon({ tone }) {
 
 
 const SUBJECT_SERIES = [
-  { key: 'Biology', color: '#1db884' },
-  { key: 'Chemistry', color: '#7c5cff' },
-  { key: 'Physics', color: '#4a90e2' },
-  { key: 'English', color: '#f59e0b' },
+  { key: 'Biology', color: '#00b894' },
+  { key: 'Chemistry', color: '#8b5cf6' },
+  { key: 'Physics', color: '#0ea5e9' },
+  { key: 'English', color: '#f97316' },
 ]
 
 const clampPercent = (value) => Math.max(0, Math.min(100, Number(value) || 0))
@@ -38,18 +38,21 @@ function buildPath(points) {
 
 function PerformanceSvgChart({ data, mode = 'subjects', average = 0, legendValues = {} }) {
   const width = 760
-  const height = 320
-  const padding = { top: 26, right: 44, bottom: 56, left: 68 }
+  const height = 340
+  const padding = { top: 22, right: 54, bottom: 50, left: 58 }
   const chartWidth = width - padding.left - padding.right
   const chartHeight = height - padding.top - padding.bottom
   const rows = data.length || 1
-  const xFor = (index) => padding.left + (rows === 1 ? chartWidth / 2 : (index / (rows - 1)) * chartWidth)
-  const yFor = (value) => padding.top + chartHeight - (clampPercent(value) / 100) * chartHeight
-  const ticks = [0, 25, 50, 75, 100]
   const series = mode === 'overall' ? [{ key: 'Overall', color: '#7c5cff' }] : SUBJECT_SERIES
+  const allValues = data.flatMap((row) => series.map((item) => clampPercent(row[item.key])).filter((value) => Number.isFinite(value)))
+  const peakValue = Math.max(clampPercent(average), ...allValues, 1)
+  const displayMax = peakValue <= 25 ? 25 : peakValue <= 50 ? 50 : peakValue <= 75 ? 75 : 100
+  const xFor = (index) => padding.left + (rows === 1 ? chartWidth / 2 : (index / (rows - 1)) * chartWidth)
+  const yFor = (value) => padding.top + chartHeight - (Math.min(clampPercent(value), displayMax) / displayMax) * chartHeight
+  const ticks = [0, displayMax * 0.25, displayMax * 0.5, displayMax * 0.75, displayMax]
   const averageY = yFor(average)
-  const labelStep = Math.max(1, Math.ceil(rows / 5))
-  const shouldShowLabel = (index) => index === 0 || index === rows - 1 || (index % labelStep === 0 && rows - 1 - index > Math.ceil(labelStep / 2))
+  const labelStep = Math.max(1, Math.ceil(rows / 4))
+  const shouldShowLabel = (index) => index === 0 || index === rows - 1 || (index % labelStep === 0 && rows - 1 - index > labelStep)
 
   return (
     <div className={`performance-svg-chart performance-svg-chart--${mode}`} role="img" aria-label={mode === 'overall' ? 'Combined accuracy chart' : 'Subject performance chart'}>
@@ -59,14 +62,14 @@ function PerformanceSvgChart({ data, mode = 'subjects', average = 0, legendValue
           return (
             <g key={tick}>
               <line className="performance-svg-grid" x1={padding.left} x2={width - padding.right} y1={y} y2={y} />
-              <text className="performance-svg-axis" x={padding.left - 12} y={y + 4} textAnchor="end">{tick}%</text>
+              <text className="performance-svg-axis" x={padding.left - 12} y={y + 4} textAnchor="end">{Math.round(tick)}%</text>
             </g>
           )
         })}
         {average > 0 ? (
           <>
             <line className="performance-svg-average" x1={padding.left} x2={width - padding.right} y1={averageY} y2={averageY} />
-            <text className="performance-svg-average-label" x={width - padding.right} y={Math.max(18, averageY - 8)} textAnchor="end">Avg {average}%</text>
+            <text className="performance-svg-average-label" x={width - padding.right + 64} y={Math.max(18, averageY - 12)} textAnchor="end">Overall {average}%</text>
           </>
         ) : null}
         {series.map((item) => {
@@ -292,6 +295,9 @@ export default function PlatformPerformance() {
     </div>
   )
 }
+
+
+
 
 
 
