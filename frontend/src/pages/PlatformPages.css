@@ -14238,3 +14238,168 @@ html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn:disa
     white-space: nowrap !important;
   }
 }
+
+
+/* Final MCQ attempt mobile jump panel and light-mode control polish. */
+@media (max-width: 768px) {
+  html body .mcq-question-backdrop {
+    display: block !important;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 900 !important;
+    border: 0 !important;
+    background: rgba(2, 6, 23, 0.58) !important;
+    touch-action: none !important;
+  }
+
+  html body .mcq-question-sidebar,
+  html body .mcq-question-sidebar.mcq-question-sidebar--open {
+    position: fixed !important;
+    left: max(10px, env(safe-area-inset-left)) !important;
+    right: max(10px, env(safe-area-inset-right)) !important;
+    top: max(12px, env(safe-area-inset-top)) !important;
+    bottom: max(12px, env(safe-area-inset-bottom)) !important;
+    z-index: 920 !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    border-radius: 22px !important;
+    border: 3px solid #9fb0cf !important;
+    background: #ffffff !important;
+    box-shadow: 0 28px 70px rgba(15, 23, 42, 0.32) !important;
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  html[data-theme="dark"] body .mcq-question-sidebar,
+  html[data-theme="dark"] body .mcq-question-sidebar.mcq-question-sidebar--open {
+    border-color: rgba(167, 139, 250, 0.82) !important;
+    background: #141132 !important;
+    box-shadow: 0 28px 70px rgba(0, 0, 0, 0.62) !important;
+  }
+
+  html body .mcq-question-sidebar:not(.mcq-question-sidebar--open) {
+    transform: translateY(115%) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  html body .mcq-question-sidebar .workspace-card-head {
+    flex: 0 0 auto !important;
+    position: static !important;
+    padding: 16px 16px 12px !important;
+    border-bottom: 2px solid #c4cee1 !important;
+    background: #f8fbff !important;
+  }
+
+  html[data-theme="dark"] body .mcq-question-sidebar .workspace-card-head {
+    border-bottom-color: rgba(167, 139, 250, 0.46) !important;
+    background: #1c1740 !important;
+  }
+
+  html body .mcq-question-sidebar .workspace-card-title {
+    color: #020617 !important;
+    font-size: 1.35rem !important;
+    font-weight: 950 !important;
+  }
+
+  html[data-theme="dark"] body .mcq-question-sidebar .workspace-card-title {
+    color: #ffffff !important;
+  }
+
+  html body .mcq-question-sidebar .label-xs {
+    color: #6b46ff !important;
+    font-weight: 950 !important;
+    opacity: 1 !important;
+  }
+
+  html body .mcq-question-close {
+    width: 44px !important;
+    height: 44px !important;
+    flex: 0 0 44px !important;
+    border-radius: 14px !important;
+    border: 2px solid #c4b5fd !important;
+    background: #ede9fe !important;
+    color: #6b46ff !important;
+    -webkit-text-fill-color: #6b46ff !important;
+    font-size: 30px !important;
+    line-height: 1 !important;
+    opacity: 1 !important;
+  }
+
+  html body .mcq-question-sidebar .workspace-card-body.mcq-question-dots {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 14px !important;
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    align-content: start !important;
+    background: #ffffff !important;
+  }
+
+  html[data-theme="dark"] body .mcq-question-sidebar .workspace-card-body.mcq-question-dots {
+    background: #100d28 !important;
+  }
+
+  html body .mcq-question-sidebar .mcq-dot {
+    min-width: 0 !important;
+    width: 100% !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    aspect-ratio: auto !important;
+    border-radius: 13px !important;
+    border: 1.8px solid #d3d8f8 !important;
+    background: #eef2ff !important;
+    color: #111827 !important;
+    -webkit-text-fill-color: #111827 !important;
+    font-size: 0.9rem !important;
+    font-weight: 950 !important;
+    box-shadow: none !important;
+  }
+
+  html body .mcq-question-sidebar .mcq-dot--active {
+    background: linear-gradient(135deg, #754cff, #4f8df7) !important;
+    border-color: transparent !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+  }
+}
+
+html:not([data-theme="dark"]) body .mcq-practice-page .mcq-options-grid {
+  border: 2.5px solid #bac7de !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.9), 0 10px 24px rgba(30, 41, 59, 0.06) !important;
+}
+
+html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn:disabled,
+html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-secondary:disabled,
+html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-ghost:disabled {
+  background: #ffffff !important;
+  border: 2.4px solid #c7cfdd !important;
+  color: #475569 !important;
+  -webkit-text-fill-color: #475569 !important;
+  opacity: 1 !important;
+  cursor: not-allowed !important;
+}
+
+@media (max-width: 640px) {
+  html:not([data-theme="dark"]) body .mcq-practice-page .mcq-option-card {
+    border-width: 2.5px !important;
+  }
+
+  html:not([data-theme="dark"]) body .mcq-practice-page .mcq-option-card--selected,
+  html:not([data-theme="dark"]) body .mcq-practice-page .mcq-option-card--selected:hover,
+  html:not([data-theme="dark"]) body .mcq-practice-page .mcq-option-card--selected:focus-visible {
+    border: 2.5px solid #f59e0b !important;
+    border-left: 12px solid #f97316 !important;
+  }
+}
