@@ -37,9 +37,9 @@ function buildPath(points) {
 }
 
 function PerformanceSvgChart({ data, mode = 'subjects', average = 0, legendValues = {} }) {
-  const width = 760
+  const width = 620
   const height = 340
-  const padding = { top: 22, right: 54, bottom: 50, left: 58 }
+  const padding = { top: 24, right: 46, bottom: 56, left: 68 }
   const chartWidth = width - padding.left - padding.right
   const chartHeight = height - padding.top - padding.bottom
   const rows = data.length || 1
@@ -295,6 +295,7 @@ export default function PlatformPerformance() {
     </div>
   )
 }
+
 
 
 

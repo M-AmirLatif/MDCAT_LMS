@@ -15972,3 +15972,100 @@ html[data-theme='dark'] body .teacher-svg-legend span {
     overflow-wrap: anywhere !important;
   }
 }
+
+/* Urgent performance chart cleanup: no line dots, readable mobile axes, aligned summary boxes. */
+html body .performance-svg-dot {
+  display: none !important;
+}
+
+html body .performance-svg-axis {
+  fill: #14213d !important;
+  font-size: 18px !important;
+  font-weight: 950 !important;
+  paint-order: stroke !important;
+  stroke: rgba(255, 255, 255, 0.85) !important;
+  stroke-width: 2px !important;
+}
+
+html[data-theme='dark'] body .performance-svg-axis {
+  fill: #ffffff !important;
+  stroke: rgba(10, 8, 28, 0.85) !important;
+}
+
+html body .performance-svg-x-axis {
+  font-size: 16px !important;
+}
+
+html body .performance-svg-line,
+html body .performance-svg-line-shadow {
+  stroke-width: 5px !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+
+html body .performance-svg-legend {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  width: 100% !important;
+  margin-top: 10px !important;
+  padding: 0 !important;
+  align-items: stretch !important;
+}
+
+html body .performance-svg-legend span {
+  min-width: 0 !important;
+  width: 100% !important;
+  justify-content: center !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  padding: 9px 10px !important;
+  font-size: clamp(12px, 1.1vw, 15px) !important;
+  font-weight: 950 !important;
+}
+
+@media (max-width: 768px) {
+  html body .workspace-page .performance-chart-grid .performance-chart-plot {
+    height: 350px !important;
+    min-height: 350px !important;
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+  }
+
+  html body .workspace-page .performance-svg-chart svg {
+    height: 275px !important;
+    min-height: 275px !important;
+    overflow: visible !important;
+  }
+
+  html body .performance-svg-axis {
+    font-size: 22px !important;
+  }
+
+  html body .performance-svg-x-axis {
+    font-size: 17px !important;
+  }
+
+  html body .performance-svg-legend {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin-top: 8px !important;
+  }
+
+  html body .performance-svg-legend span {
+    font-size: 13px !important;
+    padding: 8px 6px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  html body .performance-svg-axis {
+    font-size: 24px !important;
+  }
+
+  html body .performance-svg-x-axis {
+    font-size: 18px !important;
+  }
+}
