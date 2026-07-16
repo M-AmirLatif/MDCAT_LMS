@@ -20,7 +20,6 @@ import useAdminPanelData from '../hooks/useAdminPanelData'
 import useMcqSubjectSummary from '../hooks/useMcqSubjectSummary'
 import useStudentPerformanceData from '../hooks/useStudentPerformanceData'
 import useTeacherAnalyticsData from '../hooks/useTeacherAnalyticsData'
-import useThemeMode from '../hooks/useThemeMode'
 import './PlatformPages.css'
 import {
   mdcatSubjects,
@@ -53,8 +52,97 @@ const getAssignedSubjectNames = (user) => {
   return assigned.map((subject) => String(subject || '').trim()).filter(Boolean)
 }
 
+const momentumColors = {
+  Biology: '#1db884',
+  Chemistry: '#7c5cff',
+  Physics: '#4a90e2',
+  English: '#f59e0b',
+}
+
+const clampPercent = (value) => Math.max(0, Math.min(100, Number(value) || 0))
+
+const buildMomentumPath = (points) => {
+  if (!points.length) return ''
+  if (points.length === 1) return `M ${points[0].x} ${points[0].y}`
+
+  return points.reduce((path, point, index) => {
+    if (index === 0) return `M ${point.x} ${point.y}`
+    const previous = points[index - 1]
+    const controlOffset = Math.max(18, (point.x - previous.x) * 0.42)
+    return `${path} C ${previous.x + controlOffset} ${previous.y}, ${point.x - controlOffset} ${point.y}, ${point.x} ${point.y}`
+  }, '')
+}
+
+function DashboardMomentumSvg({ data, subjects: subjectNames, overallAccuracy = 0 }) {
+  const rows = Array.isArray(data) ? data : []
+  const hasRows = rows.length > 0
+  const chartRows = hasRows ? rows : [{ attemptLabel: 'A1', Biology: 0, Chemistry: 0, Physics: 0, English: 0 }]
+  const width = 760
+  const height = 300
+  const pad = { top: 24, right: 28, bottom: 42, left: 48 }
+  const innerWidth = width - pad.left - pad.right
+  const innerHeight = height - pad.top - pad.bottom
+  const ticks = [0, 25, 50, 75, 100]
+  const xFor = (index) => pad.left + (chartRows.length === 1 ? innerWidth / 2 : (index / (chartRows.length - 1)) * innerWidth)
+  const yFor = (value) => pad.top + (1 - clampPercent(value) / 100) * innerHeight
+  const visibleLabelStep = Math.max(1, Math.ceil(chartRows.length / 6))
+  const overall = clampPercent(overallAccuracy)
+
+  return (
+    <div className="dashboard-momentum-svg" aria-label="Subject momentum chart">
+      <svg viewBox={`0 0 ${width} ${height}`} role="img" preserveAspectRatio="none">
+        <rect className="dashboard-momentum-bg" x="0" y="0" width={width} height={height} rx="22" />
+        {ticks.map((tick) => {
+          const y = yFor(tick)
+          return (
+            <g key={tick}>
+              <line className="dashboard-momentum-grid-line" x1={pad.left} x2={width - pad.right} y1={y} y2={y} />
+              <text className="dashboard-momentum-axis-label" x={pad.left - 12} y={y + 5} textAnchor="end">{tick}%</text>
+            </g>
+          )
+        })}
+        {overall > 0 ? (
+          <g>
+            <line className="dashboard-momentum-average" x1={pad.left} x2={width - pad.right} y1={yFor(overall)} y2={yFor(overall)} />
+            <text className="dashboard-momentum-average-label" x={width - pad.right - 4} y={yFor(overall) - 8} textAnchor="end">Overall {overall}%</text>
+          </g>
+        ) : null}
+        {subjectNames.map((subjectName) => {
+          const points = chartRows.map((row, index) => ({
+            x: xFor(index),
+            y: yFor(row[subjectName]),
+          }))
+          const path = buildMomentumPath(points)
+          const color = momentumColors[subjectName] || SUBJECT_STYLES[subjectName]?.accent || '#7c5cff'
+
+          return (
+            <g key={subjectName} className="dashboard-momentum-series" style={{ '--series-color': color }}>
+              <path className="dashboard-momentum-line-shadow" d={path} />
+              <path className="dashboard-momentum-line" d={path} />
+              {points.map((point, index) => (
+                <circle
+                  key={`${subjectName}-${index}`}
+                  className="dashboard-momentum-dot"
+                  cx={point.x}
+                  cy={point.y}
+                  r={hasRows ? 4.2 : 0}
+                />
+              ))}
+            </g>
+          )
+        })}
+        {chartRows.map((row, index) => (
+          index % visibleLabelStep === 0 || index === chartRows.length - 1 ? (
+            <text key={`${row.attemptLabel}-${index}`} className="dashboard-momentum-x-label" x={xFor(index)} y={height - 12} textAnchor="middle">
+              {row.attemptLabel || `A${index + 1}`}
+            </text>
+          ) : null
+        ))}
+      </svg>
+    </div>
+  )
+}
 function StudentDashboard({ firstName }) {
-  const chartTheme = useThemeMode()
   const { subjects, summary, performanceTrend, loading } = useStudentPerformanceData()
   const visibleSubjects = subjects.length ? subjects : mdcatSubjects
   const momentumSubjectNames = ['Biology', 'Chemistry', 'Physics', 'English']
@@ -132,30 +220,11 @@ function StudentDashboard({ firstName }) {
             {!loading && performanceTrend.length > 0 ? (
             <>
               <div className="dashboard-momentum-plot">
-                <ResponsiveContainer width="100%" height={310} minWidth={260}>
-                  <LineChart data={performanceTrend} margin={{ top: 22, right: 14, left: 0, bottom: 8 }}>
-                <CartesianGrid strokeDasharray="4 6" vertical={false} stroke={chartTheme.gridColor} />
-                <XAxis dataKey="attemptLabel" axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12, fontWeight: 700 }} minTickGap={14} />
-                <YAxis width={44} axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12, fontWeight: 700 }} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(value) => `${value}%`} />
-                {summary.overallAccuracy > 0 ? (
-                  <ReferenceLine y={summary.overallAccuracy} stroke="#a590ff" strokeOpacity={0.6} strokeDasharray="6 6" label={{ value: `Overall ${summary.overallAccuracy}%`, fill: chartTheme.axisColor, fontSize: 11, fontWeight: 800, position: 'insideTopRight' }} />
-                ) : null}
-                <Tooltip
-                  formatter={(value, name) => [`${Math.round(Number(value) || 0)}%`, name]}
-                  labelFormatter={(_, payload) => {
-                    const item = payload?.[0]?.payload
-                    return item ? `${item.attemptLabel} - ${item.attemptDate} - ${item.label}` : ''
-                  }}
-                  contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 14, boxShadow: chartTheme.isDark ? '0 18px 42px rgba(0,0,0,0.42)' : '0 18px 42px rgba(42,51,86,0.16)' }}
-                  labelStyle={{ color: chartTheme.tooltipText, fontWeight: 800 }}
+                <DashboardMomentumSvg
+                  data={performanceTrend}
+                  subjects={momentumSubjectNames}
+                  overallAccuracy={summary.overallAccuracy}
                 />
-                <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ color: chartTheme.legendColor, fontSize: 12, fontWeight: 700, paddingBottom: 10 }} />
-                <Line type="monotone" dataKey="Biology" stroke="#1db884" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6, strokeWidth: 2 }} connectNulls />
-                <Line type="monotone" dataKey="Chemistry" stroke="#7c5cff" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6, strokeWidth: 2 }} connectNulls />
-                <Line type="monotone" dataKey="Physics" stroke="#4a90e2" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6, strokeWidth: 2 }} connectNulls />
-                <Line type="monotone" dataKey="English" stroke="#f59e0b" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6, strokeWidth: 2 }} connectNulls />
-                  </LineChart>
-                </ResponsiveContainer>
               </div>
               <div className="dashboard-momentum-mobile-key">
                 {momentumSubjectNames.map((subjectName) => {
@@ -343,7 +412,6 @@ function TeacherDashboard() {
 }
 
 function AdminDashboard() {
-  const chartTheme = useThemeMode()
   const { subjects } = useMcqSubjectSummary()
   const { overview, recentStudents } = useAdminPanelData()
   const subjectMix = subjects.map((subject) => ({
@@ -435,6 +503,10 @@ export default function PlatformDashboard() {
 
   return content
 }
+
+
+
+
 
 
 

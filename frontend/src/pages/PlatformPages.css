@@ -14403,3 +14403,404 @@ html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-ghos
     border-left: 12px solid #f97316 !important;
   }
 }
+
+/* Final dashboard subject momentum repair: stable SVG chart and contained legend. */
+html body .workspace-card .dashboard-momentum-chart {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 18px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+html body .workspace-card .dashboard-momentum-plot {
+  position: relative !important;
+  width: 100% !important;
+  height: 280px !important;
+  min-height: 280px !important;
+  max-height: 280px !important;
+  flex: 0 0 280px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+html body .dashboard-momentum-svg {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  display: block !important;
+  overflow: hidden !important;
+}
+
+html body .dashboard-momentum-svg svg {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: visible !important;
+}
+
+html body .dashboard-momentum-bg {
+  fill: rgba(255, 255, 255, 0.62);
+}
+
+html[data-theme="dark"] body .dashboard-momentum-bg {
+  fill: rgba(15, 12, 37, 0.68);
+}
+
+html body .dashboard-momentum-grid-line {
+  stroke: rgba(107, 114, 128, 0.24);
+  stroke-width: 1.4;
+  stroke-dasharray: 7 9;
+}
+
+html[data-theme="dark"] body .dashboard-momentum-grid-line {
+  stroke: rgba(167, 139, 250, 0.18);
+}
+
+html body .dashboard-momentum-axis-label,
+html body .dashboard-momentum-x-label {
+  fill: #475569;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+html[data-theme="dark"] body .dashboard-momentum-axis-label,
+html[data-theme="dark"] body .dashboard-momentum-x-label {
+  fill: #c4b5fd;
+}
+
+html body .dashboard-momentum-line-shadow {
+  fill: none;
+  stroke: var(--series-color);
+  stroke-width: 9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.16;
+}
+
+html body .dashboard-momentum-line {
+  fill: none;
+  stroke: var(--series-color);
+  stroke-width: 4.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+html body .dashboard-momentum-dot {
+  fill: var(--series-color);
+  stroke: #ffffff;
+  stroke-width: 3;
+}
+
+html[data-theme="dark"] body .dashboard-momentum-dot {
+  stroke: #120f2e;
+}
+
+html body .dashboard-momentum-average {
+  stroke: #8b5cf6;
+  stroke-width: 2.2;
+  stroke-dasharray: 8 8;
+  opacity: 0.7;
+}
+
+html body .dashboard-momentum-average-label {
+  fill: #5b3df4;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+html[data-theme="dark"] body .dashboard-momentum-average-label {
+  fill: #ddd6fe;
+}
+
+html body .workspace-card .dashboard-momentum-mobile-key {
+  position: static !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+}
+
+html body .workspace-card .dashboard-momentum-mobile-key span {
+  min-width: 0 !important;
+  width: 100% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  padding: 9px 10px !important;
+  border-radius: 14px !important;
+  border: 1.8px solid rgba(124, 92, 255, 0.28) !important;
+  background: rgba(124, 92, 255, 0.10) !important;
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+  font-size: 0.78rem !important;
+  font-weight: 950 !important;
+  line-height: 1.1 !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+}
+
+html[data-theme="dark"] body .workspace-card .dashboard-momentum-mobile-key span {
+  border-color: rgba(167, 139, 250, 0.42) !important;
+  background: rgba(124, 92, 255, 0.16) !important;
+  color: #f8fafc !important;
+  -webkit-text-fill-color: #f8fafc !important;
+}
+
+html body .workspace-card .dashboard-momentum-mobile-key i {
+  width: 10px !important;
+  height: 10px !important;
+  flex: 0 0 10px !important;
+  border-radius: 999px !important;
+  display: inline-block !important;
+}
+
+@media (max-width: 768px) {
+  html body .workspace-card .dashboard-momentum-chart {
+    padding: 12px !important;
+    gap: 10px !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-plot {
+    height: 210px !important;
+    min-height: 210px !important;
+    max-height: 210px !important;
+    flex-basis: 210px !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-mobile-key {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-mobile-key span {
+    padding: 8px 7px !important;
+    font-size: 0.72rem !important;
+  }
+
+  html body .dashboard-momentum-axis-label,
+  html body .dashboard-momentum-x-label {
+    font-size: 12px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  html body .workspace-card .dashboard-momentum-plot {
+    height: 190px !important;
+    min-height: 190px !important;
+    max-height: 190px !important;
+    flex-basis: 190px !important;
+  }
+
+  html body .dashboard-momentum-axis-label,
+  html body .dashboard-momentum-x-label {
+    font-size: 11px !important;
+  }
+}
+
+/* Final performance graph readability repair: larger labels, better plot usage, no mobile legend spill. */
+html body .performance-chart-grid .performance-trend-chart,
+html body .performance-chart-grid .performance-overall-chart {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 430px !important;
+  padding: 18px 18px 16px !important;
+  overflow: hidden !important;
+}
+
+html body .performance-chart-grid .performance-chart-plot {
+  width: 100% !important;
+  height: 360px !important;
+  min-height: 360px !important;
+  flex: 0 0 360px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+html body .performance-svg-chart {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  overflow: hidden !important;
+}
+
+html body .performance-svg-chart svg {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+html body .performance-svg-axis,
+html body .performance-svg-average-label {
+  fill: #26324a !important;
+  font-size: 18px !important;
+  font-weight: 950 !important;
+  paint-order: stroke !important;
+  stroke: rgba(255, 255, 255, 0.9) !important;
+  stroke-width: 2px !important;
+}
+
+html body .performance-svg-x-axis {
+  font-size: 16px !important;
+  font-weight: 950 !important;
+}
+
+html[data-theme='dark'] body .performance-svg-axis,
+html[data-theme='dark'] body .performance-svg-average-label {
+  fill: #f4f0ff !important;
+  stroke: rgba(9, 7, 24, 0.94) !important;
+}
+
+html body .performance-svg-grid {
+  stroke: rgba(99, 102, 241, 0.26) !important;
+  stroke-width: 1.5 !important;
+  stroke-dasharray: 7 8 !important;
+}
+
+html body .performance-svg-line {
+  stroke-width: 5 !important;
+}
+
+html body .performance-svg-line-shadow {
+  stroke-width: 11 !important;
+  opacity: 0.14 !important;
+}
+
+html body .performance-svg-dot {
+  stroke-width: 3.5 !important;
+}
+
+html body .performance-svg-legend {
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 8px !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 10px 18px !important;
+  color: var(--text-primary) !important;
+  font-size: clamp(1rem, 1.15vw, 1.2rem) !important;
+  font-weight: 950 !important;
+  line-height: 1.2 !important;
+  box-sizing: border-box !important;
+}
+
+html body .performance-svg-legend span {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  white-space: nowrap !important;
+}
+
+html body .performance-svg-legend i {
+  width: 14px !important;
+  height: 14px !important;
+  flex: 0 0 14px !important;
+}
+
+html body .performance-chart-mobile-key {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  html body .performance-chart-grid .performance-trend-chart,
+  html body .performance-chart-grid .performance-overall-chart {
+    min-height: 360px !important;
+    padding: 12px 10px 12px !important;
+  }
+
+  html body .performance-chart-grid .performance-chart-plot {
+    height: 292px !important;
+    min-height: 292px !important;
+    flex-basis: 292px !important;
+  }
+
+  html body .performance-svg-chart {
+    gap: 8px !important;
+  }
+
+  html body .performance-svg-axis,
+  html body .performance-svg-average-label {
+    font-size: 17px !important;
+    stroke-width: 2.4px !important;
+  }
+
+  html body .performance-svg-x-axis {
+    font-size: 15px !important;
+  }
+
+  html body .performance-svg-line {
+    stroke-width: 4.4 !important;
+  }
+
+  html body .performance-svg-line-shadow {
+    stroke-width: 9 !important;
+  }
+
+  html body .performance-svg-legend {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+    padding: 0 !important;
+    font-size: 0.82rem !important;
+  }
+
+  html body .performance-svg-legend span {
+    min-width: 0 !important;
+    justify-content: center !important;
+    padding: 7px 8px !important;
+    border-radius: 12px !important;
+    border: 1.5px solid rgba(124, 92, 255, 0.28) !important;
+    background: rgba(124, 92, 255, 0.10) !important;
+  }
+
+  html[data-theme='dark'] body .performance-svg-legend span {
+    border-color: rgba(167, 139, 250, 0.38) !important;
+    background: rgba(124, 92, 255, 0.15) !important;
+  }
+}
+
+@media (max-width: 420px) {
+  html body .performance-chart-grid .performance-trend-chart,
+  html body .performance-chart-grid .performance-overall-chart {
+    min-height: 340px !important;
+    padding: 10px 8px 10px !important;
+  }
+
+  html body .performance-chart-grid .performance-chart-plot {
+    height: 278px !important;
+    min-height: 278px !important;
+    flex-basis: 278px !important;
+  }
+
+  html body .performance-svg-axis,
+  html body .performance-svg-average-label {
+    font-size: 16px !important;
+  }
+
+  html body .performance-svg-x-axis {
+    font-size: 14px !important;
+  }
+
+  html body .performance-svg-legend {
+    font-size: 0.78rem !important;
+  }
+}

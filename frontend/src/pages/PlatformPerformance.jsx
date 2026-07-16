@@ -38,8 +38,8 @@ function buildPath(points) {
 
 function PerformanceSvgChart({ data, mode = 'subjects', average = 0 }) {
   const width = 760
-  const height = 300
-  const padding = { top: 30, right: 34, bottom: 48, left: 56 }
+  const height = 320
+  const padding = { top: 26, right: 44, bottom: 56, left: 68 }
   const chartWidth = width - padding.left - padding.right
   const chartHeight = height - padding.top - padding.bottom
   const rows = data.length || 1
@@ -48,8 +48,8 @@ function PerformanceSvgChart({ data, mode = 'subjects', average = 0 }) {
   const ticks = [0, 25, 50, 75, 100]
   const series = mode === 'overall' ? [{ key: 'Overall', color: '#7c5cff' }] : SUBJECT_SERIES
   const averageY = yFor(average)
-  const labelStep = Math.max(1, Math.ceil(rows / 6))
-  const shouldShowLabel = (index) => index === 0 || index === rows - 1 || index % labelStep === 0
+  const labelStep = Math.max(1, Math.ceil(rows / 5))
+  const shouldShowLabel = (index) => index === 0 || index === rows - 1 || (index % labelStep === 0 && rows - 1 - index > Math.ceil(labelStep / 2))
 
   return (
     <div className="performance-svg-chart" role="img" aria-label={mode === 'overall' ? 'Combined accuracy chart' : 'Subject performance chart'}>
@@ -283,6 +283,7 @@ export default function PlatformPerformance() {
     </div>
   )
 }
+
 
 
 

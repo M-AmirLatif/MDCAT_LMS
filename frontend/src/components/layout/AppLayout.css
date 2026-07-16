@@ -84,16 +84,24 @@
   }
 
   .app-layout .topbar {
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 80;
+    transform: none;
+    will-change: auto;
+  }
+
+  .app-content {
+    padding-top: calc(var(--topbar-height) + 18px);
   }
 }
 
 @media (max-width: 768px) {
   .app-content {
     padding:
-      var(--space-page-y, 14px)
+      calc(var(--topbar-height) + var(--space-page-y, 14px))
       var(--space-page-x, 14px)
       calc(var(--space-page-y, 14px) + env(safe-area-inset-bottom, 0px));
   }
@@ -102,7 +110,7 @@
 @media (max-width: 480px) {
   .app-content {
     padding:
-      var(--space-page-y, 10px)
+      calc(var(--topbar-height) + var(--space-page-y, 10px))
       var(--space-page-x, 10px)
       calc(var(--space-page-y, 10px) + env(safe-area-inset-bottom, 0px));
   }
