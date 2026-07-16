@@ -267,12 +267,13 @@ function TeacherScoreDistributionChart({ data }) {
 }
 
 function TeacherMultiStudentChart({ data, lines }) {
-  const width = 760
-  const height = 260
-  const padding = { top: 28, right: 28, bottom: 44, left: 46 }
+  const width = 560
+  const height = 330
+  const padding = { top: 30, right: 24, bottom: 70, left: 58 }
   const plotWidth = width - padding.left - padding.right
   const plotHeight = height - padding.top - padding.bottom
-  const colors = ['#7c5cff', '#ff6b6b', '#1db884', '#4a90e2']
+  const colors = ['#6c47ff', '#ff5f72', '#15b886', '#2f80ed', '#f59e0b']
+  const xTickEvery = Math.max(1, Math.ceil(data.length / 5))
 
   const getPoints = (lineKey) => data
     .map((item, index) => ({
@@ -287,25 +288,66 @@ function TeacherMultiStudentChart({ data, lines }) {
       y: padding.top + plotHeight - (Math.max(0, Math.min(100, point.value)) / 100) * plotHeight,
     }))
 
+  const toSmoothPath = (points) => {
+    if (points.length < 2) return ''
+    return points.reduce((path, point, index, all) => {
+      if (index === 0) return `M ${point.x} ${point.y}`
+      const previous = all[index - 1]
+      const controlX = previous.x + (point.x - previous.x) / 2
+      return `${path} C ${controlX} ${previous.y}, ${controlX} ${point.y}, ${point.x} ${point.y}`
+    }, '')
+  }
+
   return (
     <div className="teacher-svg-chart" role="img" aria-label="Multi-student line chart">
-      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
+      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet">
         {[0, 25, 50, 75, 100].map((tick) => {
           const y = padding.top + plotHeight - (tick / 100) * plotHeight
           return (
             <g key={tick}>
               <line x1={padding.left} x2={width - padding.right} y1={y} y2={y} className="teacher-svg-grid" />
-              <text x={padding.left - 12} y={y + 4} textAnchor="end" className="teacher-svg-axis">{tick}%</text>
+              <text x={padding.left - 16} y={y + 5} textAnchor="end" className="teacher-svg-axis teacher-svg-axis-y">{tick}%</text>
             </g>
+          )
+        })}
+        <line x1={padding.left} x2={width - padding.right} y1={padding.top + plotHeight} y2={padding.top + plotHeight} className="teacher-svg-axis-line" />
+        {data.map((item, index) => {
+          if (index % xTickEvery !== 0 && index !== data.length - 1) return null
+          const x = padding.left + (data.length > 1 ? (index / (data.length - 1)) * plotWidth : plotWidth / 2)
+          return (
+            <text key={`${item.label}-${index}`} x={x} y={height - 28} textAnchor="middle" className="teacher-svg-axis teacher-svg-axis-x">
+              {item.label}
+            </text>
           )
         })}
         {lines.map((lineKey, lineIndex) => {
           const points = getPoints(lineKey)
-          const path = points.map((point) => `${point.x},${point.y}`).join(' ')
+          const path = toSmoothPath(points)
           return (
             <g key={lineKey}>
-              {points.length > 1 ? <polyline points={path} fill="none" stroke={colors[lineIndex % colors.length]} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" /> : null}
-              {points.map((point) => <circle key={`${lineKey}-${point.index}`} cx={point.x} cy={point.y} r="5" fill={colors[lineIndex % colors.length]} stroke="#fff" strokeWidth="2" />)}
+              {points.length > 1 ? (
+                <path
+                  d={path}
+                  fill="none"
+                  stroke={colors[lineIndex % colors.length]}
+                  strokeWidth="4.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="teacher-svg-line"
+                />
+              ) : null}
+              {points.map((point) => (
+                <circle
+                  key={`${lineKey}-${point.index}`}
+                  cx={point.x}
+                  cy={point.y}
+                  r="6"
+                  fill={colors[lineIndex % colors.length]}
+                  stroke="#fff"
+                  strokeWidth="3"
+                  className="teacher-svg-point"
+                />
+              ))}
             </g>
           )
         })}
@@ -318,6 +360,7 @@ function TeacherMultiStudentChart({ data, lines }) {
     </div>
   )
 }
+
 export function TeacherAnalyticsPage() {
   const { user } = useAuth()
   const { summary, scoreDistribution, subjectMastery, multiStudentTrend } = useTeacherAnalyticsData()
@@ -934,6 +977,8 @@ export function SuperAdminAnnouncementsPage() {
     </div>
   )
 }
+
+
 
 
 
