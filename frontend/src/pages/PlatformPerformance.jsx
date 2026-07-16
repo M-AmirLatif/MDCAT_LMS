@@ -25,13 +25,21 @@ const SUBJECT_SERIES = [
 const clampPercent = (value) => Math.max(0, Math.min(100, Number(value) || 0))
 
 function buildPath(points) {
-  return points.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`).join(' ')
+  if (points.length < 2) {
+    return points.map((point) => `M ${point.x} ${point.y}`).join(' ')
+  }
+
+  return points.slice(1).reduce((path, point, index) => {
+    const previous = points[index]
+    const midX = (previous.x + point.x) / 2
+    return `${path} C ${midX} ${previous.y}, ${midX} ${point.y}, ${point.x} ${point.y}`
+  }, `M ${points[0].x} ${points[0].y}`)
 }
 
 function PerformanceSvgChart({ data, mode = 'subjects', average = 0 }) {
   const width = 760
   const height = 300
-  const padding = { top: 28, right: 26, bottom: 44, left: 52 }
+  const padding = { top: 30, right: 34, bottom: 48, left: 56 }
   const chartWidth = width - padding.left - padding.right
   const chartHeight = height - padding.top - padding.bottom
   const rows = data.length || 1
@@ -40,10 +48,12 @@ function PerformanceSvgChart({ data, mode = 'subjects', average = 0 }) {
   const ticks = [0, 25, 50, 75, 100]
   const series = mode === 'overall' ? [{ key: 'Overall', color: '#7c5cff' }] : SUBJECT_SERIES
   const averageY = yFor(average)
+  const labelStep = Math.max(1, Math.ceil(rows / 6))
+  const shouldShowLabel = (index) => index === 0 || index === rows - 1 || index % labelStep === 0
 
   return (
     <div className="performance-svg-chart" role="img" aria-label={mode === 'overall' ? 'Combined accuracy chart' : 'Subject performance chart'}>
-      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
+      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet">
         {ticks.map((tick) => {
           const y = yFor(tick)
           return (
@@ -56,7 +66,7 @@ function PerformanceSvgChart({ data, mode = 'subjects', average = 0 }) {
         {average > 0 ? (
           <>
             <line className="performance-svg-average" x1={padding.left} x2={width - padding.right} y1={averageY} y2={averageY} />
-            <text className="performance-svg-average-label" x={width - padding.right} y={averageY - 8} textAnchor="end">Overall {average}%</text>
+            <text className="performance-svg-average-label" x={width - padding.right} y={Math.max(18, averageY - 8)} textAnchor="end">Avg {average}%</text>
           </>
         ) : null}
         {series.map((item) => {
@@ -69,24 +79,26 @@ function PerformanceSvgChart({ data, mode = 'subjects', average = 0 }) {
             .filter(Boolean)
           if (!points.length) return null
           const path = buildPath(points)
+          const baseline = padding.top + chartHeight
           const areaPath = mode === 'overall' && points.length
-            ? `${path} L ${points.at(-1).x} ${padding.top + chartHeight} L ${points[0].x} ${padding.top + chartHeight} Z`
+            ? `${path} L ${points.at(-1).x} ${baseline} L ${points[0].x} ${baseline} Z`
             : null
           return (
             <g key={item.key}>
               {areaPath ? <path className="performance-svg-area" d={areaPath} /> : null}
-              <path d={path} fill="none" stroke={item.color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+              <path className="performance-svg-line-shadow" d={path} fill="none" stroke={item.color} />
+              <path className="performance-svg-line" d={path} fill="none" stroke={item.color} />
               {points.map((point, index) => (
-                <circle key={`${item.key}-${index}`} cx={point.x} cy={point.y} r="5" fill={item.color} stroke="var(--card-bg)" strokeWidth="2" />
+                <circle key={`${item.key}-${index}`} className="performance-svg-dot" cx={point.x} cy={point.y} r={index === points.length - 1 ? 4.5 : 3.2} fill={item.color} />
               ))}
             </g>
           )
         })}
-        {data.map((row, index) => (
-          <text key={`${row.attemptLabel || index}-label`} className="performance-svg-axis" x={xFor(index)} y={height - 14} textAnchor="middle">
+        {data.map((row, index) => shouldShowLabel(index) ? (
+          <text key={`${row.attemptLabel || index}-label`} className="performance-svg-axis performance-svg-x-axis" x={xFor(index)} y={height - 16} textAnchor="middle">
             {row.attemptLabel || `A${index + 1}`}
           </text>
-        ))}
+        ) : null)}
       </svg>
       <div className="performance-svg-legend">
         {series.map((item) => (
