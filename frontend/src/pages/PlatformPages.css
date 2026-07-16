@@ -15638,3 +15638,52 @@ html[data-theme='dark'] body .workspace-page .performance-svg-dot {
     max-height: 292px !important;
   }
 }
+
+/* Student MCQ solving: stronger white-mode borders for clear question/option separation. */
+html:not([data-theme="dark"]) body .mcq-practice-page .mcq-question-card {
+  border: 3px solid #8fa4cc !important;
+  box-shadow: 0 18px 42px rgba(50, 70, 120, 0.18), inset 0 0 0 1px rgba(255, 255, 255, 0.88) !important;
+  background: linear-gradient(180deg, #ffffff 0%, #f7f9ff 100%) !important;
+}
+
+html:not([data-theme="dark"]) body .mcq-practice-page .mcq-question-title {
+  border: 3px solid #a9b9d7 !important;
+  background: linear-gradient(180deg, #eef4ff 0%, #e7eefb 100%) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.86), 0 10px 24px rgba(70, 91, 140, 0.12) !important;
+}
+
+html:not([data-theme="dark"]) body .mcq-practice-page .mcq-options-grid {
+  border: 2.5px solid #c0cce2 !important;
+  background: #f8faff !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.92) !important;
+}
+
+html:not([data-theme="dark"]) body .mcq-practice-page .mcq-option-card {
+  border: 3px solid #b6c4df !important;
+  background: #ffffff !important;
+  box-shadow: 0 10px 22px rgba(48, 66, 110, 0.10) !important;
+}
+
+html:not([data-theme="dark"]) body .mcq-practice-page .mcq-option-card:hover,
+html:not([data-theme="dark"]) body .mcq-practice-page .mcq-option-card:focus-visible {
+  border-color: #8ea3cc !important;
+  background: #ffffff !important;
+  box-shadow: 0 12px 26px rgba(48, 66, 110, 0.14) !important;
+}
+
+html:not([data-theme="dark"]) body .mcq-practice-page .mcq-option-letter {
+  border: 3px solid #b6c4df !important;
+  background: #edf3ff !important;
+  box-shadow: 0 8px 18px rgba(48, 66, 110, 0.12) !important;
+}
+
+@media (max-width: 640px) {
+  html:not([data-theme="dark"]) body .mcq-practice-page .mcq-question-card {
+    border-width: 2.5px !important;
+  }
+
+  html:not([data-theme="dark"]) body .mcq-practice-page .mcq-question-title,
+  html:not([data-theme="dark"]) body .mcq-practice-page .mcq-option-card {
+    border-width: 2.5px !important;
+  }
+}
