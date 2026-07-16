@@ -36,7 +36,7 @@ function buildPath(points) {
   }, `M ${points[0].x} ${points[0].y}`)
 }
 
-function PerformanceSvgChart({ data, mode = 'subjects', average = 0 }) {
+function PerformanceSvgChart({ data, mode = 'subjects', average = 0, legendValues = {} }) {
   const width = 760
   const height = 320
   const padding = { top: 26, right: 44, bottom: 56, left: 68 }
@@ -52,7 +52,7 @@ function PerformanceSvgChart({ data, mode = 'subjects', average = 0 }) {
   const shouldShowLabel = (index) => index === 0 || index === rows - 1 || (index % labelStep === 0 && rows - 1 - index > Math.ceil(labelStep / 2))
 
   return (
-    <div className="performance-svg-chart" role="img" aria-label={mode === 'overall' ? 'Combined accuracy chart' : 'Subject performance chart'}>
+    <div className={`performance-svg-chart performance-svg-chart--${mode}`} role="img" aria-label={mode === 'overall' ? 'Combined accuracy chart' : 'Subject performance chart'}>
       <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet">
         {ticks.map((tick) => {
           const y = yFor(tick)
@@ -101,9 +101,17 @@ function PerformanceSvgChart({ data, mode = 'subjects', average = 0 }) {
         ) : null)}
       </svg>
       <div className="performance-svg-legend">
-        {series.map((item) => (
-          <span key={item.key}><i style={{ background: item.color }} />{mode === 'overall' ? 'Combined accuracy' : item.key}</span>
-        ))}
+        {series.map((item) => {
+          const label = mode === 'overall'
+            ? `Combined accuracy: ${legendValues.Overall ?? average ?? 0}%`
+            : `${item.key}: ${legendValues[item.key] ?? 0}%`
+          return (
+            <span key={item.key}>
+              <i style={{ background: item.color }} />
+              {label}
+            </span>
+          )
+        })}
       </div>
     </div>
   )
@@ -156,7 +164,14 @@ export default function PlatformPerformance() {
             {!loading && performanceTrend.length > 0 ? (
               <>
                 <div className="performance-chart-plot">
-                  <PerformanceSvgChart data={performanceTrend} average={pageSummary.overallAccuracy} />
+                  <PerformanceSvgChart
+                    data={performanceTrend}
+                    average={pageSummary.overallAccuracy}
+                    legendValues={Object.fromEntries(performanceSubjectNames.map((subjectName) => {
+                      const latest = [...performanceTrend].reverse().find((point) => Number.isFinite(Number(point[subjectName])))
+                      return [subjectName, latest ? Math.round(Number(latest[subjectName]) || 0) : 0]
+                    }))}
+                  />
                 </div>
                 <div className="performance-chart-mobile-key">
                   {performanceSubjectNames.map((subjectName) => {
@@ -187,11 +202,12 @@ export default function PlatformPerformance() {
             {!loading && overallTrend.length > 0 ? (
               <>
                 <div className="performance-chart-plot">
-                  <PerformanceSvgChart data={overallTrend} mode="overall" average={pageSummary.overallAccuracy} />
-                </div>
-                <div className="performance-chart-mobile-key performance-chart-mobile-key--overall">
-                  <span>Latest overall: {Math.round(Number(overallTrend[overallTrend.length - 1]?.Overall) || 0)}%</span>
-                  <span>Average line: {pageSummary.overallAccuracy}%</span>
+                  <PerformanceSvgChart
+                    data={overallTrend}
+                    mode="overall"
+                    average={pageSummary.overallAccuracy}
+                    legendValues={{ Overall: Math.round(Number(overallTrend[overallTrend.length - 1]?.Overall) || 0) }}
+                  />
                 </div>
               </>
             ) : (
@@ -283,6 +299,9 @@ export default function PlatformPerformance() {
     </div>
   )
 }
+
+
+
 
 
 
