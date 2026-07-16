@@ -59,6 +59,11 @@ const momentumColors = {
   English: '#f59e0b',
 }
 
+const chartTheme = {
+  tooltipBg: '#171333',
+  tooltipText: '#ffffff',
+}
+
 const clampPercent = (value) => Math.max(0, Math.min(100, Number(value) || 0))
 
 const buildMomentumPath = (points) => {
@@ -412,11 +417,13 @@ function TeacherDashboard() {
 }
 
 function AdminDashboard() {
-  const { subjects } = useMcqSubjectSummary()
-  const { overview, recentStudents } = useAdminPanelData()
-  const subjectMix = subjects.map((subject) => ({
+  const { subjects = [] } = useMcqSubjectSummary()
+  const { overview = {}, recentStudents = [] } = useAdminPanelData()
+  const safeSubjects = Array.isArray(subjects) ? subjects : []
+  const safeRecentStudents = Array.isArray(recentStudents) ? recentStudents : []
+  const subjectMix = safeSubjects.map((subject) => ({
     name: subject.name,
-    value: subject.totalMcqs,
+    value: Number(subject.totalMcqs) || 0,
     fill: subject.name === 'Biology' ? '#1db884' : subject.name === 'Chemistry' ? '#6c47ff' : subject.name === 'Physics' ? '#4a90e2' : '#f59e0b',
   }))
 
@@ -467,7 +474,7 @@ function AdminDashboard() {
         <div className="workspace-card">
           <div className="workspace-card-head"><div><div className="label-xs">Student Access</div><h3 className="workspace-card-title">Newest student accounts</h3></div></div>
           <div className="workspace-card-body list-stack">
-            {recentStudents.map((student) => (
+            {safeRecentStudents.map((student) => (
               <div key={student._id} className="queue-card">
                 <div className="workspace-card-title-row">
                   <strong>{student.firstName} {student.lastName}</strong>
@@ -476,7 +483,7 @@ function AdminDashboard() {
                 <p>{student.email} - {student.subscriptionPlan} plan - {student.metrics?.totalTests || 0} tests</p>
               </div>
             ))}
-            {recentStudents.length === 0 ? (
+            {safeRecentStudents.length === 0 ? (
               <div className="empty-state empty-state--compact">
                 <div className="empty-orb" />
                 <h3>No students yet</h3>
@@ -503,6 +510,8 @@ export default function PlatformDashboard() {
 
   return content
 }
+
+
 
 
 
