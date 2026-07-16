@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import API from '../services/api'
 
 const SUBJECTS = [
@@ -14,6 +14,24 @@ const SUBJECT_NAME_BY_KEY = new Map(
     [subject.name.toLowerCase(), subject.name],
   ]),
 )
+
+const normalizeSubjectName = (value) => {
+  const raw = String(value || '').trim()
+  if (!raw) return ''
+
+  const key = raw.toLowerCase()
+  if (SUBJECT_NAME_BY_KEY.has(key)) {
+    return SUBJECT_NAME_BY_KEY.get(key)
+  }
+
+  const matchedSubject = SUBJECTS.find((subject) => {
+    const id = subject.id.toLowerCase()
+    const name = subject.name.toLowerCase()
+    return key.includes(id) || key.includes(name)
+  })
+
+  return matchedSubject?.name || ''
+}
 
 const EMPTY_SUMMARY = {
   totalAttempted: 0,
@@ -31,17 +49,17 @@ const formatAttemptDate = (value) => {
 }
 
 const getSubjectNameFromSession = (session) => {
-  const explicitSubject = String(session?.subject || '').trim()
+  const explicitSubject = normalizeSubjectName(session?.subject)
   if (explicitSubject) {
-    return SUBJECT_NAME_BY_KEY.get(explicitSubject.toLowerCase()) || explicitSubject
+    return explicitSubject
   }
 
-  const courseCategory = String(session?.courseId?.category || '').trim()
+  const courseCategory = normalizeSubjectName(session?.courseId?.category)
   if (courseCategory) {
-    return SUBJECT_NAME_BY_KEY.get(courseCategory.toLowerCase()) || courseCategory
+    return courseCategory
   }
 
-  return ''
+  return normalizeSubjectName(session?.courseId?.subject || session?.subjectName || session?.courseId?.name)
 }
 
 const buildPerformanceData = (subjectSummary = [], sessions = []) => {
@@ -222,3 +240,4 @@ export default function useStudentPerformanceData() {
 
   return { ...data, loading }
 }
+

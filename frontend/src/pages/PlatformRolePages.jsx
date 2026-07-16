@@ -270,9 +270,9 @@ export function TeacherAnalyticsPage() {
       <div className="workspace-section-grid">
         <div className="workspace-card">
           <div className="workspace-card-head"><div><div className="label-xs">Distribution</div><h2 className="workspace-card-title">Score distribution</h2></div></div>
-          <div className="workspace-card-body chart-panel">
+          <div className="workspace-card-body chart-panel teacher-analytics-chart teacher-score-chart">
             {hasDistribution ? (
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={300} minWidth={260}>
                 <BarChart data={scoreDistribution} margin={{ top: 12, right: 18, left: 0, bottom: 4 }}>
                   <CartesianGrid strokeDasharray="4 6" vertical={false} stroke={chartTheme.gridColor} />
                   <XAxis dataKey="band" axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} />
@@ -319,9 +319,9 @@ export function TeacherAnalyticsPage() {
 
       <div className="workspace-card">
         <div className="workspace-card-head"><div><div className="label-xs">Comparison</div><h3 className="workspace-card-title">Multi-student line chart</h3></div></div>
-        <div className="workspace-card-body chart-panel">
+        <div className="workspace-card-body chart-panel teacher-analytics-chart teacher-multi-chart">
           {hasTrend ? (
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height={320} minWidth={260}>
               <LineChart data={multiStudentTrend} margin={{ top: 12, right: 18, left: 0, bottom: 4 }}>
                 <CartesianGrid strokeDasharray="4 6" vertical={false} stroke={chartTheme.gridColor} />
                 <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} minTickGap={18} />

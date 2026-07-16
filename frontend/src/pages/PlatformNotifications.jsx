@@ -1,20 +1,167 @@
+import { useEffect, useMemo, useState } from 'react'
+import toast from 'react-hot-toast'
+import API, { getUserFriendlyErrorMessage } from '../services/api'
 import './PlatformPages.css'
-import { studentNotifications } from './platformContent'
+
+const filterOptions = [
+  { key: 'all', label: 'All' },
+  { key: 'unread', label: 'Unread' },
+  { key: 'classes', label: 'Live Classes' },
+  { key: 'payments', label: 'Payments' },
+  { key: 'system', label: 'System' },
+]
+
+const quickFilters = [
+  { key: 'urgent', label: 'Urgent' },
+  { key: 'classes', label: 'Classes' },
+  { key: 'payments', label: 'Payments' },
+  { key: 'progress', label: 'Progress' },
+]
+
+const toneMeta = {
+  purple: { label: 'Progress', chip: 'badge-purple' },
+  teal: { label: 'Live Class', chip: 'badge-teal' },
+  amber: { label: 'Payments', chip: 'badge-amber' },
+  coral: { label: 'System', chip: 'badge-coral' },
+}
+
+const getText = (item) => `${item?.type || ''} ${item?.title || ''} ${item?.message || item?.body || ''}`.toLowerCase()
+
+const getNotificationCategory = (item) => {
+  const type = String(item?.type || '').toLowerCase()
+  const text = getText(item)
+
+  if (text.includes('urgent') || text.includes('critical') || text.includes('important')) return 'urgent'
+  if (type === 'lecture' || text.includes('class') || text.includes('lecture') || text.includes('live')) return 'classes'
+  if (text.includes('payment') || text.includes('billing') || text.includes('invoice') || text.includes('subscription')) return 'payments'
+  if (type === 'test' || text.includes('progress') || text.includes('score') || text.includes('attempt') || text.includes('result')) return 'progress'
+  return 'system'
+}
+
+const getNotificationTone = (category) => {
+  if (category === 'classes') return 'teal'
+  if (category === 'payments') return 'amber'
+  if (category === 'progress') return 'purple'
+  return 'coral'
+}
+
+const formatNotificationTime = (value) => {
+  const date = value ? new Date(value) : null
+  if (!date || Number.isNaN(date.getTime())) return 'Just now'
+  const seconds = Math.max(0, Math.floor((Date.now() - date.getTime()) / 1000))
+  if (seconds < 60) return 'Just now'
+  const minutes = Math.floor(seconds / 60)
+  if (minutes < 60) return `${minutes} min ago`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours} hr ago`
+  const days = Math.floor(hours / 24)
+  if (days < 7) return `${days} day${days === 1 ? '' : 's'} ago`
+  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+}
+
+const normalizeNotification = (item) => {
+  const category = getNotificationCategory(item)
+  return {
+    id: item._id || item.id || item.title,
+    title: item.title || 'Notification',
+    body: item.message || item.body || '',
+    type: item.type || 'general',
+    isRead: Boolean(item.isRead),
+    category,
+    tone: getNotificationTone(category),
+    time: formatNotificationTime(item.createdAt || item.updatedAt || item.time),
+  }
+}
 
 export default function PlatformNotifications() {
-  const inboxItems = studentNotifications
+  const [notifications, setNotifications] = useState([])
+  const [activeFilter, setActiveFilter] = useState('all')
+  const [loading, setLoading] = useState(true)
+  const [settingsOpen, setSettingsOpen] = useState(false)
 
-  const unreadCount = 0
-  const liveClassCount = inboxItems.filter((item) => item.tone === 'teal').length
-  const paymentCount = inboxItems.filter((item) => item.tone === 'amber').length
-  const systemCount = inboxItems.filter((item) => item.tone === 'coral').length
+  useEffect(() => {
+    let alive = true
+    setLoading(true)
 
-  const toneMeta = {
-    purple: { label: 'Progress', chip: 'badge-purple' },
-    teal: { label: 'Live Class', chip: 'badge-teal' },
-    amber: { label: 'Payments', chip: 'badge-amber' },
-    coral: { label: 'System', chip: 'badge-coral' },
+    API.get('/notifications?limit=100')
+      .then((res) => {
+        if (!alive) return
+        setNotifications((res.data.notifications || []).map(normalizeNotification))
+      })
+      .catch((error) => {
+        if (!alive) return
+        toast.error(getUserFriendlyErrorMessage(error, 'We could not load notifications right now.'))
+        setNotifications([])
+      })
+      .finally(() => {
+        if (alive) setLoading(false)
+      })
+
+    return () => {
+      alive = false
+    }
+  }, [])
+
+  const inboxItems = useMemo(() => {
+    if (activeFilter === 'all') return notifications
+    if (activeFilter === 'unread') return notifications.filter((item) => !item.isRead)
+    if (activeFilter === 'system') return notifications.filter((item) => item.category === 'system' || item.category === 'urgent')
+    return notifications.filter((item) => item.category === activeFilter)
+  }, [activeFilter, notifications])
+
+  const unreadCount = notifications.filter((item) => !item.isRead).length
+  const liveClassCount = notifications.filter((item) => item.category === 'classes').length
+  const paymentCount = notifications.filter((item) => item.category === 'payments').length
+  const systemCount = notifications.filter((item) => item.category === 'system' || item.category === 'urgent').length
+  const progressCount = notifications.filter((item) => item.category === 'progress').length
+
+  const markAllRead = async () => {
+    if (!notifications.some((item) => !item.isRead)) return
+
+    const previous = notifications
+    setNotifications((current) => current.map((item) => ({ ...item, isRead: true })))
+
+    try {
+      await API.post('/notifications/mark-all-read')
+      toast.success('All notifications marked as read')
+    } catch (error) {
+      setNotifications(previous)
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not mark notifications as read.'))
+    }
   }
+
+  const markOneRead = async (notificationId) => {
+    const item = notifications.find((notification) => notification.id === notificationId)
+    if (!item || item.isRead) return
+
+    setNotifications((current) => current.map((notification) => (
+      notification.id === notificationId ? { ...notification, isRead: true } : notification
+    )))
+
+    try {
+      await API.post('/notifications/mark-as-read', { notificationId })
+    } catch (error) {
+      setNotifications((current) => current.map((notification) => (
+        notification.id === notificationId ? { ...notification, isRead: false } : notification
+      )))
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not update the notification.'))
+    }
+  }
+
+  const archiveNotification = async (notificationId) => {
+    const previous = notifications
+    setNotifications((current) => current.filter((item) => item.id !== notificationId))
+
+    try {
+      await API.post('/notifications/archive', { notificationId })
+      toast.success('Notification archived')
+    } catch (error) {
+      setNotifications(previous)
+      toast.error(getUserFriendlyErrorMessage(error, 'We could not archive the notification.'))
+    }
+  }
+
+  const filterLabel = [...filterOptions, ...quickFilters].find((item) => item.key === activeFilter)?.label || 'All'
 
   return (
     <div className="workspace-page workspace-page--notifications animate-fade-up">
@@ -29,8 +176,8 @@ export default function PlatformNotifications() {
               Track live classes, billing reminders, and study updates from one clear workspace instead of a plain list.
             </p>
             <div className="workspace-hero-actions">
-              <button className="btn btn-primary" type="button">Mark all as read</button>
-              <button className="btn btn-secondary" type="button">Notification settings</button>
+              <button className="btn btn-primary" type="button" onClick={markAllRead} disabled={unreadCount === 0}>Mark all as read</button>
+              <button className="btn btn-secondary" type="button" onClick={() => setSettingsOpen((value) => !value)}>Notification settings</button>
             </div>
           </div>
 
@@ -59,20 +206,27 @@ export default function PlatformNotifications() {
 
         <div className="notification-toolbar">
           <div className="filter-pills">
-            <button className="filter-pill filter-pill--active" type="button">All</button>
-            <button className="filter-pill" type="button">Unread</button>
-            <button className="filter-pill" type="button">Live Classes</button>
-            <button className="filter-pill" type="button">Payments</button>
-            <button className="filter-pill" type="button">System</button>
+            {filterOptions.map((item) => (
+              <button
+                key={item.key}
+                className={`filter-pill ${activeFilter === item.key ? 'filter-pill--active' : ''}`}
+                type="button"
+                onClick={() => setActiveFilter(item.key)}
+              >
+                {item.label}
+              </button>
+            ))}
           </div>
-          <div className="notification-toolbar-note">No activity synced yet</div>
+          <div className="notification-toolbar-note">
+            {loading ? 'Loading inbox...' : `${inboxItems.length} item${inboxItems.length === 1 ? '' : 's'} in ${filterLabel}`}
+          </div>
         </div>
       </section>
 
       <div className="card-grid">
         <div className="stat-tile stat-tile--purple">
           <div className="stat-tile-top"><span>Total inbox</span><span className="badge badge-purple">Today</span></div>
-          <strong>{String(inboxItems.length).padStart(2, '0')}</strong>
+          <strong>{String(notifications.length).padStart(2, '0')}</strong>
           <small>Every real alert, reminder, and announcement in one stream.</small>
         </div>
         <div className="stat-tile stat-tile--teal">
@@ -98,16 +252,16 @@ export default function PlatformNotifications() {
             <div>
               <div className="label-xs">Latest activity</div>
               <h2 className="workspace-card-title">Priority inbox</h2>
-              <p>Important updates are grouped in richer cards so the page does not read like a plain document.</p>
+              <p>{filterLabel} notifications are shown here. Open marks a notification as read; Archive removes it from the active inbox.</p>
             </div>
-            <span className="state-chip state-chip--neutral">4 Active</span>
+            <span className="state-chip state-chip--neutral">{inboxItems.length} Active</span>
           </div>
           <div className="workspace-card-body list-stack">
             {inboxItems.map((item) => (
-              <article key={item.title} className={`notification-showcase notification-showcase--${item.tone}`}>
+              <article key={item.id} className={`notification-showcase notification-showcase--${item.tone} ${item.isRead ? 'notification-showcase--read' : ''}`}>
                 <div className="notification-showcase-top">
                   <span className={`badge ${toneMeta[item.tone]?.chip || 'badge-purple'}`}>
-                    {toneMeta[item.tone]?.label || 'Update'}
+                    {toneMeta[item.tone]?.label || 'Update'} - {item.isRead ? 'Read' : 'New'}
                   </span>
                   <small>{item.time}</small>
                 </div>
@@ -121,16 +275,16 @@ export default function PlatformNotifications() {
                   </div>
                 </div>
                 <div className="notification-showcase-actions">
-                  <button className="btn btn-ghost" type="button">Open</button>
-                  <button className="btn btn-secondary btn-sm" type="button">Archive</button>
+                  <button className="btn btn-ghost" type="button" onClick={() => markOneRead(item.id)} disabled={item.isRead}>Open</button>
+                  <button className="btn btn-secondary btn-sm" type="button" onClick={() => archiveNotification(item.id)}>Archive</button>
                 </div>
               </article>
             ))}
-            {inboxItems.length === 0 ? (
+            {!loading && inboxItems.length === 0 ? (
               <div className="empty-state empty-state--compact">
                 <div className="empty-orb" />
-                <h3>No notifications yet</h3>
-                <p>Real class alerts, payment reminders, and announcements will appear here after launch.</p>
+                <h3>No notifications here</h3>
+                <p>{activeFilter === 'all' ? 'Real class alerts, payment reminders, and announcements will appear here after launch.' : `No ${filterLabel.toLowerCase()} notifications are currently active.`}</p>
               </div>
             ) : null}
           </div>
@@ -159,19 +313,25 @@ export default function PlatformNotifications() {
           <div className="notification-summary-panel">
             <div className="label-xs">Quick Filters</div>
             <div className="filter-pills" style={{ marginTop: '10px' }}>
-              <button className="filter-pill" type="button">Urgent</button>
-              <button className="filter-pill" type="button">Classes</button>
-              <button className="filter-pill" type="button">Payments</button>
-              <button className="filter-pill" type="button">Progress</button>
+              {quickFilters.map((item) => (
+                <button
+                  key={item.key}
+                  className={`filter-pill ${activeFilter === item.key ? 'filter-pill--active' : ''}`}
+                  type="button"
+                  onClick={() => setActiveFilter(item.key)}
+                >
+                  {item.label}
+                </button>
+              ))}
             </div>
           </div>
 
           <div className="notification-summary-panel">
             <div className="label-xs">Auto clean-up</div>
-            <p>Archive resolved alerts after 7 days and keep critical broadcasts pinned.</p>
+            <p>{settingsOpen ? 'Settings are ready for future reminder rules. Archived notifications are hidden from this inbox.' : 'Archive resolved alerts after 7 days and keep critical broadcasts pinned.'}</p>
           </div>
 
-          <button className="btn btn-ghost notification-summary-button" type="button">Mark All Read</button>
+          <button className="btn btn-ghost notification-summary-button" type="button" onClick={markAllRead} disabled={unreadCount === 0}>Mark All Read</button>
         </aside>
       </div>
     </div>

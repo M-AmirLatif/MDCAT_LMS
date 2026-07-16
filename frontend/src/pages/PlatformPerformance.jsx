@@ -1,4 +1,4 @@
-import {
+﻿import {
   Area,
   AreaChart,
   CartesianGrid,
@@ -76,7 +76,7 @@ export default function PlatformPerformance() {
             {!loading && performanceTrend.length > 0 ? (
               <>
                 <div className="performance-chart-plot">
-                  <ResponsiveContainer width="100%" height="100%" minWidth={260} minHeight={260}>
+                  <ResponsiveContainer width="100%" height={310} minWidth={260}>
                     <LineChart data={performanceTrend} margin={{ top: 22, right: 14, left: 0, bottom: 8 }}>
                   <CartesianGrid strokeDasharray="4 6" vertical={false} stroke={chartTheme.gridColor} />
                   <XAxis dataKey="attemptLabel" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor, fontWeight: 700 }} minTickGap={14} />
@@ -88,7 +88,7 @@ export default function PlatformPerformance() {
                     formatter={(value, name) => [`${Math.round(Number(value) || 0)}%`, name]}
                     labelFormatter={(_, payload) => {
                       const item = payload?.[0]?.payload
-                      return item ? `${item.attemptLabel} • ${item.attemptDate} • ${item.label}` : ''
+                      return item ? `${item.attemptLabel} - ${item.attemptDate} - ${item.label}` : ''
                     }}
                     contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 14, boxShadow: chartTheme.isDark ? '0 18px 42px rgba(0,0,0,0.42)' : '0 18px 42px rgba(42,51,86,0.16)' }}
                     labelStyle={{ color: chartTheme.tooltipText, fontWeight: 800 }}
@@ -130,7 +130,7 @@ export default function PlatformPerformance() {
             {!loading && overallTrend.length > 0 ? (
               <>
                 <div className="performance-chart-plot">
-                  <ResponsiveContainer width="100%" height="100%" minWidth={260} minHeight={260}>
+                  <ResponsiveContainer width="100%" height={310} minWidth={260}>
                     <AreaChart data={overallTrend} margin={{ top: 22, right: 14, left: 0, bottom: 8 }}>
                   <defs>
                     <linearGradient id="overallAccuracyArea" x1="0" y1="0" x2="0" y2="1">
@@ -149,7 +149,7 @@ export default function PlatformPerformance() {
                     formatter={(value, name) => [`${Math.round(Number(value) || 0)}%`, name === 'Overall' ? 'Combined accuracy' : name]}
                     labelFormatter={(_, payload) => {
                       const item = payload?.[0]?.payload
-                      return item ? `${item.attemptLabel} • ${item.attemptDate} • ${item.label}` : ''
+                      return item ? `${item.attemptLabel} - ${item.attemptDate} - ${item.label}` : ''
                     }}
                     contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 14, boxShadow: chartTheme.isDark ? '0 18px 42px rgba(0,0,0,0.42)' : '0 18px 42px rgba(42,51,86,0.16)' }}
                     labelStyle={{ color: chartTheme.tooltipText, fontWeight: 800 }}
@@ -211,8 +211,8 @@ export default function PlatformPerformance() {
               <div key={attempt.id} className="timeline-item">
                 <div className="timeline-dot" style={{ background: attempt.score >= 80 ? 'var(--teal)' : attempt.score >= 65 ? 'var(--amber)' : 'var(--coral)' }} />
                 <div>
-                  <strong>{attempt.subject} • {attempt.chapter}</strong>
-                  <p>{attempt.correct}/{attempt.total} correct • Score {attempt.score}%</p>
+                  <strong>{attempt.subject} â€¢ {attempt.chapter}</strong>
+                  <p>{attempt.correct}/{attempt.total} correct â€¢ Score {attempt.score}%</p>
                   <small>{attempt.date}</small>
                 </div>
               </div>
@@ -252,5 +252,6 @@ export default function PlatformPerformance() {
     </div>
   )
 }
+
 
 

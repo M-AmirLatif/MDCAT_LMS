@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+﻿import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Area,
@@ -133,7 +133,7 @@ function StudentDashboard({ firstName }) {
             {!loading && performanceTrend.length > 0 ? (
             <>
               <div className="dashboard-momentum-plot">
-                <ResponsiveContainer width="100%" height="100%" minWidth={260} minHeight={260}>
+                <ResponsiveContainer width="100%" height={310} minWidth={260}>
                   <LineChart data={performanceTrend} margin={{ top: 22, right: 14, left: 0, bottom: 8 }}>
                 <CartesianGrid strokeDasharray="4 6" vertical={false} stroke={chartTheme.gridColor} />
                 <XAxis dataKey="attemptLabel" axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12, fontWeight: 700 }} minTickGap={14} />
@@ -145,7 +145,7 @@ function StudentDashboard({ firstName }) {
                   formatter={(value, name) => [`${Math.round(Number(value) || 0)}%`, name]}
                   labelFormatter={(_, payload) => {
                     const item = payload?.[0]?.payload
-                    return item ? `${item.attemptLabel} • ${item.attemptDate} • ${item.label}` : ''
+                    return item ? `${item.attemptLabel} - ${item.attemptDate} - ${item.label}` : ''
                   }}
                   contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 14, boxShadow: chartTheme.isDark ? '0 18px 42px rgba(0,0,0,0.42)' : '0 18px 42px rgba(42,51,86,0.16)' }}
                   labelStyle={{ color: chartTheme.tooltipText, fontWeight: 800 }}
@@ -323,7 +323,7 @@ function TeacherDashboard() {
                 <div className="timeline-dot" style={{ background: student.risk === 'High' ? 'var(--coral)' : student.risk === 'Medium' ? 'var(--amber)' : 'var(--teal)' }} />
                 <div>
                   <strong>{student.name}</strong>
-                  <p>{student.city} • Current score {student.score}% • {student.streak} streak</p>
+                  <p>{student.city} â€¢ Current score {student.score}% â€¢ {student.streak} streak</p>
                   <small>Risk profile: {student.risk}</small>
                 </div>
               </div>
@@ -435,6 +435,7 @@ export default function PlatformDashboard() {
 
   return content
 }
+
 
 
 

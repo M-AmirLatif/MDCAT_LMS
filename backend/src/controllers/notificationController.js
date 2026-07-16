@@ -11,6 +11,9 @@ exports.getNotifications = async (req, res) => {
     const skip = (page - 1) * limit
 
     const filter = { recipientId: req.user.id }
+    if (req.query.includeArchived !== 'true') {
+      filter.archived = { $ne: true }
+    }
 
     const [notifications, total] = await Promise.all([
       Notification.find(filter)
@@ -90,6 +93,50 @@ exports.markAsRead = async (req, res) => {
   }
 }
 
+
+// ==================== MARK ALL AS READ ====================
+exports.markAllAsRead = async (req, res) => {
+  try {
+    const result = await Notification.updateMany(
+      { recipientId: req.user.id, archived: { $ne: true }, isRead: false },
+      { $set: { isRead: true } },
+    )
+
+    res.status(200).json({
+      success: true,
+      modifiedCount: result.modifiedCount || 0,
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+}
+
+// ==================== ARCHIVE NOTIFICATION ====================
+exports.archiveNotification = async (req, res) => {
+  try {
+    const { notificationId } = req.body
+    if (!notificationId) {
+      return res.status(400).json({ error: 'notificationId is required' })
+    }
+
+    const notification = await Notification.findOneAndUpdate(
+      { _id: notificationId, recipientId: req.user.id },
+      { archived: true, isRead: true },
+      { new: true },
+    )
+
+    if (!notification) {
+      return res.status(404).json({ error: 'Notification not found' })
+    }
+
+    res.status(200).json({
+      success: true,
+      notification,
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+}
 const resolveRecipients = async ({ courseId, role }) => {
   if (courseId) {
     const course = await Course.findById(courseId).select('enrolledStudents')
@@ -171,3 +218,4 @@ exports.scheduleNotification = async (req, res) => {
     res.status(500).json({ error: error.message })
   }
 }
+

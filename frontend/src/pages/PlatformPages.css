@@ -11863,21 +11863,34 @@ html:not([data-theme="dark"]) .subject-browser-hero .mcq-learning-flow span:not(
   }
 
   html body .subject-browser-hero .mcq-learning-flow span:not(:last-child)::after {
-    content: "Next" !important;
+    content: "NEXT" !important;
     position: static !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     width: auto !important;
-    height: auto !important;
+    min-width: 44px !important;
+    height: 22px !important;
     margin-left: 12px !important;
-    background: transparent !important;
-    color: rgba(255, 255, 255, 0.78) !important;
+    padding: 0 9px !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(255, 255, 255, 0.26) !important;
+    background: rgba(255, 255, 255, 0.16) !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
     font-size: 11px !important;
     font-weight: 800 !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.08em !important;
+    letter-spacing: 0.04em !important;
+    line-height: 1 !important;
+    box-shadow: none !important;
   }
 
   html:not([data-theme="dark"]) body .subject-browser-hero .mcq-learning-flow span:not(:last-child)::after {
-    color: rgba(79, 70, 229, 0.78) !important;
+    border-color: rgba(99, 102, 241, 0.20) !important;
+    background: rgba(99, 102, 241, 0.12) !important;
+    color: #5b3dff !important;
+    -webkit-text-fill-color: #5b3dff !important;
   }
 }
 
@@ -13149,5 +13162,49 @@ html body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .bt
     height: 260px !important;
     min-height: 260px !important;
     flex-basis: 260px !important;
+  }
+}
+
+/* Teacher analytics charts: keep Recharts visible on narrow screens. */
+.teacher-analytics-chart {
+  min-height: 320px !important;
+  height: auto !important;
+  padding: 18px !important;
+  overflow: visible !important;
+}
+
+.teacher-analytics-chart .recharts-responsive-container {
+  width: 100% !important;
+  min-width: 260px !important;
+  height: 300px !important;
+  min-height: 300px !important;
+}
+
+.teacher-multi-chart .recharts-responsive-container {
+  height: 320px !important;
+  min-height: 320px !important;
+}
+
+.teacher-analytics-chart .recharts-wrapper,
+.teacher-analytics-chart svg.recharts-surface {
+  max-width: 100% !important;
+  overflow: visible !important;
+}
+
+@media (max-width: 768px) {
+  html body .teacher-analytics-chart {
+    min-height: 330px !important;
+    padding: 10px 6px 14px !important;
+  }
+
+  html body .teacher-analytics-chart .recharts-responsive-container {
+    min-width: 260px !important;
+    height: 300px !important;
+    min-height: 300px !important;
+  }
+
+  html body .teacher-multi-chart .recharts-responsive-container {
+    height: 320px !important;
+    min-height: 320px !important;
   }
 }
