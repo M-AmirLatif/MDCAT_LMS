@@ -58,6 +58,7 @@ function StudentDashboard({ firstName }) {
   const chartTheme = useThemeMode()
   const { subjects, summary, performanceTrend, loading } = useStudentPerformanceData()
   const visibleSubjects = subjects.length ? subjects : mdcatSubjects
+  const momentumSubjectNames = ['Biology', 'Chemistry', 'Physics', 'English']
 
   return (
     <div className="workspace-page animate-fade-up">
@@ -130,8 +131,10 @@ function StudentDashboard({ firstName }) {
           </div>
           <div className="workspace-card-body chart-panel dashboard-momentum-chart">
             {!loading && performanceTrend.length > 0 ? (
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={performanceTrend} margin={{ top: 22, right: 22, left: 4, bottom: 8 }}>
+            <>
+              <div className="dashboard-momentum-plot">
+                <ResponsiveContainer width="100%" height="100%" minWidth={260} minHeight={260}>
+                  <LineChart data={performanceTrend} margin={{ top: 22, right: 14, left: 0, bottom: 8 }}>
                 <CartesianGrid strokeDasharray="4 6" vertical={false} stroke={chartTheme.gridColor} />
                 <XAxis dataKey="attemptLabel" axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12, fontWeight: 700 }} minTickGap={14} />
                 <YAxis width={44} axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12, fontWeight: 700 }} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(value) => `${value}%`} />
@@ -152,8 +155,22 @@ function StudentDashboard({ firstName }) {
                 <Line type="monotone" dataKey="Chemistry" stroke="#7c5cff" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6, strokeWidth: 2 }} connectNulls />
                 <Line type="monotone" dataKey="Physics" stroke="#4a90e2" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6, strokeWidth: 2 }} connectNulls />
                 <Line type="monotone" dataKey="English" stroke="#f59e0b" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6, strokeWidth: 2 }} connectNulls />
-              </LineChart>
-            </ResponsiveContainer>
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="dashboard-momentum-mobile-key">
+                {momentumSubjectNames.map((subjectName) => {
+                  const latest = [...performanceTrend].reverse().find((point) => Number.isFinite(Number(point[subjectName])))
+                  const value = latest ? Math.round(Number(latest[subjectName]) || 0) : 0
+                  return (
+                    <span key={subjectName}>
+                      <i style={{ background: SUBJECT_STYLES[subjectName]?.accent || '#7c5cff' }} />
+                      {subjectName}: {value}%
+                    </span>
+                  )
+                })}
+              </div>
+            </>
             ) : (
               <div className="empty-state empty-state--compact">
                 <div className="empty-orb" />
@@ -418,5 +435,6 @@ export default function PlatformDashboard() {
 
   return content
 }
+
 
 

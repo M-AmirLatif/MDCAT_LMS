@@ -1303,6 +1303,7 @@ function McqList() {
   const [selectedTopicId, setSelectedTopicId] = useState(searchParams.get('topicId') || '')
   const initialViewMode = searchParams.get('view') === 'review' ? 'review' : 'mcqs'
   const [viewMode, setViewMode] = useState(initialViewMode)
+  const [activeHeaderAction, setActiveHeaderAction] = useState(initialViewMode)
   const fileRef = useRef(null)
   const testPart = searchParams.get('testPart')
   const topicIdParam = searchParams.get('topicId')
@@ -1352,11 +1353,14 @@ function McqList() {
 
   useEffect(() => {
     if (!isTeacher) return
-    setViewMode(searchParams.get('view') === 'review' ? 'review' : 'mcqs')
+    const nextMode = searchParams.get('view') === 'review' ? 'review' : 'mcqs'
+    setViewMode(nextMode)
+    setActiveHeaderAction(nextMode)
   }, [isTeacher, searchParams])
 
   const updateViewMode = (nextMode) => {
     setViewMode(nextMode)
+    setActiveHeaderAction(nextMode)
     if (!isTeacher) return
     const nextParams = new URLSearchParams(searchParams)
     nextParams.set('view', nextMode)
@@ -1619,7 +1623,7 @@ function McqList() {
             </Link>
             {isTeacher ? (
               <button
-                className="btn btn-secondary"
+                className={`btn ${activeHeaderAction === 'mcqs' ? 'btn-primary' : 'btn-secondary'}`}
                 type="button"
                 onClick={() => updateViewMode('mcqs')}
               >
@@ -1628,7 +1632,7 @@ function McqList() {
             ) : null}
             {isTeacher ? (
               <button
-                className="btn btn-secondary"
+                className={`btn ${activeHeaderAction === 'review' ? 'btn-primary' : 'btn-secondary'}`}
                 type="button"
                 onClick={() => updateViewMode('review')}
               >
@@ -1637,18 +1641,24 @@ function McqList() {
             ) : null}
             {isTeacher ? (
               <button
-                className="btn btn-secondary"
+                className={`btn ${activeHeaderAction === 'add' ? 'btn-primary' : 'btn-secondary'}`}
                 type="button"
-                onClick={() => setModal({ type: 'mcq' })}
+                onClick={() => {
+                  setActiveHeaderAction('add')
+                  setModal({ type: 'mcq' })
+                }}
               >
                 Add MCQ
               </button>
             ) : null}
             {isTeacher ? (
               <button
-                className="btn btn-secondary"
+                className={`btn ${activeHeaderAction === 'upload' ? 'btn-primary' : 'btn-secondary'}`}
                 type="button"
-                onClick={() => fileRef.current?.click()}
+                onClick={() => {
+                  setActiveHeaderAction('upload')
+                  fileRef.current?.click()
+                }}
               >
                 Upload CSV
               </button>
@@ -1667,7 +1677,10 @@ function McqList() {
             type="file"
             accept=".csv,text/csv"
             hidden
-            onChange={uploadCsv}
+            onChange={(event) => {
+              setActiveHeaderAction('upload')
+              uploadCsv(event)
+            }}
           />
         </div>
       </section>
@@ -2571,21 +2584,3 @@ function ReviewSection({ title, items }) {
 export { CourseSelection, ChapterList, McqList, QuizAttempt, QuizResult }
 
 export default CourseSelection
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

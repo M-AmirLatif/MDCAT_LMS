@@ -39,6 +39,7 @@ export default function PlatformPerformance() {
   const visibleSubjects = isStudent
     ? (subjects.length ? subjects : mdcatSubjects)
     : (bankData.subjects.length ? bankData.subjects : mdcatSubjects)
+  const performanceSubjectNames = ['Biology', 'Chemistry', 'Physics', 'English']
   const totalMcqs = visibleSubjects.reduce((sum, subject) => sum + (Number(subject.totalMcqs) || 0), 0)
   const totalChapters = visibleSubjects.reduce((sum, subject) => sum + (Number(subject.totalChapters) || 0), 0)
   const strongestBank = [...visibleSubjects].sort((a, b) => (Number(b.totalMcqs) || 0) - (Number(a.totalMcqs) || 0))[0]?.name || 'No uploads yet'
@@ -71,10 +72,12 @@ export default function PlatformPerformance() {
               <h2 className="workspace-card-title">Performance by subject over time</h2>
             </div>
           </div>
-          <div className="workspace-card-body chart-panel">
+          <div className="workspace-card-body chart-panel performance-trend-chart">
             {!loading && performanceTrend.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={performanceTrend} margin={{ top: 22, right: 22, left: 4, bottom: 8 }}>
+              <>
+                <div className="performance-chart-plot">
+                  <ResponsiveContainer width="100%" height="100%" minWidth={260} minHeight={260}>
+                    <LineChart data={performanceTrend} margin={{ top: 22, right: 14, left: 0, bottom: 8 }}>
                   <CartesianGrid strokeDasharray="4 6" vertical={false} stroke={chartTheme.gridColor} />
                   <XAxis dataKey="attemptLabel" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor, fontWeight: 700 }} minTickGap={14} />
                   <YAxis width={44} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor, fontWeight: 700 }} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(value) => `${value}%`} />
@@ -95,8 +98,17 @@ export default function PlatformPerformance() {
                   <Line type="monotone" dataKey="Chemistry" stroke="#7c5cff" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6, strokeWidth: 2 }} connectNulls />
                   <Line type="monotone" dataKey="Physics" stroke="#4a90e2" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6, strokeWidth: 2 }} connectNulls />
                   <Line type="monotone" dataKey="English" stroke="#f59e0b" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6, strokeWidth: 2 }} connectNulls />
-                </LineChart>
-              </ResponsiveContainer>
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="performance-chart-mobile-key">
+                  {performanceSubjectNames.map((subjectName) => {
+                    const latest = [...performanceTrend].reverse().find((point) => Number.isFinite(Number(point[subjectName])))
+                    const value = latest ? Math.round(Number(latest[subjectName]) || 0) : 0
+                    return <span key={subjectName}>{subjectName}: {value}%</span>
+                  })}
+                </div>
+              </>
             ) : (
               <div className="empty-state empty-state--compact">
                 <div className="empty-orb" />
@@ -114,10 +126,12 @@ export default function PlatformPerformance() {
               <h2 className="workspace-card-title">Combined accuracy across all tests</h2>
             </div>
           </div>
-          <div className="workspace-card-body chart-panel">
+          <div className="workspace-card-body chart-panel performance-overall-chart">
             {!loading && overallTrend.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={overallTrend} margin={{ top: 22, right: 22, left: 4, bottom: 8 }}>
+              <>
+                <div className="performance-chart-plot">
+                  <ResponsiveContainer width="100%" height="100%" minWidth={260} minHeight={260}>
+                    <AreaChart data={overallTrend} margin={{ top: 22, right: 14, left: 0, bottom: 8 }}>
                   <defs>
                     <linearGradient id="overallAccuracyArea" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#7c5cff" stopOpacity={0.34} />
@@ -141,8 +155,14 @@ export default function PlatformPerformance() {
                     labelStyle={{ color: chartTheme.tooltipText, fontWeight: 800 }}
                   />
                   <Area type="monotone" dataKey="Overall" name="Combined accuracy" stroke="#7c5cff" fill="url(#overallAccuracyArea)" strokeWidth={4} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6 }} />
-                </AreaChart>
-              </ResponsiveContainer>
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="performance-chart-mobile-key performance-chart-mobile-key--overall">
+                  <span>Latest overall: {Math.round(Number(overallTrend[overallTrend.length - 1]?.Overall) || 0)}%</span>
+                  <span>Average line: {pageSummary.overallAccuracy}%</span>
+                </div>
+              </>
             ) : (
               <div className="empty-state empty-state--compact">
                 <div className="empty-orb" />
@@ -232,3 +252,5 @@ export default function PlatformPerformance() {
     </div>
   )
 }
+
+

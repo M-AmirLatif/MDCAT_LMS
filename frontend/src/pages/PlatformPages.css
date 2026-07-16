@@ -6238,7 +6238,7 @@ html[data-theme='dark'] .recharts-tooltip-wrapper .chart-tooltip-clean__row stro
 }
 
 .teacher-mcq-option-field--correct label::after {
-  content: ' ✓';
+  content: ' âœ“';
   color: #10b981;
   -webkit-text-fill-color: #10b981;
   font-weight: 900;
@@ -7211,11 +7211,11 @@ html[data-theme='dark'] .recharts-tooltip-wrapper .chart-tooltip-clean__row stro
   }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   TEACHER MCQ — REDESIGNED UI (appended, overrides earlier)
-   ═══════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   TEACHER MCQ â€” REDESIGNED UI (appended, overrides earlier)
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
-/* ── Answer Picker: visual A/B/C/D button group ── */
+/* â”€â”€ Answer Picker: visual A/B/C/D button group â”€â”€ */
 .teacher-mcq-answer-picker {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -7274,7 +7274,7 @@ html[data-theme='dark'] .recharts-tooltip-wrapper .chart-tooltip-clean__row stro
   text-transform: uppercase;
 }
 
-/* ── Editor bottom: answer picker takes less width since it's compact ── */
+/* â”€â”€ Editor bottom: answer picker takes less width since it's compact â”€â”€ */
 .teacher-mcq-editor-bottom {
   grid-template-columns: minmax(240px, 300px) minmax(0, 1fr) !important;
 }
@@ -7291,9 +7291,9 @@ html[data-theme='dark'] .recharts-tooltip-wrapper .chart-tooltip-clean__row stro
   display: none !important;
 }
 
-/* ── Section divider inside editor card — handled in mid-file block above ── */
+/* â”€â”€ Section divider inside editor card â€” handled in mid-file block above â”€â”€ */
 
-/* ── Topic panel ── */
+/* â”€â”€ Topic panel â”€â”€ */
 .teacher-topic-panel {
   overflow: hidden;
 }
@@ -7531,7 +7531,7 @@ html[data-theme='dark'] .recharts-tooltip-wrapper .chart-tooltip-clean__row stro
   background: #fef2f2;
 }
 
-/* ── Dark mode ── */
+/* â”€â”€ Dark mode â”€â”€ */
 [data-theme='dark'] .teacher-mcq-answer-btn {
   background: rgba(139, 111, 255, 0.12) !important;
   border-color: rgba(139, 111, 255, 0.28) !important;
@@ -7713,7 +7713,7 @@ html[data-theme='dark'] .recharts-tooltip-wrapper .chart-tooltip-clean__row stro
   -webkit-text-fill-color: rgba(240, 238, 255, 0.58) !important;
 }
 
-/* ── Responsive ── */
+/* â”€â”€ Responsive â”€â”€ */
 @media (max-width: 900px) {
   .teacher-topic-scope-grid {
     grid-template-columns: 1fr;
@@ -12540,5 +12540,614 @@ html:not([data-theme="dark"]) .subject-browser-hero .mcq-learning-flow span:not(
   html body .workspace-page--mcq-list .mcq-image-manager-actions,
   html body .review-queue-card .mcq-image-manager-actions {
     grid-template-columns: 1fr !important;
+  }
+}
+
+/* Student dashboard momentum chart: explicit plot area so Recharts does not collapse on mobile. */
+.dashboard-momentum-chart {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  width: 100% !important;
+  min-height: 380px !important;
+  height: auto !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+}
+
+.dashboard-momentum-plot {
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 310px !important;
+  min-height: 310px !important;
+  flex: 0 0 310px !important;
+  display: block !important;
+  position: relative !important;
+  overflow: visible !important;
+}
+
+.dashboard-momentum-plot .recharts-responsive-container,
+.dashboard-momentum-plot .recharts-wrapper,
+.dashboard-momentum-plot svg.recharts-surface {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  min-height: 280px !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  overflow: visible !important;
+}
+
+.dashboard-momentum-chart .empty-state,
+.dashboard-momentum-chart .empty-state--compact {
+  display: flex !important;
+  min-height: 280px !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  color: var(--text-primary) !important;
+}
+
+.dashboard-momentum-chart .empty-state h3,
+.dashboard-momentum-chart .empty-state--compact h3 {
+  color: var(--text-primary) !important;
+}
+
+.dashboard-momentum-chart .empty-state p,
+.dashboard-momentum-chart .empty-state--compact p {
+  color: var(--text-secondary) !important;
+}
+
+.dashboard-momentum-mobile-key {
+  display: none;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+
+.dashboard-momentum-mobile-key span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--card-muted-bg, rgba(124, 92, 255, 0.1));
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.dashboard-momentum-mobile-key i {
+  width: 9px;
+  height: 9px;
+  flex: 0 0 9px;
+  border-radius: 999px;
+}
+
+@media (max-width: 768px) {
+  html body .workspace-page .workspace-section-grid .dashboard-momentum-chart {
+    min-height: 410px !important;
+    height: auto !important;
+    padding: 12px 8px 10px !important;
+  }
+
+  html body .workspace-page .workspace-section-grid .dashboard-momentum-plot {
+    height: 295px !important;
+    min-height: 295px !important;
+    flex-basis: 295px !important;
+  }
+
+  html body .workspace-page .workspace-section-grid .dashboard-momentum-mobile-key {
+    display: grid !important;
+  }
+
+  html body .workspace-page .workspace-section-grid .dashboard-momentum-plot .recharts-legend-wrapper {
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+}
+
+@media (max-width: 430px) {
+  html body .workspace-page .workspace-section-grid .dashboard-momentum-chart {
+    min-height: 390px !important;
+    padding: 10px 6px 10px !important;
+  }
+
+  html body .workspace-page .workspace-section-grid .dashboard-momentum-plot {
+    height: 270px !important;
+    min-height: 270px !important;
+    flex-basis: 270px !important;
+  }
+
+  html body .workspace-page .workspace-section-grid .dashboard-momentum-plot .recharts-responsive-container,
+  html body .workspace-page .workspace-section-grid .dashboard-momentum-plot .recharts-wrapper,
+  html body .workspace-page .workspace-section-grid .dashboard-momentum-plot svg.recharts-surface {
+    min-height: 250px !important;
+  }
+}
+
+/* Student performance page charts: keep Recharts visible on mobile. */
+.performance-chart-grid .performance-trend-chart,
+.performance-chart-grid .performance-overall-chart {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  width: 100% !important;
+  min-height: 380px !important;
+  height: auto !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+}
+
+.performance-chart-plot {
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 310px !important;
+  min-height: 310px !important;
+  flex: 0 0 310px !important;
+  display: block !important;
+  position: relative !important;
+  overflow: visible !important;
+}
+
+.performance-chart-plot .recharts-responsive-container,
+.performance-chart-plot .recharts-wrapper,
+.performance-chart-plot svg.recharts-surface {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  min-height: 280px !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  overflow: visible !important;
+}
+
+.performance-chart-grid .chart-panel .empty-state,
+.performance-chart-grid .chart-panel .empty-state--compact {
+  display: flex !important;
+  min-height: 280px !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.performance-chart-mobile-key {
+  display: none;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+
+.performance-chart-mobile-key span {
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--card-muted-bg, rgba(124, 92, 255, 0.1));
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+  html body .workspace-page .performance-chart-grid .performance-trend-chart,
+  html body .workspace-page .performance-chart-grid .performance-overall-chart {
+    min-height: 410px !important;
+    height: auto !important;
+    padding: 12px 8px 10px !important;
+  }
+
+  html body .workspace-page .performance-chart-grid .performance-chart-plot {
+    height: 295px !important;
+    min-height: 295px !important;
+    flex-basis: 295px !important;
+  }
+
+  html body .workspace-page .performance-chart-grid .performance-chart-mobile-key {
+    display: grid !important;
+  }
+}
+
+@media (max-width: 430px) {
+  html body .workspace-page .performance-chart-grid .performance-trend-chart,
+  html body .workspace-page .performance-chart-grid .performance-overall-chart {
+    min-height: 390px !important;
+    padding: 10px 6px 10px !important;
+  }
+
+  html body .workspace-page .performance-chart-grid .performance-chart-plot {
+    height: 270px !important;
+    min-height: 270px !important;
+    flex-basis: 270px !important;
+  }
+
+  html body .workspace-page .performance-chart-grid .performance-chart-plot .recharts-responsive-container,
+  html body .workspace-page .performance-chart-grid .performance-chart-plot .recharts-wrapper,
+  html body .workspace-page .performance-chart-grid .performance-chart-plot svg.recharts-surface {
+    min-height: 250px !important;
+  }
+}
+
+/* MCQ attempt question jump panel: compact, scrollable, and non-overlapping on mobile. */
+.mcq-question-sidebar {
+  max-height: calc(100vh - 130px) !important;
+  overflow: hidden !important;
+}
+
+.mcq-question-sidebar .workspace-card-body {
+  overflow: auto !important;
+}
+
+.mcq-question-dots {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)) !important;
+  align-items: stretch !important;
+}
+
+.mcq-dot {
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+  aspect-ratio: 1 / 1 !important;
+  width: 100% !important;
+  height: auto !important;
+  max-height: 54px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
+}
+
+@media (max-width: 768px) {
+  html body .mcq-question-sidebar {
+    left: 10px !important;
+    right: 10px !important;
+    bottom: 76px !important;
+    max-height: min(72dvh, 560px) !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+  }
+
+  html body .mcq-question-sidebar .workspace-card-head {
+    padding: 14px 14px 10px !important;
+    border-bottom: 1px solid var(--border-card, rgba(108, 71, 255, 0.18)) !important;
+  }
+
+  html body .mcq-question-sidebar .workspace-card-body.mcq-question-dots {
+    max-height: calc(min(72dvh, 560px) - 86px) !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding: 12px !important;
+    grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)) !important;
+    gap: 8px !important;
+    justify-content: stretch !important;
+  }
+
+  html body .mcq-question-sidebar .mcq-dot {
+    max-height: none !important;
+    min-height: 44px !important;
+    border-radius: 12px !important;
+    font-size: 0.9rem !important;
+  }
+}
+
+@media (max-width: 420px) {
+  html body .mcq-question-sidebar .workspace-card-body.mcq-question-dots {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+    padding: 10px !important;
+  }
+
+  html body .mcq-question-sidebar .mcq-dot {
+    min-height: 40px !important;
+    font-size: 0.82rem !important;
+  }
+}
+
+/* MCQ management mobile controls: keep editor actions in one row and stop image controls from merging. */
+@media (max-width: 760px) {
+  html body .workspace-page--mcq-list .mcq-inline-card-actions,
+  html body .review-queue-card .mcq-inline-card-actions,
+  html body article.mcq-review-parent-card .mcq-inline-card-actions {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+    width: 100% !important;
+    padding-top: 12px !important;
+    margin-top: 12px !important;
+  }
+
+  html body .workspace-page--mcq-list .mcq-inline-card-actions .btn,
+  html body .review-queue-card .mcq-inline-card-actions .btn,
+  html body article.mcq-review-parent-card .mcq-inline-card-actions .btn,
+  html body .workspace-page--mcq-list .mcq-inline-card-actions .btn-mcq-save,
+  html body .workspace-page--mcq-list .mcq-inline-card-actions .btn-mcq-reset,
+  html body .workspace-page--mcq-list .mcq-inline-card-actions .btn-mcq-delete {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    padding: 0 6px !important;
+    border-radius: 10px !important;
+    font-size: clamp(10px, 2.6vw, 12px) !important;
+    line-height: 1.05 !important;
+    letter-spacing: 0.02em !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  html body .workspace-page--mcq-list .mcq-explanation-box,
+  html body .review-queue-card .mcq-explanation-box,
+  html body article.mcq-review-parent-card .mcq-explanation-box {
+    display: grid !important;
+    gap: 10px !important;
+    padding: 12px !important;
+    overflow: visible !important;
+  }
+
+  html body .workspace-page--mcq-list .mcq-inline-explanation-textarea,
+  html body .review-queue-card .mcq-inline-explanation-textarea,
+  html body article.mcq-review-parent-card .mcq-inline-explanation-textarea {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    padding: 12px !important;
+    border-radius: 12px !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  html body .workspace-page--mcq-list .mcq-image-manager,
+  html body .review-queue-card .mcq-image-manager,
+  html body article.mcq-review-parent-card .mcq-image-manager {
+    display: grid !important;
+    gap: 10px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 10px !important;
+    border-radius: 14px !important;
+    overflow: visible !important;
+  }
+
+  html body .workspace-page--mcq-list .mcq-image-manager-head,
+  html body .review-queue-card .mcq-image-manager-head,
+  html body article.mcq-review-parent-card .mcq-image-manager-head {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    align-items: stretch !important;
+  }
+
+  html body .workspace-page--mcq-list .mcq-image-manager-head > span,
+  html body .review-queue-card .mcq-image-manager-head > span,
+  html body article.mcq-review-parent-card .mcq-image-manager-head > span {
+    display: block !important;
+    width: 100% !important;
+    font-size: 13px !important;
+    line-height: 1.2 !important;
+    white-space: normal !important;
+  }
+
+  html body .workspace-page--mcq-list .mcq-image-manager-actions,
+  html body .review-queue-card .mcq-image-manager-actions,
+  html body article.mcq-review-parent-card .mcq-image-manager-actions {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  html body .workspace-page--mcq-list .mcq-image-manager-actions .btn,
+  html body .review-queue-card .mcq-image-manager-actions .btn,
+  html body article.mcq-review-parent-card .mcq-image-manager-actions .btn {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    min-height: 38px !important;
+    padding: 8px 6px !important;
+    border-radius: 999px !important;
+    font-size: clamp(10px, 2.5vw, 12px) !important;
+    line-height: 1.05 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  html body .workspace-page--mcq-list .mcq-image-paste-zone,
+  html body .review-queue-card .mcq-image-paste-zone,
+  html body article.mcq-review-parent-card .mcq-image-paste-zone {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 10px !important;
+    border-radius: 12px !important;
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+    overflow-wrap: anywhere !important;
+  }
+}
+
+@media (max-width: 380px) {
+  html body .workspace-page--mcq-list .mcq-inline-card-actions,
+  html body .review-queue-card .mcq-inline-card-actions,
+  html body article.mcq-review-parent-card .mcq-inline-card-actions {
+    gap: 6px !important;
+  }
+
+  html body .workspace-page--mcq-list .mcq-inline-card-actions .btn,
+  html body .review-queue-card .mcq-inline-card-actions .btn,
+  html body article.mcq-review-parent-card .mcq-inline-card-actions .btn {
+    height: 40px !important;
+    min-height: 40px !important;
+    font-size: 10px !important;
+  }
+}
+
+/* Mobile chapter cards: keep Open/Edit/Delete on one compact line. */
+@media (max-width: 760px) {
+  html body .workspace-page .chapter-practice-card .inline-actions,
+  html body .workspace-page .chapter-practice-card:first-child .inline-actions,
+  html body .workspace-page .chapter-practice-card:first-of-type .inline-actions {
+    display: grid !important;
+    grid-template-columns: 1.35fr 0.9fr 0.9fr !important;
+    gap: 8px !important;
+    align-items: center !important;
+    width: 100% !important;
+    margin-top: auto !important;
+  }
+
+  html body .workspace-page .chapter-practice-card .inline-actions .btn,
+  html body .workspace-page .chapter-practice-card:first-child .inline-actions .btn,
+  html body .workspace-page .chapter-practice-card:first-of-type .inline-actions .btn {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    padding: 0 8px !important;
+    border-radius: 999px !important;
+    font-size: clamp(11px, 3vw, 14px) !important;
+    line-height: 1.05 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+}
+
+@media (max-width: 380px) {
+  html body .workspace-page .chapter-practice-card .inline-actions,
+  html body .workspace-page .chapter-practice-card:first-child .inline-actions,
+  html body .workspace-page .chapter-practice-card:first-of-type .inline-actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  html body .workspace-page .chapter-practice-card .inline-actions .btn,
+  html body .workspace-page .chapter-practice-card:first-child .inline-actions .btn,
+  html body .workspace-page .chapter-practice-card:first-of-type .inline-actions .btn {
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 5px !important;
+    font-size: 10px !important;
+  }
+}
+
+/* MCQ bank header action state: no default first-button highlight. */
+html body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn.btn-secondary,
+html body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn.btn-secondary:first-child,
+html body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn.btn-secondary:visited,
+html body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn.btn-secondary:first-child:visited {
+  color: #ffffff !important;
+  background: rgba(43, 31, 88, 0.88) !important;
+  border: 1.5px solid rgba(178, 158, 255, 0.72) !important;
+  box-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+}
+
+html:not([data-theme="dark"]) body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn.btn-secondary,
+html:not([data-theme="dark"]) body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn.btn-secondary:first-child,
+html:not([data-theme="dark"]) body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn.btn-secondary:visited,
+html:not([data-theme="dark"]) body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn.btn-secondary:first-child:visited {
+  color: #ffffff !important;
+  background: rgba(39, 24, 86, 0.92) !important;
+  border: 1.5px solid rgba(190, 174, 255, 0.72) !important;
+  box-shadow: none !important;
+}
+
+html body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn.btn-primary,
+html body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn.btn-primary:visited,
+html:not([data-theme="dark"]) body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn.btn-primary,
+html:not([data-theme="dark"]) body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn.btn-primary:visited {
+  color: #111827 !important;
+  background: linear-gradient(135deg, #facc15 0%, #fb923c 100%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.75) !important;
+  box-shadow: 0 14px 28px rgba(234, 88, 12, 0.28) !important;
+  filter: none !important;
+  transform: none !important;
+}
+
+html body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn:hover,
+html body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .btn:focus-visible {
+  filter: none !important;
+  transform: none !important;
+}
+
+/* Mobile chart rendering: give Recharts fixed room so dashboards/performance never collapse to blank cards. */
+@media (max-width: 760px) {
+  html body .dashboard-momentum-chart,
+  html body .performance-chart-grid .performance-trend-chart,
+  html body .performance-chart-grid .performance-overall-chart,
+  html body .workspace-card .chart-panel {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 360px !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  html body .dashboard-momentum-plot,
+  html body .performance-chart-plot,
+  html body .workspace-card .chart-panel > .recharts-responsive-container {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 285px !important;
+    min-height: 285px !important;
+    flex: 0 0 285px !important;
+    display: block !important;
+    position: relative !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  html body .dashboard-momentum-plot .recharts-responsive-container,
+  html body .performance-chart-plot .recharts-responsive-container,
+  html body .workspace-card .chart-panel .recharts-responsive-container,
+  html body .workspace-card .chart-panel .recharts-wrapper,
+  html body .workspace-card .chart-panel svg.recharts-surface {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 285px !important;
+    min-height: 285px !important;
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    overflow: visible !important;
+  }
+
+  html body .dashboard-momentum-mobile-key,
+  html body .performance-chart-mobile-key {
+    display: grid !important;
+  }
+}
+
+@media (max-width: 430px) {
+  html body .dashboard-momentum-chart,
+  html body .performance-chart-grid .performance-trend-chart,
+  html body .performance-chart-grid .performance-overall-chart,
+  html body .workspace-card .chart-panel {
+    min-height: 340px !important;
+  }
+
+  html body .dashboard-momentum-plot,
+  html body .performance-chart-plot,
+  html body .workspace-card .chart-panel > .recharts-responsive-container,
+  html body .dashboard-momentum-plot .recharts-responsive-container,
+  html body .performance-chart-plot .recharts-responsive-container,
+  html body .workspace-card .chart-panel .recharts-responsive-container,
+  html body .workspace-card .chart-panel .recharts-wrapper,
+  html body .workspace-card .chart-panel svg.recharts-surface {
+    height: 260px !important;
+    min-height: 260px !important;
+    flex-basis: 260px !important;
   }
 }

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
 import API, { getUserFriendlyErrorMessage } from '../services/api'
-import { getUserProfilePicture, normalizeProfilePictureForStorage, resolveAssetUrl } from '../utils/assetUrl'
+import { getUserProfilePicture, normalizeProfilePictureForStorage } from '../utils/assetUrl'
 import './PlatformPages.css'
 
 const safeText = (value, fallback = '') => {
@@ -19,6 +19,46 @@ function CameraIcon() {
     </svg>
   )
 }
+
+const fileToProfileDataUrl = (file) =>
+  new Promise((resolve, reject) => {
+    if (!file?.type?.startsWith('image/')) {
+      reject(new Error('Please select an image file.'))
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onerror = () => reject(new Error('Could not read selected image.'))
+    reader.onload = () => {
+      const originalDataUrl = typeof reader.result === 'string' ? reader.result : ''
+      if (!originalDataUrl) {
+        reject(new Error('Could not read selected image.'))
+        return
+      }
+
+      const image = new Image()
+      image.onerror = () => resolve(originalDataUrl)
+      image.onload = () => {
+        const maxSize = 512
+        const scale = Math.min(1, maxSize / Math.max(image.width, image.height))
+        const width = Math.max(1, Math.round(image.width * scale))
+        const height = Math.max(1, Math.round(image.height * scale))
+
+        const canvas = document.createElement('canvas')
+        canvas.width = width
+        canvas.height = height
+        const context = canvas.getContext('2d')
+        if (!context) {
+          resolve(originalDataUrl)
+          return
+        }
+        context.drawImage(image, 0, 0, width, height)
+        resolve(canvas.toDataURL('image/jpeg', 0.86))
+      }
+      image.src = originalDataUrl
+    }
+    reader.readAsDataURL(file)
+  })
 
 export default function PlatformProfile() {
   const auth = useAuth()
@@ -84,18 +124,9 @@ export default function PlatformProfile() {
   const onPhotoSelected = async (event) => {
     const file = event.target.files?.[0]
     if (!file) return
-
-    const formData = new FormData()
-    formData.append('file', file)
-
     try {
       setUploading(true)
-      const uploadRes = await API.post('/uploads/single', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
-
-      const storedProfilePicture = normalizeProfilePictureForStorage(uploadRes.data.fileUrl || uploadRes.data.url)
-      const profilePicture = resolveAssetUrl(storedProfilePicture)
+      const storedProfilePicture = await fileToProfileDataUrl(file)
       const profileRes = await API.put('/auth/profile', {
         firstName: form.firstName,
         lastName: form.lastName,
@@ -106,8 +137,11 @@ export default function PlatformProfile() {
       const nextUser = profileRes.data.user
       updateUser(nextUser)
       setPhotoError(false)
-    setPhotoRetry(0)
-    setForm((current) => ({ ...current, profilePicture }))
+      setPhotoRetry(0)
+      setForm((current) => ({
+        ...current,
+        profilePicture: getUserProfilePicture(nextUser) || storedProfilePicture,
+      }))
       toast.success('Profile photo updated.')
     } catch (error) {
       toast.error(getUserFriendlyErrorMessage(error, 'We could not update the profile photo right now.'))
@@ -270,6 +304,7 @@ export default function PlatformProfile() {
     </div>
   )
 }
+
 
 
 
