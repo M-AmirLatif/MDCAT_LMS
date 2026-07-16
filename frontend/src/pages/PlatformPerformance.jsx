@@ -1,20 +1,6 @@
-﻿import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ReferenceLine,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts'
 import { useAuth } from '../context/AuthContext'
 import useMcqSubjectSummary from '../hooks/useMcqSubjectSummary'
 import useStudentPerformanceData from '../hooks/useStudentPerformanceData'
-import useThemeMode from '../hooks/useThemeMode'
 import './PlatformPages.css'
 import { mdcatSubjects } from './platformContent'
 
@@ -28,8 +14,90 @@ function StatIcon({ tone }) {
   )
 }
 
+
+const SUBJECT_SERIES = [
+  { key: 'Biology', color: '#1db884' },
+  { key: 'Chemistry', color: '#7c5cff' },
+  { key: 'Physics', color: '#4a90e2' },
+  { key: 'English', color: '#f59e0b' },
+]
+
+const clampPercent = (value) => Math.max(0, Math.min(100, Number(value) || 0))
+
+function buildPath(points) {
+  return points.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`).join(' ')
+}
+
+function PerformanceSvgChart({ data, mode = 'subjects', average = 0 }) {
+  const width = 760
+  const height = 300
+  const padding = { top: 28, right: 26, bottom: 44, left: 52 }
+  const chartWidth = width - padding.left - padding.right
+  const chartHeight = height - padding.top - padding.bottom
+  const rows = data.length || 1
+  const xFor = (index) => padding.left + (rows === 1 ? chartWidth / 2 : (index / (rows - 1)) * chartWidth)
+  const yFor = (value) => padding.top + chartHeight - (clampPercent(value) / 100) * chartHeight
+  const ticks = [0, 25, 50, 75, 100]
+  const series = mode === 'overall' ? [{ key: 'Overall', color: '#7c5cff' }] : SUBJECT_SERIES
+  const averageY = yFor(average)
+
+  return (
+    <div className="performance-svg-chart" role="img" aria-label={mode === 'overall' ? 'Combined accuracy chart' : 'Subject performance chart'}>
+      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
+        {ticks.map((tick) => {
+          const y = yFor(tick)
+          return (
+            <g key={tick}>
+              <line className="performance-svg-grid" x1={padding.left} x2={width - padding.right} y1={y} y2={y} />
+              <text className="performance-svg-axis" x={padding.left - 12} y={y + 4} textAnchor="end">{tick}%</text>
+            </g>
+          )
+        })}
+        {average > 0 ? (
+          <>
+            <line className="performance-svg-average" x1={padding.left} x2={width - padding.right} y1={averageY} y2={averageY} />
+            <text className="performance-svg-average-label" x={width - padding.right} y={averageY - 8} textAnchor="end">Overall {average}%</text>
+          </>
+        ) : null}
+        {series.map((item) => {
+          const points = data
+            .map((row, index) => {
+              const value = row[item.key]
+              if (!Number.isFinite(Number(value))) return null
+              return { x: xFor(index), y: yFor(value), value: clampPercent(value), label: row.attemptLabel || `A${index + 1}` }
+            })
+            .filter(Boolean)
+          if (!points.length) return null
+          const path = buildPath(points)
+          const areaPath = mode === 'overall' && points.length
+            ? `${path} L ${points.at(-1).x} ${padding.top + chartHeight} L ${points[0].x} ${padding.top + chartHeight} Z`
+            : null
+          return (
+            <g key={item.key}>
+              {areaPath ? <path className="performance-svg-area" d={areaPath} /> : null}
+              <path d={path} fill="none" stroke={item.color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+              {points.map((point, index) => (
+                <circle key={`${item.key}-${index}`} cx={point.x} cy={point.y} r="5" fill={item.color} stroke="var(--card-bg)" strokeWidth="2" />
+              ))}
+            </g>
+          )
+        })}
+        {data.map((row, index) => (
+          <text key={`${row.attemptLabel || index}-label`} className="performance-svg-axis" x={xFor(index)} y={height - 14} textAnchor="middle">
+            {row.attemptLabel || `A${index + 1}`}
+          </text>
+        ))}
+      </svg>
+      <div className="performance-svg-legend">
+        {series.map((item) => (
+          <span key={item.key}><i style={{ background: item.color }} />{mode === 'overall' ? 'Combined accuracy' : item.key}</span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function PlatformPerformance() {
-  const chartTheme = useThemeMode()
   const { user } = useAuth()
   const role = user?.role || 'student'
   const studentData = useStudentPerformanceData()
@@ -76,30 +144,7 @@ export default function PlatformPerformance() {
             {!loading && performanceTrend.length > 0 ? (
               <>
                 <div className="performance-chart-plot">
-                  <ResponsiveContainer width="100%" height={310} minWidth={260}>
-                    <LineChart data={performanceTrend} margin={{ top: 22, right: 14, left: 0, bottom: 8 }}>
-                  <CartesianGrid strokeDasharray="4 6" vertical={false} stroke={chartTheme.gridColor} />
-                  <XAxis dataKey="attemptLabel" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor, fontWeight: 700 }} minTickGap={14} />
-                  <YAxis width={44} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor, fontWeight: 700 }} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(value) => `${value}%`} />
-                  {pageSummary.overallAccuracy > 0 ? (
-                    <ReferenceLine y={pageSummary.overallAccuracy} stroke="#a590ff" strokeOpacity={0.6} strokeDasharray="6 6" label={{ value: `Overall ${pageSummary.overallAccuracy}%`, fill: chartTheme.axisColor, fontSize: 11, fontWeight: 800, position: 'insideTopRight' }} />
-                  ) : null}
-                  <Tooltip
-                    formatter={(value, name) => [`${Math.round(Number(value) || 0)}%`, name]}
-                    labelFormatter={(_, payload) => {
-                      const item = payload?.[0]?.payload
-                      return item ? `${item.attemptLabel} - ${item.attemptDate} - ${item.label}` : ''
-                    }}
-                    contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 14, boxShadow: chartTheme.isDark ? '0 18px 42px rgba(0,0,0,0.42)' : '0 18px 42px rgba(42,51,86,0.16)' }}
-                    labelStyle={{ color: chartTheme.tooltipText, fontWeight: 800 }}
-                  />
-                  <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ color: chartTheme.legendColor, fontSize: 12, fontWeight: 700, paddingBottom: 10 }} />
-                  <Line type="monotone" dataKey="Biology" stroke="#1db884" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6, strokeWidth: 2 }} connectNulls />
-                  <Line type="monotone" dataKey="Chemistry" stroke="#7c5cff" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6, strokeWidth: 2 }} connectNulls />
-                  <Line type="monotone" dataKey="Physics" stroke="#4a90e2" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6, strokeWidth: 2 }} connectNulls />
-                  <Line type="monotone" dataKey="English" stroke="#f59e0b" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6, strokeWidth: 2 }} connectNulls />
-                    </LineChart>
-                  </ResponsiveContainer>
+                  <PerformanceSvgChart data={performanceTrend} average={pageSummary.overallAccuracy} />
                 </div>
                 <div className="performance-chart-mobile-key">
                   {performanceSubjectNames.map((subjectName) => {
@@ -130,33 +175,7 @@ export default function PlatformPerformance() {
             {!loading && overallTrend.length > 0 ? (
               <>
                 <div className="performance-chart-plot">
-                  <ResponsiveContainer width="100%" height={310} minWidth={260}>
-                    <AreaChart data={overallTrend} margin={{ top: 22, right: 14, left: 0, bottom: 8 }}>
-                  <defs>
-                    <linearGradient id="overallAccuracyArea" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#7c5cff" stopOpacity={0.34} />
-                      <stop offset="55%" stopColor="#4a90e2" stopOpacity={0.16} />
-                      <stop offset="100%" stopColor="#1db884" stopOpacity={0.03} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="4 6" vertical={false} stroke={chartTheme.gridColor} />
-                  <XAxis dataKey="attemptLabel" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor, fontWeight: 700 }} minTickGap={14} />
-                  <YAxis width={44} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.axisColor, fontWeight: 700 }} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(value) => `${value}%`} />
-                  {pageSummary.overallAccuracy > 0 ? (
-                    <ReferenceLine y={pageSummary.overallAccuracy} stroke="#a590ff" strokeOpacity={0.6} strokeDasharray="6 6" label={{ value: `Overall ${pageSummary.overallAccuracy}%`, fill: chartTheme.axisColor, fontSize: 11, fontWeight: 800, position: 'insideTopRight' }} />
-                  ) : null}
-                  <Tooltip
-                    formatter={(value, name) => [`${Math.round(Number(value) || 0)}%`, name === 'Overall' ? 'Combined accuracy' : name]}
-                    labelFormatter={(_, payload) => {
-                      const item = payload?.[0]?.payload
-                      return item ? `${item.attemptLabel} - ${item.attemptDate} - ${item.label}` : ''
-                    }}
-                    contentStyle={{ background: chartTheme.tooltipBg, color: chartTheme.tooltipText, border: 'none', borderRadius: 14, boxShadow: chartTheme.isDark ? '0 18px 42px rgba(0,0,0,0.42)' : '0 18px 42px rgba(42,51,86,0.16)' }}
-                    labelStyle={{ color: chartTheme.tooltipText, fontWeight: 800 }}
-                  />
-                  <Area type="monotone" dataKey="Overall" name="Combined accuracy" stroke="#7c5cff" fill="url(#overallAccuracyArea)" strokeWidth={4} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 6 }} />
-                    </AreaChart>
-                  </ResponsiveContainer>
+                  <PerformanceSvgChart data={overallTrend} mode="overall" average={pageSummary.overallAccuracy} />
                 </div>
                 <div className="performance-chart-mobile-key performance-chart-mobile-key--overall">
                   <span>Latest overall: {Math.round(Number(overallTrend[overallTrend.length - 1]?.Overall) || 0)}%</span>
@@ -211,8 +230,8 @@ export default function PlatformPerformance() {
               <div key={attempt.id} className="timeline-item">
                 <div className="timeline-dot" style={{ background: attempt.score >= 80 ? 'var(--teal)' : attempt.score >= 65 ? 'var(--amber)' : 'var(--coral)' }} />
                 <div>
-                  <strong>{attempt.subject} â€¢ {attempt.chapter}</strong>
-                  <p>{attempt.correct}/{attempt.total} correct â€¢ Score {attempt.score}%</p>
+                  <strong>{attempt.subject} - {attempt.chapter}</strong>
+                  <p>{attempt.correct}/{attempt.total} correct - Score {attempt.score}%</p>
                   <small>{attempt.date}</small>
                 </div>
               </div>
@@ -252,6 +271,7 @@ export default function PlatformPerformance() {
     </div>
   )
 }
+
 
 
 

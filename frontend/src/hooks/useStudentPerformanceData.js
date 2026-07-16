@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import API from '../services/api'
 
 const SUBJECTS = [
@@ -72,6 +72,7 @@ const buildPerformanceData = (subjectSummary = [], sessions = []) => {
         id: session._id || `${subject}-${session.submittedAt || index}`,
         subject,
         chapter: session.chapterName || session.topic || 'Chapter practice',
+        practiceKey: [subject, session.chapterId || '', session.chapterName || session.topic || 'Chapter practice'].join('::'),
         totalQuestions: Number(session.totalQuestions) || 0,
         correct: Number(session.finalScore ?? session.score) || 0,
         score: Number(session.percentage) || 0,
@@ -88,12 +89,20 @@ const buildPerformanceData = (subjectSummary = [], sessions = []) => {
     ]),
   )
 
+  const latestSessionByPractice = new Map()
   normalizedSessions.forEach((session) => {
+    const existing = latestSessionByPractice.get(session.practiceKey)
+    if (!existing || new Date(session.submittedAt || 0) >= new Date(existing.submittedAt || 0)) {
+      latestSessionByPractice.set(session.practiceKey, session)
+    }
+  })
+
+  latestSessionByPractice.forEach((session) => {
     const stats = sessionStats.get(session.subject)
     if (!stats) return
 
     stats.attemptedMcqs += session.totalQuestions
-    stats.weightedCorrect += (session.score / 100) * session.totalQuestions
+    stats.weightedCorrect += session.correct
     stats.weight += session.totalQuestions
   })
 
@@ -127,24 +136,15 @@ const buildPerformanceData = (subjectSummary = [], sessions = []) => {
   const sortedSubjects = [...attemptedSubjects].sort((a, b) => b.accuracy - a.accuracy)
 
   const latestBySubject = Object.fromEntries(SUBJECTS.map((subject) => [subject.name, null]))
-  const runningBySubject = new Map(
-    SUBJECTS.map((subject) => [
-      subject.name,
-      { correct: 0, total: 0 },
-    ]),
-  )
+  const runningLatestByPractice = new Map()
   const performanceTrend = normalizedSessions.map((session, index) => {
-    const running = runningBySubject.get(session.subject)
-    if (running) {
-      running.correct += session.correct
-      running.total += session.totalQuestions
-    }
+    runningLatestByPractice.set(session.practiceKey, session)
 
     SUBJECTS.forEach((subject) => {
-      const subjectRunning = runningBySubject.get(subject.name)
-      latestBySubject[subject.name] = subjectRunning?.total
-        ? Math.round((subjectRunning.correct / subjectRunning.total) * 100)
-        : null
+      const subjectSessions = [...runningLatestByPractice.values()].filter((item) => item.subject === subject.name)
+      const total = subjectSessions.reduce((sum, item) => sum + item.totalQuestions, 0)
+      const correct = subjectSessions.reduce((sum, item) => sum + item.correct, 0)
+      latestBySubject[subject.name] = total ? Math.round((correct / total) * 100) : null
     })
 
     return {
@@ -158,11 +158,11 @@ const buildPerformanceData = (subjectSummary = [], sessions = []) => {
     }
   })
 
-  let runningCorrect = 0
-  let runningTotal = 0
+  const runningLatestOverall = new Map()
   const overallTrend = normalizedSessions.map((session, index) => {
-    runningCorrect += session.correct
-    runningTotal += session.totalQuestions
+    runningLatestOverall.set(session.practiceKey, session)
+    const runningCorrect = [...runningLatestOverall.values()].reduce((sum, item) => sum + item.correct, 0)
+    const runningTotal = [...runningLatestOverall.values()].reduce((sum, item) => sum + item.totalQuestions, 0)
     return {
       label: session.chapter || `Attempt ${index + 1}`,
       attemptLabel: `A${index + 1}`,
@@ -240,4 +240,5 @@ export default function useStudentPerformanceData() {
 
   return { ...data, loading }
 }
+
 

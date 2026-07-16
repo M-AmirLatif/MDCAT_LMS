@@ -13393,3 +13393,272 @@ html[data-theme='dark'] .teacher-svg-grid {
     min-height: 240px;
   }
 }
+
+/* Student performance charts: deterministic SVG renderer so trend cards never appear blank. */
+.performance-svg-chart {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+.performance-svg-chart svg {
+  width: 100%;
+  height: 300px;
+  min-height: 300px;
+  display: block;
+  overflow: visible;
+}
+
+.performance-svg-grid {
+  stroke: rgba(119, 101, 211, 0.24);
+  stroke-width: 1;
+  stroke-dasharray: 5 7;
+}
+
+.performance-svg-axis,
+.performance-svg-average-label {
+  fill: var(--text-muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.performance-svg-average {
+  stroke: rgba(165, 144, 255, 0.75);
+  stroke-width: 2;
+  stroke-dasharray: 7 7;
+}
+
+.performance-svg-area {
+  fill: rgba(124, 92, 255, 0.18);
+}
+
+.performance-svg-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 16px;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.performance-svg-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.performance-svg-legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.13);
+}
+
+[data-theme='dark'] .performance-svg-grid,
+html[data-theme='dark'] .performance-svg-grid {
+  stroke: rgba(164, 143, 255, 0.18);
+}
+
+[data-theme='dark'] .performance-svg-axis,
+[data-theme='dark'] .performance-svg-average-label,
+html[data-theme='dark'] .performance-svg-axis,
+html[data-theme='dark'] .performance-svg-average-label {
+  fill: rgba(232, 228, 255, 0.82);
+}
+
+@media (max-width: 768px) {
+  .performance-svg-chart,
+  .performance-svg-chart svg {
+    min-height: 260px;
+    height: 260px;
+  }
+
+  .performance-svg-chart {
+    height: auto;
+  }
+
+  .performance-svg-legend {
+    font-size: 0.78rem;
+    justify-content: flex-start;
+  }
+}
+
+/* Final mobile chapter/test cards: equal cards, readable badges, contained CTA. */
+@media (max-width: 760px) {
+  html body .chapter-browser-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  html body .chapter-browser-grid > .chapter-practice-card,
+  html body .chapter-browser-grid > .chapter-practice-card:first-child,
+  html body .chapter-browser-grid > .chapter-practice-card:first-of-type,
+  html body .chapter-browser-grid > .chapter-practice-card--locked {
+    width: 100% !important;
+    min-height: 320px !important;
+    height: auto !important;
+    padding: 20px !important;
+    border-radius: 18px !important;
+    border: 2px solid rgba(174, 188, 215, 0.95) !important;
+    background: #f8faff !important;
+    background-image: none !important;
+    color: #07122f !important;
+    box-shadow: 0 10px 22px rgba(30, 41, 75, 0.12) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  html[data-theme='dark'] body .chapter-browser-grid > .chapter-practice-card,
+  html[data-theme='dark'] body .chapter-browser-grid > .chapter-practice-card:first-child,
+  html[data-theme='dark'] body .chapter-browser-grid > .chapter-practice-card:first-of-type,
+  html[data-theme='dark'] body .chapter-browser-grid > .chapter-practice-card--locked {
+    border-color: rgba(152, 132, 236, 0.9) !important;
+    background: #11162e !important;
+    background-image: none !important;
+    color: #ffffff !important;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.34) !important;
+  }
+
+  html body .chapter-browser-grid > .chapter-practice-card::before,
+  html body .chapter-browser-grid > .chapter-practice-card::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  html body .chapter-browser-grid > .chapter-practice-card .workspace-card-head,
+  html body .chapter-browser-grid > .chapter-practice-card:first-child .workspace-card-head,
+  html body .chapter-browser-grid > .chapter-practice-card:first-of-type .workspace-card-head {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: start !important;
+    gap: 12px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    flex: 1 1 auto !important;
+  }
+
+  html body .chapter-browser-grid > .chapter-practice-card .workspace-card-head > div {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  html body .chapter-browser-grid > .chapter-practice-card .label-xs {
+    color: #6c47ff !important;
+    font-size: 0.72rem !important;
+    letter-spacing: 0.14em !important;
+    line-height: 1.2 !important;
+    margin-bottom: 8px !important;
+  }
+
+  html body .chapter-browser-grid > .chapter-practice-card .workspace-card-title,
+  html body .chapter-browser-grid > .chapter-practice-card:first-child .workspace-card-title,
+  html body .chapter-browser-grid > .chapter-practice-card:first-of-type .workspace-card-title {
+    color: inherit !important;
+    font-size: clamp(1.35rem, 6.3vw, 1.8rem) !important;
+    line-height: 1.08 !important;
+    margin: 0 0 8px !important;
+    max-width: 100% !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+  }
+
+  html body .chapter-browser-grid > .chapter-practice-card p,
+  html body .chapter-browser-grid > .chapter-practice-card:first-child p,
+  html body .chapter-browser-grid > .chapter-practice-card:first-of-type p {
+    color: rgba(15, 23, 42, 0.72) !important;
+    font-size: 1rem !important;
+    line-height: 1.35 !important;
+    margin: 0 !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  html[data-theme='dark'] body .chapter-browser-grid > .chapter-practice-card p,
+  html[data-theme='dark'] body .chapter-browser-grid > .chapter-practice-card:first-child p,
+  html[data-theme='dark'] body .chapter-browser-grid > .chapter-practice-card:first-of-type p {
+    color: rgba(239, 236, 255, 0.74) !important;
+  }
+
+  html body .chapter-browser-grid > .chapter-practice-card .state-chip,
+  html body .chapter-browser-grid > .chapter-practice-card:first-child .state-chip,
+  html body .chapter-browser-grid > .chapter-practice-card:first-of-type .state-chip {
+    min-width: 96px !important;
+    max-width: 112px !important;
+    height: auto !important;
+    min-height: 42px !important;
+    padding: 8px 12px !important;
+    justify-self: end !important;
+    align-self: start !important;
+    white-space: normal !important;
+    text-align: center !important;
+    line-height: 1.05 !important;
+    font-size: 0.92rem !important;
+    border-radius: 999px !important;
+    color: #6c47ff !important;
+    background: linear-gradient(135deg, #efe8ff, #ddd2ff) !important;
+    border: 1.5px solid rgba(108, 71, 255, 0.28) !important;
+  }
+
+  html[data-theme='dark'] body .chapter-browser-grid > .chapter-practice-card .state-chip {
+    color: #f7f3ff !important;
+    background: linear-gradient(135deg, rgba(139, 111, 255, 0.38), rgba(74, 144, 226, 0.24)) !important;
+    border-color: rgba(167, 139, 250, 0.5) !important;
+  }
+
+  html body .chapter-browser-grid > .chapter-practice-card .workspace-card-body,
+  html body .chapter-browser-grid > .chapter-practice-card:first-child .workspace-card-body,
+  html body .chapter-browser-grid > .chapter-practice-card:first-of-type .workspace-card-body {
+    width: 100% !important;
+    padding: 18px 0 0 !important;
+    margin-top: auto !important;
+  }
+
+  html body .chapter-browser-grid > .chapter-practice-card .inline-actions,
+  html body .chapter-browser-grid > .chapter-practice-card:first-child .inline-actions,
+  html body .chapter-browser-grid > .chapter-practice-card:first-of-type .inline-actions {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  html body .chapter-browser-grid > .chapter-practice-card .inline-actions .btn,
+  html body .chapter-browser-grid > .chapter-practice-card:first-child .inline-actions .btn,
+  html body .chapter-browser-grid > .chapter-practice-card:first-of-type .inline-actions .btn {
+    flex: 1 1 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    min-height: 42px !important;
+    height: auto !important;
+    padding: 10px 12px !important;
+    border-radius: 999px !important;
+    font-size: 0.82rem !important;
+    line-height: 1.15 !important;
+    white-space: normal !important;
+    text-align: center !important;
+    overflow-wrap: break-word !important;
+  }
+
+  html body .chapter-browser-grid > .chapter-practice-card--locked .inline-actions .btn-primary,
+  html body .chapter-browser-grid > .chapter-practice-card--locked:first-child .inline-actions .btn-primary,
+  html body .chapter-browser-grid > .chapter-practice-card--locked:first-of-type .inline-actions .btn-primary {
+    flex-basis: 100% !important;
+    width: 100% !important;
+    font-size: 0.8rem !important;
+    padding-inline: 12px !important;
+  }
+}
