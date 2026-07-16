@@ -107,18 +107,22 @@ const buildAnalyticsData = (sessions = [], subjects = []) => {
     .slice(0, 3)
     .map(([name]) => name)
 
-  const perStudentCounts = new Map(topStudents.map((name) => [name, 0]))
-  const multiStudentTrend = sortedSessions.reduce((acc, session) => {
+  const sessionsByStudent = new Map(topStudents.map((name) => [name, []]))
+  sortedSessions.forEach((session) => {
     const studentName = getStudentName(session.studentId)
-    if (!perStudentCounts.has(studentName)) return acc
+    if (!sessionsByStudent.has(studentName)) return
+    sessionsByStudent.get(studentName).push(Number(session.percentage) || 0)
+  })
 
-    perStudentCounts.set(studentName, (perStudentCounts.get(studentName) || 0) + 1)
-    acc.push({
-      label: `${studentName.split(' ')[0]} ${perStudentCounts.get(studentName)}`,
-      [studentName]: Number(session.percentage) || 0,
+  const maxTrendAttempts = Math.max(0, ...topStudents.map((name) => sessionsByStudent.get(name)?.length || 0))
+  const multiStudentTrend = Array.from({ length: maxTrendAttempts }, (_, index) => {
+    const row = { label: `Attempt ${index + 1}` }
+    topStudents.forEach((name) => {
+      const score = sessionsByStudent.get(name)?.[index]
+      if (Number.isFinite(score)) row[name] = score
     })
-    return acc
-  }, [])
+    return row
+  })
 
   const studentRows = [...studentScores.entries()]
     .map(([name, scores]) => {
@@ -213,3 +217,4 @@ export default function useTeacherAnalyticsData() {
 
   return useMemo(() => ({ ...data, loading }), [data, loading])
 }
+

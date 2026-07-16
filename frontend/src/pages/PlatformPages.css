@@ -11848,49 +11848,50 @@ html:not([data-theme="dark"]) .subject-browser-hero .mcq-learning-flow span:not(
   }
 
   html body .subject-browser-hero .mcq-learning-flow {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    gap: 8px !important;
-    margin: 16px 0 !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 20px !important;
+    margin: 14px 0 16px !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding: 2px 2px 8px !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  html body .subject-browser-hero .mcq-learning-flow::-webkit-scrollbar {
+    display: none !important;
   }
 
   html body .subject-browser-hero .mcq-learning-flow span {
-    width: 100% !important;
-    justify-content: space-between !important;
-    min-height: 42px !important;
-    padding: 10px 14px !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    justify-content: center !important;
+    min-height: 38px !important;
+    padding: 8px 14px !important;
     font-size: 14px !important;
   }
 
   html body .subject-browser-hero .mcq-learning-flow span:not(:last-child)::after {
-    content: "NEXT" !important;
-    position: static !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: auto !important;
-    min-width: 44px !important;
-    height: 22px !important;
-    margin-left: 12px !important;
-    padding: 0 9px !important;
+    content: "" !important;
+    position: absolute !important;
+    right: -16px !important;
+    display: block !important;
+    width: 8px !important;
+    min-width: 8px !important;
+    height: 2px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
     border-radius: 999px !important;
-    border: 1px solid rgba(255, 255, 255, 0.26) !important;
-    background: rgba(255, 255, 255, 0.16) !important;
-    color: #ffffff !important;
-    -webkit-text-fill-color: #ffffff !important;
-    font-size: 11px !important;
-    font-weight: 800 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.04em !important;
-    line-height: 1 !important;
+    background: rgba(255, 255, 255, 0.72) !important;
     box-shadow: none !important;
   }
 
   html:not([data-theme="dark"]) body .subject-browser-hero .mcq-learning-flow span:not(:last-child)::after {
-    border-color: rgba(99, 102, 241, 0.20) !important;
-    background: rgba(99, 102, 241, 0.12) !important;
-    color: #5b3dff !important;
-    -webkit-text-fill-color: #5b3dff !important;
+    background: rgba(99, 102, 241, 0.58) !important;
   }
 }
 
@@ -13206,5 +13207,189 @@ html body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .bt
   html body .teacher-multi-chart .recharts-responsive-container {
     height: 320px !important;
     min-height: 320px !important;
+  }
+}
+
+/* Teacher dashboard live coverage and support cards */
+.workspace-section-grid .course-manage-card .state-chip--neutral {
+  border: 1px solid rgba(108, 71, 255, 0.34);
+  background: linear-gradient(135deg, rgba(108, 71, 255, 0.18), rgba(74, 144, 226, 0.12));
+  color: #4f35d8 !important;
+  -webkit-text-fill-color: #4f35d8 !important;
+  font-weight: 900;
+  opacity: 1;
+}
+
+[data-theme='dark'] .workspace-section-grid .course-manage-card .state-chip--neutral,
+html[data-theme='dark'] .workspace-section-grid .course-manage-card .state-chip--neutral {
+  border-color: rgba(196, 181, 255, 0.78);
+  background: linear-gradient(135deg, rgba(196, 181, 255, 0.24), rgba(108, 71, 255, 0.28));
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.34);
+}
+
+.workspace-section-grid .timeline-item strong {
+  color: var(--heading) !important;
+  -webkit-text-fill-color: var(--heading) !important;
+}
+
+.workspace-section-grid .timeline-item p,
+.workspace-section-grid .timeline-item small {
+  color: var(--text-secondary) !important;
+  -webkit-text-fill-color: var(--text-secondary) !important;
+}
+
+[data-theme='dark'] .workspace-section-grid .timeline-item,
+html[data-theme='dark'] .workspace-section-grid .timeline-item {
+  background: rgba(36, 28, 78, 0.72);
+  border-color: rgba(139, 111, 255, 0.34);
+}
+
+
+/* Teacher analytics fallback charts: visible in both modes and mobile. */
+.teacher-simple-bars {
+  width: 100%;
+  min-height: 280px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: end;
+  gap: 18px;
+  padding: 18px 10px 4px;
+}
+
+.teacher-simple-bar-item {
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  align-items: end;
+  justify-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--heading);
+}
+
+.teacher-simple-bar-track {
+  width: min(72px, 80%);
+  height: 180px;
+  display: flex;
+  align-items: end;
+  border-radius: 18px 18px 8px 8px;
+  background: rgba(108, 71, 255, 0.12);
+  border: 1px solid rgba(108, 71, 255, 0.18);
+  overflow: hidden;
+}
+
+.teacher-simple-bar-fill {
+  width: 100%;
+  min-height: 8px;
+  border-radius: 16px 16px 6px 6px;
+  background: linear-gradient(180deg, #2dd99b 0%, #1db884 100%);
+  box-shadow: 0 10px 24px rgba(29, 184, 132, 0.28);
+}
+
+.teacher-simple-bar-item strong {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--heading);
+  -webkit-text-fill-color: var(--heading);
+}
+
+.teacher-simple-bar-item span {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  -webkit-text-fill-color: var(--text-secondary);
+  text-align: center;
+}
+
+.teacher-svg-chart {
+  width: 100%;
+  min-height: 330px;
+  display: grid;
+  grid-template-rows: minmax(260px, 1fr) auto;
+  gap: 12px;
+  padding: 12px 4px 2px;
+}
+
+.teacher-svg-chart svg {
+  width: 100%;
+  height: 280px;
+  min-height: 280px;
+  display: block;
+  overflow: visible;
+}
+
+.teacher-svg-grid {
+  stroke: rgba(108, 71, 255, 0.18);
+  stroke-dasharray: 5 7;
+}
+
+.teacher-svg-axis {
+  fill: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.teacher-svg-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px 18px;
+  color: var(--heading);
+  font-weight: 800;
+}
+
+.teacher-svg-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.teacher-svg-legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  box-shadow: 0 0 0 3px rgba(108, 71, 255, 0.12);
+}
+
+[data-theme='dark'] .teacher-simple-bar-track,
+html[data-theme='dark'] .teacher-simple-bar-track {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(139, 111, 255, 0.34);
+}
+
+[data-theme='dark'] .teacher-svg-grid,
+html[data-theme='dark'] .teacher-svg-grid {
+  stroke: rgba(196, 181, 255, 0.18);
+}
+
+@media (max-width: 760px) {
+  html body .teacher-simple-bars {
+    min-height: 240px;
+    gap: 10px;
+    padding: 12px 2px 4px;
+  }
+
+  html body .teacher-simple-bar-track {
+    height: 150px;
+    width: min(54px, 90%);
+  }
+
+  html body .teacher-simple-bar-item strong {
+    font-size: 17px;
+  }
+
+  html body .teacher-simple-bar-item span {
+    font-size: 11px;
+  }
+
+  html body .teacher-svg-chart {
+    min-height: 300px;
+    grid-template-rows: 240px auto;
+  }
+
+  html body .teacher-svg-chart svg {
+    height: 240px;
+    min-height: 240px;
   }
 }

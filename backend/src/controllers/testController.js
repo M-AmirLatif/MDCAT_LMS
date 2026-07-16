@@ -1,5 +1,6 @@
 const MCQ = require('../models/MCQ')
 const TestSession = require('../models/TestSession')
+const Course = require('../models/Course')
 const mongoose = require('mongoose')
 const { SUBJECTS, getTeacherSubjects, normalizeSubject } = require('../utils/teacherSubjects')
 
@@ -7,7 +8,21 @@ const buildTestFilter = async (req) => {
   const role = req.user.role?.name || ''
   if (role === 'teacher') {
     const subjects = getTeacherSubjects(req.user)
-    return subjects.length ? { subject: { $in: subjects } } : { _id: null }
+    if (!subjects.length) return { _id: null }
+
+    const courses = await Course.find({
+      $or: [
+        { category: { $in: subjects } },
+        { subject: { $in: subjects } },
+      ],
+    }).select('_id').lean()
+
+    return {
+      $or: [
+        { subject: { $in: subjects } },
+        { courseId: { $in: courses.map((course) => course._id) } },
+      ],
+    }
   } else if (role === 'admin') {
     return {}
   }
@@ -524,3 +539,4 @@ exports.getSubjectWisePerformance = async (req, res) => {
     res.status(500).json({ error: error.message })
   }
 }
+

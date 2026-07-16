@@ -243,9 +243,83 @@ export function TeacherAssignmentsPage() {
   )
 }
 
+
+function TeacherScoreDistributionChart({ data }) {
+  const maxCount = Math.max(1, ...data.map((item) => Number(item.count) || 0))
+
+  return (
+    <div className="teacher-simple-bars" role="img" aria-label="Score distribution chart">
+      {data.map((item) => {
+        const count = Number(item.count) || 0
+        const height = Math.max(8, Math.round((count / maxCount) * 100))
+        return (
+          <div key={item.band} className="teacher-simple-bar-item">
+            <div className="teacher-simple-bar-track">
+              <div className="teacher-simple-bar-fill" style={{ height: `${height}%` }} />
+            </div>
+            <strong>{count}</strong>
+            <span>{item.band}</span>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function TeacherMultiStudentChart({ data, lines }) {
+  const width = 760
+  const height = 260
+  const padding = { top: 28, right: 28, bottom: 44, left: 46 }
+  const plotWidth = width - padding.left - padding.right
+  const plotHeight = height - padding.top - padding.bottom
+  const colors = ['#7c5cff', '#ff6b6b', '#1db884', '#4a90e2']
+
+  const getPoints = (lineKey) => data
+    .map((item, index) => ({
+      value: Number(item[lineKey]),
+      index,
+      label: item.label,
+    }))
+    .filter((point) => Number.isFinite(point.value))
+    .map((point) => ({
+      ...point,
+      x: padding.left + (data.length > 1 ? (point.index / (data.length - 1)) * plotWidth : plotWidth / 2),
+      y: padding.top + plotHeight - (Math.max(0, Math.min(100, point.value)) / 100) * plotHeight,
+    }))
+
+  return (
+    <div className="teacher-svg-chart" role="img" aria-label="Multi-student line chart">
+      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
+        {[0, 25, 50, 75, 100].map((tick) => {
+          const y = padding.top + plotHeight - (tick / 100) * plotHeight
+          return (
+            <g key={tick}>
+              <line x1={padding.left} x2={width - padding.right} y1={y} y2={y} className="teacher-svg-grid" />
+              <text x={padding.left - 12} y={y + 4} textAnchor="end" className="teacher-svg-axis">{tick}%</text>
+            </g>
+          )
+        })}
+        {lines.map((lineKey, lineIndex) => {
+          const points = getPoints(lineKey)
+          const path = points.map((point) => `${point.x},${point.y}`).join(' ')
+          return (
+            <g key={lineKey}>
+              {points.length > 1 ? <polyline points={path} fill="none" stroke={colors[lineIndex % colors.length]} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" /> : null}
+              {points.map((point) => <circle key={`${lineKey}-${point.index}`} cx={point.x} cy={point.y} r="5" fill={colors[lineIndex % colors.length]} stroke="#fff" strokeWidth="2" />)}
+            </g>
+          )
+        })}
+      </svg>
+      <div className="teacher-svg-legend">
+        {lines.map((lineKey, index) => (
+          <span key={lineKey}><i style={{ background: colors[index % colors.length] }} />{lineKey}</span>
+        ))}
+      </div>
+    </div>
+  )
+}
 export function TeacherAnalyticsPage() {
   const { user } = useAuth()
-  const chartTheme = useThemeMode()
   const { summary, scoreDistribution, subjectMastery, multiStudentTrend } = useTeacherAnalyticsData()
   const teacherSubjects = getAssignedSubjectNames(user)
   const visibleSubjectMastery = teacherSubjects.length
@@ -254,7 +328,6 @@ export function TeacherAnalyticsPage() {
   const trendLines = multiStudentTrend.length > 0
     ? Object.keys(multiStudentTrend.reduce((merged, item) => ({ ...merged, ...item }), {})).filter((key) => key !== 'label')
     : []
-  const trendColors = ['#6c47ff', '#ff6b6b', '#1db884']
   const hasDistribution = scoreDistribution.some((item) => item.count > 0)
   const hasTrend = trendLines.length > 0
 
@@ -272,15 +345,7 @@ export function TeacherAnalyticsPage() {
           <div className="workspace-card-head"><div><div className="label-xs">Distribution</div><h2 className="workspace-card-title">Score distribution</h2></div></div>
           <div className="workspace-card-body chart-panel teacher-analytics-chart teacher-score-chart">
             {hasDistribution ? (
-              <ResponsiveContainer width="100%" height={300} minWidth={260}>
-                <BarChart data={scoreDistribution} margin={{ top: 12, right: 18, left: 0, bottom: 4 }}>
-                  <CartesianGrid strokeDasharray="4 6" vertical={false} stroke={chartTheme.gridColor} />
-                  <XAxis dataKey="band" axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} />
-                  <YAxis axisLine={false} tickLine={false} allowDecimals={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} />
-                  <Tooltip cursor={{ fill: 'rgba(124, 92, 255, 0.08)' }} content={<ChartTooltip chartTheme={chartTheme} valueLabel="Attempts" />} />
-                  <Bar dataKey="count" fill="#1db884" radius={[10, 10, 0, 0]} activeBar={{ fill: '#2dd99b', radius: [10, 10, 0, 0] }} />
-                </BarChart>
-              </ResponsiveContainer>
+              <TeacherScoreDistributionChart data={scoreDistribution} />
             ) : (
               <div className="empty-state empty-state--compact">
                 <div className="empty-orb" />
@@ -321,18 +386,7 @@ export function TeacherAnalyticsPage() {
         <div className="workspace-card-head"><div><div className="label-xs">Comparison</div><h3 className="workspace-card-title">Multi-student line chart</h3></div></div>
         <div className="workspace-card-body chart-panel teacher-analytics-chart teacher-multi-chart">
           {hasTrend ? (
-            <ResponsiveContainer width="100%" height={320} minWidth={260}>
-              <LineChart data={multiStudentTrend} margin={{ top: 12, right: 18, left: 0, bottom: 4 }}>
-                <CartesianGrid strokeDasharray="4 6" vertical={false} stroke={chartTheme.gridColor} />
-                <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} minTickGap={18} />
-                <YAxis axisLine={false} tickLine={false} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(value) => `${value}%`} tick={{ fill: chartTheme.axisColor, fontSize: 12 }} />
-                <Tooltip cursor={{ stroke: '#7c5cff', strokeOpacity: 0.22 }} content={<ChartTooltip chartTheme={chartTheme} valueSuffix="%" />} />
-                <Legend wrapperStyle={{ color: chartTheme.legendColor }} />
-                {trendLines.map((lineKey, index) => (
-                  <Line key={lineKey} type="monotone" dataKey={lineKey} stroke={trendColors[index % trendColors.length]} strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 5 }} connectNulls />
-                ))}
-              </LineChart>
-            </ResponsiveContainer>
+            <TeacherMultiStudentChart data={multiStudentTrend} lines={trendLines} />
           ) : (
             <div className="empty-state empty-state--compact">
               <div className="empty-orb" />
@@ -880,4 +934,7 @@ export function SuperAdminAnnouncementsPage() {
     </div>
   )
 }
+
+
+
 

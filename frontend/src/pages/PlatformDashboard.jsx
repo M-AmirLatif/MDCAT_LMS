@@ -1,4 +1,4 @@
-﻿import { useMemo } from 'react'
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Area,
@@ -26,7 +26,6 @@ import {
   mdcatSubjects,
   SUBJECT_STYLES,
   studentNotifications,
-  teacherStudents,
 } from './platformContent'
 
 function SubjectGlyph({ subject }) {
@@ -216,7 +215,7 @@ function StudentDashboard({ firstName }) {
 function TeacherDashboard() {
   const { user } = useAuth()
   const { subjects, totals, teacherSummary } = useMcqSubjectSummary()
-  const { summary } = useTeacherAnalyticsData()
+  const { summary, studentRows } = useTeacherAnalyticsData()
   const teacherSubjects = getAssignedSubjectNames(user)
   const visibleSubjects = teacherSubjects.length
     ? subjects.filter((subject) => teacherSubjects.includes(subject.name || subject.subject))
@@ -228,6 +227,7 @@ function TeacherDashboard() {
   const visibleTotalChapters = visibleSubjects.reduce((sum, subject) => sum + (Number(subject.totalChapters) || 0), 0)
   const totalMcqs = teacherSubjects.length ? visibleTotalMcqs : totals.totalMcqs
   const totalChapters = teacherSubjects.length ? visibleTotalChapters : totals.totalChapters
+  const dashboardStudents = studentRows.slice(0, 5)
 
   return (
     <div className="workspace-page animate-fade-up">
@@ -318,17 +318,17 @@ function TeacherDashboard() {
         <div className="workspace-card">
           <div className="workspace-card-head"><div><div className="label-xs">Recent Upload Focus</div><h3 className="workspace-card-title">Where students need support</h3></div></div>
           <div className="workspace-card-body list-stack">
-            {teacherStudents.map((student) => (
+            {dashboardStudents.map((student) => (
               <div key={student.name} className="timeline-item">
                 <div className="timeline-dot" style={{ background: student.risk === 'High' ? 'var(--coral)' : student.risk === 'Medium' ? 'var(--amber)' : 'var(--teal)' }} />
                 <div>
                   <strong>{student.name}</strong>
-                  <p>{student.city} â€¢ Current score {student.score}% â€¢ {student.streak} streak</p>
+                  <p>{student.city} - Current score {student.score}% - {student.streak}</p>
                   <small>Risk profile: {student.risk}</small>
                 </div>
               </div>
             ))}
-            {teacherStudents.length === 0 ? (
+            {dashboardStudents.length === 0 ? (
               <div className="empty-state empty-state--compact">
                 <div className="empty-orb" />
                 <h3>No student attempts yet</h3>
@@ -435,6 +435,7 @@ export default function PlatformDashboard() {
 
   return content
 }
+
 
 
 
