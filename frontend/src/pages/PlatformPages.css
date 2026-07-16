@@ -14905,3 +14905,182 @@ html[data-theme='dark'] body .performance-svg-chart--overall .performance-svg-le
 html body .performance-chart-mobile-key--overall {
   display: none !important;
 }
+
+/* Performance chart spacing fix: keep axis labels and legend from merging. */
+html body .performance-chart-grid .performance-chart-plot {
+  height: 390px !important;
+  min-height: 390px !important;
+  overflow: visible !important;
+}
+
+html body .performance-svg-chart {
+  min-height: 390px !important;
+  gap: 16px !important;
+  overflow: visible !important;
+}
+
+html body .performance-svg-chart svg {
+  flex: 0 0 300px !important;
+  height: 300px !important;
+  max-height: 300px !important;
+  overflow: visible !important;
+}
+
+html body .performance-svg-x-axis {
+  font-size: 13px !important;
+  font-weight: 900 !important;
+}
+
+html body .performance-svg-legend {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(120px, 1fr)) !important;
+  gap: 12px !important;
+  width: 100% !important;
+  padding: 0 8px !important;
+  margin-top: 2px !important;
+}
+
+html body .performance-svg-legend span {
+  min-width: 0 !important;
+  width: 100% !important;
+  justify-content: center !important;
+  padding: 9px 10px !important;
+  border-radius: 14px !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+html body .performance-svg-chart--overall .performance-svg-legend {
+  grid-template-columns: minmax(180px, 280px) !important;
+}
+
+@media (max-width: 768px) {
+  html body .performance-chart-grid .performance-chart-plot {
+    height: 360px !important;
+    min-height: 360px !important;
+  }
+
+  html body .performance-svg-chart {
+    min-height: 360px !important;
+    gap: 12px !important;
+  }
+
+  html body .performance-svg-chart svg {
+    flex-basis: 280px !important;
+    height: 280px !important;
+    max-height: 280px !important;
+  }
+
+  html body .performance-svg-legend {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    padding: 0 !important;
+  }
+
+  html body .performance-svg-legend span {
+    font-size: 0.76rem !important;
+    padding: 8px 7px !important;
+  }
+
+  html body .performance-svg-x-axis {
+    font-size: 12px !important;
+  }
+}
+
+/* Dashboard subject momentum mobile cleanup: compact chart, contained legend, no overlap. */
+@media (max-width: 768px) {
+  html body .workspace-card .dashboard-momentum-chart {
+    min-height: 430px !important;
+    height: auto !important;
+    padding: 12px 8px 14px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    overflow: hidden !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-plot {
+    flex: 0 0 auto !important;
+    height: 285px !important;
+    min-height: 285px !important;
+    max-height: 285px !important;
+    width: 100% !important;
+    overflow: hidden !important;
+    border-radius: 16px !important;
+  }
+
+  html body .dashboard-momentum-svg {
+    height: 285px !important;
+    min-height: 285px !important;
+    max-height: 285px !important;
+    width: 100% !important;
+    overflow: hidden !important;
+  }
+
+  html body .dashboard-momentum-svg svg {
+    display: block !important;
+    width: 100% !important;
+    height: 285px !important;
+    max-height: 285px !important;
+    overflow: visible !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-mobile-key {
+    position: static !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    z-index: 1 !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-mobile-key span {
+    min-width: 0 !important;
+    width: 100% !important;
+    height: 38px !important;
+    padding: 8px 9px !important;
+    border-radius: 12px !important;
+    font-size: 0.76rem !important;
+    line-height: 1 !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  html body .dashboard-momentum-axis-label {
+    font-size: 15px !important;
+    font-weight: 950 !important;
+  }
+
+  html body .dashboard-momentum-x-label,
+  html body .dashboard-momentum-average-label {
+    font-size: 13px !important;
+    font-weight: 950 !important;
+  }
+}
+
+@media (max-width: 420px) {
+  html body .workspace-card .dashboard-momentum-chart {
+    min-height: 410px !important;
+    padding: 10px 7px 12px !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-plot,
+  html body .dashboard-momentum-svg,
+  html body .dashboard-momentum-svg svg {
+    height: 270px !important;
+    min-height: 270px !important;
+    max-height: 270px !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-mobile-key span {
+    height: 36px !important;
+    font-size: 0.7rem !important;
+    padding: 7px 6px !important;
+  }
+}

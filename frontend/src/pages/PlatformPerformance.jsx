@@ -173,13 +173,6 @@ export default function PlatformPerformance() {
                     }))}
                   />
                 </div>
-                <div className="performance-chart-mobile-key">
-                  {performanceSubjectNames.map((subjectName) => {
-                    const latest = [...performanceTrend].reverse().find((point) => Number.isFinite(Number(point[subjectName])))
-                    const value = latest ? Math.round(Number(latest[subjectName]) || 0) : 0
-                    return <span key={subjectName}>{subjectName}: {value}%</span>
-                  })}
-                </div>
               </>
             ) : (
               <div className="empty-state empty-state--compact">
@@ -299,6 +292,7 @@ export default function PlatformPerformance() {
     </div>
   )
 }
+
 
 
 
