@@ -756,3 +756,287 @@ html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-car
   opacity: 1 !important;
   filter: none !important;
 }
+
+/* Final mobile compacting: reduce quiz height without changing the theme. */
+@media (max-width: 640px) {
+  html body .mcq-practice-shell {
+    gap: 10px !important;
+  }
+
+  html body .mcq-practice-top {
+    padding: 16px 18px !important;
+    gap: 12px !important;
+    border-radius: 18px !important;
+  }
+
+  html body .mcq-practice-top h1 {
+    margin: 4px 0 4px !important;
+    font-size: clamp(24px, 7vw, 32px) !important;
+    line-height: 1.05 !important;
+  }
+
+  html body .mcq-practice-top p {
+    margin: 0 !important;
+    font-size: 13px !important;
+    line-height: 1.25 !important;
+  }
+
+  html body .mcq-practice-top .label-xs {
+    font-size: 10px !important;
+    line-height: 1.15 !important;
+    letter-spacing: 0.08em !important;
+  }
+
+  html body .mcq-practice-tools {
+    gap: 8px !important;
+  }
+
+  html body .mcq-practice-top .mcq-question-panel-toggle,
+  html body .mcq-practice-top .mcq-timer {
+    min-height: 42px !important;
+    height: 42px !important;
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+    border-radius: 14px !important;
+  }
+
+  html body .mcq-attempt-layout,
+  html body .mcq-question-card {
+    gap: 10px !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-question-card {
+    padding: 14px 14px 12px !important;
+    border-radius: 20px !important;
+  }
+
+  html body .mcq-attempt-question-label,
+  html body .mcq-section-label {
+    margin-bottom: 6px !important;
+    font-size: 10px !important;
+    line-height: 1.1 !important;
+    letter-spacing: 0.08em !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-question-title {
+    margin-bottom: 10px !important;
+    padding: 12px 14px !important;
+    border-radius: 16px !important;
+    font-size: clamp(20px, 6.3vw, 26px) !important;
+    line-height: 1.22 !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-question-title .mcq-renderer,
+  html body .mcq-attempt-layout .mcq-question-title .mcq-renderer * {
+    font-size: inherit !important;
+    line-height: inherit !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-options-grid {
+    gap: 8px !important;
+    padding: 10px !important;
+    border-radius: 16px !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-option-card {
+    min-height: 58px !important;
+    padding: 8px 10px !important;
+    gap: 12px !important;
+    border-radius: 15px !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-option-letter {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    border-radius: 12px !important;
+    font-size: 17px !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-option-text,
+  html body .mcq-attempt-layout .mcq-option-text .mcq-renderer,
+  html body .mcq-attempt-layout .mcq-option-text .mcq-renderer * {
+    font-size: clamp(16px, 4.8vw, 19px) !important;
+    line-height: 1.22 !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-nav-actions {
+    gap: 8px !important;
+    padding-top: 10px !important;
+    margin-top: 10px !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-nav-actions .btn {
+    min-height: 42px !important;
+    height: 42px !important;
+    padding: 8px 10px !important;
+    border-radius: 14px !important;
+    font-size: 12px !important;
+    line-height: 1.1 !important;
+  }
+}
+
+@media (max-width: 380px) {
+  html body .mcq-attempt-layout .mcq-question-card {
+    padding: 12px 10px 10px !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-question-title {
+    padding: 10px 12px !important;
+    font-size: 20px !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-option-card {
+    min-height: 52px !important;
+    padding: 7px 9px !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-option-letter {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    font-size: 16px !important;
+  }
+}
+
+/* Final mobile quiz compacting: keep style, reduce vertical height for student solving. */
+@media (max-width: 640px) {
+  html body .mcq-practice-shell {
+    gap: 6px !important;
+  }
+
+  html body .mcq-practice-top {
+    padding: 10px 12px !important;
+    gap: 8px !important;
+    border-radius: 16px !important;
+  }
+
+  html body .mcq-practice-top h1 {
+    margin: 2px 0 !important;
+    font-size: clamp(20px, 5.8vw, 26px) !important;
+    line-height: 1.02 !important;
+  }
+
+  html body .mcq-practice-top p {
+    margin: 0 !important;
+    font-size: 11px !important;
+    line-height: 1.15 !important;
+  }
+
+  html body .mcq-practice-top .label-xs {
+    font-size: 9px !important;
+    line-height: 1.05 !important;
+    letter-spacing: 0.07em !important;
+  }
+
+  html body .mcq-practice-tools {
+    gap: 6px !important;
+  }
+
+  html body .mcq-practice-top .mcq-question-panel-toggle,
+  html body .mcq-practice-top .mcq-timer {
+    min-height: 34px !important;
+    height: 34px !important;
+    padding: 6px 9px !important;
+    font-size: 11px !important;
+    border-radius: 12px !important;
+  }
+
+  html body .mcq-attempt-layout,
+  html body .mcq-question-card {
+    gap: 6px !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-question-card {
+    padding: 8px 8px 7px !important;
+    border-radius: 16px !important;
+  }
+
+  html body .mcq-attempt-question-label,
+  html body .mcq-section-label {
+    margin-bottom: 4px !important;
+    font-size: 8px !important;
+    line-height: 1.05 !important;
+    letter-spacing: 0.07em !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-question-title {
+    margin-bottom: 6px !important;
+    padding: 8px 10px !important;
+    border-radius: 13px !important;
+    font-size: clamp(16px, 4.7vw, 20px) !important;
+    line-height: 1.15 !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-question-title .mcq-renderer,
+  html body .mcq-attempt-layout .mcq-question-title .mcq-renderer * {
+    font-size: inherit !important;
+    line-height: inherit !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-options-grid {
+    gap: 6px !important;
+    padding: 7px !important;
+    border-radius: 13px !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-option-card {
+    min-height: 42px !important;
+    padding: 6px 8px !important;
+    gap: 9px !important;
+    border-radius: 13px !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-option-letter {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    border-radius: 10px !important;
+    font-size: 13px !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-option-text,
+  html body .mcq-attempt-layout .mcq-option-text .mcq-renderer,
+  html body .mcq-attempt-layout .mcq-option-text .mcq-renderer * {
+    font-size: clamp(13px, 3.8vw, 15px) !important;
+    line-height: 1.14 !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-nav-actions {
+    gap: 6px !important;
+    padding-top: 6px !important;
+    margin-top: 6px !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-nav-actions .btn {
+    min-height: 34px !important;
+    height: 34px !important;
+    padding: 6px 7px !important;
+    border-radius: 12px !important;
+    font-size: 10px !important;
+    line-height: 1.05 !important;
+  }
+}
+
+@media (max-width: 380px) {
+  html body .mcq-attempt-layout .mcq-question-card {
+    padding: 7px 6px 6px !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-question-title {
+    padding: 7px 8px !important;
+    font-size: 15px !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-option-card {
+    min-height: 39px !important;
+    padding: 5px 7px !important;
+  }
+
+  html body .mcq-attempt-layout .mcq-option-letter {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    font-size: 12px !important;
+  }
+}
