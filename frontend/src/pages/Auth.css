@@ -1998,3 +1998,51 @@ html[data-theme="dark"] .auth-form .floating-field {
   }
 }
 
+
+/* Mobile auth input icon spacing fix */
+@media (max-width: 640px) {
+  .auth-form .floating-field.auth-input-shell {
+    padding-left: 60px !important;
+    padding-right: 16px !important;
+    overflow: visible !important;
+  }
+
+  .auth-form .floating-field.auth-password-field {
+    padding-right: 90px !important;
+  }
+
+  .auth-form .floating-field.auth-input-shell label {
+    position: static !important;
+    display: block !important;
+    margin: 0 0 5px !important;
+    line-height: 1.1 !important;
+  }
+
+  .auth-form .floating-field.auth-input-shell input {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .auth-form .floating-field.auth-password-field input {
+    padding-right: 0 !important;
+  }
+
+  .auth-form .floating-field.auth-input-shell .auth-input-icon {
+    left: 20px !important;
+    top: 50% !important;
+    width: 18px !important;
+    height: 18px !important;
+    transform: translateY(-50%) !important;
+  }
+
+  .auth-form .floating-field.auth-password-field .auth-inline-toggle {
+    right: 14px !important;
+    top: 50% !important;
+    z-index: 4 !important;
+    transform: translateY(-50%) !important;
+  }
+}
