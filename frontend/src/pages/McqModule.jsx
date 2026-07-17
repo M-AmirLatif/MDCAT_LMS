@@ -71,19 +71,13 @@ const getLegacyQuizResultStorageKey = (subject, chapterId) =>
   `mcq-result-${subject}-${chapterId}`
 
 const readStoredQuizResult = (userKey, subject, chapterId) => {
-  const keys = [
-    getQuizResultStorageKey(userKey, subject, chapterId),
-    getLegacyQuizResultStorageKey(subject, chapterId),
-  ]
-  for (const key of keys) {
-    try {
-      const parsed = JSON.parse(localStorage.getItem(key) || sessionStorage.getItem(key) || 'null')
-      if (parsed) return parsed
-    } catch {
-      // Ignore corrupt browser storage and continue with the next key.
-    }
+  const key = getQuizResultStorageKey(userKey, subject, chapterId)
+  try {
+    return JSON.parse(localStorage.getItem(key) || sessionStorage.getItem(key) || 'null')
+  } catch {
+    // Ignore corrupt browser storage so a fresh quiz can start normally.
+    return null
   }
-  return null
 }
 
 const clearStoredQuizResult = (userKey, subject, chapterId) => {
@@ -2261,9 +2255,8 @@ function QuizAttempt() {
         <div className="mcq-practice-top">
           <div>
             <div className="label-xs" style={{ color: meta?.accent }}>
-              {meta?.name} &gt; {chapter?.name}
+              {meta?.name}: {chapter?.name}
             </div>
-            <h1>Quiz Attempt</h1>
             <p>
               Question {currentIndex + 1} of {mcqs.length}
             </p>
@@ -2595,5 +2588,6 @@ function ReviewSection({ title, items }) {
 export { CourseSelection, ChapterList, McqList, QuizAttempt, QuizResult }
 
 export default CourseSelection
+
 
 

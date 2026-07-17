@@ -9,21 +9,36 @@ function getApiOrigin() {
 }
 
 export function normalizeImageUrl(url) {
-  const value = String(url || '').trim()
+  const value = String(url || '')
+    .trim()
+    .replace(/^[\"'`<]+|[\"'`>]+$/g, '')
   if (!value) return ''
 
-  if (/^data:image\//i.test(value)) return value
+  if (/^(data:image\/|blob:)/i.test(value)) return value
 
   const apiOrigin = getApiOrigin()
 
-  if (/^\/uploads\//i.test(value)) {
-    return apiOrigin ? `${apiOrigin}${value}` : value
+  const normalizeUploadPath = (pathname) => {
+    const path = String(pathname || '').replace(/\\/g, '/')
+    if (/^\/?api\/uploads\//i.test(path)) {
+      return `/${path.replace(/^\/?api\/uploads\//i, 'uploads/')}`
+    }
+    if (/^\/?uploads\//i.test(path)) {
+      return path.startsWith('/') ? path : `/${path}`
+    }
+    return ''
+  }
+
+  const directUploadPath = normalizeUploadPath(value)
+  if (directUploadPath) {
+    return apiOrigin ? `${apiOrigin}${directUploadPath}` : directUploadPath
   }
 
   try {
     const parsed = new URL(value)
-    if (parsed.pathname.startsWith('/uploads/') && apiOrigin) {
-      return `${apiOrigin}${parsed.pathname}${parsed.search}`
+    const uploadPath = normalizeUploadPath(parsed.pathname)
+    if (uploadPath && apiOrigin) {
+      return `${apiOrigin}${uploadPath}${parsed.search}`
     }
     return value
   } catch {

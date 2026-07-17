@@ -22,27 +22,27 @@ let debugLogCount = 0
 function cleanImageUrl(url) {
   return String(url || '')
     .trim()
-    .replace(/^["'`]+|["'`]+$/g, '')
+    .replace(/^["'`<]+|["'`>]+$/g, '')
     .replace(/\s+["'][^"']*["']$/g, '')
     .replace(/[),.;\]]+$/g, '')
 }
 
 function isSafeImageUrl(url) {
-  const value = cleanImageUrl(url)
+  const value = normalizeImageUrl(cleanImageUrl(url))
   if (!value) return false
 
   if (/^data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+$/i.test(value)) {
     return true
   }
 
-  if (/^\/uploads\/[^\s<>"']+/i.test(value)) return true
+  if (/^blob:/i.test(value)) return true
+  if (/^\/?(?:api\/)?uploads\/[^\s<>"']+/i.test(value)) return true
 
   try {
     const parsed = new URL(value)
     if (!['http:', 'https:'].includes(parsed.protocol)) return false
-    if (parsed.hostname.includes('cloudinary.com') && parsed.pathname.includes('/image/upload/')) {
-      return true
-    }
+    if (parsed.hostname.includes('cloudinary.com')) return true
+    if (/\/(?:api\/)?uploads\//i.test(parsed.pathname)) return true
     return /\.(png|jpe?g|gif|webp|svg|bmp|avif)$/i.test(parsed.pathname)
   } catch {
     return false
@@ -77,7 +77,19 @@ function imageFromUnknown(image) {
   if (!image) return null
   if (typeof image === 'string') return { url: cleanImageUrl(image), alt: '' }
   return {
-    url: cleanImageUrl(image.url || image.src || image.imageUrl || image.secure_url || image.path || ''),
+    url: cleanImageUrl(
+      image.url
+        || image.src
+        || image.imageUrl
+        || image.secure_url
+        || image.secureUrl
+        || image.fileUrl
+        || image.absoluteUrl
+        || image.publicUrl
+        || image.location
+        || image.path
+        || '',
+    ),
     alt: image.alt || image.caption || image.title || '',
   }
 }
