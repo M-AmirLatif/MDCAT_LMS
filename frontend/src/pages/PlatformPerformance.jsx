@@ -69,7 +69,7 @@ function PerformanceSvgChart({ data, mode = 'subjects', average = 0, legendValue
         {average > 0 ? (
           <>
             <line className="performance-svg-average" x1={padding.left} x2={width - padding.right} y1={averageY} y2={averageY} />
-            <text className="performance-svg-average-label" x={width - padding.right + 64} y={Math.max(18, averageY - 12)} textAnchor="end">Overall {average}%</text>
+            <text className="performance-svg-average-label" x={width - padding.right - 4} y={Math.max(18, averageY - 12)} textAnchor="end">Overall {average}%</text>
           </>
         ) : null}
         {series.map((item) => {
@@ -295,6 +295,7 @@ export default function PlatformPerformance() {
     </div>
   )
 }
+
 
 
 

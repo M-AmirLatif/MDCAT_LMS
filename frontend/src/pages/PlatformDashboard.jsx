@@ -83,8 +83,8 @@ function DashboardMomentumSvg({ data, subjects: subjectNames, overallAccuracy = 
   const hasRows = rows.length > 0
   const chartRows = hasRows ? rows : [{ attemptLabel: 'A1', Biology: 0, Chemistry: 0, Physics: 0, English: 0 }]
   const width = 760
-  const height = 300
-  const pad = { top: 24, right: 28, bottom: 42, left: 48 }
+  const height = 330
+  const pad = { top: 28, right: 46, bottom: 54, left: 76 }
   const innerWidth = width - pad.left - pad.right
   const innerHeight = height - pad.top - pad.bottom
   const ticks = [0, 25, 50, 75, 100]
@@ -510,6 +510,7 @@ export default function PlatformDashboard() {
 
   return content
 }
+
 
 
 

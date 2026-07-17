@@ -16069,3 +16069,429 @@ html body .performance-svg-legend span {
     font-size: 18px !important;
   }
 }
+
+/* Final performance graph readability pass: header summaries, no overlap, mobile-safe spacing. */
+html body .workspace-page .performance-chart-grid {
+  align-items: stretch !important;
+}
+
+html body .workspace-page .performance-chart-grid > .workspace-card {
+  overflow: hidden !important;
+}
+
+html body .workspace-page .performance-chart-grid > .workspace-card .workspace-card-head {
+  min-height: 116px !important;
+  padding-bottom: 12px !important;
+  align-items: flex-start !important;
+}
+
+html body .workspace-page .performance-chart-grid .chart-panel,
+html body .workspace-page .performance-chart-grid .performance-trend-chart,
+html body .workspace-page .performance-chart-grid .performance-overall-chart {
+  padding: 14px 22px 18px !important;
+  overflow: visible !important;
+}
+
+html body .workspace-page .performance-chart-grid .performance-chart-plot {
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+html body .workspace-page .performance-svg-chart {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  width: 100% !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+
+html body .workspace-page .performance-svg-chart svg {
+  order: 2 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 360px !important;
+  min-height: 360px !important;
+  overflow: visible !important;
+}
+
+html body .workspace-page .performance-svg-legend {
+  order: 1 !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(126px, 1fr)) !important;
+  gap: 12px !important;
+  width: 100% !important;
+  margin: -78px 0 18px !important;
+  padding: 0 !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+html body .workspace-page .performance-svg-chart--overall .performance-svg-legend {
+  grid-template-columns: minmax(220px, 390px) !important;
+  justify-content: center !important;
+}
+
+html body .workspace-page .performance-svg-legend span {
+  min-width: 0 !important;
+  width: 100% !important;
+  min-height: 54px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  padding: 12px 14px !important;
+  border-radius: 14px !important;
+  border: 2px solid rgba(15, 23, 42, 0.82) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  font-size: clamp(15px, 1.18vw, 18px) !important;
+  font-weight: 950 !important;
+  line-height: 1.1 !important;
+  letter-spacing: 0 !important;
+  white-space: normal !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.16) !important;
+}
+
+html body .workspace-page .performance-svg-legend span:nth-child(1) {
+  background: linear-gradient(135deg, #008f6d 0%, #00c896 100%) !important;
+}
+html body .workspace-page .performance-svg-legend span:nth-child(2) {
+  background: linear-gradient(135deg, #4c1d95 0%, #8b5cf6 100%) !important;
+}
+html body .workspace-page .performance-svg-legend span:nth-child(3) {
+  background: linear-gradient(135deg, #075985 0%, #38bdf8 100%) !important;
+}
+html body .workspace-page .performance-svg-legend span:nth-child(4) {
+  background: linear-gradient(135deg, #9a3412 0%, #f59e0b 100%) !important;
+}
+html body .workspace-page .performance-svg-chart--overall .performance-svg-legend span {
+  background: linear-gradient(135deg, #4c1d95 0%, #2563eb 100%) !important;
+}
+
+html body .workspace-page .performance-svg-legend i {
+  flex: 0 0 14px !important;
+  width: 14px !important;
+  height: 14px !important;
+  border-radius: 999px !important;
+  border: 3px solid rgba(255, 255, 255, 0.92) !important;
+  box-shadow: none !important;
+}
+
+html body .workspace-page .performance-svg-grid {
+  stroke: rgba(71, 85, 105, 0.35) !important;
+  stroke-dasharray: none !important;
+  stroke-width: 1.4 !important;
+}
+
+html[data-theme='dark'] body .workspace-page .performance-svg-grid {
+  stroke: rgba(226, 232, 240, 0.32) !important;
+}
+
+html body .workspace-page .performance-svg-axis,
+html body .workspace-page .performance-svg-x-axis,
+html body .workspace-page .performance-svg-average-label {
+  fill: #0f172a !important;
+  font-weight: 950 !important;
+  paint-order: stroke !important;
+  stroke: rgba(255, 255, 255, 0.96) !important;
+  stroke-width: 3px !important;
+}
+
+html[data-theme='dark'] body .workspace-page .performance-svg-axis,
+html[data-theme='dark'] body .workspace-page .performance-svg-x-axis,
+html[data-theme='dark'] body .workspace-page .performance-svg-average-label {
+  fill: #ffffff !important;
+  stroke: rgba(5, 4, 18, 0.95) !important;
+}
+
+html body .workspace-page .performance-svg-axis {
+  font-size: 18px !important;
+}
+
+html body .workspace-page .performance-svg-x-axis {
+  font-size: 16px !important;
+}
+
+html body .workspace-page .performance-svg-average-label {
+  font-size: 15px !important;
+}
+
+html body .workspace-page .performance-svg-line,
+html body .workspace-page .performance-svg-line-shadow {
+  stroke-width: 5px !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+
+html body .workspace-page .performance-svg-dot {
+  display: none !important;
+}
+
+@media (max-width: 920px) {
+  html body .workspace-page .performance-chart-grid > .workspace-card .workspace-card-head {
+    min-height: 96px !important;
+  }
+
+  html body .workspace-page .performance-svg-legend {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    margin: 0 0 14px !important;
+    gap: 10px !important;
+  }
+
+  html body .workspace-page .performance-svg-chart--overall .performance-svg-legend {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 520px) {
+  html body .workspace-page .performance-chart-grid > .workspace-card .workspace-card-head {
+    min-height: auto !important;
+    padding: 18px 18px 12px !important;
+  }
+
+  html body .workspace-page .performance-chart-grid .chart-panel,
+  html body .workspace-page .performance-chart-grid .performance-trend-chart,
+  html body .workspace-page .performance-chart-grid .performance-overall-chart {
+    padding: 12px 10px 14px !important;
+  }
+
+  html body .workspace-page .performance-svg-chart {
+    gap: 10px !important;
+  }
+
+  html body .workspace-page .performance-svg-chart svg {
+    height: 300px !important;
+    min-height: 300px !important;
+  }
+
+  html body .workspace-page .performance-svg-legend {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin: 0 0 10px !important;
+  }
+
+  html body .workspace-page .performance-svg-legend span {
+    min-height: 44px !important;
+    padding: 9px 8px !important;
+    border-radius: 12px !important;
+    font-size: 12px !important;
+    line-height: 1.15 !important;
+  }
+
+  html body .workspace-page .performance-svg-legend i {
+    flex-basis: 10px !important;
+    width: 10px !important;
+    height: 10px !important;
+    border-width: 2px !important;
+  }
+
+  html body .workspace-page .performance-svg-axis {
+    font-size: 20px !important;
+  }
+
+  html body .workspace-page .performance-svg-x-axis {
+    font-size: 15px !important;
+  }
+
+  html body .workspace-page .performance-svg-average-label {
+    font-size: 13px !important;
+  }
+}
+
+/* Final dashboard subject momentum cleanup: readable axes, top summary chips, no overlap. */
+html body .workspace-card .dashboard-momentum-chart {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  padding: 16px 22px 20px !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+
+html body .workspace-card .dashboard-momentum-mobile-key {
+  order: 1 !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(118px, 1fr)) !important;
+  gap: 12px !important;
+  width: 100% !important;
+  margin: 0 0 10px !important;
+  padding: 0 !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+html body .workspace-card .dashboard-momentum-mobile-key span {
+  min-width: 0 !important;
+  min-height: 52px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  padding: 11px 12px !important;
+  border-radius: 14px !important;
+  border: 2px solid rgba(15, 23, 42, 0.82) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  font-size: clamp(14px, 1.1vw, 17px) !important;
+  font-weight: 950 !important;
+  line-height: 1.1 !important;
+  white-space: normal !important;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.16) !important;
+}
+
+html body .workspace-card .dashboard-momentum-mobile-key span:nth-child(1) {
+  background: linear-gradient(135deg, #008f6d 0%, #00c896 100%) !important;
+}
+html body .workspace-card .dashboard-momentum-mobile-key span:nth-child(2) {
+  background: linear-gradient(135deg, #4c1d95 0%, #8b5cf6 100%) !important;
+}
+html body .workspace-card .dashboard-momentum-mobile-key span:nth-child(3) {
+  background: linear-gradient(135deg, #075985 0%, #38bdf8 100%) !important;
+}
+html body .workspace-card .dashboard-momentum-mobile-key span:nth-child(4) {
+  background: linear-gradient(135deg, #9a3412 0%, #f59e0b 100%) !important;
+}
+
+html body .workspace-card .dashboard-momentum-mobile-key i {
+  flex: 0 0 13px !important;
+  width: 13px !important;
+  height: 13px !important;
+  border-radius: 999px !important;
+  border: 3px solid rgba(255, 255, 255, 0.92) !important;
+}
+
+html body .workspace-card .dashboard-momentum-plot {
+  order: 2 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+html body .dashboard-momentum-svg {
+  display: block !important;
+  width: 100% !important;
+  min-height: 390px !important;
+  overflow: visible !important;
+}
+
+html body .dashboard-momentum-svg svg {
+  display: block !important;
+  width: 100% !important;
+  height: 390px !important;
+  min-height: 390px !important;
+  overflow: visible !important;
+}
+
+html body .dashboard-momentum-dot {
+  display: none !important;
+}
+
+html body .dashboard-momentum-grid-line,
+html body .dashboard-momentum-average {
+  stroke-dasharray: none !important;
+  stroke-width: 1.5 !important;
+}
+
+html body .dashboard-momentum-grid-line {
+  stroke: rgba(71, 85, 105, 0.38) !important;
+}
+html[data-theme='dark'] body .dashboard-momentum-grid-line {
+  stroke: rgba(226, 232, 240, 0.32) !important;
+}
+
+html body .dashboard-momentum-line,
+html body .dashboard-momentum-line-shadow {
+  stroke-width: 5px !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+
+html body .dashboard-momentum-axis-label,
+html body .dashboard-momentum-x-label,
+html body .dashboard-momentum-average-label {
+  fill: #0f172a !important;
+  font-weight: 950 !important;
+  paint-order: stroke !important;
+  stroke: rgba(255, 255, 255, 0.96) !important;
+  stroke-width: 3px !important;
+}
+
+html[data-theme='dark'] body .dashboard-momentum-axis-label,
+html[data-theme='dark'] body .dashboard-momentum-x-label,
+html[data-theme='dark'] body .dashboard-momentum-average-label {
+  fill: #ffffff !important;
+  stroke: rgba(5, 4, 18, 0.95) !important;
+}
+
+html body .dashboard-momentum-axis-label {
+  font-size: 17px !important;
+}
+html body .dashboard-momentum-x-label {
+  font-size: 15px !important;
+}
+html body .dashboard-momentum-average-label {
+  font-size: 14px !important;
+}
+
+@media (min-width: 921px) {
+  html body .workspace-card:has(.dashboard-momentum-chart) .workspace-card-head {
+    min-height: 108px !important;
+    padding-bottom: 10px !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-mobile-key {
+    margin-top: -78px !important;
+    margin-bottom: 16px !important;
+  }
+}
+
+@media (max-width: 920px) {
+  html body .workspace-card .dashboard-momentum-chart {
+    padding: 12px 10px 14px !important;
+    gap: 10px !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-mobile-key {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin: 0 0 10px !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-mobile-key span {
+    min-height: 44px !important;
+    padding: 9px 8px !important;
+    border-radius: 12px !important;
+    font-size: 12px !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-mobile-key i {
+    flex-basis: 10px !important;
+    width: 10px !important;
+    height: 10px !important;
+    border-width: 2px !important;
+  }
+
+  html body .dashboard-momentum-svg,
+  html body .dashboard-momentum-svg svg {
+    height: 310px !important;
+    min-height: 310px !important;
+  }
+
+  html body .dashboard-momentum-axis-label {
+    font-size: 20px !important;
+  }
+
+  html body .dashboard-momentum-x-label {
+    font-size: 15px !important;
+  }
+
+  html body .dashboard-momentum-average-label {
+    font-size: 13px !important;
+  }
+}
