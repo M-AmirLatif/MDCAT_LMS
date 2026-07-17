@@ -17337,3 +17337,85 @@ html body .mcq-practice-page .mcq-question-sidebar .mcq-question-dots::-webkit-s
   background: rgba(124, 92, 255, 0.55);
   border-radius: 999px;
 }
+
+/* Student quiz mobile density pass: remove label and tighten vertical space. */
+@media (max-width: 640px) {
+  html body .mcq-practice-page .mcq-attempt-question-label {
+    display: none !important;
+  }
+
+  html body .mcq-practice-page .mcq-question-card {
+    padding: 6px 7px 5px !important;
+    gap: 4px !important;
+  }
+
+  html body .mcq-practice-page .mcq-question-title {
+    width: 100% !important;
+    min-height: 0 !important;
+    margin: 0 0 4px !important;
+    padding: 7px 9px !important;
+    border-radius: 12px !important;
+    font-size: clamp(13px, 3.8vw, 16px) !important;
+    line-height: 1.12 !important;
+  }
+
+  html body .mcq-practice-page .mcq-question-title p,
+  html body .mcq-practice-page .mcq-question-title div,
+  html body .mcq-practice-page .mcq-question-title span {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  html body .mcq-practice-page .mcq-options-grid {
+    margin-top: 3px !important;
+    padding: 6px !important;
+    gap: 5px !important;
+  }
+
+  html body .mcq-practice-page .mcq-option-card {
+    min-height: 36px !important;
+    padding: 4px 7px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  html body .mcq-practice-page .mcq-option-letter {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    font-size: 11px !important;
+  }
+
+  html body .mcq-practice-page .mcq-option-text {
+    display: flex !important;
+    align-items: center !important;
+    min-height: 28px !important;
+  }
+
+  html body .mcq-practice-page .mcq-option-text,
+  html body .mcq-practice-page .mcq-option-text p,
+  html body .mcq-practice-page .mcq-option-text div,
+  html body .mcq-practice-page .mcq-option-text span {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    font-size: clamp(11px, 3.25vw, 13px) !important;
+    line-height: 1.08 !important;
+  }
+
+  html body .mcq-practice-page .mcq-nav-actions {
+    margin-top: 5px !important;
+    padding-top: 5px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  html body .mcq-practice-page .mcq-question-title {
+    padding: 6px 8px !important;
+    font-size: 13px !important;
+  }
+
+  html body .mcq-practice-page .mcq-option-card {
+    min-height: 34px !important;
+    padding: 3px 6px !important;
+  }
+}
