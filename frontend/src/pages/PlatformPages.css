@@ -17213,3 +17213,127 @@ html[data-theme="dark"] .workspace-page--notifications .notification-feed-card .
     max-height: 240px !important;
   }
 }
+
+/* Active quiz compact pass: keep the student MCQ screen usable on small phones. */
+@media (max-width: 640px) {
+  html body .mcq-practice-page .mcq-attempt-layout {
+    gap: 6px !important;
+    padding: 0 !important;
+  }
+
+  html body .mcq-practice-page .mcq-question-card {
+    padding: 8px 8px 6px !important;
+    gap: 6px !important;
+    border-radius: 16px !important;
+  }
+
+  html body .mcq-practice-page .mcq-section-label,
+  html body .mcq-practice-page .mcq-attempt-question-label {
+    margin: 0 0 3px !important;
+    font-size: 9px !important;
+    line-height: 1 !important;
+  }
+
+  html body .mcq-practice-page .mcq-question-title {
+    min-height: 0 !important;
+    margin: 0 0 6px !important;
+    padding: 8px 10px !important;
+    border-radius: 13px !important;
+    font-size: clamp(15px, 4.2vw, 18px) !important;
+    line-height: 1.15 !important;
+  }
+
+  html body .mcq-practice-page .mcq-question-title .mcq-rich-content,
+  html body .mcq-practice-page .mcq-question-title .mcq-rich-text,
+  html body .mcq-practice-page .mcq-question-title .mcq-renderer,
+  html body .mcq-practice-page .mcq-question-title .mcq-renderer * {
+    margin: 0 !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+  }
+
+  html body .mcq-practice-page .mcq-options-grid {
+    margin-top: 4px !important;
+    padding: 7px !important;
+    gap: 6px !important;
+    border-radius: 14px !important;
+  }
+
+  html body .mcq-practice-page .mcq-option-card {
+    min-height: 40px !important;
+    padding: 5px 7px !important;
+    gap: 8px !important;
+    border-radius: 12px !important;
+  }
+
+  html body .mcq-practice-page .mcq-option-letter {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    border-radius: 9px !important;
+    font-size: 12px !important;
+  }
+
+  html body .mcq-practice-page .mcq-option-text,
+  html body .mcq-practice-page .mcq-option-text * {
+    font-size: clamp(12px, 3.4vw, 14px) !important;
+    line-height: 1.1 !important;
+  }
+
+  html body .mcq-practice-page .mcq-nav-actions {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+    margin-top: 6px !important;
+    padding-top: 6px !important;
+  }
+
+  html body .mcq-practice-page .mcq-nav-actions .btn {
+    min-height: 32px !important;
+    height: 32px !important;
+    padding: 5px 4px !important;
+    border-radius: 999px !important;
+    font-size: 10px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 380px) {
+  html body .mcq-practice-page .mcq-question-card {
+    padding: 6px 6px 5px !important;
+  }
+
+  html body .mcq-practice-page .mcq-question-title {
+    padding: 6px 8px !important;
+    font-size: 14px !important;
+  }
+
+  html body .mcq-practice-page .mcq-option-card {
+    min-height: 36px !important;
+    padding: 4px 6px !important;
+  }
+}
+
+/* Question jump must scroll inside the drawer/panel, not behind the quiz page. */
+html body .mcq-practice-page .mcq-question-sidebar {
+  max-height: min(82vh, 760px) !important;
+  overflow: hidden !important;
+  overscroll-behavior: contain !important;
+}
+
+html body .mcq-practice-page .mcq-question-sidebar .mcq-question-dots {
+  max-height: calc(min(82vh, 760px) - 96px) !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  padding-right: 6px !important;
+}
+
+html body .mcq-practice-page .mcq-question-sidebar .mcq-question-dots::-webkit-scrollbar {
+  width: 8px;
+}
+
+html body .mcq-practice-page .mcq-question-sidebar .mcq-question-dots::-webkit-scrollbar-thumb {
+  background: rgba(124, 92, 255, 0.55);
+  border-radius: 999px;
+}
