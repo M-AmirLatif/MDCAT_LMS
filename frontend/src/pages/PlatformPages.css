@@ -16808,3 +16808,82 @@ html body .workspace-page .performance-svg-chart--overall .performance-svg-legen
     grid-template-columns: 1fr !important;
   }
 }
+
+/* Final mobile containment for dashboard Subject momentum graph. */
+@media (max-width: 920px) {
+  html body .workspace-card:has(.dashboard-momentum-chart) {
+    min-height: auto !important;
+    height: auto !important;
+    overflow: hidden !important;
+  }
+
+  html body .workspace-card:has(.dashboard-momentum-chart) .workspace-card-head {
+    min-height: auto !important;
+    padding: 18px 22px 14px !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-chart {
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 16px 16px 18px !important;
+    gap: 12px !important;
+    overflow: hidden !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-mobile-key {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-mobile-key span {
+    min-height: 42px !important;
+    padding: 8px 7px !important;
+    font-size: 11px !important;
+    line-height: 1.05 !important;
+    border-radius: 12px !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-plot {
+    height: 230px !important;
+    min-height: 230px !important;
+    flex: 0 0 230px !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+  }
+
+  html body .dashboard-momentum-svg,
+  html body .dashboard-momentum-svg svg {
+    height: 230px !important;
+    min-height: 230px !important;
+    max-height: 230px !important;
+    overflow: hidden !important;
+  }
+
+  html body .dashboard-momentum-axis-label {
+    font-size: 13px !important;
+    stroke-width: 1.5px !important;
+  }
+
+  html body .dashboard-momentum-x-label,
+  html body .dashboard-momentum-average-label {
+    font-size: 10px !important;
+    stroke-width: 1.4px !important;
+  }
+}
+
+@media (max-width: 430px) {
+  html body .workspace-card .dashboard-momentum-chart {
+    padding: 14px 12px 16px !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-plot,
+  html body .dashboard-momentum-svg,
+  html body .dashboard-momentum-svg svg {
+    height: 210px !important;
+    min-height: 210px !important;
+    max-height: 210px !important;
+  }
+}
