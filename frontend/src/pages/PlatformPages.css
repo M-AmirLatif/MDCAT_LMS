@@ -16495,3 +16495,91 @@ html body .dashboard-momentum-average-label {
     font-size: 13px !important;
   }
 }
+
+/* Final dashboard momentum legend placement: align subject chips in the chart's upper space. */
+html body .workspace-card .dashboard-momentum-chart {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 14px !important;
+  padding: 14px 22px 20px !important;
+  overflow: visible !important;
+}
+
+html body .workspace-card .dashboard-momentum-mobile-key {
+  order: 0 !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(126px, 1fr)) !important;
+  gap: 12px !important;
+  width: 100% !important;
+  margin: 0 0 6px !important;
+  padding: 0 !important;
+  position: relative !important;
+  z-index: 3 !important;
+}
+
+html body .workspace-card .dashboard-momentum-plot {
+  order: 1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+html body .workspace-card .dashboard-momentum-mobile-key span {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 50px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  padding: 10px 12px !important;
+  border-radius: 14px !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  font-size: clamp(14px, 1.05vw, 17px) !important;
+  font-weight: 950 !important;
+  line-height: 1.1 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
+}
+
+@media (min-width: 921px) {
+  html body .workspace-card:has(.dashboard-momentum-chart) .workspace-card-head {
+    min-height: 94px !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-mobile-key {
+    margin-top: -18px !important;
+    margin-bottom: 8px !important;
+  }
+}
+
+@media (max-width: 920px) {
+  html body .workspace-card .dashboard-momentum-chart {
+    padding: 12px 10px 16px !important;
+    gap: 10px !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-mobile-key {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin: 0 0 8px !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-mobile-key span {
+    min-height: 42px !important;
+    padding: 8px 7px !important;
+    border-radius: 12px !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
+  }
+
+  html body .dashboard-momentum-svg,
+  html body .dashboard-momentum-svg svg {
+    height: 300px !important;
+    min-height: 300px !important;
+  }
+}

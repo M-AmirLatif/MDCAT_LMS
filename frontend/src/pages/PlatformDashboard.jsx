@@ -224,13 +224,6 @@ function StudentDashboard({ firstName }) {
           <div className="workspace-card-body chart-panel dashboard-momentum-chart">
             {!loading && performanceTrend.length > 0 ? (
             <>
-              <div className="dashboard-momentum-plot">
-                <DashboardMomentumSvg
-                  data={performanceTrend}
-                  subjects={momentumSubjectNames}
-                  overallAccuracy={summary.overallAccuracy}
-                />
-              </div>
               <div className="dashboard-momentum-mobile-key">
                 {momentumSubjectNames.map((subjectName) => {
                   const latest = [...performanceTrend].reverse().find((point) => Number.isFinite(Number(point[subjectName])))
@@ -242,6 +235,13 @@ function StudentDashboard({ firstName }) {
                     </span>
                   )
                 })}
+              </div>
+              <div className="dashboard-momentum-plot">
+                <DashboardMomentumSvg
+                  data={performanceTrend}
+                  subjects={momentumSubjectNames}
+                  overallAccuracy={summary.overallAccuracy}
+                />
               </div>
             </>
             ) : (
@@ -510,6 +510,7 @@ export default function PlatformDashboard() {
 
   return content
 }
+
 
 
 
