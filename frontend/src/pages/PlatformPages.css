@@ -16583,3 +16583,228 @@ html body .workspace-card .dashboard-momentum-mobile-key span {
     min-height: 300px !important;
   }
 }
+
+/* Stabilize dashboard Subject momentum after legend move: prevent clipping on desktop/mobile. */
+html body .workspace-card:has(.dashboard-momentum-chart) {
+  height: auto !important;
+  min-height: 640px !important;
+  overflow: visible !important;
+}
+
+html body .workspace-card:has(.dashboard-momentum-chart) .workspace-card-head {
+  min-height: 112px !important;
+  padding-bottom: 16px !important;
+}
+
+html body .workspace-card .dashboard-momentum-chart {
+  height: auto !important;
+  min-height: 500px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  padding: 18px 28px 28px !important;
+  overflow: visible !important;
+}
+
+html body .workspace-card .dashboard-momentum-mobile-key {
+  order: 0 !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  margin: 0 0 10px !important;
+  width: 100% !important;
+  overflow: visible !important;
+}
+
+html body .workspace-card .dashboard-momentum-mobile-key span {
+  min-height: 46px !important;
+  padding: 9px 8px !important;
+  font-size: clamp(12px, 0.95vw, 15px) !important;
+  line-height: 1.05 !important;
+  white-space: nowrap !important;
+}
+
+html body .workspace-card .dashboard-momentum-mobile-key i {
+  flex: 0 0 11px !important;
+  width: 11px !important;
+  height: 11px !important;
+}
+
+html body .workspace-card .dashboard-momentum-plot {
+  order: 1 !important;
+  height: 390px !important;
+  min-height: 390px !important;
+  flex: 0 0 390px !important;
+  overflow: visible !important;
+}
+
+html body .dashboard-momentum-svg,
+html body .dashboard-momentum-svg svg {
+  width: 100% !important;
+  height: 390px !important;
+  min-height: 390px !important;
+  overflow: visible !important;
+}
+
+html body .dashboard-momentum-axis-label {
+  font-size: 15px !important;
+  stroke-width: 2px !important;
+}
+
+html body .dashboard-momentum-x-label,
+html body .dashboard-momentum-average-label {
+  font-size: 13px !important;
+  stroke-width: 2px !important;
+}
+
+@media (max-width: 920px) {
+  html body .workspace-card:has(.dashboard-momentum-chart) {
+    min-height: 560px !important;
+  }
+
+  html body .workspace-card:has(.dashboard-momentum-chart) .workspace-card-head {
+    min-height: 104px !important;
+    padding-bottom: 12px !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-chart {
+    min-height: 430px !important;
+    padding: 12px 10px 20px !important;
+    gap: 10px !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-mobile-key {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin: 0 0 10px !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-mobile-key span {
+    min-height: 40px !important;
+    padding: 8px 6px !important;
+    font-size: 11px !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-plot {
+    height: 300px !important;
+    min-height: 300px !important;
+    flex-basis: 300px !important;
+  }
+
+  html body .dashboard-momentum-svg,
+  html body .dashboard-momentum-svg svg {
+    height: 300px !important;
+    min-height: 300px !important;
+  }
+
+  html body .dashboard-momentum-axis-label {
+    font-size: 12px !important;
+    stroke-width: 1.5px !important;
+  }
+
+  html body .dashboard-momentum-x-label,
+  html body .dashboard-momentum-average-label {
+    font-size: 10px !important;
+    stroke-width: 1.5px !important;
+  }
+}
+
+@media (max-width: 430px) {
+  html body .workspace-card:has(.dashboard-momentum-chart) {
+    min-height: 540px !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-chart {
+    min-height: 410px !important;
+    padding-inline: 8px !important;
+  }
+
+  html body .workspace-card .dashboard-momentum-plot {
+    height: 285px !important;
+    min-height: 285px !important;
+    flex-basis: 285px !important;
+  }
+
+  html body .dashboard-momentum-svg,
+  html body .dashboard-momentum-svg svg {
+    height: 285px !important;
+    min-height: 285px !important;
+  }
+}
+
+/* Final performance chart alignment: keep summary chips inside the chart card. */
+html body .workspace-page .performance-chart-grid > .workspace-card {
+  overflow: hidden !important;
+}
+
+html body .workspace-page .performance-chart-grid .chart-panel,
+html body .workspace-page .performance-chart-grid .performance-trend-chart,
+html body .workspace-page .performance-chart-grid .performance-overall-chart {
+  overflow: hidden !important;
+}
+
+html body .workspace-page .performance-svg-chart {
+  overflow: hidden !important;
+}
+
+html body .workspace-page .performance-svg-legend {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  width: 100% !important;
+  margin: 0 0 16px !important;
+  padding: 0 !important;
+  align-items: stretch !important;
+}
+
+html body .workspace-page .performance-svg-legend span {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 48px !important;
+  padding: 9px 8px !important;
+  border-radius: 14px !important;
+  font-size: clamp(12px, 0.85vw, 15px) !important;
+  line-height: 1.08 !important;
+  white-space: normal !important;
+  text-align: center !important;
+}
+
+html body .workspace-page .performance-svg-chart--overall .performance-svg-legend {
+  grid-template-columns: minmax(260px, 520px) !important;
+  justify-content: center !important;
+  margin: 0 auto 16px !important;
+}
+
+html body .workspace-page .performance-svg-chart--overall .performance-svg-legend span {
+  min-height: 54px !important;
+  font-size: clamp(14px, 1vw, 18px) !important;
+}
+
+@media (min-width: 921px) {
+  html body .workspace-page .performance-chart-grid > .workspace-card .workspace-card-head {
+    min-height: 112px !important;
+    padding-bottom: 14px !important;
+  }
+
+  html body .workspace-page .performance-chart-grid .chart-panel,
+  html body .workspace-page .performance-chart-grid .performance-trend-chart,
+  html body .workspace-page .performance-chart-grid .performance-overall-chart {
+    padding: 18px 24px 24px !important;
+  }
+
+  html body .workspace-page .performance-svg-chart svg {
+    height: 340px !important;
+    min-height: 340px !important;
+  }
+}
+
+@media (max-width: 920px) {
+  html body .workspace-page .performance-svg-legend {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin: 0 0 12px !important;
+  }
+
+  html body .workspace-page .performance-svg-chart--overall .performance-svg-legend {
+    grid-template-columns: 1fr !important;
+  }
+}
