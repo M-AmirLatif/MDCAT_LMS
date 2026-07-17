@@ -17419,3 +17419,182 @@ html body .mcq-practice-page .mcq-question-sidebar .mcq-question-dots::-webkit-s
     padding: 3px 6px !important;
   }
 }
+
+/* Profile page dark mode: remove the extra wrapper fill behind input fields. */
+html[data-theme="dark"] body .profile-form .floating-field,
+[data-theme="dark"] body .profile-form .floating-field {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
+/* Mobile quiz start page: add breathing room around summary boxes. */
+@media (max-width: 640px) {
+  html body .student-quiz-summary-grid {
+    gap: 12px !important;
+    padding: 0 10px !important;
+    margin: 4px 0 14px !important;
+    box-sizing: border-box !important;
+  }
+
+  html body .student-quiz-summary-card {
+    margin: 0 !important;
+    min-height: 104px !important;
+    padding: 16px 18px !important;
+    border-radius: 18px !important;
+    box-sizing: border-box !important;
+  }
+
+  html body .student-quiz-motivation {
+    margin: 12px 10px 0 !important;
+    padding: 20px 18px !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* Final mobile quiz compacting: shrink question statement area and pull options upward. */
+@media (max-width: 640px) {
+  html body .mcq-practice-page .mcq-attempt-layout {
+    gap: 4px !important;
+  }
+
+  html body .mcq-practice-page .mcq-question-card {
+    padding: 4px 5px 4px !important;
+    gap: 3px !important;
+    border-radius: 14px !important;
+  }
+
+  html body .mcq-practice-page .mcq-question-title {
+    margin: 0 0 2px !important;
+    padding: 5px 8px !important;
+    min-height: 0 !important;
+    border-radius: 11px !important;
+    font-size: clamp(12px, 3.35vw, 14px) !important;
+    line-height: 1.08 !important;
+  }
+
+  html body .mcq-practice-page .mcq-question-title .mcq-rich-content,
+  html body .mcq-practice-page .mcq-question-title .mcq-rich-text,
+  html body .mcq-practice-page .mcq-question-title .mcq-renderer,
+  html body .mcq-practice-page .mcq-question-title .mcq-renderer-text,
+  html body .mcq-practice-page .mcq-question-title p,
+  html body .mcq-practice-page .mcq-question-title div,
+  html body .mcq-practice-page .mcq-question-title span {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+  }
+
+  html body .mcq-practice-page .mcq-options-grid {
+    margin-top: 2px !important;
+    padding: 5px !important;
+    gap: 4px !important;
+    border-radius: 13px !important;
+  }
+
+  html body .mcq-practice-page .mcq-option-card {
+    min-height: 32px !important;
+    padding: 3px 6px !important;
+    gap: 7px !important;
+    border-radius: 11px !important;
+  }
+
+  html body .mcq-practice-page .mcq-option-letter {
+    width: 26px !important;
+    height: 26px !important;
+    min-width: 26px !important;
+    font-size: 10px !important;
+    border-radius: 8px !important;
+  }
+
+  html body .mcq-practice-page .mcq-option-text,
+  html body .mcq-practice-page .mcq-option-text * {
+    font-size: clamp(10.5px, 3vw, 12px) !important;
+    line-height: 1.05 !important;
+  }
+}
+
+@media (max-width: 380px) {
+  html body .mcq-practice-page .mcq-question-title {
+    padding: 4px 7px !important;
+    font-size: 12px !important;
+  }
+
+  html body .mcq-practice-page .mcq-option-card {
+    min-height: 30px !important;
+  }
+}
+
+/* Final fix: keep dashboard Subject momentum plot inside the card on mobile. */
+@media (max-width: 920px) {
+  html body .workspace-section-grid .workspace-card:has(.dashboard-momentum-chart) {
+    min-height: 640px !important;
+    height: auto !important;
+    overflow: hidden !important;
+  }
+
+  html body .workspace-section-grid .workspace-card .dashboard-momentum-chart {
+    min-height: 520px !important;
+    height: auto !important;
+    padding: 16px 14px 76px !important;
+    gap: 12px !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  html body .workspace-section-grid .workspace-card .dashboard-momentum-plot {
+    height: 238px !important;
+    min-height: 238px !important;
+    max-height: 238px !important;
+    flex: 0 0 238px !important;
+    margin: -8px 0 0 !important;
+    padding: 0 0 18px !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  html body .workspace-section-grid .dashboard-momentum-svg,
+  html body .workspace-section-grid .dashboard-momentum-svg svg {
+    height: 238px !important;
+    min-height: 238px !important;
+    max-height: 238px !important;
+    overflow: hidden !important;
+  }
+
+  html body .workspace-section-grid .dashboard-momentum-svg svg {
+    transform: translateY(-26px) !important;
+    transform-origin: center top !important;
+  }
+}
+
+@media (max-width: 430px) {
+  html body .workspace-section-grid .workspace-card:has(.dashboard-momentum-chart) {
+    min-height: 620px !important;
+  }
+
+  html body .workspace-section-grid .workspace-card .dashboard-momentum-chart {
+    min-height: 500px !important;
+    padding: 14px 10px 78px !important;
+  }
+
+  html body .workspace-section-grid .workspace-card .dashboard-momentum-plot {
+    height: 224px !important;
+    min-height: 224px !important;
+    max-height: 224px !important;
+    flex-basis: 224px !important;
+    padding-bottom: 20px !important;
+  }
+
+  html body .workspace-section-grid .dashboard-momentum-svg,
+  html body .workspace-section-grid .dashboard-momentum-svg svg {
+    height: 224px !important;
+    min-height: 224px !important;
+    max-height: 224px !important;
+  }
+
+  html body .workspace-section-grid .dashboard-momentum-svg svg {
+    transform: translateY(-30px) !important;
+  }
+}
