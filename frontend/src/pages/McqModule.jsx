@@ -2015,9 +2015,16 @@ function QuizAttempt() {
     const loadQuiz = async () => {
       setLoading(true)
       try {
+        let activeDraft = null
+        try {
+          activeDraft = JSON.parse(localStorage.getItem(quizStorageKey) || 'null')
+        } catch {
+          activeDraft = null
+        }
+
         if (location.state?.retake) {
           clearStoredQuizResult(quizUserKey, subject, chapterAttemptId)
-        } else {
+        } else if (!activeDraft) {
           const storedResult = readStoredQuizResult(quizUserKey, subject, chapterAttemptId)
           if (storedResult) {
             navigate(`/mcqs/${subject}/${chapterId}/result${testPartQuery}`, {
@@ -2027,7 +2034,7 @@ function QuizAttempt() {
             return
           }
         }
-        if (!location.state?.retake) {
+        if (!location.state?.retake && !activeDraft) {
           const previousAttempt = await API.get(`/mcqs/${subject}/${chapterId}/latest-attempt${testPartQuery}`)
           if (!alive) return
           if (previousAttempt.data.result) {
@@ -2047,14 +2054,7 @@ function QuizAttempt() {
         if (!alive || !response) return
         const loadedMcqs = response.data.mcqs || []
         const defaultRemaining = loadedMcqs.length * 50
-        let savedDraft = null
-        try {
-          savedDraft = JSON.parse(
-            localStorage.getItem(quizStorageKey) || 'null',
-          )
-        } catch {
-          savedDraft = null
-        }
+        let savedDraft = activeDraft
         if (!savedDraft) {
           const suffix = `-${subject}-${chapterAttemptId}`
           const matchingDrafts = Object.keys(localStorage)
