@@ -113,7 +113,7 @@ export function normalizeImageUrl(input) {
       parsed.hostname.endsWith('vercel.app') ||
       isLocalHost
     )
-    if (uploadPath && apiOrigin && isFrontendUploadUrl) {
+    if (uploadPath && apiOrigin) {
       return `${apiOrigin}${uploadPath}${parsed.search}${parsed.hash}`
     }
     if (parsed.protocol === 'http:' && !isLocalHost) {

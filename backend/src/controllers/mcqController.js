@@ -343,6 +343,20 @@ const appendImageReference = (text, imageUrl, alt = '') => {
   return base ? `${base}\n${token}` : token
 }
 
+const canonicalizeUploadedImageUrl = (value) => {
+  const url = cleanImageUrl(value)
+  if (/^\/?(?:api\/)?uploads\//i.test(url)) {
+    return '/uploads/' + url.replace(/^\/?(?:api\/)?uploads\//i, '')
+  }
+  try {
+    const parsed = new URL(url)
+    if (/^\/(?:api\/)?uploads\//i.test(parsed.pathname)) {
+      return '/uploads/' + parsed.pathname.replace(/^\/(?:api\/)?uploads\//i, '')
+    }
+  } catch {}
+  return url
+}
+
 const normalizeImageArray = (...values) => {
   const urls = []
   const push = (value) => {
@@ -356,7 +370,8 @@ const normalizeImageArray = (...values) => {
       return
     }
     const extracted = extractImageUrlFromField(value) || cleanImageUrl(value)
-    if (isRenderableImageUrl(extracted)) urls.push(extracted)
+    const canonical = canonicalizeUploadedImageUrl(extracted)
+    if (isRenderableImageUrl(canonical)) urls.push(canonical)
   }
   values.forEach(push)
   return [...new Set(urls)]
