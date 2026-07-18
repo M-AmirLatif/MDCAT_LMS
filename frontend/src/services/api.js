@@ -2,7 +2,7 @@ import axios from 'axios'
 import { clearAuth, getAuthToken } from './authStorage'
 import toast from 'react-hot-toast'
 
-const FALLBACK_API_BASE_URL = 'https://mdcatlms-production-4d20.up.railway.app/api'
+const FALLBACK_API_BASE_URL = 'https://mdcatlms-production-e781.up.railway.app/api'
 const configuredApiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').trim()
 export const API_BASE_URL = configuredApiBaseUrl || FALLBACK_API_BASE_URL
 
