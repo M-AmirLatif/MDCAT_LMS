@@ -2161,14 +2161,25 @@ function QuizAttempt() {
   useEffect(() => {
     if (loading || !mcqs.length) return undefined
 
-    window.history.pushState({ mcqAttempt: true }, '')
-    const handleBack = () => {
+    const baseState = {
+      ...(window.history.state || {}),
+      mcqAttemptBase: true,
+    }
+    window.history.replaceState(baseState, '')
+    window.history.pushState({ ...baseState, mcqAttemptGuard: true }, '')
+
+    const handleBack = (event) => {
+      if (event.state?.mcqAttemptGuard) return
+
       const current = currentIndexRef.current
+      setShowQuestionPanel(false)
       if (current > 0) {
-        window.history.pushState({ mcqAttempt: true }, '')
-        setShowQuestionPanel(false)
-        setCurrentIndex(current - 1)
+        const previous = current - 1
+        currentIndexRef.current = previous
+        setCurrentIndex(previous)
       }
+
+      window.history.forward()
     }
 
     window.addEventListener('popstate', handleBack)
