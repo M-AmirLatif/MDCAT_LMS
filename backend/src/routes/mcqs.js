@@ -22,6 +22,7 @@ const {
   getMcqsByChapter,
   createChapterMcq,
   uploadChapterMcqsCsv,
+  getLatestChapterAttempt,
   submitChapterAttempt,
 } = require('../controllers/mcqController')
 const { protect, authorize } = require('../middlewares/auth')
@@ -49,6 +50,7 @@ router.post('/:subject/chapters/:chapterId/review-queue/:itemId/approve', protec
 router.get('/:subject/:chapterId', protect, getMcqsByChapter)
 router.post('/:subject/:chapterId', protect, authorize('teacher', 'admin'), createChapterMcq)
 router.post('/:subject/:chapterId/upload-csv', protect, authorize('teacher', 'admin'), upload.single('file'), uploadChapterMcqsCsv)
+router.get('/:subject/:chapterId/latest-attempt', protect, getLatestChapterAttempt)
 router.post('/:subject/:chapterId/submit', protect, submitChapterAttempt)
 
 // Teacher/Admin routes (full answers)

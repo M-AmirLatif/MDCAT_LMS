@@ -505,3 +505,41 @@ html body .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected .mcq-op
     border-width: 2.5px !important;
   }
 }
+
+/* Keep option text stable from pointer-down through selection. */
+html body .mcq-attempt-layout .mcq-option-card,
+html body .mcq-attempt-layout .mcq-option-card *,
+html body .mcq-attempt-layout .mcq-option-card:active,
+html body .mcq-attempt-layout .mcq-option-card:active * {
+  transition: none !important;
+  animation: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+html body .mcq-attempt-layout .mcq-option-card:active .mcq-option-text,
+html body .mcq-attempt-layout .mcq-option-card:active .mcq-option-text *,
+html body .mcq-attempt-layout .mcq-option-card:active .mcq-renderer,
+html body .mcq-attempt-layout .mcq-option-card:active .mcq-renderer * {
+  color: #020617 !important;
+  -webkit-text-fill-color: #020617 !important;
+}
+
+/* Selected options keep exactly the same geometry as unselected options. */
+html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected,
+html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected:hover,
+html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected:focus,
+html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected:focus-visible,
+html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected:active {
+  border-width: 3px !important;
+  border-left-width: 3px !important;
+  padding-left: 18px !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+@media (max-width: 640px) {
+  html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected {
+    border-width: 2.5px !important;
+    border-left-width: 2.5px !important;
+    padding-left: 10px !important;
+  }
+}

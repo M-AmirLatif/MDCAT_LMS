@@ -2027,6 +2027,21 @@ function QuizAttempt() {
             return
           }
         }
+        if (!location.state?.retake) {
+          const previousAttempt = await API.get(`/mcqs/${subject}/${chapterId}/latest-attempt${testPartQuery}`)
+          if (!alive) return
+          if (previousAttempt.data.result) {
+            const resultPayload = JSON.stringify(previousAttempt.data.result)
+            const resultKey = getQuizResultStorageKey(quizUserKey, subject, chapterAttemptId)
+            localStorage.setItem(resultKey, resultPayload)
+            sessionStorage.setItem(resultKey, resultPayload)
+            navigate(`/mcqs/${subject}/${chapterId}/result${testPartQuery}`, {
+              replace: true,
+              state: { result: previousAttempt.data.result },
+            })
+            return
+          }
+        }
         const response = await API.get(`/mcqs/${subject}/${chapterId}${testPartQuery}`)
 
         if (!alive || !response) return

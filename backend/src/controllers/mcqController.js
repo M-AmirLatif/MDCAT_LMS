@@ -2527,6 +2527,40 @@ exports.approveCsvReviewItem = async (req, res) => {
   }
 }
 
+// ==================== GET LATEST CHAPTER ATTEMPT ====================
+exports.getLatestChapterAttempt = async (req, res) => {
+  try {
+    const context = await buildChapterMcqFilter(req.params.subject, req.params.chapterId, false, req.query.topicId || null)
+    if (context.error) return res.status(400).json({ error: context.error })
+    if (!context.course || !context.chapter) return res.status(404).json({ error: 'Chapter not found' })
+    const selectedTestPart = normalizeTestPart(req.query.testPart)
+    const chapterName = selectedTestPart ? { $regex: ' - Test ' + selectedTestPart + '$' } : { $not: / - Test \d+$/ }
+    const session = await TestSession.findOne({
+      studentId: req.user.id, courseId: context.course._id, chapterId: context.chapter.id,
+      topicId: context.topic?.id || null, chapterName,
+    }).sort({ submittedAt: -1 }).lean()
+    if (!session) return res.status(200).json({ success: true, result: null })
+    const mcqs = await MCQ.find({ _id: { $in: session.answers.map((answer) => answer.mcqId) } }).lean()
+    const mcqMap = new Map(mcqs.map((mcq) => [String(mcq._id), mcq]))
+    const detailed = session.answers.map((answer) => {
+      const mcq = serializeMcqMedia(mcqMap.get(String(answer.mcqId)))
+      const selectedIndex = Number(answer.selectedIndex)
+      return { mcqId: answer.mcqId, questionNumber: mcq.questionNumber || null,
+        originalQuestionNumber: mcq.originalQuestionNumber || mcq.questionNumber || null, csvRowIndex: mcq.csvRowIndex || null,
+        question: mcq.questionText || mcq.question || '', questionText: mcq.questionText || mcq.question || '',
+        questionImages: mcq.questionImages || [], options: mcq.options || [], selectedIndex, correctIndex: Number(answer.correctIndex),
+        skipped: selectedIndex < 0, isCorrect: Boolean(answer.isCorrect), explanation: mcq.explanationText || mcq.explanation || '',
+        explanationText: mcq.explanationText || mcq.explanation || '', explanationImages: mcq.explanationImages || [] }
+    })
+    const skipped = detailed.filter((item) => item.skipped).length
+    const correct = detailed.filter((item) => item.isCorrect).length
+    return res.status(200).json({ success: true, result: { testSessionId: session._id, subject: context.subject,
+      chapter: { ...context.chapter, name: session.chapterName || context.chapter.name }, selectedTopic: context.topic,
+      totalQuestions: session.totalQuestions, correct, wrong: session.totalQuestions - correct - skipped, skipped,
+      score: session.finalScore ?? session.score, percentage: session.percentage, detailed } })
+  } catch (error) { return res.status(500).json({ error: error.message }) }
+}
+
 // ==================== SUBMIT CHAPTER ATTEMPT ====================
 exports.submitChapterAttempt = async (req, res) => {
   try {
