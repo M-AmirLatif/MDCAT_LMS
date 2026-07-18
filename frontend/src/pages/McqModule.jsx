@@ -2054,30 +2054,10 @@ function QuizAttempt() {
         if (!alive || !response) return
         const loadedMcqs = response.data.mcqs || []
         const defaultRemaining = loadedMcqs.length * 50
+        // Never search another account's drafts. The exact user-scoped key is the only resumable source.
         let savedDraft = activeDraft
-        if (!savedDraft) {
-          const suffix = `-${subject}-${chapterAttemptId}`
-          const matchingDrafts = Object.keys(localStorage)
-            .filter(
-              (key) => key.startsWith('mcq-draft-') && key.endsWith(suffix),
-            )
-            .map((key) => {
-              try {
-                return {
-                  key,
-                  draft: JSON.parse(localStorage.getItem(key) || 'null'),
-                }
-              } catch {
-                return null
-              }
-            })
-            .filter((item) => item?.draft)
-            .sort(
-              (a, b) =>
-                new Date(b.draft.updatedAt || 0) -
-                new Date(a.draft.updatedAt || 0),
-            )
-          savedDraft = matchingDrafts[0]?.draft || null
+        if (savedDraft?.ownerKey && savedDraft.ownerKey !== quizUserKey) {
+          savedDraft = null
         }
         const loadedIds = loadedMcqs.map((mcq) => String(mcq._id))
         const loadedIdSet = new Set(loadedIds)
@@ -2141,6 +2121,7 @@ function QuizAttempt() {
   useEffect(() => {
     if (loading || !mcqs.length) return
     const draft = {
+      ownerKey: quizUserKey,
       mcqIds: mcqs.map((mcq) => mcq._id),
       currentIndex,
       answers,
@@ -2151,12 +2132,12 @@ function QuizAttempt() {
       updatedAt: new Date().toISOString(),
     }
     localStorage.setItem(quizStorageKey, JSON.stringify(draft))
-  }, [answers, currentIndex, loading, mcqs, quizStorageKey, quizTiming, remaining, skipped])
+  }, [answers, currentIndex, loading, mcqs, quizStorageKey, quizTiming, quizUserKey, remaining, skipped])
 
   useEffect(() => {
     if (loading || !mcqs.length) return undefined
     const savePausedDraft = () => localStorage.setItem(quizStorageKey, JSON.stringify({
-      mcqIds: mcqs.map((mcq) => mcq._id), currentIndex, answers, skipped, remaining,
+      ownerKey: quizUserKey, mcqIds: mcqs.map((mcq) => mcq._id), currentIndex, answers, skipped, remaining,
       startedAt: quizTiming.startedAt, expiresAt: null, updatedAt: new Date().toISOString(),
     }))
     const handleVisibilityChange = () => {
@@ -2175,7 +2156,7 @@ function QuizAttempt() {
       window.removeEventListener('pagehide', savePausedDraft)
       window.removeEventListener('beforeunload', savePausedDraft)
     }
-  }, [answers, currentIndex, loading, mcqs, quizStorageKey, quizTiming.startedAt, remaining, skipped])
+  }, [answers, currentIndex, loading, mcqs, quizStorageKey, quizTiming.startedAt, quizUserKey, remaining, skipped])
 
   useEffect(() => {
     if (loading || !mcqs.length) return undefined
@@ -2225,10 +2206,7 @@ function QuizAttempt() {
             ? new Date(startedAt).toISOString()
             : undefined,
       })
-      const suffix = `-${subject}-${chapterAttemptId}`
-      Object.keys(localStorage)
-        .filter((key) => key.startsWith('mcq-draft-') && key.endsWith(suffix))
-        .forEach((key) => localStorage.removeItem(key))
+      localStorage.removeItem(quizStorageKey)
       const resultPayload = JSON.stringify(res.data)
       const resultKey = getQuizResultStorageKey(quizUserKey, subject, chapterAttemptId)
       const legacyResultKey = getLegacyQuizResultStorageKey(subject, chapterAttemptId)
