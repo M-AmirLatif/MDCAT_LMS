@@ -14114,7 +14114,7 @@ html:not([data-theme="dark"]) body .mcq-practice-page .mcq-option-card--selected
 html:not([data-theme="dark"]) body .mcq-practice-page .mcq-option-card--selected:hover,
 html:not([data-theme="dark"]) body .mcq-practice-page .mcq-option-card--selected:focus-visible {
   border: 3px solid #f59e0b !important;
-  border-left: 12px solid #f97316 !important;
+  border-left: 3px solid #f59e0b !important;
   background: linear-gradient(135deg, #fff3bf 0%, #ffe08a 100%) !important;
   color: #020617 !important;
   -webkit-text-fill-color: #020617 !important;
@@ -14400,7 +14400,7 @@ html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-ghos
   html:not([data-theme="dark"]) body .mcq-practice-page .mcq-option-card--selected:hover,
   html:not([data-theme="dark"]) body .mcq-practice-page .mcq-option-card--selected:focus-visible {
     border: 2.5px solid #f59e0b !important;
-    border-left: 12px solid #f97316 !important;
+    border-left: 3px solid #f59e0b !important;
   }
 }
 
@@ -17808,7 +17808,7 @@ html:not([data-theme="dark"]) body .mcq-practice-page .mcq-option-card--selected
 html:not([data-theme="dark"]) body .mcq-practice-page .mcq-option-card--selected:focus-visible {
   background: linear-gradient(135deg, #fff4bd 0%, #ffe08a 100%) !important;
   border: 3px solid #f59e0b !important;
-  border-left: 14px solid #f97316 !important;
+  border-left: 3px solid #f59e0b !important;
   color: #061126 !important;
   -webkit-text-fill-color: #061126 !important;
   opacity: 1 !important;
@@ -17967,7 +17967,7 @@ html[data-theme="dark"] body #root .mcq-practice-page .mcq-option-card--selected
 html[data-theme="dark"] body #root .mcq-practice-page .mcq-option-card--selected:focus-visible {
   background: linear-gradient(135deg, #fff4bd 0%, #ffe08a 100%) !important;
   border: 3px solid #f59e0b !important;
-  border-left: 14px solid #f97316 !important;
+  border-left: 3px solid #f59e0b !important;
   color: #061126 !important;
   -webkit-text-fill-color: #061126 !important;
   opacity: 1 !important;

@@ -5872,7 +5872,7 @@ html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-option-card {
 
   html .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected,
   html[data-theme="dark"] .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected {
-    border-left-width: 8px !important;
+    border-left-width: 2px !important;
   }
 
   html .mcq-attempt-layout .mcq-option-letter,

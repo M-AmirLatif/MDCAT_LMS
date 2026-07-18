@@ -132,7 +132,7 @@
 .mcq-option-card--selected:focus-visible {
   border-radius: 2px;
   background: #FFE08A;
-  box-shadow: inset 8px 0 0 #EA580C;
+  box-shadow: none;
 }
 
 .mcq-option-letter {
@@ -295,7 +295,7 @@ html:not([data-theme="dark"]) .mcq-question-card .mcq-option-text .mcq-renderer 
 [data-theme="dark"] .mcq-option-card--selected:focus-visible {
   border-radius: 2px;
   background: #5B3708;
-  box-shadow: inset 8px 0 0 #FACC15;
+  box-shadow: none;
 }
 
 [data-theme="dark"] .mcq-option-card:nth-child(1) .mcq-option-letter {
