@@ -82,12 +82,18 @@ exports.serveUpload = async (req, res, next) => {
     const filename = path.basename(req.params.filename || '')
     if (!filename) return next()
 
-    const upload = await Upload.findOne({ filename }).lean()
+    // Keep Mongoose's Buffer casting here. Using lean() returns a BSON Binary
+    // object, which Express serializes as JSON instead of image bytes.
+    const upload = await Upload.findOne({ filename }).select('data contentType')
     if (!upload?.data) return next()
 
+    const data = Buffer.isBuffer(upload.data)
+      ? upload.data
+      : Buffer.from(upload.data.buffer || upload.data)
     res.setHeader('Content-Type', upload.contentType || 'application/octet-stream')
+    res.setHeader('Content-Length', data.length)
     res.setHeader('Cache-Control', 'public, max-age=604800, immutable')
-    res.send(upload.data)
+    res.end(data)
   } catch (error) {
     next(error)
   }
