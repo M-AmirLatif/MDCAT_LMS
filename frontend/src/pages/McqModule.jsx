@@ -2102,20 +2102,13 @@ function QuizAttempt() {
             (savedIds.length > 0 &&
               savedIds.every((id) => loadedIdSet.has(id))))
         const now = Date.now()
-        const savedStartedAt = Number(savedDraft?.startedAt)
-        const savedExpiresAt = Number(savedDraft?.expiresAt)
-        const startedAt =
-          canRestore && Number.isFinite(savedStartedAt) && savedStartedAt > 0
-            ? savedStartedAt
-            : now
-        const expiresAt =
-          canRestore && Number.isFinite(savedExpiresAt) && savedExpiresAt > 0
-            ? savedExpiresAt
-            : startedAt + defaultRemaining * 1000
-        const remainingFromClock = Math.max(
-          0,
-          Math.ceil((expiresAt - now) / 1000),
-        )
+        const savedRemaining = Number(savedDraft?.remaining)
+        const remainingFromDraft = canRestore && Number.isFinite(savedRemaining)
+          ? Math.max(0, Math.min(defaultRemaining, Math.ceil(savedRemaining)))
+          : defaultRemaining
+        const startedAt = now
+        const expiresAt = now + remainingFromDraft * 1000
+        const remainingFromClock = remainingFromDraft
 
         setChapter(response.data.chapter)
         setMcqs(loadedMcqs)
@@ -2162,6 +2155,30 @@ function QuizAttempt() {
 
   useEffect(() => {
     if (loading || !mcqs.length) return undefined
+    const savePausedDraft = () => localStorage.setItem(quizStorageKey, JSON.stringify({
+      mcqIds: mcqs.map((mcq) => mcq._id), currentIndex, answers, skipped, remaining,
+      startedAt: quizTiming.startedAt, expiresAt: null, updatedAt: new Date().toISOString(),
+    }))
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        savePausedDraft()
+        setQuizTiming((timing) => ({ ...timing, expiresAt: null }))
+      } else {
+        setQuizTiming((timing) => ({ ...timing, expiresAt: timing.expiresAt || Date.now() + remaining * 1000 }))
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('pagehide', savePausedDraft)
+    window.addEventListener('beforeunload', savePausedDraft)
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('pagehide', savePausedDraft)
+      window.removeEventListener('beforeunload', savePausedDraft)
+    }
+  }, [answers, currentIndex, loading, mcqs, quizStorageKey, quizTiming.startedAt, remaining, skipped])
+
+  useEffect(() => {
+    if (loading || !mcqs.length) return undefined
 
     window.history.pushState({ mcqAttempt: true }, '')
     const handleBack = () => {
@@ -2195,13 +2212,9 @@ function QuizAttempt() {
     try {
       const timeLimitSeconds = mcqs.length * 50
       const startedAt = Number(quizTiming.startedAt)
-      const elapsedSeconds =
-        Number.isFinite(startedAt) && startedAt > 0
-          ? Math.round((Date.now() - startedAt) / 1000)
-          : timeLimitSeconds - remaining
       const timeSpentSeconds = Math.min(
         timeLimitSeconds,
-        Math.max(0, elapsedSeconds),
+        Math.max(0, timeLimitSeconds - remaining),
       )
       const res = await API.post(`/mcqs/${subject}/${chapterId}/submit${testPartQuery}`, {
         answers,
