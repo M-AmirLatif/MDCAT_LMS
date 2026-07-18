@@ -2331,11 +2331,30 @@ function QuizAttempt() {
     setCurrentIndex((index) => Math.min(mcqs.length - 1, index + 1))
   }
 
+  const pauseAndExitQuiz = () => {
+    localStorage.setItem(quizStorageKey, JSON.stringify({
+      ownerKey: quizUserKey,
+      mcqIds: mcqs.map((mcq) => mcq._id),
+      currentIndex,
+      answers,
+      skipped,
+      remaining,
+      startedAt: quizTiming.startedAt,
+      expiresAt: null,
+      updatedAt: new Date().toISOString(),
+    }))
+    navigate(`/mcqs/${subject}/${chapterId}${testPartQuery}`)
+  }
+
   return (
     <div className="mcq-practice-page animate-fade-up">
       <section className="mcq-practice-shell">
         <div className="mcq-practice-top">
           <div>
+            <button className="mcq-exit-attempt" type="button" onClick={pauseAndExitQuiz}>
+              <span aria-hidden="true">&#8592;</span>
+              Back to chapter
+            </button>
             <div className="label-xs" style={{ color: meta?.accent }}>
               {meta?.name}: {chapter?.name}
             </div>

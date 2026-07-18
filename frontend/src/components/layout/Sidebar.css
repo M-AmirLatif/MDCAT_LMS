@@ -347,6 +347,10 @@
   height: 36px;
 }
 
+.sidebar-mobile-close {
+  display: none;
+}
+
 @media (max-width: 1024px) {
   .sidebar {
     transform: translateX(-100%);
@@ -360,6 +364,20 @@
   /* Hide sidebar expand/collapse button on mobile/tablet */
   .sidebar-collapse {
     display: none !important;
+  }
+
+  .sidebar-mobile-close {
+    display: inline-flex;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color, rgba(108, 71, 255, 0.24));
+    border-radius: 13px;
+    background: var(--bg-surface-2, #f7f7fc);
+    color: var(--text-primary, #17172b);
+    cursor: pointer;
   }
 
   /* Prevent collapsed state from hiding text elements on mobile/tablet */

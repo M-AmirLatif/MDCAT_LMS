@@ -2118,6 +2118,28 @@ html[data-theme='dark'] .recharts-tooltip-wrapper .chart-tooltip-clean__row stro
   gap: 12px;
 }
 
+.mcq-exit-attempt {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 10px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 999px;
+  background: rgba(10, 8, 42, 0.28);
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.mcq-exit-attempt:hover,
+.mcq-exit-attempt:focus-visible {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.75);
+}
+
 .mcq-question-panel-toggle,
 .mcq-question-close {
   display: none;
