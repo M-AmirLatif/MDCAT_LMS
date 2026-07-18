@@ -6693,3 +6693,26 @@ html[data-theme="dark"] body .mcq-attempt-layout .mcq-question-card .mcq-option-
     -webkit-text-fill-color: #3f24b8 !important;
   }
 }
+
+/* Keep the authenticated mobile dashboard action visible in light mode. */
+@media (max-width: 1024px) {
+  html:not([data-theme="dark"]) .landing .lp-links .lp-mobile-actions {
+    display: flex !important;
+    width: 100% !important;
+    margin-top: 8px !important;
+  }
+  html:not([data-theme="dark"]) .landing .lp-links .lp-mobile-actions .lp-btn-primary,
+  html:not([data-theme="dark"]) .landing .lp-links .lp-mobile-actions .lp-btn-primary:visited,
+  html:not([data-theme="dark"]) .landing .lp-links .lp-mobile-actions .lp-btn-primary:hover,
+  html:not([data-theme="dark"]) .landing .lp-links .lp-mobile-actions .lp-btn-primary:focus-visible {
+    display: inline-flex !important;
+    width: 100% !important;
+    min-height: 48px !important;
+    background: linear-gradient(135deg, #6c47ff, #4a90e2) !important;
+    background-color: #6c47ff !important;
+    border-color: transparent !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    opacity: 1 !important;
+  }
+}
