@@ -6670,3 +6670,26 @@ html[data-theme="dark"] body .mcq-attempt-layout .mcq-question-card .mcq-option-
     border-left-width: 2.5px !important;
   }
 }
+
+/* Light-mode mobile navigation: keep all three menu links clearly visible. */
+@media (max-width: 1024px) {
+  html:not([data-theme="dark"]) .landing .lp-links {
+    background: #ffffff !important;
+    border-color: rgba(108, 71, 255, 0.32) !important;
+  }
+  html:not([data-theme="dark"]) .landing .lp-links > a {
+    background: #f3f0ff !important;
+    border: 1px solid rgba(108, 71, 255, 0.24) !important;
+    color: #17132f !important;
+    -webkit-text-fill-color: #17132f !important;
+    opacity: 1 !important;
+    text-shadow: none !important;
+  }
+  html:not([data-theme="dark"]) .landing .lp-links > a:hover,
+  html:not([data-theme="dark"]) .landing .lp-links > a:focus-visible {
+    background: #e9e2ff !important;
+    border-color: #6c47ff !important;
+    color: #3f24b8 !important;
+    -webkit-text-fill-color: #3f24b8 !important;
+  }
+}
