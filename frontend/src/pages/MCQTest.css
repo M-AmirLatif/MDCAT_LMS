@@ -220,7 +220,7 @@ html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card--selected:hove
 html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card--selected:focus-visible {
   border-radius: 2px !important;
   background: #FFE08A !important;
-  box-shadow: inset 8px 0 0 #EA580C !important;
+  box-shadow: none !important;
 }
 
 html:not([data-theme="dark"]) .mcq-question-card .mcq-option-card > span:not(.mcq-option-letter),
@@ -436,7 +436,7 @@ html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-question-card .mcq-option
 html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected:hover,
 html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected:focus-visible {
   border: 3px solid #f59e0b !important;
-  border-left: 12px solid #ea580c !important;
+  border-left: 3px solid #f59e0b !important;
   border-radius: 18px !important;
   background: #ffe08a !important;
   box-shadow: 0 12px 28px rgba(234, 88, 12, 0.18) !important;
@@ -523,7 +523,7 @@ html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-car
   background: linear-gradient(90deg, #fff2b8 0%, #ffe08a 100%) !important;
   border-color: #f59e0b !important;
   color: #07122f !important;
-  box-shadow: inset 9px 0 0 #f97316, 0 12px 28px rgba(234, 88, 12, 0.18) !important;
+  box-shadow: none !important;
   transform: none !important;
   transition: none !important;
 }
@@ -537,7 +537,7 @@ html[data-theme="dark"] body .mcq-attempt-layout .mcq-question-card .mcq-option-
   background: linear-gradient(90deg, #fff1b8 0%, #fde68a 100%) !important;
   border-color: #f59e0b !important;
   color: #070b25 !important;
-  box-shadow: inset 9px 0 0 #f97316, 0 12px 28px rgba(249, 115, 22, 0.24) !important;
+  box-shadow: none !important;
   transform: none !important;
   transition: none !important;
 }
@@ -730,7 +730,7 @@ html[data-theme="dark"] body .mcq-attempt-layout .mcq-question-card .mcq-option-
 html[data-theme="dark"] body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected:active {
   background: #ffe58f !important;
   border: 3px solid #f59e0b !important;
-  border-left: 14px solid #ea580c !important;
+  border-left: 3px solid #f59e0b !important;
   border-radius: 20px !important;
   color: #020617 !important;
   box-shadow: none !important;
@@ -1096,7 +1096,7 @@ html:not([data-theme="dark"]) body .mcq-attempt-layout .mcq-question-card .mcq-o
 html:not([data-theme="dark"]) body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected:focus-visible {
   background: #ffe58f !important;
   border: 3px solid #f59e0b !important;
-  border-left: 14px solid #ea580c !important;
+  border-left: 3px solid #f59e0b !important;
   color: #020617 !important;
   -webkit-text-fill-color: #020617 !important;
 }

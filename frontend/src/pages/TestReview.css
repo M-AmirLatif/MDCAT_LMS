@@ -474,7 +474,7 @@ html body .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected:focus-v
 html body .mcq-attempt-layout .mcq-option-card.mcq-option-card--selected:active {
   background: #ffe58f !important;
   border: 3px solid #f59e0b !important;
-  border-left: 14px solid #ea580c !important;
+  border-left: 3px solid #f59e0b !important;
   color: #020617 !important;
   box-shadow: 0 14px 30px rgba(245, 158, 11, 0.28) !important;
   filter: none !important;
