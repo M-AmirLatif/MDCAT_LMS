@@ -68,6 +68,8 @@ exports.uploadSingle = async (req, res) => {
       fileUrl: uploadPath,
       url: uploadPath,
       absoluteUrl,
+      secure_url: uploadPath,
+      secureUrl: uploadPath,
       fileName: req.file.originalname,
     })
   } catch (error) {
@@ -90,5 +92,8 @@ exports.serveUpload = async (req, res, next) => {
     next(error)
   }
 }
+
+
+
 
 

@@ -64,6 +64,44 @@ const emptyMcqForm = {
 
 const letters = ['A', 'B', 'C', 'D']
 
+const compactImageList = (...values) => values
+  .flatMap((value) => {
+    if (!value) return []
+    return Array.isArray(value) ? value.filter(Boolean) : [value]
+  })
+  .filter((value) => Boolean(normalizeImageUrl(value)))
+
+const mcqQuestionImages = (mcq) => compactImageList(
+  mcq?.questionImages,
+  mcq?.questionImage,
+  mcq?.questionImageUrl,
+  mcq?.questionImageUrls,
+  mcq?.imageUrl,
+  mcq?.imageUrls,
+  mcq?.images,
+)
+
+const mcqExplanationImages = (mcq) => compactImageList(
+  mcq?.explanationImages,
+  mcq?.explanationImage,
+  mcq?.explanationImageUrl,
+  mcq?.explanationImageUrls,
+  mcq?.explanationImagesUrl,
+)
+
+const mcqOptionImages = (mcq, option, letter) => compactImageList(
+  option?.images,
+  option?.imageUrl,
+  option?.imageUrls,
+  option?.src,
+  option?.url,
+  mcq?.[`option${letter}Images`],
+  mcq?.[`option${letter}Image`],
+  mcq?.[`option${letter}ImageUrl`],
+  mcq?.[`option${letter}ImageUrls`],
+)
+
+
 const getQuizResultStorageKey = (userKey, subject, chapterId) =>
   `mcq-result-${userKey}-${subject}-${chapterId}`
 
@@ -146,7 +184,7 @@ const getMcqDisplayNumber = (mcq, fallbackIndex, offset = 0) => {
 }
 
 const getOptionImages = (mcq, letter, index) =>
-  mcq?.[`option${letter}Images`] || mcq?.options?.[index]?.images || []
+  mcqOptionImages(mcq, mcq?.options?.[index], letter)
 
 async function uploadMcqImage(file) {
   const data = new FormData()
@@ -154,9 +192,35 @@ async function uploadMcqImage(file) {
   const res = await API.post('/uploads/single', data, {
     headers: { 'Content-Type': 'multipart/form-data' },
   })
-  return res.data.secure_url || res.data.url || res.data.fileUrl
+  return res.data.url || res.data.fileUrl || res.data.secure_url || res.data.secureUrl || res.data.absoluteUrl
 }
 
+function McqImagePreview({ image, label, index, onRemove }) {
+  const src = normalizeImageUrl(image)
+  const [failed, setFailed] = useState(false)
+
+  useEffect(() => {
+    setFailed(false)
+  }, [src])
+
+  return (
+    <div className="mcq-image-preview">
+      {src && !failed ? (
+        <img
+          src={src}
+          alt={`${label} ${index + 1}`}
+          loading="eager"
+          onError={() => setFailed(true)}
+        />
+      ) : (
+        <div className="mcq-image-unavailable" role="status">Image unavailable</div>
+      )}
+      <button type="button" onClick={onRemove}>
+        Remove
+      </button>
+    </div>
+  )
+}
 function McqImageManager({ id, label, images = [], onChange }) {
   const [uploading, setUploading] = useState(false)
   const addImage = (nextUrl) => {
@@ -254,12 +318,13 @@ function McqImageManager({ id, label, images = [], onChange }) {
       {images?.length ? (
         <div className="mcq-image-preview-grid">
           {images.map((image, index) => (
-            <div className="mcq-image-preview" key={`${image}-${index}`}>
-              <img src={normalizeImageUrl(image)} alt={`${label} ${index + 1}`} />
-              <button type="button" onClick={() => onChange(images.filter((_, itemIndex) => itemIndex !== index))}>
-                Remove
-              </button>
-            </div>
+            <McqImagePreview
+              key={`${normalizeImageUrl(image) || index}-${index}`}
+              image={image}
+              label={label}
+              index={index}
+              onRemove={() => onChange(images.filter((_, itemIndex) => itemIndex !== index))}
+            />
           ))}
         </div>
       ) : null}
@@ -768,7 +833,7 @@ function mcqToForm(mcq) {
     }))
     return {
       question: mcq.question || '',
-      questionImages: mcq.questionImages || [],
+      questionImages: mcqQuestionImages(mcq),
       optionA: byLetter[0].text,
       optionAImages: getOptionImages(mcq, 'A', 0),
       optionB: byLetter[1].text,
@@ -779,24 +844,24 @@ function mcqToForm(mcq) {
       optionDImages: getOptionImages(mcq, 'D', 3),
       correctAnswer: mcq.correctAnswer || 'A',
       explanation: mcq.explanation || '',
-      explanationImages: mcq.explanationImages || [],
+      explanationImages: mcqExplanationImages(mcq),
     }
   }
 
   return {
     question: mcq.question || '',
-    questionImages: mcq.questionImages || [],
+    questionImages: mcqQuestionImages(mcq),
     optionA: mcq.optionA || '',
-    optionAImages: mcq.optionAImages || [],
+    optionAImages: mcqOptionImages(mcq, null, 'A'),
     optionB: mcq.optionB || '',
-    optionBImages: mcq.optionBImages || [],
+    optionBImages: mcqOptionImages(mcq, null, 'B'),
     optionC: mcq.optionC || '',
-    optionCImages: mcq.optionCImages || [],
+    optionCImages: mcqOptionImages(mcq, null, 'C'),
     optionD: mcq.optionD || '',
-    optionDImages: mcq.optionDImages || [],
+    optionDImages: mcqOptionImages(mcq, null, 'D'),
     correctAnswer: mcq.correctAnswer || 'A',
     explanation: mcq.explanation || '',
-    explanationImages: mcq.explanationImages || [],
+    explanationImages: mcqExplanationImages(mcq),
   }
 }
 
@@ -1218,7 +1283,7 @@ function ReviewQueueReadonlyCard({ item, index, onEdit, onApprove, onDelete }) {
         <div className="teacher-review-render-card">
           <div className="teacher-review-render-label">Question</div>
           <div className="teacher-review-render-content">
-            <MCQRenderer text={item.questionText || item.question || ''} images={item.questionImages || []} />
+            <MCQRenderer text={item.questionText || item.question || ''} images={mcqQuestionImages(item)} />
           </div>
         </div>
       </div>
@@ -1232,7 +1297,7 @@ function ReviewQueueReadonlyCard({ item, index, onEdit, onApprove, onDelete }) {
             >
               <label>{`Option ${letter}`}</label>
               <div className="teacher-review-render-content">
-                <MCQRenderer text={item[`option${letter}`] || item.options?.[index]?.text || ''} images={item[`option${letter}Images`] || item.options?.[index]?.images || []} />
+                <MCQRenderer text={item[`option${letter}`] || item.options?.[index]?.text || ''} images={mcqOptionImages(item, item.options?.[index], letter)} />
               </div>
             </div>
           )
@@ -1251,7 +1316,7 @@ function ReviewQueueReadonlyCard({ item, index, onEdit, onApprove, onDelete }) {
         <div className="floating-field">
           <label>Explanation</label>
           <div className="teacher-review-render-content">
-            <MCQRenderer text={item.explanationText || item.explanation || ''} images={item.explanationImages || []} />
+            <MCQRenderer text={item.explanationText || item.explanation || ''} images={mcqExplanationImages(item)} />
           </div>
         </div>
       </div>
@@ -2278,7 +2343,7 @@ function QuizAttempt() {
         <div className="mcq-attempt-layout">
           <div className="mcq-question-card">
             <div className="mcq-question-title">
-              <MCQRenderer text={current.questionText || current.question} images={current.questionImages || []} />
+              <MCQRenderer text={current.questionText || current.question} images={mcqQuestionImages(current)} />
             </div>
             {current.needsReview ? (
               <div className="mcq-under-review-badge">Under Review</div>
@@ -2296,7 +2361,7 @@ function QuizAttempt() {
                     {String.fromCharCode(65 + index)}
                   </span>
                   <div className="mcq-option-text">
-                    <MCQRenderer text={option.text || option} images={option.images || current[`option${String.fromCharCode(65 + index)}Images`] || []} />
+                    <MCQRenderer text={option.text || option} images={mcqOptionImages(current, option, String.fromCharCode(65 + index))} />
                   </div>
                 </button>
               ))}
@@ -2544,7 +2609,7 @@ function ReviewSection({ title, items }) {
             </span>
           </div>
           <div className="review-question-title">
-            <MCQRenderer text={item.questionText || item.question} images={item.questionImages || []} />
+            <MCQRenderer text={item.questionText || item.question} images={mcqQuestionImages(item)} />
           </div>
           <div className="review-options-list">
             {item.options.map((option, optionIndex) => {
@@ -2559,7 +2624,7 @@ function ReviewSection({ title, items }) {
                     {String.fromCharCode(65 + optionIndex)}
                   </span>
                   <div className="review-option-text">
-                    <MCQRenderer text={option.text || option} images={option.images || item[`option${String.fromCharCode(65 + optionIndex)}Images`] || []} />
+                    <MCQRenderer text={option.text || option} images={mcqOptionImages(item, option, String.fromCharCode(65 + optionIndex))} />
                   </div>
                   {selected ? (
                     <span className="review-option-tag">Your answer</span>
@@ -2576,7 +2641,7 @@ function ReviewSection({ title, items }) {
           <div className="review-explanation-box">
             <strong>Explanation</strong>
             <div className="review-explanation-text">
-              <MCQRenderer text={item.explanationText || item.explanation || 'No explanation added yet.'} images={item.explanationImages || []} />
+              <MCQRenderer text={item.explanationText || item.explanation || 'No explanation added yet.'} images={mcqExplanationImages(item)} />
             </div>
           </div>
         </article>
@@ -2588,6 +2653,11 @@ function ReviewSection({ title, items }) {
 export { CourseSelection, ChapterList, McqList, QuizAttempt, QuizResult }
 
 export default CourseSelection
+
+
+
+
+
 
 
 

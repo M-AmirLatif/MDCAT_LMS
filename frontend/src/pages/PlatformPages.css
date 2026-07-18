@@ -18185,3 +18185,103 @@ html body article.mcq-review-parent-card .mcq-image-manager .mcq-image-manager-a
     min-width: 0 !important;
   }
 }
+
+/* Permanent MCQ image upload/readability fixes */
+html body .mcq-image-manager,
+html body .workspace-page--mcq-list .mcq-image-manager,
+html body .review-queue-card .mcq-image-manager,
+html body article.mcq-review-parent-card .mcq-image-manager {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+html body .mcq-image-manager .mcq-image-manager-head,
+html body .workspace-page--mcq-list .mcq-image-manager .mcq-image-manager-head,
+html body .review-queue-card .mcq-image-manager .mcq-image-manager-head,
+html body article.mcq-review-parent-card .mcq-image-manager .mcq-image-manager-head {
+  display: grid !important;
+  grid-template-columns: minmax(8rem, 1fr) auto !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  min-width: 0 !important;
+}
+
+html body .mcq-image-manager .mcq-image-manager-head > span,
+html body .workspace-page--mcq-list .mcq-image-manager .mcq-image-manager-head > span,
+html body .review-queue-card .mcq-image-manager .mcq-image-manager-head > span,
+html body article.mcq-review-parent-card .mcq-image-manager .mcq-image-manager-head > span {
+  display: block !important;
+  width: auto !important;
+  min-width: 8rem !important;
+  max-width: 100% !important;
+  white-space: normal !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  line-height: 1.25 !important;
+  text-align: left !important;
+}
+
+html body .mcq-image-manager .mcq-image-manager-actions,
+html body .workspace-page--mcq-list .mcq-image-manager .mcq-image-manager-actions,
+html body .review-queue-card .mcq-image-manager .mcq-image-manager-actions,
+html body article.mcq-review-parent-card .mcq-image-manager .mcq-image-manager-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 0.65rem !important;
+  flex-wrap: wrap !important;
+  min-width: 0 !important;
+}
+
+html body .mcq-image-preview img {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  max-height: 420px !important;
+  object-fit: contain !important;
+  border-radius: 14px !important;
+}
+
+html body .mcq-image-unavailable {
+  min-height: 160px !important;
+  display: grid !important;
+  place-items: center !important;
+  border: 1px dashed rgba(124, 92, 255, 0.55) !important;
+  border-radius: 16px !important;
+  color: var(--text-primary) !important;
+  font-weight: 800 !important;
+}
+
+@media (max-width: 640px) {
+  html body .mcq-image-manager .mcq-image-manager-head,
+  html body .workspace-page--mcq-list .mcq-image-manager .mcq-image-manager-head,
+  html body .review-queue-card .mcq-image-manager .mcq-image-manager-head,
+  html body article.mcq-review-parent-card .mcq-image-manager .mcq-image-manager-head {
+    grid-template-columns: 1fr !important;
+    align-items: stretch !important;
+  }
+
+  html body .mcq-image-manager .mcq-image-manager-head > span,
+  html body .workspace-page--mcq-list .mcq-image-manager .mcq-image-manager-head > span,
+  html body .review-queue-card .mcq-image-manager .mcq-image-manager-head > span,
+  html body article.mcq-review-parent-card .mcq-image-manager .mcq-image-manager-head > span {
+    min-width: 0 !important;
+  }
+
+  html body .mcq-image-manager .mcq-image-manager-actions,
+  html body .workspace-page--mcq-list .mcq-image-manager .mcq-image-manager-actions,
+  html body .review-queue-card .mcq-image-manager .mcq-image-manager-actions,
+  html body article.mcq-review-parent-card .mcq-image-manager .mcq-image-manager-actions {
+    justify-content: stretch !important;
+  }
+
+  html body .mcq-image-manager .mcq-image-manager-actions .btn,
+  html body .workspace-page--mcq-list .mcq-image-manager .mcq-image-manager-actions .btn,
+  html body .review-queue-card .mcq-image-manager .mcq-image-manager-actions .btn,
+  html body article.mcq-review-parent-card .mcq-image-manager .mcq-image-manager-actions .btn {
+    flex: 1 1 8rem !important;
+    min-width: 0 !important;
+  }
+}

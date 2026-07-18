@@ -2,6 +2,42 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import MCQRenderer from '../components/MCQRenderer'
 import './TestReview.css'
 
+const compactImageList = (...values) => values.flatMap((value) => {
+  if (!value) return []
+  return Array.isArray(value) ? value.filter(Boolean) : [value]
+})
+
+const mcqQuestionImages = (mcq) => compactImageList(
+  mcq?.questionImages,
+  mcq?.questionImage,
+  mcq?.questionImageUrl,
+  mcq?.questionImageUrls,
+  mcq?.imageUrl,
+  mcq?.imageUrls,
+  mcq?.images,
+)
+
+const mcqExplanationImages = (mcq) => compactImageList(
+  mcq?.explanationImages,
+  mcq?.explanationImage,
+  mcq?.explanationImageUrl,
+  mcq?.explanationImageUrls,
+  mcq?.explanationImagesUrl,
+)
+
+const mcqOptionImages = (mcq, option, letter) => compactImageList(
+  option?.images,
+  option?.imageUrl,
+  option?.imageUrls,
+  option?.src,
+  option?.url,
+  mcq?.[`option${letter}Images`],
+  mcq?.[`option${letter}Image`],
+  mcq?.[`option${letter}ImageUrl`],
+  mcq?.[`option${letter}ImageUrls`],
+)
+
+
 export default function TestReview() {
   const location = useLocation()
   const navigate = useNavigate()
@@ -50,7 +86,7 @@ export default function TestReview() {
                 </span>
               </div>
               <div className="review-question-title">
-                <MCQRenderer text={item.questionText || item.question} images={item.questionImages || []} />
+                <MCQRenderer text={item.questionText || item.question} images={mcqQuestionImages(item)} />
               </div>
 
               <div className="review-options-list">
@@ -64,7 +100,7 @@ export default function TestReview() {
                     >
                       <span className="review-option-letter">{String.fromCharCode(65 + optionIndex)}</span>
                       <div className="review-option-text">
-                        <MCQRenderer text={option?.text || option} images={option?.images || item[`option${String.fromCharCode(65 + optionIndex)}Images`] || []} />
+                        <MCQRenderer text={option?.text || option} images={mcqOptionImages(item, option, String.fromCharCode(65 + optionIndex))} />
                       </div>
                       {selected ? <span className="review-option-tag">Your answer</span> : null}
                       {correct ? <span className="review-option-tag review-option-tag--correct">Correct answer</span> : null}
@@ -76,7 +112,7 @@ export default function TestReview() {
               <div className="review-explanation-box">
                 <strong>Explanation</strong>
                 <div className="review-explanation-text">
-                  <MCQRenderer text={item.explanationText || item.explanation || 'No explanation added yet.'} images={item.explanationImages || []} />
+                  <MCQRenderer text={item.explanationText || item.explanation || 'No explanation added yet.'} images={mcqExplanationImages(item)} />
                 </div>
               </div>
             </article>

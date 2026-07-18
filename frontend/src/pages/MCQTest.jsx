@@ -2,6 +2,42 @@ import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import MCQRenderer from '../components/MCQRenderer'
 import './MCQTest.css'
+
+const compactImageList = (...values) => values.flatMap((value) => {
+  if (!value) return []
+  return Array.isArray(value) ? value.filter(Boolean) : [value]
+})
+
+const mcqQuestionImages = (mcq) => compactImageList(
+  mcq?.questionImages,
+  mcq?.questionImage,
+  mcq?.questionImageUrl,
+  mcq?.questionImageUrls,
+  mcq?.imageUrl,
+  mcq?.imageUrls,
+  mcq?.images,
+)
+
+const mcqExplanationImages = (mcq) => compactImageList(
+  mcq?.explanationImages,
+  mcq?.explanationImage,
+  mcq?.explanationImageUrl,
+  mcq?.explanationImageUrls,
+  mcq?.explanationImagesUrl,
+)
+
+const mcqOptionImages = (mcq, option, letter) => compactImageList(
+  option?.images,
+  option?.imageUrl,
+  option?.imageUrls,
+  option?.src,
+  option?.url,
+  mcq?.[`option${letter}Images`],
+  mcq?.[`option${letter}Image`],
+  mcq?.[`option${letter}ImageUrl`],
+  mcq?.[`option${letter}ImageUrls`],
+)
+
 import { getChapterById, getMcqsByChapter, getSubjectById, SUBJECT_STYLES } from './platformContent'
 
 function getCorrectIndex(mcq) {
@@ -112,7 +148,7 @@ export default function MCQTest() {
               <span className="state-chip state-chip--warning">{chapter.name}</span>
             </div>
             <div className="mcq-question-title">
-              <MCQRenderer text={currentMcq.questionText || currentMcq.question} images={currentMcq.questionImages || []} />
+              <MCQRenderer text={currentMcq.questionText || currentMcq.question} images={mcqQuestionImages(currentMcq)} />
             </div>
             <div className="mcq-options-grid">
               {currentMcq.options.map((option, index) => {
@@ -126,7 +162,7 @@ export default function MCQTest() {
                   >
                     <span className="mcq-option-letter">{String.fromCharCode(65 + index)}</span>
                     <div className="mcq-option-text">
-                      <MCQRenderer text={option?.text || option} images={option?.images || currentMcq[`option${String.fromCharCode(65 + index)}Images`] || []} />
+                      <MCQRenderer text={option?.text || option} images={mcqOptionImages(currentMcq, option, String.fromCharCode(65 + index))} />
                     </div>
                   </button>
                 )

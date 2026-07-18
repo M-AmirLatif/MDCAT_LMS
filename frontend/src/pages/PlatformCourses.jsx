@@ -4,6 +4,42 @@ import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
 import MCQRenderer from '../components/MCQRenderer'
 import './PlatformPages.css'
+
+const compactImageList = (...values) => values.flatMap((value) => {
+  if (!value) return []
+  return Array.isArray(value) ? value.filter(Boolean) : [value]
+})
+
+const mcqQuestionImages = (mcq) => compactImageList(
+  mcq?.questionImages,
+  mcq?.questionImage,
+  mcq?.questionImageUrl,
+  mcq?.questionImageUrls,
+  mcq?.imageUrl,
+  mcq?.imageUrls,
+  mcq?.images,
+)
+
+const mcqExplanationImages = (mcq) => compactImageList(
+  mcq?.explanationImages,
+  mcq?.explanationImage,
+  mcq?.explanationImageUrl,
+  mcq?.explanationImageUrls,
+  mcq?.explanationImagesUrl,
+)
+
+const mcqOptionImages = (mcq, option, letter) => compactImageList(
+  option?.images,
+  option?.imageUrl,
+  option?.imageUrls,
+  option?.src,
+  option?.url,
+  mcq?.[`option${letter}Images`],
+  mcq?.[`option${letter}Image`],
+  mcq?.[`option${letter}ImageUrl`],
+  mcq?.[`option${letter}ImageUrls`],
+)
+
 import {
   SUBJECT_STYLES,
   getChaptersBySubject,
@@ -246,7 +282,7 @@ function TeacherMcqManagement() {
                     <div>
                       <span className="state-chip state-chip--neutral">Q{index + 1}</span>
                       <div className="teacher-mcq-question-preview">
-                        <MCQRenderer text={mcq.questionText || mcq.question} images={mcq.questionImages || []} />
+                        <MCQRenderer text={mcq.questionText || mcq.question} images={mcqQuestionImages(mcq)} />
                       </div>
                       <p>Correct answer: {mcq.correctAnswer} - {mcq.difficulty}</p>
                     </div>

@@ -39,8 +39,14 @@ const normalizeImageArray = (...values) => {
   const push = (value) => {
     if (!value) return
     if (Array.isArray(value)) return value.forEach(push)
-    if (typeof value === 'object') return push(value.url || value.src || value.imageUrl || value.secure_url || value.path)
-    const url = String(value || '').trim()
+    if (typeof value === 'object') return push(value.secure_url || value.secureUrl || value.url || value.src || value.imageUrl || value.fileUrl || value.absoluteUrl || value.publicUrl || value.location || value.path || value.href)
+    let url = String(value || '').trim()
+    const markdownMatch = url.match(/^!\[[^\]]*]\(([\s\S]+)\)$/)
+    if (markdownMatch?.[1]) url = markdownMatch[1].trim()
+    const tokenMatch = url.match(/^\[(?:IMAGE|IMG|PIC|PICTURE|FIGURE|SCREENSHOT|SS):\s*([\s\S]*?)\]$/i)
+    if (tokenMatch?.[1]) url = tokenMatch[1].trim()
+    const pipeIndex = url.indexOf('|')
+    if (pipeIndex > -1) url = url.slice(0, pipeIndex).trim()
     if (url) urls.push(url)
   }
   values.forEach(push)
@@ -53,17 +59,41 @@ const serializeMcqMedia = (mcq) => {
   const options = (mcq.options || []).map((option, index) => ({
     ...option,
     text: option.text || mcq[`option${letters[index]}`] || '',
-    images: normalizeImageArray(option.images, mcq[`option${letters[index]}Images`]),
+    images: normalizeImageArray(
+      option.images,
+      option.imageUrl,
+      option.imageUrls,
+      option.src,
+      option.url,
+      mcq[`option${letters[index]}Images`],
+      mcq[`option${letters[index]}Image`],
+      mcq[`option${letters[index]}ImageUrl`],
+      mcq[`option${letters[index]}ImageUrls`],
+    ),
   }))
   return {
     ...mcq,
     question: mcq.questionText || mcq.question || '',
     questionText: mcq.questionText || mcq.question || '',
-    questionImages: normalizeImageArray(mcq.questionImages),
+    questionImages: normalizeImageArray(
+      mcq.questionImages,
+      mcq.questionImage,
+      mcq.questionImageUrl,
+      mcq.questionImageUrls,
+      mcq.imageUrl,
+      mcq.imageUrls,
+      mcq.images,
+    ),
     options,
     explanation: mcq.explanationText || mcq.explanation || null,
     explanationText: mcq.explanationText || mcq.explanation || null,
-    explanationImages: normalizeImageArray(mcq.explanationImages),
+    explanationImages: normalizeImageArray(
+      mcq.explanationImages,
+      mcq.explanationImage,
+      mcq.explanationImageUrl,
+      mcq.explanationImageUrls,
+      mcq.explanationImagesUrl,
+    ),
   }
 }
 
@@ -539,4 +569,6 @@ exports.getSubjectWisePerformance = async (req, res) => {
     res.status(500).json({ error: error.message })
   }
 }
+
+
 

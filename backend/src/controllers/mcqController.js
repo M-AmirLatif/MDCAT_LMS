@@ -1,4 +1,4 @@
-const MCQ = require('../models/MCQ')
+﻿const MCQ = require('../models/MCQ')
 const Course = require('../models/Course')
 const TestSession = require('../models/TestSession')
 const ImportBatch = require('../models/ImportBatch')
@@ -131,7 +131,7 @@ const getSubjectCourse = async (subject) => {
     .lean()
 }
 
-// Full Mongoose document — required for chapter CRUD that calls .save()
+// Full Mongoose document â€” required for chapter CRUD that calls .save()
 const getSubjectCourseFull = async (subject) => {
   return Course.findOne({ category: subject }).sort({ createdAt: 1 })
 }
@@ -352,7 +352,7 @@ const normalizeImageArray = (...values) => {
       return
     }
     if (typeof value === 'object') {
-      push(value.secure_url || value.url || value.src || value.imageUrl || value.path)
+      push(value.secure_url || value.secureUrl || value.url || value.src || value.imageUrl || value.fileUrl || value.absoluteUrl || value.publicUrl || value.location || value.path || value.href)
       return
     }
     const extracted = extractImageUrlFromField(value) || cleanImageUrl(value)
@@ -401,7 +401,14 @@ const extractImagesAndCleanText = (value, extraImages = []) => {
 const optionImagesForLetter = (mcq, letter, option) =>
   normalizeImageArray(
     mcq?.[`option${letter}Images`],
+    mcq?.[`option${letter}Image`],
+    mcq?.[`option${letter}ImageUrl`],
+    mcq?.[`option${letter}ImageUrls`],
     option?.images,
+    option?.imageUrl,
+    option?.imageUrls,
+    option?.src,
+    option?.url,
   )
 
 const serializeMcqMedia = (mcq) => {
@@ -423,8 +430,24 @@ const serializeMcqMedia = (mcq) => {
   const explanationLegacy = extractImagesAndCleanText(plain.explanation || '')
   const questionText = plain.questionText || questionLegacy.text || plain.question || ''
   const explanationText = plain.explanationText || explanationLegacy.text || plain.explanation || ''
-  const questionImages = normalizeImageArray(plain.questionImages, questionLegacy.images)
-  const explanationImages = normalizeImageArray(plain.explanationImages, explanationLegacy.images)
+  const questionImages = normalizeImageArray(
+    plain.questionImages,
+    plain.questionImage,
+    plain.questionImageUrl,
+    plain.questionImageUrls,
+    plain.imageUrl,
+    plain.imageUrls,
+    plain.images,
+    questionLegacy.images,
+  )
+  const explanationImages = normalizeImageArray(
+    plain.explanationImages,
+    plain.explanationImage,
+    plain.explanationImageUrl,
+    plain.explanationImageUrls,
+    plain.explanationImagesUrl,
+    explanationLegacy.images,
+  )
 
   return {
     ...plain,
@@ -2638,6 +2661,7 @@ exports.submitChapterAttempt = async (req, res) => {
     res.status(500).json({ error: error.message })
   }
 }
+
 
 
 

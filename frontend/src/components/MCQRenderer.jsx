@@ -1,6 +1,6 @@
-import { Fragment, useEffect, useRef, useState } from 'react'
+﻿import { Fragment, useEffect, useRef, useState } from 'react'
 import { BlockMath, InlineMath } from 'react-katex'
-import { normalizeImageUrl } from '../utils/mediaUrls'
+import { cleanImageUrlValue, normalizeImageUrl } from '../utils/mediaUrls'
 import 'katex/dist/katex.min.css'
 
 const DIAGRAM_REGEX = /\[DIAGRAM:\s*([\s\S]*?)\]/gi
@@ -20,11 +20,7 @@ const DEBUG_LOG_LIMIT = 40
 let debugLogCount = 0
 
 function cleanImageUrl(url) {
-  return String(url || '')
-    .trim()
-    .replace(/^["'`<]+|["'`>]+$/g, '')
-    .replace(/\s+["'][^"']*["']$/g, '')
-    .replace(/[),.;\]]+$/g, '')
+  return cleanImageUrlValue(url)
 }
 
 function isSafeImageUrl(url) {
@@ -75,23 +71,12 @@ function logRendererDebug(payload) {
 
 function imageFromUnknown(image) {
   if (!image) return null
-  if (typeof image === 'string') return { url: cleanImageUrl(image), alt: '' }
-  return {
-    url: cleanImageUrl(
-      image.url
-        || image.src
-        || image.imageUrl
-        || image.secure_url
-        || image.secureUrl
-        || image.fileUrl
-        || image.absoluteUrl
-        || image.publicUrl
-        || image.location
-        || image.path
-        || '',
-    ),
-    alt: image.alt || image.caption || image.title || '',
-  }
+  const url = normalizeImageUrl(image)
+  if (!url) return null
+  const alt = typeof image === 'object' && !Array.isArray(image)
+    ? image.alt || image.caption || image.title || ''
+    : ''
+  return { url, alt }
 }
 
 function getImageToken(rawBody) {
@@ -165,8 +150,9 @@ function parseImageTokenBody(body) {
 }
 
 function RichImage({ image }) {
-  const url = normalizeImageUrl(cleanImageUrl(image?.url))
-  const alt = image?.alt || ''
+  const normalizedImage = imageFromUnknown(image)
+  const url = normalizedImage?.url || ''
+  const alt = normalizedImage?.alt || ''
   const imageRef = useRef(null)
   const [loaded, setLoaded] = useState(false)
   const [failed, setFailed] = useState(false)
@@ -372,3 +358,4 @@ export default function MCQRenderer({
 }
 
 export { MCQRenderer as MCQContent, MCQRenderer as RichContentRenderer }
+
