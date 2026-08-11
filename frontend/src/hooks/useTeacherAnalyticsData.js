@@ -1,15 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
-import API from '../services/api'
 import { useAuth } from '../context/AuthContext'
+import { teacherPerformanceQuery } from '../services/dataQueries'
 
 const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English']
-
-const SUBJECT_NAME_BY_KEY = new Map(
-  SUBJECTS.flatMap((subject) => [
-    [subject.toLowerCase(), subject],
-    [subject.slice(0, 3).toLowerCase(), subject],
-  ]),
-)
 
 const EMPTY = {
   summary: {
@@ -25,155 +18,12 @@ const EMPTY = {
   studentRows: [],
 }
 
-const getStudentName = (student) => {
-  if (!student) return 'Unknown'
-  const name = [student.firstName, student.lastName].filter(Boolean).join(' ').trim()
-  return name || student.email || 'Unknown'
-}
-
-const normalizeSubjectName = (value) => {
-  const key = String(value || '').trim().toLowerCase()
-  if (!key) return ''
-  return SUBJECT_NAME_BY_KEY.get(key) || SUBJECT_NAME_BY_KEY.get(key.replace(/[^a-z]/g, '')) || ''
-}
-
-const getSubjectName = (session) =>
-  normalizeSubjectName(session?.subject) ||
-  normalizeSubjectName(session?.courseId?.category) ||
-  normalizeSubjectName(session?.courseId?.subject) ||
-  normalizeSubjectName(session?.subjectName)
-
-const buildAnalyticsData = (sessions = [], subjects = []) => {
-  const totalChapters = subjects.reduce((sum, subject) => sum + (Number(subject.totalChapters) || 0), 0)
-  const totalSessions = sessions.length
-  const classAverage = totalSessions
-    ? Math.round(sessions.reduce((sum, session) => sum + (Number(session.percentage) || 0), 0) / totalSessions)
-    : 0
-
-  const uniqueChapterAttempts = new Set(
-    sessions
-      .map((session) => session.chapterId || session.chapterName || session.topic)
-      .filter(Boolean),
-  )
-  const submissionRate = totalChapters
-    ? Math.round((uniqueChapterAttempts.size / totalChapters) * 100)
-    : 0
-
-  const studentScores = new Map()
-  const studentMeta = new Map()
-  sessions.forEach((session) => {
-    const studentName = getStudentName(session.studentId)
-    const current = studentScores.get(studentName) || []
-    current.push(Number(session.percentage) || 0)
-    studentScores.set(studentName, current)
-    if (!studentMeta.has(studentName)) {
-      studentMeta.set(studentName, {
-        email: session.studentId?.email || 'No email',
-      })
-    }
-  })
-
-  const atRisk = [...studentScores.values()].filter((scores) => {
-    const avg = scores.reduce((sum, score) => sum + score, 0) / scores.length
-    return avg < 50
-  }).length
-
-  const bands = [
-    { band: '0-39%', min: 0, max: 39, count: 0 },
-    { band: '40-59%', min: 40, max: 59, count: 0 },
-    { band: '60-79%', min: 60, max: 79, count: 0 },
-    { band: '80-100%', min: 80, max: 100, count: 0 },
-  ]
-
-  sessions.forEach((session) => {
-    const percentage = Number(session.percentage) || 0
-    const match = bands.find((band) => percentage >= band.min && percentage <= band.max)
-    if (match) match.count += 1
-  })
-
-  const subjectMastery = SUBJECTS.map((subject) => {
-    const subjectSessions = sessions.filter((session) => getSubjectName(session) === subject)
-    const score = subjectSessions.length
-      ? Math.round(subjectSessions.reduce((sum, session) => sum + (Number(session.percentage) || 0), 0) / subjectSessions.length)
-      : 0
-    return { subject, score }
-  })
-
-  const sortedSessions = [...sessions].sort(
-    (a, b) => new Date(a.submittedAt || 0) - new Date(b.submittedAt || 0),
-  )
-
-  const topStudents = [...studentScores.entries()]
-    .sort((a, b) => b[1].length - a[1].length)
-    .slice(0, 3)
-    .map(([name]) => name)
-
-  const sessionsByStudent = new Map(topStudents.map((name) => [name, []]))
-  sortedSessions.forEach((session) => {
-    const studentName = getStudentName(session.studentId)
-    if (!sessionsByStudent.has(studentName)) return
-    sessionsByStudent.get(studentName).push(Number(session.percentage) || 0)
-  })
-
-  const maxTrendAttempts = Math.max(0, ...topStudents.map((name) => sessionsByStudent.get(name)?.length || 0))
-  const multiStudentTrend = Array.from({ length: maxTrendAttempts }, (_, index) => {
-    const row = { label: `Attempt ${index + 1}` }
-    topStudents.forEach((name) => {
-      const score = sessionsByStudent.get(name)?.[index]
-      if (Number.isFinite(score)) row[name] = score
-    })
-    return row
-  })
-
-  const studentRows = [...studentScores.entries()]
-    .map(([name, scores]) => {
-      const averageScore = Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length)
-      const risk = averageScore < 50 ? 'High' : averageScore < 70 ? 'Medium' : 'Low'
-      return {
-        name,
-        city: 'N/A',
-        score: averageScore,
-        streak: `${scores.length} attempts`,
-        risk,
-        email: studentMeta.get(name)?.email || 'No email',
-        trend: sortedSessions
-          .filter((session) => getStudentName(session.studentId) === name)
-          .map((session, index) => ({
-            label: `Attempt ${index + 1}`,
-            score: Number(session.percentage) || 0,
-          })),
-      }
-    })
-    .sort((a, b) => b.score - a.score)
-
-  return {
-    summary: {
-      classAverage,
-      submissionRate,
-      liveAttendance: 0,
-      atRisk,
-      totalAttempts: totalSessions,
-    },
-    scoreDistribution: bands.map(({ band, count }) => ({ band, count })),
-    subjectMastery,
-    multiStudentTrend,
-    studentRows,
-  }
-}
-
 export default function useTeacherAnalyticsData() {
   const { user } = useAuth()
   const query = useQuery({
-    queryKey: ['teacher-performance-overview', user?._id || user?.id || user?.email],
-    queryFn: async () => {
-      const response = await API.get('/tests/performance-overview', { skipQueryCache: true })
-      return response.data?.data || buildAnalyticsData()
-    },
-    staleTime: 2 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
+    ...teacherPerformanceQuery(user),
     placeholderData: (previousData) => previousData,
   })
 
   return { ...(query.data || EMPTY), loading: query.isPending }
 }
-

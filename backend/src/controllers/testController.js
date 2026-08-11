@@ -772,14 +772,21 @@ exports.getPerformanceOverview = async (req, res) => {
     const role = req.user.role?.name || req.user.role || 'student'
     const filter = await buildTestFilter(req)
     const allowedSubjects = role === 'teacher' ? getTeacherSubjects(req.user) : SUBJECTS
+    const sessionsQuery = TestSession.find(filter)
+      .populate('courseId', 'category subject')
+      .select('studentId courseId subject chapterId chapterName topic totalQuestions score finalScore percentage submittedAt')
+      .sort({ submittedAt: 1 })
+      .lean()
+
+    // Student responses never read student profile fields. Avoiding this populate
+    // removes an extra Atlas query from the critical first-page request.
+    if (role !== 'student') {
+      sessionsQuery.populate('studentId', 'firstName lastName email')
+    }
+
     const [bank, sessions] = await Promise.all([
       getCompactSubjectBank(allowedSubjects),
-      TestSession.find(filter)
-        .populate('studentId', 'firstName lastName email')
-        .populate('courseId', 'category subject')
-        .select('studentId courseId subject chapterId chapterName topic totalQuestions score finalScore percentage submittedAt')
-        .sort({ submittedAt: 1 })
-        .lean(),
+      sessionsQuery,
     ])
     const data = role === 'student'
       ? buildStudentOverview(bank, sessions)

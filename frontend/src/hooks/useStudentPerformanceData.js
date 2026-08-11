@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import API from '../services/api'
 import { useAuth } from '../context/AuthContext'
+import { studentPerformanceQuery } from '../services/dataQueries'
 
 const SUBJECTS = [
   { id: 'biology', name: 'Biology' },
@@ -207,13 +207,7 @@ export default function useStudentPerformanceData() {
   const { user } = useAuth()
   const enabled = user?.role === 'student'
   const query = useQuery({
-    queryKey: ['student-performance-overview', user?._id || user?.id || user?.email],
-    queryFn: async () => {
-      const response = await API.get('/tests/performance-overview', { skipQueryCache: true })
-      return response.data?.data || buildPerformanceData()
-    },
-    staleTime: 2 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
+    ...studentPerformanceQuery(user),
     placeholderData: (previousData) => previousData,
     enabled,
   })

@@ -14,6 +14,7 @@ import {
   setStoredUser,
 } from '../services/authStorage'
 import { clearApiCache } from '../services/queryClient'
+import { prefetchAppData, resetPrefetchState } from '../services/prefetchAppData'
 
 const AuthContext = createContext(null)
 
@@ -33,6 +34,7 @@ export function AuthProvider({ children }) {
         return
       }
       try {
+        prefetchAppData(user)
         const res = await API.get('/auth/profile')
         if (!alive) return
         setUser(res.data.user)
@@ -55,10 +57,12 @@ export function AuthProvider({ children }) {
     setAuth({ token: tokenValue, user: userData, remember })
     setToken(tokenValue)
     setUser(userData)
+    prefetchAppData(userData, { force: true })
   }, [])
 
   const logout = useCallback(() => {
     clearApiCache()
+    resetPrefetchState()
     clearAuth()
     setToken(null)
     setUser(null)

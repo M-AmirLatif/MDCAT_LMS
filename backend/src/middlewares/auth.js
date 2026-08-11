@@ -17,7 +17,9 @@ exports.protect = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
     // Lightweight: populate role name only (covers role-based authorize checks)
-    const user = await User.findById(decoded.id).populate('role', 'name')
+    const user = await User.findById(decoded.id)
+      .select('+activeSessionId')
+      .populate('role', 'name')
 
     if (!user) {
       return res.status(401).json({ error: 'User no longer exists' })
@@ -41,13 +43,9 @@ exports.protect = async (req, res, next) => {
       })
     }
     if (roleName === 'student' && decoded.sessionId) {
-      const freshUser = await User.findById(decoded.id).select(
-        'activeSessionId',
-      )
       if (
-        freshUser &&
-        freshUser.activeSessionId &&
-        freshUser.activeSessionId !== decoded.sessionId
+        user.activeSessionId &&
+        user.activeSessionId !== decoded.sessionId
       ) {
         return res.status(401).json({
           error: 'SESSION_SUPERSEDED',
@@ -80,10 +78,12 @@ exports.protectWithPermissions = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
     // Full hydration: populate role with nested permissions
-    const user = await User.findById(decoded.id).populate({
-      path: 'role',
-      populate: { path: 'permissions' },
-    })
+    const user = await User.findById(decoded.id)
+      .select('+activeSessionId')
+      .populate({
+        path: 'role',
+        populate: { path: 'permissions' },
+      })
 
     if (!user) {
       return res.status(401).json({ error: 'User no longer exists' })
@@ -107,13 +107,9 @@ exports.protectWithPermissions = async (req, res, next) => {
       })
     }
     if (roleName === 'student' && decoded.sessionId) {
-      const freshUser = await User.findById(decoded.id).select(
-        'activeSessionId',
-      )
       if (
-        freshUser &&
-        freshUser.activeSessionId &&
-        freshUser.activeSessionId !== decoded.sessionId
+        user.activeSessionId &&
+        user.activeSessionId !== decoded.sessionId
       ) {
         return res.status(401).json({
           error: 'SESSION_SUPERSEDED',
