@@ -33,7 +33,9 @@ const getCacheScope = () => {
 }
 
 const getStaleTime = (url = '') => {
-  if (/latest-attempt/i.test(url)) return 0
+  // Attempt results are invalidated immediately by every submit mutation. A short
+  // window lets the chapter screen warm this request before Start Quiz is clicked.
+  if (/latest-attempt/i.test(url)) return 30 * 1000
   if (/notifications|payments|subscriptions|auth\/profile/i.test(url)) return 30 * 1000
   if (/subjects\/summary|\/chapters(?:\?|$)|\/courses(?:\?|$)|public\/stats/i.test(url)) return 5 * 60 * 1000
   return 2 * 60 * 1000
@@ -43,7 +45,7 @@ const getStaleTime = (url = '') => {
 // page rewrite while giving route changes, StrictMode remounts, and refreshes one
 // deduplicated, user-scoped source of server data.
 API.get = (url, config = {}) => {
-  if (config.skipQueryCache || /latest-attempt/i.test(String(url))) {
+  if (config.skipQueryCache) {
     return networkGet(url, config)
   }
 

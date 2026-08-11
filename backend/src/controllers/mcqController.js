@@ -124,9 +124,12 @@ const canAccessChapterTest = (user, subject, contentIndex = 0, testPart = null) 
 const getChapterIndex = (course, chapterId) =>
   (course?.chapters || []).findIndex((chapter) => String(chapter.id) === String(chapterId))
 
-const getSubjectCourse = async (subject) => {
+const getSubjectCourse = async (subject, includeReviewQueue = false) => {
+  const projection = includeReviewQueue
+    ? '_id category chapters name'
+    : '_id category name chapters.id chapters.name chapters.description chapters.topics'
   return Course.findOne({ category: subject })
-    .select('_id category chapters name')
+    .select(projection)
     .sort({ createdAt: 1 })
     .lean()
 }
@@ -1287,23 +1290,25 @@ exports.getChaptersBySubject = async (req, res) => {
         .json({ success: true, subject, courseId: null, chapters: [] })
     }
 
-    const counts = await MCQ.aggregate([
-      { $match: { courseId: course._id, subject } },
-      { $group: { _id: '$chapterId', totalMcqs: { $sum: 1 } } },
+    const [counts, topicCounts] = await Promise.all([
+      MCQ.aggregate([
+        { $match: { courseId: course._id, subject } },
+        { $group: { _id: '$chapterId', totalMcqs: { $sum: 1 } } },
+      ]),
+      MCQ.aggregate([
+        { $match: { courseId: course._id, subject, topicId: { $ne: null } } },
+        {
+          $group: {
+            _id: { chapterId: '$chapterId', topicId: '$topicId' },
+            totalMcqs: { $sum: 1 },
+          },
+        },
+      ]),
     ])
     const countByChapter = new Map(
       counts.map((item) => [item._id, item.totalMcqs]),
     )
 
-    const topicCounts = await MCQ.aggregate([
-      { $match: { courseId: course._id, subject, topicId: { $ne: null } } },
-      {
-        $group: {
-          _id: { chapterId: '$chapterId', topicId: '$topicId' },
-          totalMcqs: { $sum: 1 },
-        },
-      },
-    ])
     const topicCountByKey = new Map(
       topicCounts.map((item) => [
         `${item._id.chapterId}:${item._id.topicId}`,
@@ -1684,7 +1689,7 @@ const buildChapterMcqFilter = async (
   const subject = normalizeSubject(subjectParam)
   if (!subject) return { error: 'Invalid subject' }
 
-  const course = await getSubjectCourse(subject)
+  const course = await getSubjectCourse(subject, includeUnpublished)
   if (!course) return { subject, course: null, chapter: null, filter: null }
 
   const chapter = getChapter(course, chapterId)
@@ -1733,18 +1738,29 @@ exports.getMcqsByChapter = async (req, res) => {
       })
     }
 
-    const allMcqs = sortMcqsByOriginalOrder(
-      await MCQ.find(context.filter).sort({ createdAt: 1 }).lean(),
-    )
+    const mcqQuery = MCQ.find(context.filter)
+    if (!includeFull) {
+      mcqQuery.select(
+        '-correctAnswer -explanation -explanationText -explanationImages -options.isCorrect -createdBy -reviewReason -validationErrors -importBatchId',
+      )
+    }
+    const allMcqs = sortMcqsByOriginalOrder(await mcqQuery.lean())
     const selectedTestPart = teacherRoleNames.has(role) ? null : normalizeTestPart(req.query.testPart)
     const mcqs = sliceMcqsForVirtualTest(allMcqs, selectedTestPart)
     const safeMcqs = includeFull ? serializeMcqsMedia(mcqs) : stripCorrectOptions(mcqs)
+    const responseChapterBase = includeFull
+      ? context.chapter
+      : {
+          id: context.chapter.id,
+          name: context.chapter.name,
+          description: context.chapter.description || '',
+        }
     const responseTitleBase = context.topic
       ? `${context.chapter.name} - ${context.topic.name}`
       : context.chapter.name
     const responseChapter = selectedTestPart
       ? {
-          ...context.chapter,
+          ...responseChapterBase,
           originalName: context.chapter.name,
           topicId: context.topic?.id || null,
           topicName: context.topic?.name || null,
@@ -1755,14 +1771,14 @@ exports.getMcqsByChapter = async (req, res) => {
         }
       : context.topic
         ? {
-            ...context.chapter,
+            ...responseChapterBase,
             originalName: context.chapter.name,
             topicId: context.topic.id,
             topicName: context.topic.name,
             name: responseTitleBase,
             totalChapterMcqs: allMcqs.length,
           }
-        : context.chapter
+        : responseChapterBase
 
     res.status(200).json({
       success: true,
@@ -1771,12 +1787,14 @@ exports.getMcqsByChapter = async (req, res) => {
       chapter: responseChapter,
       topics: getChapterTopics(context.chapter),
       selectedTopic: context.topic,
-      reviewQueue: getChapterReviewQueue(context.chapter)
-        .filter((item) => {
-          if (!req.query.topicId) return true
-          return String(item.topicId || '') === String(req.query.topicId)
-        })
-        .sort(compareMcqOrder),
+      reviewQueue: includeFull
+        ? getChapterReviewQueue(context.chapter)
+          .filter((item) => {
+            if (!req.query.topicId) return true
+            return String(item.topicId || '') === String(req.query.topicId)
+          })
+          .sort(compareMcqOrder)
+        : [],
       count: safeMcqs.length,
       mcqs: safeMcqs,
     })
@@ -2553,9 +2571,14 @@ exports.getLatestChapterAttempt = async (req, res) => {
     const session = await TestSession.findOne({
       studentId: req.user.id, courseId: context.course._id, chapterId: context.chapter.id,
       topicId: context.topic?.id || null, chapterName,
-    }).sort({ submittedAt: -1 }).lean()
+    })
+      .select('_id chapterName totalQuestions score finalScore percentage answers submittedAt')
+      .sort({ submittedAt: -1 })
+      .lean()
     if (!session) return res.status(200).json({ success: true, result: null })
-    const mcqs = await MCQ.find({ _id: { $in: session.answers.map((answer) => answer.mcqId) } }).lean()
+    const mcqs = await MCQ.find({ _id: { $in: session.answers.map((answer) => answer.mcqId) } })
+      .select('-createdBy -reviewReason -validationErrors -importBatchId')
+      .lean()
     const mcqMap = new Map(mcqs.map((mcq) => [String(mcq._id), mcq]))
     const detailed = session.answers.map((answer) => {
       const mcq = serializeMcqMedia(mcqMap.get(String(answer.mcqId)))
@@ -2600,7 +2623,9 @@ exports.submitChapterAttempt = async (req, res) => {
 
     const answers = req.body.answers || {}
     const allMcqs = sortMcqsByOriginalOrder(
-      await MCQ.find(context.filter).sort({ createdAt: 1 }).lean(),
+      await MCQ.find(context.filter)
+        .select('-createdBy -reviewReason -validationErrors -importBatchId')
+        .lean(),
     )
     const selectedTestPart = normalizeTestPart(req.query.testPart)
     const mcqs = sliceMcqsForVirtualTest(allMcqs, selectedTestPart)

@@ -514,6 +514,9 @@ function CourseSelection() {
             className="workspace-card mcq-subject-card"
             to={`/mcqs/${subject.id}`}
             style={{ '--subject': subject.accent }}
+            onPointerEnter={() => API.get(`/mcqs/${subject.id}/chapters`).catch(() => null)}
+            onFocus={() => API.get(`/mcqs/${subject.id}/chapters`).catch(() => null)}
+            onTouchStart={() => API.get(`/mcqs/${subject.id}/chapters`).catch(() => null)}
           >
             <div className="mcq-subject-card-top">
               <span className="mcq-subject-icon">
@@ -628,11 +631,39 @@ function ChapterList() {
   const [loading, setLoading] = useState(true)
   const [modal, setModal] = useState(null)
 
+  const buildChapterMcqPath = (chapter) => {
+    const params = new URLSearchParams()
+    if (chapter.topicId) params.set('topicId', chapter.topicId)
+    if (chapter.testPart) params.set('testPart', chapter.testPart)
+    const query = params.toString()
+    return `/mcqs/${subject}/${chapter.id}${query ? `?${query}` : ''}`
+  }
+
+  const prefetchChapter = (chapter) => {
+    if (chapter.isLocked && !isTeacher) return
+    const path = buildChapterMcqPath(chapter)
+    const [basePath, query = ''] = path.split('?')
+    const suffix = query ? `?${query}` : ''
+    // Teachers/admins warm the complete management payload. Students warm the
+    // safe question payload plus their own returning-attempt lookup.
+    API.get(path).catch(() => null)
+    if (!isTeacher) {
+      API.get(`${basePath}/latest-attempt${suffix}`).catch(() => null)
+    }
+  }
+
   const load = async () => {
     setLoading(true)
     try {
       const res = await API.get(`/mcqs/${subject}/chapters`)
-      setChapters(res.data.chapters || [])
+      const loadedChapters = res.data.chapters || []
+      setChapters(loadedChapters)
+      const firstAvailable = loadedChapters.find(
+        (chapter) => isTeacher || !chapter.isLocked,
+      )
+      if (firstAvailable) {
+        window.setTimeout(() => prefetchChapter(firstAvailable), 100)
+      }
     } catch (error) {
       toast.error(getUserFriendlyErrorMessage(error, 'We could not load the chapters right now.'))
     } finally {
@@ -671,14 +702,6 @@ function ChapterList() {
     } catch (error) {
       toast.error(getUserFriendlyErrorMessage(error, 'We could not save the chapter right now.'))
     }
-  }
-
-  const buildChapterMcqPath = (chapter) => {
-    const params = new URLSearchParams()
-    if (chapter.topicId) params.set('topicId', chapter.topicId)
-    if (chapter.testPart) params.set('testPart', chapter.testPart)
-    const query = params.toString()
-    return `/mcqs/${subject}/${chapter.id}${query ? `?${query}` : ''}`
   }
 
   const deleteChapter = async (chapter) => {
@@ -739,6 +762,9 @@ function ChapterList() {
           <article
             key={`${chapter.id}-${chapter.topicId || 'chapter'}-${chapter.testPart || 'base'}`}
             className={`workspace-card chapter-practice-card ${chapter.isLocked ? 'chapter-practice-card--locked' : ''}`}
+            onPointerEnter={() => prefetchChapter(chapter)}
+            onFocus={() => prefetchChapter(chapter)}
+            onTouchStart={() => prefetchChapter(chapter)}
           >
             <div className="workspace-card-head">
               <div>
@@ -1389,6 +1415,11 @@ function McqList() {
       if (selectedTopicId) params.set('topicId', selectedTopicId)
       if (!isTeacher && testPart) params.set('testPart', testPart)
       const query = params.toString() ? `?${params.toString()}` : ''
+      // Warm the returning-student check while the workspace itself loads. The
+      // attempt page reuses this user-scoped cache instead of waiting 2-3 seconds.
+      if (!isTeacher) {
+        API.get(`/mcqs/${subject}/${chapterId}/latest-attempt${query}`).catch(() => null)
+      }
       const res = await API.get(`/mcqs/${subject}/${chapterId}${query}`)
       setLockMessage('')
       setChapter(res.data.chapter)
@@ -2034,6 +2065,10 @@ function QuizAttempt() {
             return
           }
         }
+        // On a direct/uncached attempt URL, load questions in parallel with the
+        // returning-student lookup instead of creating a two-request waterfall.
+        const questionsRequest = API.get(`/mcqs/${subject}/${chapterId}${testPartQuery}`)
+          .catch((error) => ({ loadError: error }))
         if (!location.state?.retake && !activeDraft) {
           const previousAttempt = await API.get(`/mcqs/${subject}/${chapterId}/latest-attempt${testPartQuery}`)
           if (!alive) return
@@ -2049,7 +2084,8 @@ function QuizAttempt() {
             return
           }
         }
-        const response = await API.get(`/mcqs/${subject}/${chapterId}${testPartQuery}`)
+        const response = await questionsRequest
+        if (response?.loadError) throw response.loadError
 
         if (!alive || !response) return
         const loadedMcqs = response.data.mcqs || []

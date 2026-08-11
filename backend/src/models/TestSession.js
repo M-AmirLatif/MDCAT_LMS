@@ -108,6 +108,7 @@ const testSessionSchema = new mongoose.Schema(
 // ==================== INDEXES ====================
 testSessionSchema.index({ studentId: 1, courseId: 1 })
 testSessionSchema.index({ studentId: 1, submittedAt: -1 })
+testSessionSchema.index({ studentId: 1, courseId: 1, chapterId: 1, topicId: 1, submittedAt: -1 })
 testSessionSchema.index({ subject: 1, submittedAt: -1 })
 testSessionSchema.index({ courseId: 1, submittedAt: -1 })
 testSessionSchema.index({ submittedAt: -1 })
