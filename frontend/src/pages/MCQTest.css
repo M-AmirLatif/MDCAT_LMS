@@ -1137,37 +1137,42 @@ html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-car
 }
 /* Desktop/tablet: preserve the existing MCQ design and only trim empty space. */
 @media (min-width: 641px) {
-  html body .mcq-practice-shell {
-    gap: 12px !important;
+  html body #root .mcq-practice-page .mcq-practice-shell {
+    gap: 10px !important;
   }
 
-  html body .mcq-practice-top {
-    padding: 18px 22px !important;
-  }
-
-  html body .mcq-attempt-layout {
-    gap: 12px !important;
-  }
-
-  html body .mcq-attempt-layout .mcq-question-card {
+  html body #root .mcq-practice-page .mcq-practice-top {
     padding: 16px 20px !important;
   }
 
-  html body .mcq-attempt-layout .mcq-question-title {
-    margin-bottom: 14px !important;
+  html body #root .mcq-practice-page .mcq-attempt-layout {
+    gap: 10px !important;
   }
 
-  html body .mcq-attempt-layout .mcq-options-grid {
+  html body #root .mcq-practice-page .mcq-attempt-layout .mcq-question-card {
+    padding: 16px 18px !important;
+    gap: 10px !important;
+  }
+
+  html body #root .mcq-practice-page .mcq-attempt-layout .mcq-question-title {
+    margin-bottom: 10px !important;
+    padding: 13px 18px !important;
+  }
+
+  html body #root .mcq-practice-page .mcq-attempt-layout .mcq-options-grid {
+    margin: 0 !important;
+    padding: 6px 10px !important;
     gap: 8px !important;
   }
 
-  html body .mcq-attempt-layout .mcq-option-card {
-    padding-top: 11px !important;
-    padding-bottom: 11px !important;
+  html body #root .mcq-practice-page .mcq-attempt-layout .mcq-option-card {
+    min-height: 58px !important;
+    padding: 7px 16px !important;
   }
 
-  html body .mcq-attempt-layout .mcq-nav-actions {
-    margin-top: 12px !important;
-    padding-top: 12px !important;
+  html body #root .mcq-practice-page .mcq-attempt-layout .mcq-nav-actions {
+    margin-top: 10px !important;
+    padding-top: 10px !important;
+    gap: 10px !important;
   }
 }
