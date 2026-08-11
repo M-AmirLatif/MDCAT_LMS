@@ -19,6 +19,77 @@ const IMAGE_ALT_REGEX = /\balt\s*=\s*["']([^"']*)["']/i
 const DEBUG_LOG_LIMIT = 40
 let debugLogCount = 0
 
+const CHEMICAL_ELEMENTS = new Set([
+  'H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar',
+  'K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr',
+  'Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I', 'Xe',
+  'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu',
+  'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra',
+  'Ac', 'Th', 'Pa', 'U', 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr', 'Rf', 'Db',
+  'Sg', 'Bh', 'Hs', 'Mt', 'Ds', 'Rg', 'Cn', 'Nh', 'Fl', 'Mc', 'Lv', 'Ts', 'Og',
+])
+const CHEMICAL_FORMULA_REGEX = /(?<![A-Za-z])(?:\d+\s*)?(?:[A-Z][a-z]?\d*|\((?:[A-Z][a-z]?\d*)+\)\d*)+(?:\^?\d*[+-])?(?![A-Za-z])/g
+
+function parseChemicalFormula(value) {
+  const raw = String(value || '')
+  if (!/\d|[+-]$/.test(raw)) return null
+
+  const coefficientMatch = raw.match(/^\d+(?=\s*[A-Z(])/)
+  const coefficient = coefficientMatch?.[0] || ''
+  const formula = raw.slice(coefficient.length).trimStart()
+  const chargeMatch = formula.match(/\^?\d*[+-]$/)
+  const charge = chargeMatch?.[0]?.replace('^', '') || ''
+  const body = charge ? formula.slice(0, -chargeMatch[0].length) : formula
+  const elementMatches = [...body.matchAll(/[A-Z][a-z]?/g)].map((match) => match[0])
+
+  if (!elementMatches.length || elementMatches.some((element) => !CHEMICAL_ELEMENTS.has(element))) {
+    return null
+  }
+  const consumed = body.replace(/[A-Z][a-z]?|\d+|[()]/g, '')
+  if (consumed) return null
+  return { coefficient, body, charge }
+}
+
+function ChemicalFormula({ parsed }) {
+  const parts = []
+  const tokenRegex = /([A-Z][a-z]?|\d+|[()])/g
+  let match
+  let index = 0
+  while ((match = tokenRegex.exec(parsed.body)) !== null) {
+    const token = match[0]
+    parts.push(/^\d+$/.test(token)
+      ? <sub key={`sub-${index}`}>{token}</sub>
+      : <Fragment key={`atom-${index}`}>{token}</Fragment>)
+    index += 1
+  }
+  return (
+    <span className="mcq-chemical-formula">
+      {parsed.coefficient}{parts}
+      {parsed.charge ? <sup>{parsed.charge}</sup> : null}
+    </span>
+  )
+}
+
+function renderPlainTextWithChemistry(text, keyPrefix) {
+  const value = String(text || '')
+  const nodes = []
+  const regex = new RegExp(CHEMICAL_FORMULA_REGEX)
+  let lastIndex = 0
+  let match
+  let index = 0
+
+  while ((match = regex.exec(value)) !== null) {
+    const parsed = parseChemicalFormula(match[0])
+    if (!parsed) continue
+    if (match.index > lastIndex) nodes.push(value.slice(lastIndex, match.index))
+    nodes.push(<ChemicalFormula key={`${keyPrefix}-chem-${index}`} parsed={parsed} />)
+    lastIndex = match.index + match[0].length
+    index += 1
+  }
+  if (lastIndex < value.length) nodes.push(value.slice(lastIndex))
+  return nodes.length ? nodes : value
+}
+
 function cleanImageUrl(url) {
   return cleanImageUrlValue(url)
 }
@@ -237,7 +308,11 @@ function renderTextWithMath(text, keyPrefix) {
         </div>
       )
     }
-    return <Fragment key={key}>{part.content}</Fragment>
+    return (
+      <Fragment key={key}>
+        {renderPlainTextWithChemistry(part.content, key)}
+      </Fragment>
+    )
   })
 }
 

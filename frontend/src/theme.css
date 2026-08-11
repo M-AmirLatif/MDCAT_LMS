@@ -6716,3 +6716,26 @@ html[data-theme="dark"] body .mcq-attempt-layout .mcq-question-card .mcq-option-
     opacity: 1 !important;
   }
 }
+/* Scientific formulas typed as plain text (H2SO4, C6H12O6) are normalized by
+   MCQRenderer. Keep subscripts compact and stable inside every MCQ surface. */
+.mcq-chemical-formula {
+  display: inline;
+  white-space: nowrap;
+  font-family: "Times New Roman", "Cambria Math", serif;
+}
+
+.mcq-chemical-formula sub,
+.mcq-chemical-formula sup {
+  position: relative;
+  font-size: 0.7em;
+  line-height: 0;
+  vertical-align: baseline;
+}
+
+.mcq-chemical-formula sub {
+  bottom: -0.28em;
+}
+
+.mcq-chemical-formula sup {
+  top: -0.5em;
+}
