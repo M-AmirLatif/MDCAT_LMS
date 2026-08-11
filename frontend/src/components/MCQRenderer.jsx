@@ -29,6 +29,148 @@ const CHEMICAL_ELEMENTS = new Set([
   'Sg', 'Bh', 'Hs', 'Mt', 'Ds', 'Rg', 'Cn', 'Nh', 'Fl', 'Mc', 'Lv', 'Ts', 'Og',
 ])
 const CHEMICAL_FORMULA_REGEX = /(?<![A-Za-z])(?:\d+\s*)?(?:[A-Z][a-z]?\d*|\((?:[A-Z][a-z]?\d*)+\)\d*)+(?:\^?\d*[+-])?(?![A-Za-z])/g
+const GREEK_NAMES = new Set([
+  'alpha', 'beta', 'gamma', 'delta', 'epsilon', 'theta', 'lambda', 'mu', 'nu',
+  'pi', 'rho', 'sigma', 'tau', 'phi', 'chi', 'psi', 'omega',
+])
+
+function tokenizeAsciiMath(value) {
+  const tokens = []
+  const regex = /\s*([A-Za-z][A-Za-z0-9_]*|\d*\.\d+|\d+|[()+\-*/^=])/gy
+  let index = 0
+  while (index < value.length) {
+    regex.lastIndex = index
+    const match = regex.exec(value)
+    if (!match) return null
+    tokens.push(match[1])
+    index = regex.lastIndex
+  }
+  return tokens
+}
+
+function identifierToLatex(identifier) {
+  const match = identifier.match(/^([A-Za-z]+)(?:_?(\d+))?$/)
+  if (!match) return identifier
+  const base = GREEK_NAMES.has(match[1].toLowerCase())
+    ? `\\${match[1].toLowerCase()}`
+    : match[1]
+  return match[2] ? `${base}_{${match[2]}}` : base
+}
+
+function mathNodeToLatex(node, parentPrecedence = 0) {
+  if (node.type === 'number') return node.value
+  if (node.type === 'identifier') return identifierToLatex(node.value)
+  if (node.type === 'negate') return `-${mathNodeToLatex(node.value, 4)}`
+  if (node.type === 'power') {
+    return `{${mathNodeToLatex(node.left, 4)}}^{${mathNodeToLatex(node.right)}}`
+  }
+  if (node.type === 'divide') {
+    return `\\frac{${mathNodeToLatex(node.left)}}{${mathNodeToLatex(node.right)}}`
+  }
+
+  const precedence = node.type === 'add' || node.type === 'subtract' ? 1 : 2
+  const operator = {
+    add: '+',
+    subtract: '-',
+    multiply: '\\cdot',
+  }[node.type]
+  const rendered = `${mathNodeToLatex(node.left, precedence)} ${operator} ${mathNodeToLatex(node.right, precedence + 1)}`
+  return precedence < parentPrecedence ? `\\left(${rendered}\\right)` : rendered
+}
+
+function parseAsciiEquation(value) {
+  const raw = String(value || '').trim()
+  if (!raw.includes('=')) return null
+  const tokens = tokenizeAsciiMath(raw)
+  if (!tokens || tokens.filter((token) => token === '=').length !== 1) return null
+  let position = 0
+
+  const parsePrimary = () => {
+    const token = tokens[position]
+    if (token === '-') {
+      position += 1
+      const valueNode = parsePrimary()
+      return valueNode ? { type: 'negate', value: valueNode } : null
+    }
+    if (token === '(') {
+      position += 1
+      const node = parseExpression()
+      if (tokens[position] !== ')') return null
+      position += 1
+      return node
+    }
+    if (/^\d/.test(token || '')) {
+      position += 1
+      return { type: 'number', value: token }
+    }
+    if (/^[A-Za-z]/.test(token || '')) {
+      position += 1
+      return { type: 'identifier', value: token }
+    }
+    return null
+  }
+
+  const parsePower = () => {
+    let node = parsePrimary()
+    if (node && tokens[position] === '^') {
+      position += 1
+      const right = parsePower()
+      node = right ? { type: 'power', left: node, right } : null
+    }
+    return node
+  }
+
+  const parseProduct = () => {
+    let node = parsePower()
+    while (node && ['*', '/'].includes(tokens[position])) {
+      const operator = tokens[position]
+      position += 1
+      const right = parsePower()
+      if (!right) return null
+      node = { type: operator === '*' ? 'multiply' : 'divide', left: node, right }
+    }
+    return node
+  }
+
+  function parseExpression() {
+    let node = parseProduct()
+    while (node && ['+', '-'].includes(tokens[position])) {
+      const operator = tokens[position]
+      position += 1
+      const right = parseProduct()
+      if (!right) return null
+      node = { type: operator === '+' ? 'add' : 'subtract', left: node, right }
+    }
+    return node
+  }
+
+  const left = parseExpression()
+  if (!left || tokens[position] !== '=') return null
+  position += 1
+  const right = parseExpression()
+  if (!right || position !== tokens.length) return null
+  return `${mathNodeToLatex(left)} = ${mathNodeToLatex(right)}`
+}
+
+function renderAsciiEquationWhenPresent(text, keyPrefix) {
+  const value = String(text || '')
+  const directEquation = parseAsciiEquation(value)
+  if (directEquation) return <InlineMath math={directEquation} />
+
+  const colonIndex = value.lastIndexOf(':')
+  if (colonIndex >= 0) {
+    const equation = parseAsciiEquation(value.slice(colonIndex + 1))
+    if (equation) {
+      return (
+        <Fragment>
+          {renderPlainTextWithChemistry(value.slice(0, colonIndex + 1), `${keyPrefix}-label`)}{' '}
+          <InlineMath math={equation} />
+        </Fragment>
+      )
+    }
+  }
+  return null
+}
 
 function parseChemicalFormula(value) {
   const raw = String(value || '')
@@ -72,6 +214,16 @@ function ChemicalFormula({ parsed }) {
 
 function renderPlainTextWithChemistry(text, keyPrefix) {
   const value = String(text || '')
+  if (value.includes('\n')) {
+    return value.split('\n').map((line, index, lines) => (
+      <Fragment key={`${keyPrefix}-line-${index}`}>
+        {renderPlainTextWithChemistry(line, `${keyPrefix}-line-${index}`)}
+        {index < lines.length - 1 ? <br /> : null}
+      </Fragment>
+    ))
+  }
+  const equation = renderAsciiEquationWhenPresent(value, keyPrefix)
+  if (equation) return equation
   const nodes = []
   const regex = new RegExp(CHEMICAL_FORMULA_REGEX)
   let lastIndex = 0
