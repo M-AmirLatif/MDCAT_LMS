@@ -1180,16 +1180,15 @@ html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-car
   }
 
   html body .mcq-attempt-layout .mcq-question-card {
-    display: flex !important;
-    flex-direction: column !important;
-    height: calc(100dvh - 190px) !important;
-    min-height: 390px !important;
-    max-height: 680px !important;
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
     margin: 0 !important;
     padding: 14px 16px !important;
     border-width: 3px !important;
     border-radius: 22px !important;
-    overflow: hidden !important;
+    overflow: visible !important;
   }
 
   html body .mcq-attempt-layout .mcq-question-title {
@@ -1207,12 +1206,12 @@ html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-car
   }
 
   html body .mcq-attempt-layout .mcq-options-grid {
-    flex: 1 1 auto !important;
+    flex: none !important;
     min-height: 0 !important;
     margin: 0 !important;
     padding: 2px 4px !important;
     gap: 7px !important;
-    overflow: auto !important;
+    overflow: visible !important;
     align-content: start !important;
     scrollbar-width: thin;
   }
