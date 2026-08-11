@@ -172,12 +172,12 @@ function StudentDashboard({ firstName }) {
           <div className="workspace-hero-stats">
             <div className="hero-mini-card">
               <span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Attempted MCQs</span>
-              <strong>{summary.totalAttempted}/{summary.totalMcqs}</strong>
+              <strong>{loading ? '...' : `${summary.totalAttempted}/${summary.totalMcqs}`}</strong>
               <p>Across all four MDCAT subjects</p>
             </div>
             <div className="hero-mini-card">
               <span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Overall Accuracy</span>
-              <strong>{summary.overallAccuracy}%</strong>
+              <strong>{loading ? '...' : `${summary.overallAccuracy}%`}</strong>
               <p>Accuracy will update after real MCQ attempts</p>
             </div>
           </div>
@@ -194,15 +194,15 @@ function StudentDashboard({ firstName }) {
                 </span>
                 <div>
                   <div className="label-xs" style={{ color: SUBJECT_STYLES[subject.name].accent }}>{subject.name}</div>
-                  <h3 className="workspace-card-title">{subject.totalChapters} Chapters</h3>
+                  <h3 className="workspace-card-title">{loading ? 'Loading...' : `${subject.totalChapters} Chapters`}</h3>
                 </div>
               </div>
-              <span className="state-chip state-chip--neutral subject-accuracy-chip">{subject.accuracy}% accuracy</span>
+              <span className="state-chip state-chip--neutral subject-accuracy-chip">{loading ? '...' : `${subject.accuracy}% accuracy`}</span>
             </div>
             <div className="workspace-card-body subject-focus-body">
               <div className="subject-focus-metrics">
-                <div><span>Total MCQs</span><strong>{subject.totalMcqs}</strong></div>
-                <div><span>Attempted</span><strong>{subject.attemptedMcqs}</strong></div>
+                <div><span>Total MCQs</span><strong>{loading ? '...' : subject.totalMcqs}</strong></div>
+                <div><span>Attempted</span><strong>{loading ? '...' : subject.attemptedMcqs}</strong></div>
               </div>
               <div className="progress-bar-bg">
                 <div className="progress-bar-fill" style={{ '--fill': `${subject.accuracy}%`, width: `${subject.accuracy}%`, background: SUBJECT_STYLES[subject.name].progress }} />

@@ -148,10 +148,10 @@ export default function PlatformPerformance() {
   return (
     <div className="workspace-page animate-fade-up">
       <div className="card-grid">
-        <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>{isStudent ? 'Attempted MCQs' : 'Uploaded MCQs'}</span><StatIcon tone="purple" /></div><strong>{pageSummary.totalAttempted}</strong><small>{isStudent ? `${Math.max(pageSummary.totalMcqs - pageSummary.totalAttempted, 0)} still unattempted` : 'Live subject-bank count'}</small></div>
-        <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>{isStudent ? 'Overall Accuracy' : 'Total Chapters'}</span><StatIcon tone="teal" /></div><strong>{isStudent ? `${pageSummary.overallAccuracy}%` : pageSummary.overallAccuracy}</strong><small>{isStudent ? 'Live average across all attempts' : 'Across Biology, Chemistry, Physics, and English'}</small></div>
-        <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>{isStudent ? 'Best Subject' : 'Largest Bank'}</span><StatIcon tone="amber" /></div><strong>{pageSummary.bestSubject}</strong><small>{isStudent ? 'Highest current subject accuracy' : 'Most uploaded MCQs'}</small></div>
-        <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>{isStudent ? 'Weakest Subject' : 'Smallest Bank'}</span><StatIcon tone="coral" /></div><strong>{pageSummary.weakestSubject}</strong><small>{isStudent ? 'Main recovery target for this week' : 'Needs content coverage next'}</small></div>
+        <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>{isStudent ? 'Attempted MCQs' : 'Uploaded MCQs'}</span><StatIcon tone="purple" /></div><strong>{loading ? '...' : pageSummary.totalAttempted}</strong><small>{isStudent ? (loading ? 'Loading your progress' : `${Math.max(pageSummary.totalMcqs - pageSummary.totalAttempted, 0)} still unattempted`) : 'Live subject-bank count'}</small></div>
+        <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>{isStudent ? 'Overall Accuracy' : 'Total Chapters'}</span><StatIcon tone="teal" /></div><strong>{loading ? '...' : (isStudent ? `${pageSummary.overallAccuracy}%` : pageSummary.overallAccuracy)}</strong><small>{isStudent ? 'Live average across all attempts' : 'Across Biology, Chemistry, Physics, and English'}</small></div>
+        <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>{isStudent ? 'Best Subject' : 'Largest Bank'}</span><StatIcon tone="amber" /></div><strong>{loading ? '...' : pageSummary.bestSubject}</strong><small>{isStudent ? 'Highest current subject accuracy' : 'Most uploaded MCQs'}</small></div>
+        <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>{isStudent ? 'Weakest Subject' : 'Smallest Bank'}</span><StatIcon tone="coral" /></div><strong>{loading ? '...' : pageSummary.weakestSubject}</strong><small>{isStudent ? 'Main recovery target for this week' : 'Needs content coverage next'}</small></div>
       </div>
 
       {isStudent ? (
@@ -164,7 +164,9 @@ export default function PlatformPerformance() {
             </div>
           </div>
           <div className="workspace-card-body chart-panel performance-trend-chart">
-            {!loading && performanceTrend.length > 0 ? (
+            {loading ? (
+              <div className="empty-state empty-state--compact"><div className="loading-spinner" /><h3>Loading performance...</h3></div>
+            ) : performanceTrend.length > 0 ? (
               <>
                 <div className="performance-chart-plot">
                   <PerformanceSvgChart
@@ -195,7 +197,9 @@ export default function PlatformPerformance() {
             </div>
           </div>
           <div className="workspace-card-body chart-panel performance-overall-chart">
-            {!loading && overallTrend.length > 0 ? (
+            {loading ? (
+              <div className="empty-state empty-state--compact"><div className="loading-spinner" /><h3>Loading performance...</h3></div>
+            ) : overallTrend.length > 0 ? (
               <>
                 <div className="performance-chart-plot">
                   <PerformanceSvgChart
@@ -231,7 +235,7 @@ export default function PlatformPerformance() {
               <div key={subject.id} className="progress-inline">
                 <div className="progress-inline-row">
                   <span>{subject.name}</span>
-                  <strong>{isStudent ? `${subject.accuracy}%` : `${subject.totalMcqs || 0} MCQs`}</strong>
+                  <strong>{loading ? '...' : (isStudent ? `${subject.accuracy}%` : `${subject.totalMcqs || 0} MCQs`)}</strong>
                 </div>
                 <div className="progress-bar-bg">
                   <div className="progress-bar-fill" style={{ '--fill': `${isStudent ? subject.accuracy : totalMcqs ? Math.round(((subject.totalMcqs || 0) / totalMcqs) * 100) : 0}%`, width: `${isStudent ? subject.accuracy : totalMcqs ? Math.round(((subject.totalMcqs || 0) / totalMcqs) * 100) : 0}%`, background: subject.name === 'Biology' ? 'var(--grad-teal)' : subject.name === 'Chemistry' ? 'linear-gradient(135deg, #6C47FF 0%, #1DB884 100%)' : subject.name === 'Physics' ? 'linear-gradient(135deg, #4A90E2 0%, #73B1FF 100%)' : 'linear-gradient(135deg, #F59E0B 0%, #FFB648 100%)' }} />

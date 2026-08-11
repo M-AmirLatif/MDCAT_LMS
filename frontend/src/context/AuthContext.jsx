@@ -13,6 +13,7 @@ import {
   setAuth,
   setStoredUser,
 } from '../services/authStorage'
+import { clearApiCache } from '../services/queryClient'
 
 const AuthContext = createContext(null)
 
@@ -50,12 +51,14 @@ export function AuthProvider({ children }) {
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const login = useCallback((tokenValue, userData, remember = true) => {
+    clearApiCache()
     setAuth({ token: tokenValue, user: userData, remember })
     setToken(tokenValue)
     setUser(userData)
   }, [])
 
   const logout = useCallback(() => {
+    clearApiCache()
     clearAuth()
     setToken(null)
     setUser(null)

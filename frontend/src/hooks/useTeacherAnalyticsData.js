@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import API from '../services/api'
+import { useAuth } from '../context/AuthContext'
 
 const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English']
 
@@ -160,61 +161,19 @@ const buildAnalyticsData = (sessions = [], subjects = []) => {
   }
 }
 
-const hasAnalyticsAttempts = (analytics) => Number(analytics?.summary?.totalAttempts) > 0
-
 export default function useTeacherAnalyticsData() {
-  const [data, setData] = useState(EMPTY)
-  const [loading, setLoading] = useState(true)
-  const lastGoodDataRef = useRef(null)
+  const { user } = useAuth()
+  const query = useQuery({
+    queryKey: ['teacher-performance-overview', user?._id || user?.id || user?.email],
+    queryFn: async () => {
+      const response = await API.get('/tests/performance-overview', { skipQueryCache: true })
+      return response.data?.data || buildAnalyticsData()
+    },
+    staleTime: 2 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    placeholderData: (previousData) => previousData,
+  })
 
-  useEffect(() => {
-    let alive = true
-
-    const load = async () => {
-      setLoading((current) => (!lastGoodDataRef.current ? true : current))
-      try {
-        const [historyRes, summaryRes] = await Promise.all([
-          API.get('/tests/my', { params: { page: 1, limit: 1000 } }),
-          API.get('/mcqs/subjects/summary'),
-        ])
-
-        if (!alive) return
-
-        const nextData = buildAnalyticsData(
-          historyRes.data?.sessions || [],
-          summaryRes.data?.subjects || [],
-        )
-
-        if (hasAnalyticsAttempts(nextData)) {
-          lastGoodDataRef.current = nextData
-          setData(nextData)
-          return
-        }
-
-        // Avoid flashing "No submissions" during transient empty refreshes.
-        setData(lastGoodDataRef.current || nextData)
-      } catch {
-        if (alive) setData(lastGoodDataRef.current || EMPTY)
-      } finally {
-        if (alive) setLoading(false)
-      }
-    }
-
-    load()
-    const interval = window.setInterval(load, 30000)
-    const syncOnFocus = () => {
-      if (document.visibilityState === 'visible') load()
-    }
-    window.addEventListener('focus', load)
-    document.addEventListener('visibilitychange', syncOnFocus)
-    return () => {
-      alive = false
-      window.clearInterval(interval)
-      window.removeEventListener('focus', load)
-      document.removeEventListener('visibilitychange', syncOnFocus)
-    }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  return useMemo(() => ({ ...data, loading }), [data, loading])
+  return { ...(query.data || EMPTY), loading: query.isPending }
 }
 

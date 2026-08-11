@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { clearAuth, getAuthToken } from './authStorage'
-import toast from 'react-hot-toast'
+import { queryClient } from './queryClient'
 
 const FALLBACK_API_BASE_URL = 'https://mdcatlms-production-e781.up.railway.app/api'
 const configuredApiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').trim()
@@ -10,6 +10,64 @@ const API = axios.create({
   baseURL: API_BASE_URL,
   timeout: Number(import.meta.env.VITE_API_TIMEOUT_MS || 15000),
 })
+
+const networkGet = API.get.bind(API)
+
+const stableSerialize = (value) => {
+  if (value === null || value === undefined) return String(value)
+  if (Array.isArray(value)) return `[${value.map(stableSerialize).join(',')}]`
+  if (typeof value === 'object') {
+    return `{${Object.keys(value).sort().map((key) => `${key}:${stableSerialize(value[key])}`).join(',')}}`
+  }
+  return String(value)
+}
+
+const getCacheScope = () => {
+  try {
+    const rawUser = sessionStorage.getItem('user') || localStorage.getItem('user')
+    const user = rawUser ? JSON.parse(rawUser) : null
+    return String(user?._id || user?.id || user?.email || 'guest')
+  } catch {
+    return 'guest'
+  }
+}
+
+const getStaleTime = (url = '') => {
+  if (/latest-attempt/i.test(url)) return 0
+  if (/notifications|payments|subscriptions|auth\/profile/i.test(url)) return 30 * 1000
+  if (/subjects\/summary|\/chapters(?:\?|$)|\/courses(?:\?|$)|public\/stats/i.test(url)) return 5 * 60 * 1000
+  return 2 * 60 * 1000
+}
+
+// Central cache for every existing API.get call. This avoids a risky all-at-once
+// page rewrite while giving route changes, StrictMode remounts, and refreshes one
+// deduplicated, user-scoped source of server data.
+API.get = (url, config = {}) => {
+  if (config.skipQueryCache || /latest-attempt/i.test(String(url))) {
+    return networkGet(url, config)
+  }
+
+  const queryKey = [
+    'api-get',
+    getCacheScope(),
+    String(url),
+    stableSerialize(config.params || {}),
+  ]
+
+  return queryClient.fetchQuery({
+    queryKey,
+    staleTime: getStaleTime(String(url)),
+    queryFn: async () => {
+      const response = await networkGet(url, config)
+      return {
+        data: response.data,
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers,
+      }
+    },
+  })
+}
 
 const PUBLIC_ROUTE_PATHS = new Set([
   '/',
@@ -64,7 +122,13 @@ API.interceptors.request.use((config) => {
 // - Only retry on genuine connectivity / infrastructure errors
 // - Reduced fallback timeout to avoid long double-wait UX
 API.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const method = String(response?.config?.method || 'get').toLowerCase()
+    if (!['get', 'head', 'options'].includes(method)) {
+      queryClient.invalidateQueries()
+    }
+    return response
+  },
   (error) => {
     const originalRequest = error.config
     const isRetryable =

@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import API from '../services/api'
+import { useAuth } from '../context/AuthContext'
 
 const SUBJECTS = [
   { id: 'biology', name: 'Biology' },
@@ -203,42 +204,21 @@ const buildPerformanceData = (subjectSummary = [], sessions = []) => {
 }
 
 export default function useStudentPerformanceData() {
-  const [data, setData] = useState(() => buildPerformanceData())
-  const [loading, setLoading] = useState(true)
+  const { user } = useAuth()
+  const enabled = user?.role === 'student'
+  const query = useQuery({
+    queryKey: ['student-performance-overview', user?._id || user?.id || user?.email],
+    queryFn: async () => {
+      const response = await API.get('/tests/performance-overview', { skipQueryCache: true })
+      return response.data?.data || buildPerformanceData()
+    },
+    staleTime: 2 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    placeholderData: (previousData) => previousData,
+    enabled,
+  })
 
-  useEffect(() => {
-    let alive = true
-
-    const load = async () => {
-      setLoading(true)
-      try {
-        const [subjectRes, historyRes] = await Promise.all([
-          API.get('/mcqs/subjects/summary'),
-          API.get('/tests/my', { params: { page: 1, limit: 200 } }),
-        ])
-
-        if (!alive) return
-
-        setData(
-          buildPerformanceData(
-            subjectRes.data?.subjects || [],
-            historyRes.data?.sessions || [],
-          ),
-        )
-      } catch {
-        if (alive) setData(buildPerformanceData())
-      } finally {
-        if (alive) setLoading(false)
-      }
-    }
-
-    load()
-    return () => {
-      alive = false
-    }
-  }, [])
-
-  return { ...data, loading }
+  return { ...(query.data || buildPerformanceData()), loading: enabled && query.isPending }
 }
 
 

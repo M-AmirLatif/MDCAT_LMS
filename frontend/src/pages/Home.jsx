@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import ThemeToggle from '../components/ThemeToggle'
 import { getAuthUser } from '../services/authStorage'
@@ -24,20 +25,18 @@ function formatStat(value) {
 
 export default function Home() {
   const user = getAuthUser()
-  const [stats, setStats] = useState(null)
   const [menuOpen, setMenuOpen] = useState(false)
 
-  useEffect(() => {
-    let alive = true
-    API.get('/public/stats')
-      .then((res) => {
-        if (alive && res.data?.success) setStats(res.data)
-      })
-      .catch(() => {
-        // Silently fail — stats section will show fallback
-      })
-    return () => { alive = false }
-  }, [])
+  const statsQuery = useQuery({
+    queryKey: ['public-stats'],
+    queryFn: async () => {
+      const res = await API.get('/public/stats', { skipQueryCache: true })
+      return res.data?.success ? res.data : null
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  })
+  const stats = statsQuery.data
 
   const statItems = [
     [String(stats?.subjects ?? 4), 'MDCAT Subjects', 'people'],

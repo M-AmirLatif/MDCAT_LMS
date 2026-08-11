@@ -1,10 +1,12 @@
-import { StrictMode, useMemo, useEffect, useState } from 'react'
+import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Toaster } from 'react-hot-toast'
+import { QueryClientProvider } from '@tanstack/react-query'
 import ErrorBoundary from './components/ErrorBoundary'
 import { AuthProvider } from './context/AuthContext'
 import './index.css'
 import App from './App.jsx'
+import { queryClient } from './services/queryClient'
 
 function ToasterWithTheme() {
   return (
@@ -28,8 +30,10 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>
       <AuthProvider>
-        <App />
-        <ToasterWithTheme />
+        <QueryClientProvider client={queryClient}>
+          <App />
+          <ToasterWithTheme />
+        </QueryClientProvider>
       </AuthProvider>
     </ErrorBoundary>
   </StrictMode>,

@@ -570,5 +570,226 @@ exports.getSubjectWisePerformance = async (req, res) => {
   }
 }
 
+const normalizeAnalyticsSubject = (session) => {
+  const raw = String(
+    session?.subject || session?.courseId?.category || session?.courseId?.subject || '',
+  ).trim().toLowerCase()
+  return SUBJECTS.find((subject) => subject.toLowerCase() === raw) || ''
+}
+
+const getCompactSubjectBank = async (allowedSubjects = SUBJECTS) => {
+  const courses = await Course.find({ category: { $in: allowedSubjects } })
+    .select('_id category chapters')
+    .lean()
+  const counts = await MCQ.aggregate([
+    { $match: { courseId: { $in: courses.map((course) => course._id) } } },
+    { $group: { _id: '$subject', totalMcqs: { $sum: 1 } } },
+  ])
+  const courseBySubject = new Map(courses.map((course) => [course.category, course]))
+  const countBySubject = new Map(counts.map((row) => [row._id, row.totalMcqs]))
+  return allowedSubjects.map((subject) => ({
+    id: subject.toLowerCase(),
+    name: subject,
+    totalChapters: courseBySubject.get(subject)?.chapters?.length || 0,
+    totalMcqs: countBySubject.get(subject) || 0,
+  }))
+}
+
+const compactSession = (session) => ({
+  id: String(session._id),
+  subject: normalizeAnalyticsSubject(session),
+  chapter: session.chapterName || session.topic || 'Chapter practice',
+  chapterId: session.chapterId || '',
+  totalQuestions: Number(session.totalQuestions) || 0,
+  correct: Number(session.finalScore ?? session.score) || 0,
+  score: Number(session.percentage) || 0,
+  submittedAt: session.submittedAt || null,
+  student: session.studentId ? {
+    id: String(session.studentId._id || session.studentId),
+    firstName: session.studentId.firstName || '',
+    lastName: session.studentId.lastName || '',
+    email: session.studentId.email || '',
+  } : null,
+})
+
+const formatOverviewDate = (value) => {
+  if (!value) return 'Recent'
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return 'Recent'
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
+const buildStudentOverview = (bank, rawSessions) => {
+  const sessions = rawSessions.map(compactSession).filter((session) => session.subject)
+  const latestByPractice = new Map()
+  sessions.forEach((session) => {
+    const key = `${session.subject}::${session.chapterId || session.chapter}`
+    latestByPractice.set(key, session)
+  })
+
+  const subjects = bank.map((subject) => {
+    const attempts = [...latestByPractice.values()].filter((row) => row.subject === subject.name)
+    const attemptedMcqs = attempts.reduce((sum, row) => sum + row.totalQuestions, 0)
+    const correct = attempts.reduce((sum, row) => sum + row.correct, 0)
+    return {
+      ...subject,
+      attemptedMcqs,
+      accuracy: attemptedMcqs ? Math.round((correct / attemptedMcqs) * 100) : 0,
+      theme: subject.name,
+    }
+  })
+  const totalAttempted = subjects.reduce((sum, subject) => sum + subject.attemptedMcqs, 0)
+  const totalCorrect = [...latestByPractice.values()].reduce((sum, row) => sum + row.correct, 0)
+  const attemptedSubjects = subjects.filter((subject) => subject.attemptedMcqs > 0)
+    .sort((a, b) => b.accuracy - a.accuracy)
+
+  const trendSource = sessions.slice(-60)
+  const running = new Map()
+  const performanceTrend = trendSource.map((session, index) => {
+    running.set(`${session.subject}::${session.chapterId || session.chapter}`, session)
+    const row = {
+      label: session.chapter,
+      attemptLabel: `A${index + 1}`,
+      attemptNumber: index + 1,
+      attemptDate: formatOverviewDate(session.submittedAt),
+      subject: session.subject,
+      score: session.score,
+    }
+    SUBJECTS.forEach((subject) => {
+      const values = [...running.values()].filter((item) => item.subject === subject)
+      const total = values.reduce((sum, item) => sum + item.totalQuestions, 0)
+      const correct = values.reduce((sum, item) => sum + item.correct, 0)
+      row[subject] = total ? Math.round((correct / total) * 100) : null
+    })
+    return row
+  })
+  const overallTrend = performanceTrend.map((row) => {
+    const current = trendSource.slice(0, row.attemptNumber)
+    const total = current.reduce((sum, item) => sum + item.totalQuestions, 0)
+    const correct = current.reduce((sum, item) => sum + item.correct, 0)
+    return {
+      label: row.label,
+      attemptLabel: row.attemptLabel,
+      attemptNumber: row.attemptNumber,
+      attemptDate: row.attemptDate,
+      Overall: total ? Math.round((correct / total) * 100) : 0,
+      attemptScore: row.score,
+    }
+  })
+
+  return {
+    subjects,
+    summary: {
+      totalAttempted,
+      totalMcqs: subjects.reduce((sum, subject) => sum + subject.totalMcqs, 0),
+      overallAccuracy: totalAttempted ? Math.round((totalCorrect / totalAttempted) * 100) : 0,
+      bestSubject: attemptedSubjects[0]?.name || 'No attempts yet',
+      weakestSubject: attemptedSubjects.at(-1)?.name || 'No attempts yet',
+    },
+    performanceTrend,
+    overallTrend,
+    practiceAttempts: [...sessions].reverse().slice(0, 6).map((session) => ({
+      id: session.id,
+      subject: session.subject,
+      chapter: session.chapter,
+      correct: session.correct,
+      total: session.totalQuestions,
+      score: session.score,
+      date: formatOverviewDate(session.submittedAt),
+    })),
+  }
+}
+
+const buildTeacherOverview = (bank, rawSessions) => {
+  const sessions = rawSessions.map(compactSession).filter((session) => session.subject)
+  const studentMap = new Map()
+  sessions.forEach((session) => {
+    const id = session.student?.id || session.student?.email || 'unknown'
+    const current = studentMap.get(id) || { student: session.student, sessions: [] }
+    current.sessions.push(session)
+    studentMap.set(id, current)
+  })
+  const studentRows = [...studentMap.values()].map(({ student, sessions: rows }) => {
+    const score = rows.length
+      ? Math.round(rows.reduce((sum, row) => sum + row.score, 0) / rows.length)
+      : 0
+    return {
+      name: [student?.firstName, student?.lastName].filter(Boolean).join(' ') || student?.email || 'Unknown',
+      city: 'N/A',
+      score,
+      streak: `${rows.length} attempts`,
+      risk: score < 50 ? 'High' : score < 70 ? 'Medium' : 'Low',
+      email: student?.email || 'No email',
+      trend: rows.slice(-30).map((row, index) => ({ label: `Attempt ${index + 1}`, score: row.score })),
+    }
+  }).sort((a, b) => b.score - a.score)
+  const subjectMastery = SUBJECTS.map((subject) => {
+    const rows = sessions.filter((session) => session.subject === subject)
+    return {
+      subject,
+      score: rows.length ? Math.round(rows.reduce((sum, row) => sum + row.score, 0) / rows.length) : 0,
+    }
+  })
+  const scoreDistribution = [
+    { band: '0-39%', min: 0, max: 39 },
+    { band: '40-59%', min: 40, max: 59 },
+    { band: '60-79%', min: 60, max: 79 },
+    { band: '80-100%', min: 80, max: 100 },
+  ].map(({ band, min, max }) => ({
+    band,
+    count: sessions.filter((session) => session.score >= min && session.score <= max).length,
+  }))
+  const topStudents = studentRows.slice(0, 3)
+  const maxTrend = Math.max(0, ...topStudents.map((student) => student.trend.length))
+  const multiStudentTrend = Array.from({ length: maxTrend }, (_, index) => {
+    const row = { label: `Attempt ${index + 1}` }
+    topStudents.forEach((student) => {
+      if (student.trend[index]) row[student.name] = student.trend[index].score
+    })
+    return row
+  })
+  const totalChapters = bank.reduce((sum, subject) => sum + subject.totalChapters, 0)
+  const attemptedChapters = new Set(sessions.map((session) => `${session.subject}:${session.chapterId || session.chapter}`))
+  return {
+    summary: {
+      classAverage: sessions.length ? Math.round(sessions.reduce((sum, row) => sum + row.score, 0) / sessions.length) : 0,
+      submissionRate: totalChapters ? Math.round((attemptedChapters.size / totalChapters) * 100) : 0,
+      liveAttendance: 0,
+      atRisk: studentRows.filter((student) => student.score < 50).length,
+      totalAttempts: sessions.length,
+    },
+    scoreDistribution,
+    subjectMastery,
+    multiStudentTrend,
+    studentRows,
+  }
+}
+
+// One compact, pre-calculated response replaces repeated downloads of 200-1000
+// raw test sessions on dashboard/performance/teacher pages.
+exports.getPerformanceOverview = async (req, res) => {
+  try {
+    const role = req.user.role?.name || req.user.role || 'student'
+    const filter = await buildTestFilter(req)
+    const allowedSubjects = role === 'teacher' ? getTeacherSubjects(req.user) : SUBJECTS
+    const [bank, sessions] = await Promise.all([
+      getCompactSubjectBank(allowedSubjects),
+      TestSession.find(filter)
+        .populate('studentId', 'firstName lastName email')
+        .populate('courseId', 'category subject')
+        .select('studentId courseId subject chapterId chapterName topic totalQuestions score finalScore percentage submittedAt')
+        .sort({ submittedAt: 1 })
+        .lean(),
+    ])
+    const data = role === 'student'
+      ? buildStudentOverview(bank, sessions)
+      : buildTeacherOverview(bank, sessions)
+    res.set('Cache-Control', 'private, max-age=30')
+    res.status(200).json({ success: true, data })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+}
+
 
 
