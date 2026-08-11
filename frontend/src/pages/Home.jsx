@@ -3,8 +3,19 @@ import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import ThemeToggle from '../components/ThemeToggle'
 import { getAuthUser } from '../services/authStorage'
-import API from '../services/api'
 import './Home.css'
+
+const PUBLIC_STATS_CACHE_KEY = 'mdcat-public-stats-v1'
+
+const readCachedPublicStats = () => {
+  try {
+    const cached = JSON.parse(localStorage.getItem(PUBLIC_STATS_CACHE_KEY) || 'null')
+    if (cached?.savedAt < Date.now() - 24 * 60 * 60 * 1000) return undefined
+    return cached?.data?.success ? cached.data : undefined
+  } catch {
+    return undefined
+  }
+}
 
 function Icon({ name }) {
   const common = { viewBox: '0 0 24 24', fill: 'none', 'aria-hidden': true }
@@ -30,11 +41,22 @@ export default function Home() {
   const statsQuery = useQuery({
     queryKey: ['public-stats'],
     queryFn: async () => {
-      const res = await API.get('/public/stats', { skipQueryCache: true })
-      return res.data?.success ? res.data : null
+      const response = await fetch('/api/public/stats', {
+        headers: { Accept: 'application/json' },
+      })
+      if (!response.ok) throw new Error('Unable to load public statistics')
+      const data = await response.json()
+      if (data?.success) {
+        localStorage.setItem(PUBLIC_STATS_CACHE_KEY, JSON.stringify({
+          savedAt: Date.now(),
+          data,
+        }))
+      }
+      return data?.success ? data : null
     },
+    initialData: readCachedPublicStats,
     staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
+    gcTime: 24 * 60 * 60 * 1000,
   })
   const stats = statsQuery.data
 

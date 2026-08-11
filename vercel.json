@@ -5,6 +5,10 @@
   "outputDirectory": "frontend/dist",
   "rewrites": [
     {
+      "source": "/api/public/stats",
+      "destination": "https://mdcatlms-production-e781.up.railway.app/api/public/stats"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
