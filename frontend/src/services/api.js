@@ -2,7 +2,7 @@ import axios from 'axios'
 import { clearAuth, getAuthToken } from './authStorage'
 import { queryClient } from './queryClient'
 
-const FALLBACK_API_BASE_URL = 'https://mediumspringgreen-reindeer-224522.hostingersite.com/api'
+const FALLBACK_API_BASE_URL = 'https://api.acemdcat.com/api'
 const configuredApiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').trim()
 export const API_BASE_URL = configuredApiBaseUrl || FALLBACK_API_BASE_URL
 
