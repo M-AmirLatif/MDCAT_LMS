@@ -414,6 +414,7 @@
 .auth-form .floating-field input:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
   box-shadow: 0 0 0 1000px transparent inset !important;
+  font-weight: 600 !important;
   transition: background-color 9999s ease-out 0s;
 }
 
@@ -440,7 +441,7 @@
 .auth-input-shell--valid input:focus {
   color: #1a1a2e;
   -webkit-text-fill-color: #1a1a2e;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .auth-form .floating-field input:hover {
