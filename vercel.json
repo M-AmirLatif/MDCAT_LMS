@@ -6,7 +6,7 @@
   "rewrites": [
     {
       "source": "/api/public/stats",
-      "destination": "https://mdcatlms-production-e781.up.railway.app/api/public/stats"
+      "destination": "https://mediumspringgreen-reindeer-224522.hostingersite.com/api/public/stats"
     },
     {
       "source": "/(.*)",
