@@ -245,7 +245,14 @@ export default function Login() {
                     autoComplete="username"
                     required
                     readOnly={!isInteractable}
-                    onPointerDown={() => setIsInteractable(true)}
+                    onPointerDown={(event) => {
+                      event.currentTarget.removeAttribute('readonly')
+                      setIsInteractable(true)
+                    }}
+                    onTouchStart={(event) => {
+                      event.currentTarget.removeAttribute('readonly')
+                      setIsInteractable(true)
+                    }}
                     onFocus={() => setIsInteractable(true)}
                   />
                   {emailValid ? <span className="auth-valid-dot" aria-hidden="true" /> : null}
@@ -270,7 +277,14 @@ export default function Login() {
                     autoComplete="current-password"
                     required
                     readOnly={!isInteractable}
-                    onPointerDown={() => setIsInteractable(true)}
+                    onPointerDown={(event) => {
+                      event.currentTarget.removeAttribute('readonly')
+                      setIsInteractable(true)
+                    }}
+                    onTouchStart={(event) => {
+                      event.currentTarget.removeAttribute('readonly')
+                      setIsInteractable(true)
+                    }}
                     onFocus={() => setIsInteractable(true)}
                   />
                   <button
