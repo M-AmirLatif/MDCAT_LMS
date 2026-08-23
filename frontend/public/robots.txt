@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /courses
+Disallow: /mcqs
+Disallow: /student/
+Disallow: /teacher/
+Disallow: /performance
+Disallow: /leaderboard
+Disallow: /payments
+Disallow: /profile/
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /verify-email
+
+Sitemap: https://www.acemdcat.com/sitemap.xml
