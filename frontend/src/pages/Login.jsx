@@ -68,6 +68,7 @@ export default function Login() {
     email: '',
     password: '',
   })
+  const [isInteractable, setIsInteractable] = useState(false)
   const [remember, setRemember] = useState(rememberedCredentials.remember)
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -243,6 +244,9 @@ export default function Login() {
                     placeholder="Enter your email"
                     autoComplete="username"
                     required
+                    readOnly={!isInteractable}
+                    onPointerDown={() => setIsInteractable(true)}
+                    onFocus={() => setIsInteractable(true)}
                   />
                   {emailValid ? <span className="auth-valid-dot" aria-hidden="true" /> : null}
                 </div>
@@ -265,6 +269,9 @@ export default function Login() {
                     placeholder="Enter your password"
                     autoComplete="current-password"
                     required
+                    readOnly={!isInteractable}
+                    onPointerDown={() => setIsInteractable(true)}
+                    onFocus={() => setIsInteractable(true)}
                   />
                   <button
                     className="auth-inline-toggle"
