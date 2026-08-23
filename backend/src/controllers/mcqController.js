@@ -85,6 +85,10 @@ const buildVirtualChapterTests = (chapter, totalMcqs, options = {}) => {
 }
 const teacherRoleNames = new Set(['teacher', 'admin'])
 
+// MCQ access is currently free for every student. Set this to true in a
+// future release when paid access to later tests should be re-enabled.
+const REQUIRE_SUBSCRIPTION_FOR_MCQ_TESTS = false
+
 const userRoleName = (user) =>
   user?.role?.name === 'superadmin' ? 'admin' : user?.role?.name
 
@@ -107,6 +111,7 @@ const canAccessSubjectContent = (user, subject, contentIndex = 0) => {
   if (roleName === 'admin') return true
   if (roleName === 'teacher') return canManageSubject(subject, user)
   if (roleName !== 'student') return false
+  if (!REQUIRE_SUBSCRIPTION_FOR_MCQ_TESTS) return true
   if (contentIndex === 0) return true
   return hasActiveSubscription(user, subject)
 }
@@ -116,6 +121,7 @@ const canAccessChapterTest = (user, subject, contentIndex = 0, testPart = null) 
   if (roleName === 'admin') return true
   if (roleName === 'teacher') return canManageSubject(subject, user)
   if (roleName !== 'student') return false
+  if (!REQUIRE_SUBSCRIPTION_FOR_MCQ_TESTS) return true
   const part = normalizeTestPart(testPart)
   if (contentIndex === 0 && (!part || part === 1)) return true
   return hasActiveSubscription(user, subject)
