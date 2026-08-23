@@ -399,6 +399,7 @@
   color: #1a1a2e;
   font-size: 15px;
   font-weight: 600;
+  caret-color: #6c47ff;
   outline: none;
   transition: border-color 200ms ease, box-shadow 200ms ease, background 200ms ease;
 }
@@ -2025,6 +2026,9 @@ html[data-theme="dark"] .auth-form .floating-field {
     padding: 0 !important;
     border: 0 !important;
     box-sizing: border-box !important;
+    font-size: 17px !important;
+    line-height: 1.45 !important;
+    caret-color: #6c47ff !important;
   }
 
   .auth-form .floating-field.auth-password-field input {

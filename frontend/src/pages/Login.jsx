@@ -68,7 +68,6 @@ export default function Login() {
     email: '',
     password: '',
   })
-  const [isInteractable, setIsInteractable] = useState(false)
   const [remember, setRemember] = useState(rememberedCredentials.remember)
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -225,7 +224,7 @@ export default function Login() {
                 tools.
               </p>
 
-              <form className="auth-form" onSubmit={handleSubmit} autoComplete="off">
+              <form className="auth-form" onSubmit={handleSubmit} autoComplete="on">
                 <div
                   className={`floating-field auth-input-shell ${formData.email ? 'auth-input-shell--filled' : ''} ${emailValid ? 'auth-input-shell--valid' : ''}`}
                 >
@@ -242,10 +241,8 @@ export default function Login() {
                       setFormData((current) => ({ ...current, email: event.target.value }))
                     }
                     placeholder="Enter your email"
-                    autoComplete="off"
+                    autoComplete="username"
                     required
-                    readOnly={!isInteractable}
-                    onFocus={() => setIsInteractable(true)}
                   />
                   {emailValid ? <span className="auth-valid-dot" aria-hidden="true" /> : null}
                 </div>
@@ -266,10 +263,8 @@ export default function Login() {
                       setFormData((current) => ({ ...current, password: event.target.value }))
                     }
                     placeholder="Enter your password"
-                    autoComplete="new-password"
+                    autoComplete="current-password"
                     required
-                    readOnly={!isInteractable}
-                    onFocus={() => setIsInteractable(true)}
                   />
                   <button
                     className="auth-inline-toggle"
