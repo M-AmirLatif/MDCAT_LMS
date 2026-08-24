@@ -253,7 +253,11 @@ export default function Login() {
                       event.currentTarget.removeAttribute('readonly')
                       setIsInteractable(true)
                     }}
-                    onFocus={() => setIsInteractable(true)}
+                    onFocus={(event) => {
+                      event.currentTarget.removeAttribute('readonly')
+                      setIsInteractable(true)
+                    }}
+                    onClick={(event) => event.currentTarget.focus()}
                   />
                   {emailValid ? <span className="auth-valid-dot" aria-hidden="true" /> : null}
                 </div>
@@ -285,7 +289,11 @@ export default function Login() {
                       event.currentTarget.removeAttribute('readonly')
                       setIsInteractable(true)
                     }}
-                    onFocus={() => setIsInteractable(true)}
+                    onFocus={(event) => {
+                      event.currentTarget.removeAttribute('readonly')
+                      setIsInteractable(true)
+                    }}
+                    onClick={(event) => event.currentTarget.focus()}
                   />
                   <button
                     className="auth-inline-toggle"

@@ -1541,6 +1541,23 @@ html[data-theme="dark"] .auth-form .floating-field {
   -webkit-text-fill-color: #F0EEFF;
 }
 
+/* Keep browser autofill and selected saved accounts visually identical to
+   manually entered login text. */
+.auth-form .floating-field input,
+.auth-form .floating-field input:-webkit-autofill,
+.auth-form .floating-field input:-webkit-autofill:hover,
+.auth-form .floating-field input:-webkit-autofill:focus,
+.auth-form .floating-field input:-webkit-autofill:active {
+  font-family: inherit !important;
+  font-size: 15px !important;
+  font-weight: 400 !important;
+  font-synthesis: none !important;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  caret-color: #ffffff !important;
+  caret-shape: bar;
+}
+
 [data-theme="dark"] .auth-form .floating-field input::placeholder {
   color: rgba(155, 143, 204, 0.5);
   -webkit-text-fill-color: rgba(155, 143, 204, 0.5);
@@ -2033,8 +2050,10 @@ html[data-theme="dark"] .auth-form .floating-field {
     border: 0 !important;
     box-sizing: border-box !important;
     font-size: 18px !important;
-    line-height: 1.55 !important;
+    line-height: 1.4 !important;
+    font-weight: 400 !important;
     caret-color: #ffffff !important;
+    caret-shape: bar;
   }
 
   .auth-form .floating-field.auth-password-field input {
