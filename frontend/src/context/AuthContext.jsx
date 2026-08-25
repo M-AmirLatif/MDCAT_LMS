@@ -39,9 +39,25 @@ export function AuthProvider({ children }) {
         if (!alive) return
         setUser(res.data.user)
         setStoredUser(res.data.user)
-      } catch {
+      } catch (error) {
         if (!alive) return
-        logout()
+
+        // Only sign out when the server actually rejected the credentials.
+        // A bare catch here used to log the user out on ANY failure, including a
+        // momentary network blip or a cold-start 503 — so a successful login was
+        // immediately undone and the user was bounced back to /login. That was a
+        // large part of the "login works sometimes" behaviour.
+        const status = error?.response?.status
+        if (status === 401 || status === 403) {
+          logout()
+        } else {
+          // Transient/offline failure: keep the cached session and let the user
+          // continue. The next authenticated request will re-validate.
+          console.warn(
+            'Could not verify session (keeping cached session):',
+            error?.message || status,
+          )
+        }
       } finally {
         if (alive) setLoading(false)
       }

@@ -92,13 +92,29 @@ const isPublicPage = () => {
 export const getUserFriendlyErrorMessage = (error, fallback = 'Something went wrong. Please try again.') => {
   const status = error?.response?.status
   const message = String(error?.response?.data?.error || '').trim()
+  const code = String(error?.response?.data?.code || '')
+
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+    return 'You appear to be offline. Check your internet connection and try again.'
+  }
 
   if (error?.code === 'ECONNABORTED') {
     return 'The server took too long to respond. Please try again.'
   }
 
-  if (error?.message === 'Network Error' || !error?.response) {
+  if (error?.message === 'Network Error' || error?.code === 'ERR_NETWORK' || !error?.response) {
     return 'The server is temporarily unavailable. Please try again in a moment.'
+  }
+
+  if (status === 429) {
+    const seconds = Number(error?.response?.data?.retryAfterSeconds)
+    return Number.isFinite(seconds) && seconds > 0
+      ? `Too many attempts. Please wait ${seconds > 60 ? `${Math.ceil(seconds / 60)} minute(s)` : `${seconds} second(s)`} and try again.`
+      : 'Too many attempts. Please wait a moment and try again.'
+  }
+
+  if (code === 'DB_UNAVAILABLE') {
+    return 'The server is still starting up. Please try again in a few seconds.'
   }
 
   if (status >= 500) {
@@ -119,10 +135,50 @@ API.interceptors.request.use((config) => {
 })
 
 // ==================== RESPONSE INTERCEPTOR ====================
-// Refined fallback retry strategy:
-// - Only retry on GET (idempotent) requests to avoid double mutations
-// - Only retry on genuine connectivity / infrastructure errors
-// - Reduced fallback timeout to avoid long double-wait UX
+// Transient-failure retry.
+//
+// The previous implementation required `baseURL !== FALLBACK_API_BASE_URL`. In
+// production VITE_API_BASE_URL is set to exactly the fallback URL, so that test
+// was always false and NOTHING was ever retried — every momentary backend blip
+// surfaced to the user. Sign-in was hit hardest because it is a POST and POSTs
+// were excluded outright.
+//
+// Retries now cover: connection failures, timeouts, and 502/503/504 (including
+// the API's own "still starting up" 503). Only safe methods plus the two
+// session-minting auth POSTs are replayed, so no domain mutation can double-fire.
+const RETRYABLE_STATUS = new Set([502, 503, 504])
+const MAX_RETRIES = 2
+const RETRY_BASE_DELAY_MS = 600
+
+const REPLAYABLE_POST_PATHS = [/\/auth\/login\/?$/, /\/auth\/google\/?$/]
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+const isTransientFailure = (error) =>
+  error?.message === 'Network Error' ||
+  error?.code === 'ERR_NETWORK' ||
+  error?.code === 'ECONNABORTED' ||
+  error?.code === 'ETIMEDOUT' ||
+  RETRYABLE_STATUS.has(error?.response?.status)
+
+const isReplayable = (config) => {
+  const method = String(config?.method || 'get').toUpperCase()
+  if (['GET', 'HEAD', 'OPTIONS'].includes(method)) return true
+  if (method === 'POST') {
+    return REPLAYABLE_POST_PATHS.some((pattern) => pattern.test(String(config?.url || '')))
+  }
+  return false
+}
+
+const getRetryDelay = (error, attempt) => {
+  // Honour Retry-After when the server sends one (the readiness gate does).
+  const headerValue = Number(error?.response?.headers?.['retry-after'])
+  if (Number.isFinite(headerValue) && headerValue > 0) {
+    return Math.min(headerValue * 1000, 5000)
+  }
+  return RETRY_BASE_DELAY_MS * 2 ** (attempt - 1) + Math.random() * 250
+}
+
 API.interceptors.response.use(
   (response) => {
     const method = String(response?.config?.method || 'get').toLowerCase()
@@ -131,25 +187,34 @@ API.interceptors.response.use(
     }
     return response
   },
-  (error) => {
+  async (error) => {
     const originalRequest = error.config
-    const isRetryable =
-      originalRequest &&
-      !originalRequest.__retriedWithFallback &&
-      FALLBACK_API_BASE_URL &&
-      originalRequest.baseURL !== FALLBACK_API_BASE_URL &&
-      // Only retry safe, idempotent methods to avoid double-mutations
-      (!originalRequest.method || originalRequest.method.toUpperCase() === 'GET') &&
-      (error.message === 'Network Error' ||
-        error.code === 'ECONNABORTED' ||
-        [502, 503, 504].includes(error.response?.status))
+    const isOffline = typeof navigator !== 'undefined' && navigator.onLine === false
 
-    if (isRetryable) {
-      originalRequest.__retriedWithFallback = true
-      originalRequest.baseURL = FALLBACK_API_BASE_URL
-      // Use shorter timeout for fallback to avoid long stalls
-      originalRequest.timeout = 10000
-      return API.request(originalRequest)
+    if (
+      originalRequest &&
+      !isOffline &&
+      isTransientFailure(error) &&
+      isReplayable(originalRequest)
+    ) {
+      const attempt = (originalRequest.__retryCount || 0) + 1
+      if (attempt <= MAX_RETRIES) {
+        originalRequest.__retryCount = attempt
+        await sleep(getRetryDelay(error, attempt))
+
+        // On the final attempt, try the known-good fallback host if we are not
+        // already pointed at it.
+        if (
+          attempt === MAX_RETRIES &&
+          FALLBACK_API_BASE_URL &&
+          originalRequest.baseURL !== FALLBACK_API_BASE_URL
+        ) {
+          originalRequest.baseURL = FALLBACK_API_BASE_URL
+          originalRequest.timeout = 10000
+        }
+
+        return API.request(originalRequest)
+      }
     }
 
     if (error.response?.status === 401) {
