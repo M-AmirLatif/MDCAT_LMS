@@ -57,6 +57,16 @@ const allowedOriginSet = new Set(
     .filter(Boolean),
 )
 
+const requiredProductionOrigins = [
+  'https://www.acemdcat.com',
+  'https://acemdcat.com',
+  'https://mdcat-lms.vercel.app',
+]
+
+requiredProductionOrigins.forEach((origin) =>
+  allowedOriginSet.add(normalizeOrigin(origin)),
+)
+
 const allowedHostSet = new Set(
   rawCorsOrigins
     .filter((o) => !o.includes('://'))
