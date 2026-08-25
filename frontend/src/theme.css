@@ -1419,7 +1419,6 @@ html[data-theme="dark"] .auth-form .floating-field input::placeholder {
   color: rgba(240,238,255,0.42) !important;
   opacity: 1 !important;
   font-weight: 500 !important;
-  filter: blur(0.15px);
   -webkit-text-fill-color: rgba(240,238,255,0.42) !important;
 }
 

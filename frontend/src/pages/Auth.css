@@ -398,7 +398,7 @@
   background: transparent;
   color: #1a1a2e;
   font-size: 15px;
-  font-weight: 400;
+  font-weight: 500;
   caret-color: #8b6fff !important;
   outline: none;
   transition: border-color 200ms ease, box-shadow 200ms ease, background 200ms ease;
@@ -414,7 +414,7 @@
 .auth-form .floating-field input:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
   box-shadow: 0 0 0 1000px transparent inset !important;
-  font-weight: 400 !important;
+  font-weight: 500 !important;
   transition: background-color 9999s ease-out 0s;
 }
 
@@ -426,7 +426,6 @@
   color: rgba(107, 107, 138, 0.5);
   opacity: 1;
   font-weight: 500;
-  filter: blur(0.15px);
 }
 
 .auth-form .floating-field input:placeholder-shown {
@@ -441,7 +440,7 @@
 .auth-input-shell--valid input:focus {
   color: #1a1a2e;
   -webkit-text-fill-color: #1a1a2e;
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .auth-form .floating-field input:hover {
@@ -1187,7 +1186,6 @@ input:focus-visible {
     color: rgba(107, 107, 138, 0.5);
     font-weight: 500;
     opacity: 1;
-    filter: blur(0.15px);
   }
 
   .auth-form .floating-field input:placeholder-shown {
@@ -1550,7 +1548,7 @@ html[data-theme="dark"] .auth-form .floating-field {
 .auth-form .floating-field input:-webkit-autofill:active {
   font-family: inherit !important;
   font-size: 15px !important;
-  font-weight: 400 !important;
+  font-weight: 500 !important;
   font-synthesis: none !important;
   text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
@@ -2051,7 +2049,7 @@ html[data-theme="dark"] .auth-form .floating-field {
     box-sizing: border-box !important;
     font-size: 18px !important;
     line-height: 30px !important;
-    font-weight: 400 !important;
+    font-weight: 500 !important;
     caret-color: #8b6fff !important;
     caret-shape: bar;
   }
