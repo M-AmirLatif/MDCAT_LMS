@@ -1,6 +1,6 @@
 import { QueryClient, dehydrate, hydrate } from '@tanstack/react-query'
 
-const CACHE_STORAGE_KEY = 'mdcat-query-cache-v1'
+const CACHE_STORAGE_KEY = 'mdcat-query-cache-v2'
 const CACHE_MAX_AGE_MS = 30 * 60 * 1000
 
 // Persist to localStorage, not sessionStorage. sessionStorage is scoped to a
