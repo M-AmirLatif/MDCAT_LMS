@@ -2026,8 +2026,7 @@ html[data-theme="dark"] .auth-form .floating-field {
 /* Mobile auth input icon spacing fix */
 @media (max-width: 640px) {
   .auth-form .floating-field.auth-input-shell {
-    padding-left: 60px !important;
-    padding-right: 16px !important;
+    padding: 12px 16px 12px 60px !important;
     overflow: visible !important;
   }
 
@@ -2046,11 +2045,12 @@ html[data-theme="dark"] .auth-form .floating-field {
     width: 100% !important;
     max-width: 100% !important;
     min-width: 0 !important;
+    height: 30px !important;
     padding: 0 !important;
     border: 0 !important;
     box-sizing: border-box !important;
     font-size: 18px !important;
-    line-height: 1.4 !important;
+    line-height: 30px !important;
     font-weight: 400 !important;
     caret-color: #8b6fff !important;
     caret-shape: bar;
