@@ -101,8 +101,19 @@ export function useGoogleSignIn({
         })
         const { token, user } = res.data
 
+        // Role gate. `expectedRole` comes from the ?role= query param and
+        // defaults to 'student', so an admin/teacher signing in from the plain
+        // /login URL used to fail this check, hit the bare `return` below, and
+        // stay on the login page with no navigation — the token was discarded
+        // silently. Sign the user in and send them to their own dashboard
+        // instead of dead-ending; only warn on a genuine mismatch.
         if (mode === 'signin' && expectedRole && user?.role !== expectedRole) {
-          toast.error(`This Google account is a ${getRoleLabel(user?.role)} account, not ${getRoleLabel(expectedRole)}.`)
+          toast(
+            `Signing you in as ${getRoleLabel(user?.role)}.`,
+            { icon: 'i' },
+          )
+          login(token, user, remember)
+          navigate(getDefaultRouteForRole(user?.role), { replace: true })
           return
         }
 
@@ -158,6 +169,11 @@ export function useGoogleSignIn({
         callback: handleCredentialResponse,
         auto_select: false,
         cancel_on_tap_outside: true,
+        // Chrome/Edge are phasing out third-party cookies, which the legacy One
+        // Tap flow depends on. Without opting into FedCM the account chooser can
+        // still appear and then never deliver a credential to the callback —
+        // the user picks an account and nothing happens at all.
+        use_fedcm_for_prompt: true,
       })
 
       initializedRef.current = true
