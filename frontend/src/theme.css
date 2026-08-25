@@ -1398,7 +1398,7 @@ html[data-theme="dark"] .auth-input-shell--valid input,
 html[data-theme="dark"] .auth-input-shell--valid input:focus {
   color: #f4f2ff !important;
   -webkit-text-fill-color: #f4f2ff !important;
-  font-weight: 700 !important;
+  font-weight: 500 !important;
 }
 
 html[data-theme="dark"] .auth-form .floating-field input:not(:placeholder-shown),
@@ -1407,7 +1407,7 @@ html[data-theme="dark"] .auth-password-field input:focus {
   color: #f4f2ff !important;
   -webkit-text-fill-color: #f4f2ff !important;
   opacity: 1 !important;
-  font-weight: 700 !important;
+  font-weight: 500 !important;
 }
 
 html[data-theme="dark"] .auth-form .floating-field input:focus {
@@ -1436,7 +1436,7 @@ html[data-theme="dark"] .auth-form .floating-field input:-webkit-autofill:focus 
   caret-color: #f4f2ff !important;
   -webkit-box-shadow: 0 0 0 1000px #24224E inset !important;
   box-shadow: 0 0 0 1000px #24224E inset !important;
-  font-weight: 700 !important;
+  font-weight: 500 !important;
 }
 
 html[data-theme="dark"] .auth-inline-toggle {
@@ -1512,7 +1512,7 @@ html[data-theme="light"] .auth-form .floating-field input {
   box-shadow: none !important;
   color: #1a1a2e !important;
   -webkit-text-fill-color: #1a1a2e !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
 }
 
 html[data-theme="light"] .auth-form .floating-field input:focus {
@@ -1533,7 +1533,7 @@ html[data-theme="light"] .auth-input-shell--valid input,
 html[data-theme="light"] .auth-input-shell--valid input:focus {
   color: #171a2f !important;
   -webkit-text-fill-color: #171a2f !important;
-  font-weight: 700 !important;
+  font-weight: 500 !important;
 }
 
 html[data-theme="light"] .auth-form .floating-field input:-webkit-autofill,
