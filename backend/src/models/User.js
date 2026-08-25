@@ -170,7 +170,10 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 }
 
 // ==================== INDEXES ====================
-userSchema.index({ email: 1 })
+// NOTE: no explicit { email: 1 } index here — `unique: true` on the email field
+// already creates it. Declaring it again produced a name collision on
+// syncIndexes() ("existing index has the same name"), because the field-level
+// version carries unique:true and this one did not.
 userSchema.index({ role: 1, isActive: 1 })
 userSchema.index({ role: 1, status: 1, assignedSubject: 1 })
 userSchema.index({ role: 1, status: 1, assignedSubjects: 1 })

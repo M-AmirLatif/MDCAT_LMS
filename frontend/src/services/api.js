@@ -179,11 +179,53 @@ const getRetryDelay = (error, attempt) => {
   return RETRY_BASE_DELAY_MS * 2 ** (attempt - 1) + Math.random() * 250
 }
 
+// Maps a mutated endpoint to the cached GET prefixes it can actually affect.
+// Anything not listed falls back to invalidating everything, so a new endpoint is
+// never silently left with stale data — correctness first, speed where it's safe.
+const INVALIDATION_MAP = [
+  { pattern: /\/auth\/(login|google|register)/i, affects: null },
+  { pattern: /\/auth\/(profile|set-password)/i, affects: ['auth/profile'] },
+  { pattern: /\/notifications/i, affects: ['notifications'] },
+  { pattern: /\/tests|\/attempts|submit/i, affects: ['tests', 'attempts', 'latest-attempt', 'subjects/summary'] },
+  { pattern: /\/assignments/i, affects: ['assignments'] },
+  { pattern: /\/mcqs/i, affects: ['mcqs', 'chapters', 'subjects/summary'] },
+  { pattern: /\/lectures/i, affects: ['lectures', 'chapters'] },
+  { pattern: /\/courses/i, affects: ['courses', 'chapters', 'subjects/summary'] },
+  { pattern: /\/live-sessions/i, affects: ['live-sessions'] },
+  { pattern: /\/payments|\/subscriptions/i, affects: ['payments', 'subscriptions', 'auth/profile'] },
+  { pattern: /\/uploads/i, affects: ['uploads'] },
+]
+
+const invalidateForMutation = (url) => {
+  const target = String(url || '')
+  const rule = INVALIDATION_MAP.find((entry) => entry.pattern.test(target))
+
+  // Unknown endpoint, or an auth change that alters the whole user scope:
+  // fall back to the old blanket behaviour.
+  if (!rule || rule.affects === null) {
+    queryClient.invalidateQueries()
+    return
+  }
+
+  queryClient.invalidateQueries({
+    predicate: (query) => {
+      const key = query.queryKey
+      if (!Array.isArray(key) || key[0] !== 'api-get') return true
+      const requestUrl = String(key[2] || '')
+      return rule.affects.some((fragment) => requestUrl.includes(fragment))
+    },
+  })
+}
+
 API.interceptors.response.use(
   (response) => {
     const method = String(response?.config?.method || 'get').toLowerCase()
     if (!['get', 'head', 'options'].includes(method)) {
-      queryClient.invalidateQueries()
+      // Previously this called queryClient.invalidateQueries() with no argument,
+      // which threw away EVERY cached query in the app. Marking one notification
+      // read forced a refetch of courses, chapters, profile, stats — everything.
+      // That was the dominant cause of sluggish navigation.
+      invalidateForMutation(response?.config?.url)
     }
     return response
   },
