@@ -41,7 +41,7 @@ const mcqOptionImages = (mcq, option, letter) => compactImageList(
 )
 
 import {
-  SUBJECT_STYLES,
+  getSubjectStyle,
   getChaptersBySubject,
   getMcqsByChapter,
   mdcatSubjects,
@@ -87,7 +87,7 @@ function StudentSubjects() {
 
       <div className="workspace-columns-3">
         {mdcatSubjects.map((subject) => {
-          const style = SUBJECT_STYLES[subject.name]
+          const style = getSubjectStyle(subject.name)
           return (
             <article key={subject.id} className={`subject-card subject-card--mdcat ${style.className}`}>
               <div className="subject-card-banner" style={{ background: style.banner }}>
@@ -141,7 +141,7 @@ function TeacherMcqManagement() {
   const formRef = useRef(null)
 
   const selectedSubject = teacherMdcatSubjects.find((subject) => subject.id === selectedSubjectId) || teacherMdcatSubjects[0] || mdcatSubjects[0]
-  const selectedStyle = SUBJECT_STYLES[selectedSubject.name]
+  const selectedStyle = getSubjectStyle(selectedSubject.name)
   const chapterOptions = useMemo(() => getChaptersBySubject(selectedSubjectId), [selectedSubjectId])
   const selectedChapter = chapterOptions.find((chapter) => chapter.id === selectedChapterId) || chapterOptions[0]
   const selectedMcqs = useMemo(
@@ -194,7 +194,7 @@ function TeacherMcqManagement() {
 
       <div className="card-grid">
         {teacherMdcatSubjects.map((subject) => {
-          const style = SUBJECT_STYLES[subject.name]
+          const style = getSubjectStyle(subject.name)
           const active = selectedSubjectId === subject.id
           return (
             <button

@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 import './PlatformPages.css'
-import { getChaptersBySubject, getSubjectById, SUBJECT_STYLES } from './platformContent'
+import { getChaptersBySubject, getSubjectById, getSubjectStyle } from './platformContent'
 
 export default function CourseDetail() {
   const { courseId } = useParams()
@@ -20,7 +20,7 @@ export default function CourseDetail() {
   }
 
   const chapters = getChaptersBySubject(courseId)
-  const style = SUBJECT_STYLES[subject.name]
+  const style = getSubjectStyle(subject.name)
 
   return (
     <div className="workspace-page animate-fade-up">

@@ -5,6 +5,7 @@ import { queryClient } from './queryClient'
 const FALLBACK_API_BASE_URL = 'https://api.acemdcat.com/api'
 const configuredApiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').trim()
 export const API_BASE_URL = configuredApiBaseUrl || FALLBACK_API_BASE_URL
+export const AUTH_REQUEST_TIMEOUT_MS = Number(import.meta.env.VITE_AUTH_TIMEOUT_MS || 12000)
 
 const API = axios.create({
   baseURL: API_BASE_URL,
@@ -148,6 +149,7 @@ API.interceptors.request.use((config) => {
 // session-minting auth POSTs are replayed, so no domain mutation can double-fire.
 const RETRYABLE_STATUS = new Set([502, 503, 504])
 const MAX_RETRIES = 2
+const AUTH_MAX_RETRIES = 1
 const RETRY_BASE_DELAY_MS = 600
 
 const REPLAYABLE_POST_PATHS = [/\/auth\/login\/?$/, /\/auth\/google\/?$/]
@@ -240,7 +242,9 @@ API.interceptors.response.use(
       isReplayable(originalRequest)
     ) {
       const attempt = (originalRequest.__retryCount || 0) + 1
-      if (attempt <= MAX_RETRIES) {
+      const isAuthRequest = REPLAYABLE_POST_PATHS.some((p) => p.test(String(originalRequest?.url || '')))
+      const maxRetries = isAuthRequest ? AUTH_MAX_RETRIES : MAX_RETRIES
+      if (attempt <= maxRetries) {
         originalRequest.__retryCount = attempt
         await sleep(getRetryDelay(error, attempt))
 

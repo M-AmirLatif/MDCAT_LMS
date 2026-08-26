@@ -23,7 +23,7 @@ import useTeacherAnalyticsData from '../hooks/useTeacherAnalyticsData'
 import './PlatformPages.css'
 import {
   mdcatSubjects,
-  SUBJECT_STYLES,
+  getSubjectStyle,
   studentNotifications,
 } from './platformContent'
 
@@ -118,7 +118,7 @@ function DashboardMomentumSvg({ data, subjects: subjectNames, overallAccuracy = 
             y: yFor(row[subjectName]),
           }))
           const path = buildMomentumPath(points)
-          const color = momentumColors[subjectName] || SUBJECT_STYLES[subjectName]?.accent || '#7c5cff'
+          const color = momentumColors[subjectName] || getSubjectStyle(subjectName).accent
 
           return (
             <g key={subjectName} className="dashboard-momentum-series" style={{ '--series-color': color }}>
@@ -186,14 +186,14 @@ function StudentDashboard({ firstName }) {
 
       <div className="card-grid">
         {visibleSubjects.map((subject) => (
-          <article key={subject.id} className={`workspace-card subject-focus-card ${SUBJECT_STYLES[subject.name].className}`}>
+          <article key={subject.id} className={`workspace-card subject-focus-card ${getSubjectStyle(subject.name).className}`}>
             <div className="workspace-card-head subject-focus-topline">
               <div className="subject-focus-head">
                 <span className={`subject-focus-icon subject-focus-icon--${subject.id}`}>
                   <SubjectGlyph subject={subject.name} />
                 </span>
                 <div>
-                  <div className="label-xs" style={{ color: SUBJECT_STYLES[subject.name].accent }}>{subject.name}</div>
+                  <div className="label-xs" style={{ color: getSubjectStyle(subject.name).accent }}>{subject.name}</div>
                   <h3 className="workspace-card-title">{loading ? 'Loading...' : `${subject.totalChapters} Chapters`}</h3>
                 </div>
               </div>
@@ -205,7 +205,7 @@ function StudentDashboard({ firstName }) {
                 <div><span>Attempted</span><strong>{loading ? '...' : subject.attemptedMcqs}</strong></div>
               </div>
               <div className="progress-bar-bg">
-                <div className="progress-bar-fill" style={{ '--fill': `${subject.accuracy}%`, width: `${subject.accuracy}%`, background: SUBJECT_STYLES[subject.name].progress }} />
+                <div className="progress-bar-fill" style={{ '--fill': `${subject.accuracy}%`, width: `${subject.accuracy}%`, background: getSubjectStyle(subject.name).progress }} />
               </div>
               <Link className="btn btn-primary btn-sm" to={`/mcqs/${subject.id}`}>Continue Practice</Link>
             </div>
@@ -230,7 +230,7 @@ function StudentDashboard({ firstName }) {
                   const value = latest ? Math.round(Number(latest[subjectName]) || 0) : 0
                   return (
                     <span key={subjectName}>
-                      <i style={{ background: SUBJECT_STYLES[subjectName]?.accent || '#7c5cff' }} />
+                      <i style={{ background: getSubjectStyle(subjectName).accent }} />
                       {subjectName}: {value}%
                     </span>
                   )
@@ -349,7 +349,7 @@ function TeacherDashboard() {
         <div className="workspace-card-body">
           <div className="card-grid">
             {visibleSubjects.map((subject) => {
-              const style = SUBJECT_STYLES[subject.name]
+              const style = getSubjectStyle(subject.name)
               return (
                 <article key={subject.id} className={`teacher-subject-bank ${style.className}`}>
                   <div className="subject-focus-head">

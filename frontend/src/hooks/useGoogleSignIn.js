@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import API, { getUserFriendlyErrorMessage } from '../services/api'
+import API, { AUTH_REQUEST_TIMEOUT_MS, getUserFriendlyErrorMessage } from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import { getDefaultRouteForRole, getRoleLabel } from '../lib/platform'
 
@@ -98,6 +98,8 @@ export function useGoogleSignIn({
         const res = await API.post('/auth/google', {
           credential: response.credential,
           mode,
+        }, {
+          timeout: AUTH_REQUEST_TIMEOUT_MS,
         })
         const { token, user } = res.data
 

@@ -2073,3 +2073,61 @@ html[data-theme="dark"] .auth-form .floating-field {
     transform: translateY(-50%) !important;
   }
 }
+
+/* Login input stability: keep browser autofill/saved-password selection from
+   changing text size or weight, and keep the mobile caret clearly visible. */
+.auth-page .auth-form .floating-field.auth-input-shell input,
+.auth-page .auth-form .floating-field.auth-input-shell input:hover,
+.auth-page .auth-form .floating-field.auth-input-shell input:focus,
+.auth-page .auth-form .floating-field.auth-input-shell input:active,
+.auth-page .auth-form .floating-field.auth-input-shell input:valid,
+.auth-page .auth-form .floating-field.auth-input-shell input:autofill,
+.auth-page .auth-form .floating-field.auth-input-shell input:-webkit-autofill,
+.auth-page .auth-form .floating-field.auth-input-shell input:-webkit-autofill:hover,
+.auth-page .auth-form .floating-field.auth-input-shell input:-webkit-autofill:focus,
+.auth-page .auth-form .floating-field.auth-input-shell input:-webkit-autofill:active {
+  font-family: inherit !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  font-style: normal !important;
+  font-variant: normal !important;
+  font-synthesis: none !important;
+  letter-spacing: normal !important;
+  line-height: 24px !important;
+  caret-color: #8b6fff !important;
+  -webkit-text-size-adjust: 100% !important;
+  text-size-adjust: 100% !important;
+}
+
+html[data-theme="dark"] .auth-page .auth-form .floating-field.auth-input-shell input,
+html[data-theme="dark"] .auth-page .auth-form .floating-field.auth-input-shell input:hover,
+html[data-theme="dark"] .auth-page .auth-form .floating-field.auth-input-shell input:focus,
+html[data-theme="dark"] .auth-page .auth-form .floating-field.auth-input-shell input:active,
+html[data-theme="dark"] .auth-page .auth-form .floating-field.auth-input-shell input:valid,
+html[data-theme="dark"] .auth-page .auth-form .floating-field.auth-input-shell input:autofill,
+html[data-theme="dark"] .auth-page .auth-form .floating-field.auth-input-shell input:-webkit-autofill,
+html[data-theme="dark"] .auth-page .auth-form .floating-field.auth-input-shell input:-webkit-autofill:hover,
+html[data-theme="dark"] .auth-page .auth-form .floating-field.auth-input-shell input:-webkit-autofill:focus,
+html[data-theme="dark"] .auth-page .auth-form .floating-field.auth-input-shell input:-webkit-autofill:active {
+  color: #f0eeff !important;
+  -webkit-text-fill-color: #f0eeff !important;
+}
+
+@media (max-width: 640px) {
+  .auth-page .auth-form .floating-field.auth-input-shell input,
+  .auth-page .auth-form .floating-field.auth-input-shell input:hover,
+  .auth-page .auth-form .floating-field.auth-input-shell input:focus,
+  .auth-page .auth-form .floating-field.auth-input-shell input:active,
+  .auth-page .auth-form .floating-field.auth-input-shell input:valid,
+  .auth-page .auth-form .floating-field.auth-input-shell input:autofill,
+  .auth-page .auth-form .floating-field.auth-input-shell input:-webkit-autofill,
+  .auth-page .auth-form .floating-field.auth-input-shell input:-webkit-autofill:hover,
+  .auth-page .auth-form .floating-field.auth-input-shell input:-webkit-autofill:focus,
+  .auth-page .auth-form .floating-field.auth-input-shell input:-webkit-autofill:active {
+    height: 32px !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    line-height: 32px !important;
+    caret-color: #8b6fff !important;
+  }
+}

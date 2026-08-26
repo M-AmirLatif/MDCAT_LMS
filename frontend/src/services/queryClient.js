@@ -1,6 +1,6 @@
 import { QueryClient, dehydrate, hydrate } from '@tanstack/react-query'
 
-const CACHE_STORAGE_KEY = 'mdcat-query-cache-v2'
+const CACHE_STORAGE_KEY = `mdcat-query-cache-${import.meta.env.VITE_BUILD_ID || 'v3'}`
 const CACHE_MAX_AGE_MS = 30 * 60 * 1000
 
 // Persist to localStorage, not sessionStorage. sessionStorage is scoped to a
@@ -45,6 +45,18 @@ if (typeof window !== 'undefined' && storage) {
     }
   } catch {
     storage.removeItem(CACHE_STORAGE_KEY)
+  }
+
+  // Clean up caches from previous builds to avoid unbounded localStorage growth.
+  try {
+    for (let i = 0; i < storage.length; i++) {
+      const key = storage.key(i)
+      if (key && key.startsWith('mdcat-query-cache-') && key !== CACHE_STORAGE_KEY) {
+        storage.removeItem(key)
+      }
+    }
+  } catch {
+    // ignore
   }
 
   let persistTimer

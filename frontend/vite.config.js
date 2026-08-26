@@ -1,9 +1,15 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+const buildId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  define: {
+    'import.meta.env.VITE_BUILD_ID': JSON.stringify(buildId),
+    'import.meta.env.VITE_BUILD_TIME': JSON.stringify(new Date().toISOString()),
+  },
   server: {
     proxy: {
       '/api/public/stats': 'http://localhost:5000',

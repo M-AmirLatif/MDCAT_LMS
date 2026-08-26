@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import API, { getUserFriendlyErrorMessage } from '../services/api'
+import API, { AUTH_REQUEST_TIMEOUT_MS, getUserFriendlyErrorMessage } from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import { getDefaultRouteForRole, getRoleLabel } from '../lib/platform'
 import { useGoogleSignIn } from '../hooks/useGoogleSignIn'
@@ -70,10 +70,26 @@ export default function Login() {
   })
   const [remember, setRemember] = useState(rememberedCredentials.remember)
   const [loading, setLoading] = useState(false)
+  const [loginStatus, setLoginStatus] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const emailInputRef = useRef(null)
+  const passwordInputRef = useRef(null)
   const navigate = useNavigate()
   const { login } = useAuth()
   const googleSignIn = useGoogleSignIn({ remember, nextPath, mode: 'signin', expectedRole: requestedRole })
+
+  // Progressive feedback: if login takes > 4s, show a status message so students
+  // know the app isn't frozen (common on Hostinger cold-starts).
+  useEffect(() => {
+    if (!loading) {
+      setLoginStatus('')
+      return
+    }
+    const timer = window.setTimeout(() => {
+      setLoginStatus('Still connecting, servers may be waking up…')
+    }, 4000)
+    return () => window.clearTimeout(timer)
+  }, [loading])
 
   // Show toast if user was forcibly logged out from another device
   useMemo(() => {
@@ -112,7 +128,9 @@ export default function Login() {
     setLoading(true)
 
     try {
-      const response = await API.post('/auth/login', formData)
+      const response = await API.post('/auth/login', formData, {
+        timeout: AUTH_REQUEST_TIMEOUT_MS,
+      })
       const user = response.data.user
 
       if (user?.role !== requestedRole) {
@@ -233,6 +251,7 @@ export default function Login() {
                   </span>
                   <label htmlFor="email">Email</label>
                   <input
+                    ref={emailInputRef}
                     id="email"
                     name="email"
                     type="email"
@@ -255,6 +274,7 @@ export default function Login() {
                   </span>
                   <label htmlFor="password">Password</label>
                   <input
+                    ref={passwordInputRef}
                     id="password"
                     name="password"
                     type={showPassword ? 'text' : 'password'}
@@ -296,6 +316,11 @@ export default function Login() {
                 <button className="auth-primary" type="submit" disabled={loading}>
                   {loading ? 'Signing in...' : 'Sign In'}
                 </button>
+                {loginStatus && (
+                  <p className="auth-login-status" style={{ textAlign: 'center', fontSize: '13px', color: 'var(--text-secondary)', marginTop: '8px', animation: 'fadeIn 0.3s ease' }}>
+                    {loginStatus}
+                  </p>
+                )}
 
                 <div className="auth-google-block">
                   <div className="auth-divider">or</div>

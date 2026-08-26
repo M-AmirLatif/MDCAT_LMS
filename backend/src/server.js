@@ -5,6 +5,7 @@ const path = require('path')
 const mongoose = require('mongoose')
 const helmet = require('helmet')
 const morgan = require('morgan')
+const compression = require('compression')
 const connectDB = require('./config/db')
 const { isDbReady, getDbState } = require('./config/db')
 
@@ -81,6 +82,26 @@ const INSTANCE_ID = `${process.pid}-${Date.now().toString(36)}`
 // and Railway were live against the same Atlas database, both were claiming and
 // sending the same jobs.
 const SCHEDULER_ENABLED = process.env.ENABLE_SCHEDULER !== 'false'
+
+// Hostinger web apps can become idle between student visits. The next login then
+// becomes the wake-up request and may time out on mobile. Keep-alive is enabled
+// by default only for the Hostinger production backend and pings a cheap health
+// endpoint; disable with ENABLE_KEEP_ALIVE=false if needed.
+const KEEP_ALIVE_ENABLED =
+  process.env.ENABLE_KEEP_ALIVE === 'true' ||
+  (
+    process.env.ENABLE_KEEP_ALIVE !== 'false' &&
+    process.env.NODE_ENV === 'production' &&
+    process.env.DEPLOYMENT_TARGET === 'hostinger'
+  )
+const KEEP_ALIVE_URL =
+  process.env.KEEP_ALIVE_URL ||
+  process.env.PUBLIC_API_HEALTH_URL ||
+  'https://api.acemdcat.com/api/health/db'
+const KEEP_ALIVE_INTERVAL_MS = Math.max(
+  60000,
+  parseInt(process.env.KEEP_ALIVE_INTERVAL_MS, 10) || 4 * 60 * 1000,
+)
 
 // Hostinger (LiteSpeed/Passenger) and Railway both terminate HTTPS in front of
 // the Node process. The number of proxy hops differs per host, so make it
@@ -179,49 +200,9 @@ app.use(
 )
 
 // ==================== COMPRESSION ====================
-// Compress JSON responses — typically 60-80% size reduction on list endpoints.
-// Uses Node built-in zlib; no extra dependency required.
-const zlib = require('zlib')
-const compressResponse = (req, res, next) => {
-  const acceptEncoding = req.headers['accept-encoding'] || ''
-  if (!acceptEncoding.includes('gzip')) return next()
-
-  const originalJson = res.json.bind(res)
-  res.json = (body) => {
-    let raw
-    try {
-      raw = JSON.stringify(body)
-    } catch {
-      return originalJson(body)
-    }
-
-    // Only compress responses larger than 1KB
-    if (raw == null || raw.length < 1024) {
-      return originalJson(body)
-    }
-
-    zlib.gzip(Buffer.from(raw), (err, compressed) => {
-      // This callback runs asynchronously. By now the client may have
-      // disconnected or another handler may have responded — writing headers
-      // then throws ERR_HTTP_HEADERS_SENT, which as an uncaught exception in a
-      // zlib callback used to take the whole process down.
-      try {
-        if (err) return originalJson(body)
-        if (res.headersSent || res.writableEnded || res.destroyed) return
-        res.set('Content-Encoding', 'gzip')
-        res.set('Content-Type', 'application/json')
-        res.set('Vary', 'Accept-Encoding')
-        res.set('Content-Length', String(compressed.length))
-        res.end(compressed)
-      } catch (writeError) {
-        console.error('gzip response write failed:', writeError.message)
-      }
-    })
-    return res
-  }
-  next()
-}
-app.use(compressResponse)
+// Compress responses — typically 60-80% size reduction on JSON list endpoints.
+// Uses the standard `compression` package; threshold skips tiny responses.
+app.use(compression({ threshold: 1024 }))
 
 // ==================== LOGGING ====================
 if (process.env.NODE_ENV !== 'test') {
@@ -294,6 +275,7 @@ app.get('/api/health/db', (req, res) => {
     instanceId: INSTANCE_ID,
     deploymentTarget: process.env.DEPLOYMENT_TARGET || 'unset',
     schedulerEnabled: SCHEDULER_ENABLED,
+    keepAliveEnabled: KEEP_ALIVE_ENABLED,
     uptimeSeconds: Math.round(process.uptime()),
     node: process.version,
     timestamp: new Date(),
@@ -382,6 +364,36 @@ if (SCHEDULER_ENABLED) {
   console.log('Notification scheduler disabled on this instance')
 }
 
+// ==================== HOSTINGER KEEP-ALIVE ====================
+let keepAliveTimer = null
+
+if (KEEP_ALIVE_ENABLED && KEEP_ALIVE_URL) {
+  const pingKeepAlive = async () => {
+    try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 8000)
+      timeout.unref?.()
+
+      await fetch(KEEP_ALIVE_URL, {
+        method: 'GET',
+        cache: 'no-store',
+        signal: controller.signal,
+      })
+      clearTimeout(timeout)
+    } catch (error) {
+      // Non-fatal. The next interval tries again; never crash the API because
+      // a background keep-alive ping failed.
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('Keep-alive ping failed:', error.message)
+      }
+    }
+  }
+
+  keepAliveTimer = setInterval(pingKeepAlive, KEEP_ALIVE_INTERVAL_MS)
+  keepAliveTimer.unref?.()
+  setTimeout(pingKeepAlive, 15000).unref?.()
+}
+
 // ==================== 404 HANDLER ====================
 app.use((req, res) => {
   res.status(404).json({ error: `Route ${req.originalUrl} not found` })
@@ -432,6 +444,7 @@ const shutdown = (signal) => {
   console.log(`${signal} received, shutting down gracefully`)
 
   if (schedulerTimer) clearInterval(schedulerTimer)
+  if (keepAliveTimer) clearInterval(keepAliveTimer)
 
   const forceExit = setTimeout(() => process.exit(0), 10000)
   forceExit.unref()

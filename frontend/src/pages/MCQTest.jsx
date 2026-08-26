@@ -38,7 +38,7 @@ const mcqOptionImages = (mcq, option, letter) => compactImageList(
   mcq?.[`option${letter}ImageUrls`],
 )
 
-import { getChapterById, getMcqsByChapter, getSubjectById, SUBJECT_STYLES } from './platformContent'
+import { getChapterById, getMcqsByChapter, getSubjectById, getSubjectStyle } from './platformContent'
 
 function getCorrectIndex(mcq) {
   return ['A', 'B', 'C', 'D'].indexOf(mcq.correctAnswer)
@@ -59,7 +59,7 @@ export default function MCQTest() {
   const currentMcq = mcqs[currentIndex]
   const answeredCount = Object.keys(answers).length
   const progress = mcqs.length ? Math.round(((currentIndex + 1) / mcqs.length) * 100) : 0
-  const style = subject ? SUBJECT_STYLES[subject.name] : SUBJECT_STYLES.Biology
+  const style = getSubjectStyle(subject?.name)
 
   const result = useMemo(() => {
     const detailed = mcqs.map((mcq) => {

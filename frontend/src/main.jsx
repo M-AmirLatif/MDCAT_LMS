@@ -26,6 +26,13 @@ function ToasterWithTheme() {
   )
 }
 
+// Log build info so it's trivially verifiable from DevTools whether latest deploy is live
+console.info(
+  `%c[MDCAT LMS]%c Build ${import.meta.env.VITE_BUILD_ID || 'dev'} · ${import.meta.env.VITE_BUILD_TIME || 'local'}`,
+  'color: #7c5cff; font-weight: bold',
+  'color: inherit',
+)
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>

@@ -7,6 +7,9 @@ export const SUBJECT_STYLES = {
   English: { className: 'card-english', banner: 'linear-gradient(135deg, #f59e0b 0%, #ffb648 100%)', progress: 'linear-gradient(135deg, #F59E0B 0%, #FFB648 100%)', accent: 'var(--amber-dark)' },
 }
 
+const DEFAULT_SUBJECT_STYLE = { className: '', banner: 'linear-gradient(135deg, #7c5cff, #38bdf8)', progress: 'linear-gradient(135deg, #7c5cff, #38bdf8)', accent: '#7c5cff' }
+export const getSubjectStyle = (name) => SUBJECT_STYLES[name] || DEFAULT_SUBJECT_STYLE
+
 export const mdcatSubjects = mdcatData.subjects.map((subject) => ({
   ...subject,
   chapters: [],
