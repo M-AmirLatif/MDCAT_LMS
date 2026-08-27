@@ -414,7 +414,7 @@
 .auth-form .floating-field input:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
   box-shadow: 0 0 0 1000px transparent inset !important;
-  font-weight: 500 !important;
+  font-weight: 400 !important;
   transition: background-color 9999s ease-out 0s;
 }
 
@@ -1175,7 +1175,7 @@ input:focus-visible {
     background: transparent;
     color: #1a1a2e;
     font-size: 15px;
-    font-weight: 500 !important;
+    font-weight: 400 !important;
   }
 
   .auth-password-field input {
@@ -1548,7 +1548,7 @@ html[data-theme="dark"] .auth-form .floating-field {
 .auth-form .floating-field input:-webkit-autofill:active {
   font-family: inherit !important;
   font-size: 15px !important;
-  font-weight: 500 !important;
+  font-weight: 400 !important;
   font-synthesis: none !important;
   text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
@@ -1904,8 +1904,7 @@ html[data-theme="dark"] .auth-form .floating-field {
   text-align: center;
 }
 
-.auth-google-custom-btn,
-.auth-google-rendered-button {
+.auth-google-custom-btn {
   overflow: hidden;
   border-radius: 14px;
 }
@@ -2049,7 +2048,7 @@ html[data-theme="dark"] .auth-form .floating-field {
     box-sizing: border-box !important;
     font-size: 18px !important;
     line-height: 30px !important;
-    font-weight: 500 !important;
+    font-weight: 400 !important;
     caret-color: #8b6fff !important;
     caret-shape: bar;
   }
@@ -2088,7 +2087,7 @@ html[data-theme="dark"] .auth-form .floating-field {
 .auth-page .auth-form .floating-field.auth-input-shell input:-webkit-autofill:active {
   font-family: inherit !important;
   font-size: 15px !important;
-  font-weight: 500 !important;
+  font-weight: 400 !important;
   font-style: normal !important;
   font-variant: normal !important;
   font-synthesis: none !important;
@@ -2126,7 +2125,7 @@ html[data-theme="dark"] .auth-page .auth-form .floating-field.auth-input-shell i
   .auth-page .auth-form .floating-field.auth-input-shell input:-webkit-autofill:active {
     height: 32px !important;
     font-size: 16px !important;
-    font-weight: 500 !important;
+    font-weight: 400 !important;
     line-height: 32px !important;
     caret-color: #8b6fff !important;
   }

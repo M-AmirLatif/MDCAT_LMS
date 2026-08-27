@@ -91,6 +91,17 @@ export default function Login() {
     return () => window.clearTimeout(timer)
   }, [loading])
 
+  // Clear fields on mount to prevent aggressive browser autofill,
+  // but keep the fields clickable so saved passwords dropdown still works.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (emailInputRef.current) emailInputRef.current.value = '';
+      if (passwordInputRef.current) passwordInputRef.current.value = '';
+      setFormData({ email: '', password: '' });
+    }, 150);
+    return () => clearTimeout(timer);
+  }, []);
+
   // Show toast if user was forcibly logged out from another device
   useMemo(() => {
     if (sessionStorage.getItem('session_superseded')) {
@@ -326,7 +337,6 @@ export default function Login() {
                   <div className="auth-divider">or</div>
                   {googleSignIn.configured ? (
                     <>
-                      <div className="auth-google-role-hint">Continue with Google as {roleLabel}</div>
                       <div ref={googleSignIn.buttonRef} className="auth-google-rendered-button" />
                       {googleSignIn.loading ? <span className="auth-google-loading">Preparing Google sign-in...</span> : null}
                       {googleSignIn.error ? (
