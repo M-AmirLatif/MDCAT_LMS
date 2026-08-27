@@ -91,6 +91,10 @@ export default function Login() {
     return () => window.clearTimeout(timer)
   }, [loading])
 
+  // Single shared lock state for both inputs to prevent initial autofill
+  // while ensuring paired autofill works properly when unlocked.
+  const [inputsLocked, setInputsLocked] = useState(true)
+
   // Show toast if user was forcibly logged out from another device
   useMemo(() => {
     if (sessionStorage.getItem('session_superseded')) {
@@ -243,11 +247,6 @@ export default function Login() {
               </p>
 
               <form className="auth-form" onSubmit={handleSubmit} autoComplete="on">
-                {/* Hidden dummy inputs to absorb aggressive browser autofill on page load, 
-                    keeping the real fields empty until the user explicitly clicks them. */}
-                <input type="text" name="hidden_email" style={{ display: 'none' }} tabIndex={-1} aria-hidden="true" />
-                <input type="password" name="hidden_password" style={{ display: 'none' }} tabIndex={-1} aria-hidden="true" />
-
                 <div
                   className={`floating-field auth-input-shell ${formData.email ? 'auth-input-shell--filled' : ''} ${emailValid ? 'auth-input-shell--valid' : ''}`}
                 >
@@ -261,9 +260,12 @@ export default function Login() {
                     name="email"
                     type="email"
                     value={formData.email}
-                    onChange={(event) =>
+                    readOnly={inputsLocked}
+                    onFocus={() => setInputsLocked(false)}
+                    onChange={(event) => {
+                      setInputsLocked(false)
                       setFormData((current) => ({ ...current, email: event.target.value }))
-                    }
+                    }}
                     placeholder="Enter your email"
                     autoComplete="username"
                     required
@@ -284,9 +286,12 @@ export default function Login() {
                     name="password"
                     type={showPassword ? 'text' : 'password'}
                     value={formData.password}
-                    onChange={(event) =>
+                    readOnly={inputsLocked}
+                    onFocus={() => setInputsLocked(false)}
+                    onChange={(event) => {
+                      setInputsLocked(false)
                       setFormData((current) => ({ ...current, password: event.target.value }))
-                    }
+                    }}
                     placeholder="Enter your password"
                     autoComplete="current-password"
                     required
