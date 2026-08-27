@@ -82,7 +82,7 @@ export function useGoogleSignIn({
       text: mode === 'signup' ? 'signup_with' : 'continue_with',
       shape: 'rectangular',
       width,
-      logo_alignment: 'left',
+      logo_alignment: 'center',
     })
   }, [mode])
 
