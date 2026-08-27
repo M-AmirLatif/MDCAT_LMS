@@ -262,6 +262,14 @@ export default function Login() {
                     value={formData.email}
                     readOnly={inputsLocked}
                     onFocus={() => setInputsLocked(false)}
+                    onClick={(e) => {
+                      // Hack to force Chrome's autofill dropdown to reappear if the user 
+                      // clears the field and clicks it again without clicking away first.
+                      if (!formData.email && !inputsLocked) {
+                        e.target.blur();
+                        setTimeout(() => e.target.focus(), 10);
+                      }
+                    }}
                     onChange={(event) => {
                       setInputsLocked(false)
                       setFormData((current) => ({ ...current, email: event.target.value }))
@@ -288,6 +296,12 @@ export default function Login() {
                     value={formData.password}
                     readOnly={inputsLocked}
                     onFocus={() => setInputsLocked(false)}
+                    onClick={(e) => {
+                      if (!formData.password && !inputsLocked) {
+                        e.target.blur();
+                        setTimeout(() => e.target.focus(), 10);
+                      }
+                    }}
                     onChange={(event) => {
                       setInputsLocked(false)
                       setFormData((current) => ({ ...current, password: event.target.value }))
