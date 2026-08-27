@@ -64,6 +64,10 @@
     <script>
       ;(() => {
         try {
+          if (!sessionStorage.getItem('theme-init')) {
+            localStorage.setItem('mdcat-theme', 'dark')
+            sessionStorage.setItem('theme-init', 'true')
+          }
           const saved = localStorage.getItem('mdcat-theme') || 'dark'
           document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light')
         } catch {

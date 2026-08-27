@@ -91,16 +91,9 @@ export default function Login() {
     return () => window.clearTimeout(timer)
   }, [loading])
 
-  // Clear fields on mount to prevent aggressive browser autofill,
-  // but keep the fields clickable so saved passwords dropdown still works.
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (emailInputRef.current) emailInputRef.current.value = '';
-      if (passwordInputRef.current) passwordInputRef.current.value = '';
-      setFormData({ email: '', password: '' });
-    }, 150);
-    return () => clearTimeout(timer);
-  }, []);
+  // Use readOnly trick to prevent browser autofill on load without flashing
+  const [emailReadOnly, setEmailReadOnly] = useState(true)
+  const [passwordReadOnly, setPasswordReadOnly] = useState(true)
 
   // Show toast if user was forcibly logged out from another device
   useMemo(() => {
@@ -267,9 +260,12 @@ export default function Login() {
                     name="email"
                     type="email"
                     value={formData.email}
-                    onChange={(event) =>
+                    readOnly={emailReadOnly}
+                    onFocus={() => setEmailReadOnly(false)}
+                    onChange={(event) => {
+                      setEmailReadOnly(false)
                       setFormData((current) => ({ ...current, email: event.target.value }))
-                    }
+                    }}
                     placeholder="Enter your email"
                     autoComplete="username"
                     required
@@ -290,9 +286,12 @@ export default function Login() {
                     name="password"
                     type={showPassword ? 'text' : 'password'}
                     value={formData.password}
-                    onChange={(event) =>
+                    readOnly={passwordReadOnly}
+                    onFocus={() => setPasswordReadOnly(false)}
+                    onChange={(event) => {
+                      setPasswordReadOnly(false)
                       setFormData((current) => ({ ...current, password: event.target.value }))
-                    }
+                    }}
                     placeholder="Enter your password"
                     autoComplete="current-password"
                     required
