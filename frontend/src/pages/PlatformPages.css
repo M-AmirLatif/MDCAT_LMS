@@ -15251,9 +15251,9 @@ html:not([data-theme='dark']) body .workspace-page .chapter-practice-card .inlin
 html:not([data-theme='dark']) body .workspace-page .chapter-practice-card .inline-actions .btn-secondary:visited,
 html:not([data-theme='dark']) body .workspace-page .chapter-practice-card .inline-actions .btn-ghost,
 html:not([data-theme='dark']) body .workspace-page .chapter-practice-card .inline-actions .btn-ghost:visited {
-  color: #ffffff !important;
-  background: linear-gradient(135deg, #4c2aa3 0%, #2c1c64 100%) !important;
-  border-color: rgba(124, 77, 255, 0.92) !important;
+  color: #4f35d8 !important;
+  background: rgba(108, 71, 255, 0.12) !important;
+  border-color: rgba(108, 71, 255, 0.4) !important;
 }
 
 html body .chapter-browser-grid > article.chapter-practice-card .inline-actions .btn:hover,
