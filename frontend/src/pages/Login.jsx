@@ -94,6 +94,7 @@ export default function Login() {
   // Single shared lock state for both inputs to prevent initial autofill
   // while ensuring paired autofill works properly when unlocked.
   const [inputsLocked, setInputsLocked] = useState(true)
+  const lastFocusTime = useRef(0)
 
   // Show toast if user was forcibly logged out from another device
   useMemo(() => {
@@ -261,11 +262,15 @@ export default function Login() {
                     type="email"
                     value={formData.email}
                     readOnly={inputsLocked}
-                    onFocus={() => setInputsLocked(false)}
+                    onFocus={() => {
+                      lastFocusTime.current = Date.now()
+                      setInputsLocked(false)
+                    }}
                     onClick={(e) => {
                       // Hack to force Chrome's autofill dropdown to reappear if the user 
                       // clears the field and clicks it again without clicking away first.
-                      if (!formData.email && !inputsLocked) {
+                      // We only run this if the input was ALREADY focused (>200ms ago) so we don't kill the initial popup.
+                      if (!formData.email && Date.now() - lastFocusTime.current > 200) {
                         e.target.blur();
                         setTimeout(() => e.target.focus(), 10);
                       }
@@ -295,9 +300,12 @@ export default function Login() {
                     type={showPassword ? 'text' : 'password'}
                     value={formData.password}
                     readOnly={inputsLocked}
-                    onFocus={() => setInputsLocked(false)}
+                    onFocus={() => {
+                      lastFocusTime.current = Date.now()
+                      setInputsLocked(false)
+                    }}
                     onClick={(e) => {
-                      if (!formData.password && !inputsLocked) {
+                      if (!formData.password && Date.now() - lastFocusTime.current > 200) {
                         e.target.blur();
                         setTimeout(() => e.target.focus(), 10);
                       }
