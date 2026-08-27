@@ -91,11 +91,6 @@ export default function Login() {
     return () => window.clearTimeout(timer)
   }, [loading])
 
-  // Single shared lock state for both inputs to prevent initial autofill
-  // while ensuring paired autofill works properly when unlocked.
-  const [inputsLocked, setInputsLocked] = useState(true)
-  const lastFocusTime = useRef(0)
-
   // Show toast if user was forcibly logged out from another device
   useMemo(() => {
     if (sessionStorage.getItem('session_superseded')) {
@@ -261,24 +256,9 @@ export default function Login() {
                     name="email"
                     type="email"
                     value={formData.email}
-                    readOnly={inputsLocked}
-                    onFocus={() => {
-                      lastFocusTime.current = Date.now()
-                      setInputsLocked(false)
-                    }}
-                    onClick={(e) => {
-                      // Hack to force Chrome's autofill dropdown to reappear if the user 
-                      // clears the field and clicks it again without clicking away first.
-                      // We only run this if the input was ALREADY focused (>200ms ago) so we don't kill the initial popup.
-                      if (!formData.email && Date.now() - lastFocusTime.current > 200) {
-                        e.target.blur();
-                        setTimeout(() => e.target.focus(), 10);
-                      }
-                    }}
-                    onChange={(event) => {
-                      setInputsLocked(false)
+                    onChange={(event) =>
                       setFormData((current) => ({ ...current, email: event.target.value }))
-                    }}
+                    }
                     placeholder="Enter your email"
                     autoComplete="username"
                     required
@@ -299,21 +279,9 @@ export default function Login() {
                     name="password"
                     type={showPassword ? 'text' : 'password'}
                     value={formData.password}
-                    readOnly={inputsLocked}
-                    onFocus={() => {
-                      lastFocusTime.current = Date.now()
-                      setInputsLocked(false)
-                    }}
-                    onClick={(e) => {
-                      if (!formData.password && Date.now() - lastFocusTime.current > 200) {
-                        e.target.blur();
-                        setTimeout(() => e.target.focus(), 10);
-                      }
-                    }}
-                    onChange={(event) => {
-                      setInputsLocked(false)
+                    onChange={(event) =>
                       setFormData((current) => ({ ...current, password: event.target.value }))
-                    }}
+                    }
                     placeholder="Enter your password"
                     autoComplete="current-password"
                     required
