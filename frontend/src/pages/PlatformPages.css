@@ -13245,7 +13245,7 @@ html body .workspace-page--mcq-list .workspace-header-sticky .inline-actions .bt
 [data-theme='dark'] .workspace-section-grid .course-manage-card .state-chip--neutral,
 html[data-theme='dark'] .workspace-section-grid .course-manage-card .state-chip--neutral {
   border-color: rgba(196, 181, 255, 0.78);
-  background: linear-gradient(135deg, rgba(196, 181, 255, 0.24), rgba(108, 71, 255, 0.28));
+  background: rgba(43, 30, 85, 0.9) !important;
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.34);
