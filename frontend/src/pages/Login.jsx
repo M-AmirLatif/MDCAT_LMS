@@ -91,6 +91,11 @@ export default function Login() {
     return () => window.clearTimeout(timer)
   }, [loading])
 
+  // Start inputs as readOnly to block Chrome's initial page load autofill.
+  // We unlock them instantly when the user's mouse hovers over the form,
+  // guaranteeing paired autofill works when they click!
+  const [inputsLocked, setInputsLocked] = useState(true)
+
   // Show toast if user was forcibly logged out from another device
   useMemo(() => {
     if (sessionStorage.getItem('session_superseded')) {
@@ -242,17 +247,13 @@ export default function Login() {
                 tools.
               </p>
 
-              <form className="auth-form" onSubmit={handleSubmit} autoComplete="on">
-                {/* 
-                  Off-screen dummy inputs to safely absorb Chrome's aggressive autofill.
-                  Unlike display:none, these are "visible" to the browser engine so it fills these
-                  instead of your real fields, keeping your fields perfectly empty on load!
-                */}
-                <div style={{ position: 'absolute', opacity: 0, height: 0, width: 0, overflow: 'hidden', pointerEvents: 'none' }} aria-hidden="true">
-                  <input type="email" name="fake_email" tabIndex={-1} autoComplete="username" />
-                  <input type="password" name="fake_password" tabIndex={-1} autoComplete="current-password" />
-                </div>
-
+              <form 
+                className="auth-form" 
+                onSubmit={handleSubmit} 
+                autoComplete="on"
+                onMouseEnter={() => setInputsLocked(false)}
+                onTouchStart={() => setInputsLocked(false)}
+              >
                 <div
                   className={`floating-field auth-input-shell ${formData.email ? 'auth-input-shell--filled' : ''} ${emailValid ? 'auth-input-shell--valid' : ''}`}
                 >
@@ -266,6 +267,7 @@ export default function Login() {
                     name="email"
                     type="email"
                     value={formData.email}
+                    readOnly={inputsLocked}
                     onChange={(event) =>
                       setFormData((current) => ({ ...current, email: event.target.value }))
                     }
@@ -289,6 +291,7 @@ export default function Login() {
                     name="password"
                     type={showPassword ? 'text' : 'password'}
                     value={formData.password}
+                    readOnly={inputsLocked}
                     onChange={(event) =>
                       setFormData((current) => ({ ...current, password: event.target.value }))
                     }
