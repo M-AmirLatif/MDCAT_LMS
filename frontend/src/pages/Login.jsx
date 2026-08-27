@@ -243,6 +243,16 @@ export default function Login() {
               </p>
 
               <form className="auth-form" onSubmit={handleSubmit} autoComplete="on">
+                {/* 
+                  Off-screen dummy inputs to safely absorb Chrome's aggressive autofill.
+                  Unlike display:none, these are "visible" to the browser engine so it fills these
+                  instead of your real fields, keeping your fields perfectly empty on load!
+                */}
+                <div style={{ position: 'absolute', opacity: 0, height: 0, width: 0, overflow: 'hidden', pointerEvents: 'none' }} aria-hidden="true">
+                  <input type="email" name="fake_email" tabIndex={-1} autoComplete="username" />
+                  <input type="password" name="fake_password" tabIndex={-1} autoComplete="current-password" />
+                </div>
+
                 <div
                   className={`floating-field auth-input-shell ${formData.email ? 'auth-input-shell--filled' : ''} ${emailValid ? 'auth-input-shell--valid' : ''}`}
                 >
