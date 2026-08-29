@@ -1390,6 +1390,7 @@ function McqList() {
   const [viewMode, setViewMode] = useState(initialViewMode)
   const [activeHeaderAction, setActiveHeaderAction] = useState(initialViewMode)
   const fileRef = useRef(null)
+  const replaceCsvRef = useRef(false)
   const testPart = searchParams.get('testPart')
   const topicIdParam = searchParams.get('topicId')
   const studentMcqQuery = useMemo(() => {
@@ -1571,7 +1572,7 @@ function McqList() {
     if (!file) return
     try {
       const csvText = await file.text()
-      const res = await API.post(`/mcqs/${subject}/${chapterId}/upload-csv`, {
+      const res = await API.post(`/mcqs/${subject}/${chapterId}/upload-csv?replaceAll=${replaceCsvRef.current}`, {
         csvText,
         fileName: file.name,
         topicId: selectedTopicId || null,
@@ -1747,10 +1748,26 @@ function McqList() {
                 type="button"
                 onClick={() => {
                   setActiveHeaderAction('upload')
+                  replaceCsvRef.current = false
                   fileRef.current?.click()
                 }}
               >
                 Upload CSV
+              </button>
+            ) : null}
+            {isTeacher ? (
+              <button
+                className="btn btn-secondary"
+                type="button"
+                onClick={() => {
+                  if (window.confirm('Warning: This will DELETE all existing MCQs for this chapter/topic and replace them with the new CSV. This cannot be undone. Do you want to proceed?')) {
+                    setActiveHeaderAction('upload')
+                    replaceCsvRef.current = true
+                    fileRef.current?.click()
+                  }
+                }}
+              >
+                Replace MCQs
               </button>
             ) : null}
             {!isTeacher ? (

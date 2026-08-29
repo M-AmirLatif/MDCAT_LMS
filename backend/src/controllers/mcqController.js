@@ -1,4 +1,4 @@
-﻿const MCQ = require('../models/MCQ')
+const MCQ = require('../models/MCQ')
 const Course = require('../models/Course')
 const TestSession = require('../models/TestSession')
 const ImportBatch = require('../models/ImportBatch')
@@ -2230,7 +2230,9 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
     })
 
     const uploadedNumbers = [...uploadedQuestionNumbers].filter(Boolean)
-    if (uploadedNumbers.length) {
+    const replaceAll = req.query.replaceAll === 'true'
+
+    if (uploadedNumbers.length || replaceAll) {
       const numberFilter = {
         $or: [
           { originalQuestionNumber: { $in: uploadedNumbers } },
@@ -2241,21 +2243,26 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
         courseId: context.course._id,
         chapterId: context.chapter.id,
       }
+      
       if (context.topic?.id) {
         replaceFilter.topicId = context.topic.id
-        replaceFilter.$or = numberFilter.$or
+        if (!replaceAll) replaceFilter.$or = numberFilter.$or
       } else {
-        replaceFilter.$and = [
-          { $or: [{ topicId: null }, { topicId: { $exists: false } }] },
-          numberFilter,
-        ]
+        if (replaceAll) {
+          replaceFilter.$or = [{ topicId: null }, { topicId: { $exists: false } }]
+        } else {
+          replaceFilter.$and = [
+            { $or: [{ topicId: null }, { topicId: { $exists: false } }] },
+            numberFilter,
+          ]
+        }
       }
       // CSV upload is source-of-truth for these question-number slots.
-      // If row 12 goes to review, old main MCQ 12 must be removed.
+      // If replaceAll is true, it wipes all existing MCQs for this chapter/topic.
       await MCQ.deleteMany(replaceFilter)
     }
 
-    if (uploadedNumbers.length || reviewItems.length) {
+    if (uploadedNumbers.length || reviewItems.length || replaceAll) {
       const courseForReviewQueue = await getSubjectCourseFull(context.subject)
       const chapterForReviewQueue = getChapter(
         courseForReviewQueue,
@@ -2264,6 +2271,10 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
       chapterForReviewQueue.reviewQueue = getChapterReviewQueue(
         chapterForReviewQueue,
       ).filter((item) => {
+        if (replaceAll) {
+          if (context.topic?.id) return String(item.topicId || '') !== String(context.topic.id)
+          return !!item.topicId
+        }
         const itemNumber = String(item.originalQuestionNumber || item.questionNumber || '').trim()
         if (!uploadedQuestionNumbers.has(itemNumber)) return true
         if (context.topic?.id) return String(item.topicId || '') !== String(context.topic.id)
