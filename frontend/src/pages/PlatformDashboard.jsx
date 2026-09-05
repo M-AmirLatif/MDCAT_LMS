@@ -147,7 +147,7 @@ function DashboardMomentumSvg({ data, subjects: subjectNames, overallAccuracy = 
     </div>
   )
 }
-function StudentDashboard({ firstName }) {
+function StudentDashboard({ firstName, user }) {
   const { subjects, summary, performanceTrend, loading } = useStudentPerformanceData()
   const visibleSubjects = subjects.length ? subjects : mdcatSubjects
   const momentumSubjectNames = ['Biology', 'Chemistry', 'Physics', 'English']
@@ -176,9 +176,18 @@ function StudentDashboard({ firstName }) {
               <p>Across all four MDCAT subjects</p>
             </div>
             <div className="hero-mini-card">
-              <span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Overall Accuracy</span>
-              <strong>{loading ? '...' : `${summary.overallAccuracy}%`}</strong>
-              <p>Accuracy will update after real MCQ attempts</p>
+              <span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Average Score</span>
+              <strong>{loading ? '...' : `${summary.overallAverage}%`}</strong>
+              <p>Total recorded accuracy percentage</p>
+            </div>
+            <div className="hero-mini-card">
+              <span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Practice Streak 🔥</span>
+              <strong>{user?.currentStreak || 0} Days</strong>
+              <p>
+                {user?.badges?.length > 0 
+                  ? `Badges: ${user.badges.join(', ')}`
+                  : 'Complete a test to start a streak!'}
+              </p>
             </div>
           </div>
         </div>
@@ -503,10 +512,10 @@ export default function PlatformDashboard() {
   const firstName = user?.firstName || 'Student'
 
   const content = useMemo(() => {
-    if (role === 'teacher') return <TeacherDashboard />
+    if (role === 'teacher') return <TeacherDashboard user={user} />
     if (role === 'admin') return <AdminDashboard />
-    return <StudentDashboard firstName={firstName} />
-  }, [firstName, role])
+    return <StudentDashboard firstName={firstName} user={user} />
+  }, [firstName, role, user])
 
   return content
 }
