@@ -21,27 +21,6 @@ export default defineConfig({
   build: {
     target: 'es2020',
     modulePreload: false,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) {
-            return 'vendor-react'
-          }
-          if (id.includes('node_modules/react-router')) {
-            return 'vendor-router'
-          }
-          if (id.includes('node_modules/recharts') || id.includes('node_modules/d3-')) {
-            return 'vendor-charts'
-          }
-          if (id.includes('node_modules/axios')) {
-            return 'vendor-axios'
-          }
-          if (id.includes('node_modules/')) {
-            return 'vendor-misc'
-          }
-        },
-      },
-    },
     chunkSizeWarningLimit: 300,
   },
 })
