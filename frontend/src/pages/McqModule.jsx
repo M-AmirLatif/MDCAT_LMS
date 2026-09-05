@@ -2072,6 +2072,8 @@ function QuizAttempt() {
 
         if (location.state?.retake) {
           clearStoredQuizResult(quizUserKey, subject, chapterAttemptId)
+          localStorage.removeItem(quizStorageKey)
+          activeDraft = null
         } else if (!activeDraft) {
           const storedResult = readStoredQuizResult(quizUserKey, subject, chapterAttemptId)
           if (storedResult) {

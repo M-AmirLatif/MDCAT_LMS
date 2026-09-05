@@ -122,6 +122,9 @@ const buildUserResponse = (user, roleDoc, extra = {}) => ({
   assignedSubjects: getTeacherSubjects(user),
   hasLocalPassword: user.hasLocalPassword !== false,
   needsPasswordSetup: user.hasLocalPassword === false,
+  currentStreak: user.currentStreak || 0,
+  badges: user.badges || [],
+  lastPracticeDate: user.lastPracticeDate || null,
   ...extra,
 })
 
@@ -221,7 +224,7 @@ exports.login = async (req, res) => {
     }
 
     const user = await User.findOne({ email }).select(
-      '+password role isActive isEmailVerified firstName lastName email phone profilePicture hasLocalPassword status assignedSubject assignedSubjects',
+      '+password role isActive isEmailVerified firstName lastName email phone profilePicture hasLocalPassword status assignedSubject assignedSubjects currentStreak badges lastPracticeDate',
     )
     if (!user) {
       return res.status(400).json({ error: 'Invalid credentials' })
@@ -308,6 +311,9 @@ exports.getProfile = async (req, res) => {
         status: user.status || 'active',
         assignedSubject: user.assignedSubject || null,
         assignedSubjects: getTeacherSubjects(user),
+        currentStreak: user.currentStreak || 0,
+        badges: user.badges || [],
+        lastPracticeDate: user.lastPracticeDate || null,
       },
     })
   } catch (error) {
