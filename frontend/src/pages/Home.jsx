@@ -213,35 +213,36 @@ export default function Home() {
         <meta property="og:url" content={canonicalUrl} />
         <meta name="twitter:title" content={seo.title} />
         <meta name="twitter:description" content={seo.desc} />
+      </Helmet>
+      
+      {/* JSON-LD Structured Data (Rendered natively outside Helmet for guaranteed injection) */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "ACEMDCAT",
+          "url": "https://www.acemdcat.com",
+          "description": "Free MDCAT 2026 Preparation Platform with chapter-wise MCQs for Biology, Chemistry, Physics, and English."
+        })
+      }} />
 
-        {/* JSON-LD Structured Data */}
+      {seo.faq && seo.faq.length > 0 && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "WebSite",
-            "name": "ACEMDCAT",
-            "url": "https://www.acemdcat.com",
-            "description": "Free MDCAT 2026 Preparation Platform with chapter-wise MCQs for Biology, Chemistry, Physics, and English."
+            "@type": "FAQPage",
+            "mainEntity": seo.faq.map((f) => ({
+              "@type": "Question",
+              "name": f.q,
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": f.a
+              }
+            }))
           })
         }} />
+      )}
 
-        {seo.faq && seo.faq.length > 0 && (
-          <script type="application/ld+json" dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "FAQPage",
-              "mainEntity": seo.faq.map((f) => ({
-                "@type": "Question",
-                "name": f.q,
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": f.a
-                }
-              }))
-            })
-          }} />
-        )}
-      </Helmet>
       <header className="lp-nav">
         <Link className="lp-brand" to="/">
           <span className="lp-mark">M</span>
