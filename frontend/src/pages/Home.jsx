@@ -57,7 +57,14 @@ export default function Home() {
           desc: "Practice chapter-wise Biology MCQs for MDCAT 2026. Real test environment, timer-based quizzes, and detailed explanations.",
           heading: "Free MDCAT Biology MCQs",
           subheading: "Chapter Wise Practice",
-          p: "Master Biology with our extensive collection of chapter-wise MCQs designed for MDCAT 2026."
+          p: "Master Biology with our extensive collection of chapter-wise MCQs designed for MDCAT 2026.",
+          subject: 'Biology',
+          benefits: 'Focus on Cellular Life, Human Physiology, and Genetics. Practice timed tests and get instant explanations for Biology concepts.',
+          topics: ['Cell Biology', 'Biological Molecules', 'Microbiology', 'Kingdom Animalia', 'Human Physiology', 'Bioenergetics', 'Biotechnology', 'Evolution and Genetics'],
+          faq: [
+             {q: "Is MDCAT Biology chapter-wise practice free?", a: "Yes, our entire MDCAT Biology MCQ bank is completely free to practice."},
+             {q: "Does this cover the PMDC MDCAT 2026 Biology syllabus?", a: "Absolutely. The MCQs are organized strictly according to the latest PMDC MDCAT 2026 Biology syllabus."}
+          ]
         };
       case '/mdcat-chemistry-mcqs':
         return {
@@ -65,7 +72,14 @@ export default function Home() {
           desc: "Practice chapter-wise Chemistry MCQs for MDCAT 2026. Real test environment, timer-based quizzes, and detailed explanations.",
           heading: "Free MDCAT Chemistry MCQs",
           subheading: "Chapter Wise Practice",
-          p: "Master Chemistry with our extensive collection of chapter-wise MCQs designed for MDCAT 2026."
+          p: "Master Chemistry with our extensive collection of chapter-wise MCQs designed for MDCAT 2026.",
+          subject: 'Chemistry',
+          benefits: 'Sharpen your Organic and Inorganic Chemistry concepts. Solve complex equations and conceptual MCQs effortlessly.',
+          topics: ['Physical Chemistry', 'Inorganic Chemistry', 'Organic Chemistry', 'Macromolecules', 'Environmental Chemistry', 'Transition Elements'],
+          faq: [
+             {q: "Are explanations provided for MDCAT Chemistry MCQs?", a: "Yes, detailed explanations and balanced chemical equations are provided after you complete each quiz."},
+             {q: "Are the Chemistry MCQs chapter-wise?", a: "Yes, you can select specific chapters like Organic Chemistry or Physical Chemistry to focus your practice."}
+          ]
         };
       case '/mdcat-physics-mcqs':
         return {
@@ -73,7 +87,14 @@ export default function Home() {
           desc: "Practice chapter-wise Physics MCQs for MDCAT 2026. Real test environment, timer-based quizzes, and detailed explanations.",
           heading: "Free MDCAT Physics MCQs",
           subheading: "Chapter Wise Practice",
-          p: "Master Physics with our extensive collection of chapter-wise MCQs designed for MDCAT 2026."
+          p: "Master Physics with our extensive collection of chapter-wise MCQs designed for MDCAT 2026.",
+          subject: 'Physics',
+          benefits: 'Improve your numerical problem-solving speed and conceptual clarity across all MDCAT Physics topics.',
+          topics: ['Force and Motion', 'Work and Energy', 'Rotational and Circular Motion', 'Waves', 'Thermodynamics', 'Electrostatics', 'Current Electricity', 'Electromagnetism', 'Modern Physics'],
+          faq: [
+             {q: "How can I improve my MDCAT Physics numericals?", a: "By practicing with our timed quizzes. Every Physics numerical comes with a step-by-step solution after submission."},
+             {q: "Is the MDCAT Physics test bank free?", a: "Yes, all Physics chapters and MCQs are 100% free for MDCAT 2026 students."}
+          ]
         };
       case '/mdcat-english-mcqs':
         return {
@@ -81,7 +102,14 @@ export default function Home() {
           desc: "Practice chapter-wise English MCQs for MDCAT 2026. Real test environment, timer-based quizzes, and detailed explanations.",
           heading: "Free MDCAT English MCQs",
           subheading: "Chapter Wise Practice",
-          p: "Master English with our extensive collection of chapter-wise MCQs designed for MDCAT 2026."
+          p: "Master English with our extensive collection of chapter-wise MCQs designed for MDCAT 2026.",
+          subject: 'English',
+          benefits: 'Enhance your vocabulary, grammar, and sentence structure skills with PMDC-aligned English MCQs.',
+          topics: ['Vocabulary', 'Tenses', 'Subject-Verb Agreement', 'Prepositions', 'Articles', 'Sentence Completion', 'Punctuation', 'Spelling'],
+          faq: [
+             {q: "Does the English section include Vocabulary practice?", a: "Yes, our English bank includes comprehensive vocabulary, synonyms, antonyms, and sentence completion practice."},
+             {q: "Is English grammar covered for MDCAT?", a: "Yes, we cover all essential PMDC English grammar rules including subject-verb agreement and prepositions."}
+          ]
         };
       case '/about':
         return {
@@ -249,6 +277,38 @@ export default function Home() {
         </div>
       </section>
 
+            {seo.subject && (
+        <section className="lp-section lp-section-light" style={{ paddingBottom: 0 }}>
+          <div className="lp-container reveal">
+            <h2 className="lp-section-title">Why Practice MDCAT {seo.subject} with Us?</h2>
+            <p style={{ textAlign: 'center', marginBottom: '40px', color: 'var(--text-muted, #4b5563)' }}>{seo.benefits}</p>
+            
+            <h3 style={{ textAlign: 'center', marginBottom: '20px' }}>{seo.subject} Syllabus Topics Covered</h3>
+            <div className="lp-faq-grid" style={{ marginBottom: '60px' }}>
+              {seo.topics?.map(topic => (
+                <div className="lp-faq-item" key={topic} style={{ padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', fontWeight: 'bold' }}>
+                  {topic}
+                </div>
+              ))}
+            </div>
+
+            <h3 style={{ textAlign: 'center', marginBottom: '20px' }}>{seo.subject} FAQs</h3>
+            <div className="lp-faq-grid" style={{ marginBottom: '40px' }}>
+              {seo.faq?.map((f, i) => (
+                <div className="lp-faq-item" key={i}>
+                  <strong>{f.q}</strong>
+                  <p>{f.a}</p>
+                </div>
+              ))}
+            </div>
+            
+            <div style={{ textAlign: 'center', marginTop: '20px', marginBottom: '40px' }}>
+               <Link className="lp-btn lp-btn-primary" to="/mcqs">Start {seo.subject} Practice Now</Link>
+            </div>
+          </div>
+        </section>
+      )}
+
       <section id="courses" className="lp-section lp-section-light">
         <div className="lp-container lp-value-grid reveal">
           <div>
@@ -359,12 +419,14 @@ export default function Home() {
             <Link to="/login">Login</Link>
             <Link to="/register">Register</Link>
           </nav>
-          <p>Â© 2026 MDCAT LMS</p>
+          <p>Ã‚Â© 2026 MDCAT LMS</p>
         </div>
       </footer>
     </main>
   )
 }
+
+
 
 
 
