@@ -123,7 +123,8 @@ export default function Home() {
           heading: "About ACEMDCAT",
           subheading: "Our Mission",
           headingLine3: "",
-          p: "ACEMDCAT is built to provide high-quality, free MDCAT preparation for every student in Pakistan."
+          p: "ACEMDCAT is built to provide high-quality, free MDCAT preparation for every student in Pakistan.",
+          staticPage: 'about'
         };
       case '/contact':
         return {
@@ -132,7 +133,8 @@ export default function Home() {
           heading: "Contact Us",
           subheading: "We're here to help",
           headingLine3: "",
-          p: "Have a question or feedback? We'd love to hear from you."
+          p: "Have a question or feedback? We'd love to hear from you.",
+          staticPage: 'contact'
         };
       case '/privacy-policy':
         return {
@@ -141,7 +143,8 @@ export default function Home() {
           heading: "Privacy Policy",
           subheading: "Data Protection",
           headingLine3: "",
-          p: "We take your privacy seriously. Read our policies below."
+          p: "We take your privacy seriously. Read our policies below.",
+          staticPage: 'privacy'
         };
       case '/terms':
         return {
@@ -150,11 +153,12 @@ export default function Home() {
           heading: "Terms of Service",
           subheading: "User Agreement",
           headingLine3: "",
-          p: "Please read these terms carefully before using our platform."
+          p: "Please read these terms carefully before using our platform.",
+          staticPage: 'terms'
         };
       default:
         return {
-          title: "MDCAT LMS – Free MDCAT 2026 Preparation & MCQs",
+          title: "MDCAT LMS â€“ Free MDCAT 2026 Preparation & MCQs",
           desc: "Prepare for MDCAT 2026 with free chapter-wise Biology, Chemistry, Physics, and English MCQs, timed tests, explanations, and performance tracking.",
           heading: "MDCAT 2026:",
           subheading: "Faster, Smarter",
@@ -319,7 +323,80 @@ export default function Home() {
         </section>
       )}
 
-      <section id="courses" className="lp-section lp-section-light">
+            {seo.staticPage && (
+        <section className="lp-section lp-section-light" style={{ paddingBottom: '80px', paddingTop: '40px' }}>
+          <div className="lp-container reveal" style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'left', lineHeight: '1.8', color: 'var(--text-color, #1f2937)' }}>
+            {seo.staticPage === 'about' && (
+              <>
+                <h2>Our Story</h2>
+                <p>Welcome to ACEMDCAT, Pakistan's premier free platform for MDCAT preparation. Founded by passionate educators, our mission is to democratize access to high-quality medical entrance exam resources.</p>
+                <br />
+                <h2>Why We Built This</h2>
+                <p>MDCAT preparation is often expensive and stressful. We believe that every student, regardless of their financial background, deserves a fair shot at getting into their dream medical college. That's why we've built a comprehensive, chapter-wise MCQ bank that perfectly aligns with the latest PMDC syllabus—completely free of charge.</p>
+                <br />
+                <h2>What We Offer</h2>
+                <ul>
+                  <li><strong>Chapter-Wise MCQs:</strong> Thousands of questions spanning Biology, Chemistry, Physics, and English.</li>
+                  <li><strong>Real-Time Analytics:</strong> Track your daily streaks, weak chapters, and overall performance.</li>
+                  <li><strong>Detailed Explanations:</strong> Learn from your mistakes instantly with clear, step-by-step solutions for numericals and conceptual questions.</li>
+                </ul>
+              </>
+            )}
+            
+            {seo.staticPage === 'contact' && (
+              <>
+                <h2>Get in Touch</h2>
+                <p>We are always here to help you on your journey to becoming a medical professional. Whether you have a question about our platform, need technical support, or want to share feedback, we'd love to hear from you!</p>
+                <br />
+                <h2>Contact Information</h2>
+                <ul style={{ listStyle: 'none', padding: 0 }}>
+                  <li>?? <strong>Email:</strong> support@acemdcat.com</li>
+                  <li>?? <strong>WhatsApp:</strong> +92 300 0000000</li>
+                  <li>?? <strong>Location:</strong> Online Platform for all Pakistani Students</li>
+                </ul>
+                <br />
+                <p>We aim to respond to all inquiries within 24 hours.</p>
+              </>
+            )}
+
+            {seo.staticPage === 'privacy' && (
+              <>
+                <h2>1. Information We Collect</h2>
+                <p>We collect basic information required to provide our LMS services, including your name, email address, and performance data on quizzes (such as scores and time taken). We do not collect sensitive payment information directly on our servers.</p>
+                <br />
+                <h2>2. How We Use Your Data</h2>
+                <p>Your data is strictly used to improve your educational experience. We use quiz results to generate your personalized analytics dashboard and streak trackers. We do not sell your personal data to third-party marketing companies.</p>
+                <br />
+                <h2>3. Cookies and Tracking</h2>
+                <p>We use standard session cookies for authenticating your account, and Google Analytics to understand how visitors interact with our public pages. These tools help us improve platform speed and usability.</p>
+                <br />
+                <h2>4. Data Security</h2>
+                <p>All passwords are encrypted and our servers employ modern security practices to ensure your data remains safe and private.</p>
+              </>
+            )}
+
+            {seo.staticPage === 'terms' && (
+              <>
+                <h2>1. Acceptance of Terms</h2>
+                <p>By accessing and using ACEMDCAT, you agree to comply with and be bound by these Terms of Service. If you do not agree with any part of these terms, you may not use our platform.</p>
+                <br />
+                <h2>2. Educational Use Only</h2>
+                <p>All MCQs, explanations, and content provided on this platform are for educational and preparation purposes. While we strive for 100% accuracy, we do not guarantee admission into any medical institution based solely on the usage of our platform.</p>
+                <br />
+                <h2>3. User Conduct</h2>
+                <p>You agree to use the platform respectfully. Any attempt to scrape our MCQ database, manipulate leaderboards, or share premium accounts (if applicable) will result in immediate account termination.</p>
+                <br />
+                <h2>4. Intellectual Property</h2>
+                <p>All website design, structure, and original content are the intellectual property of ACEMDCAT. You may not reproduce, distribute, or create derivative works without explicit permission.</p>
+              </>
+            )}
+          </div>
+        </section>
+      )}
+
+      {!seo.staticPage && (
+        <>
+<section id="courses" className="lp-section lp-section-light">
         <div className="lp-container lp-value-grid reveal">
           <div>
             <p className="lp-label">Stress-free MDCAT prep</p>
@@ -420,6 +497,11 @@ export default function Home() {
         </div>
       </section>
 
+
+      </>
+
+      )}
+
       <footer className="lp-footer">
         <div className="lp-container lp-footer-inner">
           <div className="lp-footer-brand"><span className="lp-mark">M</span><div><strong>MDCAT LMS</strong><small>Your MDCAT Prep Companion</small></div></div>
@@ -429,12 +511,13 @@ export default function Home() {
             <Link to="/login">Login</Link>
             <Link to="/register">Register</Link>
           </nav>
-          <p>Ãƒâ€šÃ‚Â© 2026 MDCAT LMS</p>
+          <p>ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â© 2026 MDCAT LMS</p>
         </div>
       </footer>
     </main>
   )
 }
+
 
 
 
