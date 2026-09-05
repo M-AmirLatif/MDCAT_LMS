@@ -2249,10 +2249,10 @@ function QuizAttempt() {
       ).length
       const skippedCount = mcqs.filter((mcq) => skipped[mcq._id]).length
       if (unansweredCount > 0 || skippedCount > 0) {
-        toast.error(
-          `Please attempt all MCQs before submitting. ${unansweredCount} unanswered, ${skippedCount} skipped.`,
+        const confirmed = window.confirm(
+          `You have ${unansweredCount} unanswered and ${skippedCount} skipped MCQs. Submit anyway?`
         )
-        return
+        if (!confirmed) return
       }
     }
     setSubmitting(true)
