@@ -4,7 +4,7 @@ import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import './App.css'
-import './pages/PlatformPages.css'
+
 import './theme.css'
 
 function lazyWithRetry(importer, key) {

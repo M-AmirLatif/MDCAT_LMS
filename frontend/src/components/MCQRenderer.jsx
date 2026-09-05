@@ -1,7 +1,7 @@
-﻿import { Fragment, useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { BlockMath, InlineMath } from 'react-katex'
 import { cleanImageUrlValue, normalizeImageUrl } from '../utils/mediaUrls'
-import 'katex/dist/katex.min.css'
+
 
 const DIAGRAM_REGEX = /\[DIAGRAM:\s*([\s\S]*?)\]/gi
 const IMAGE_TOKEN_REGEX =
@@ -475,6 +475,10 @@ export default function MCQRenderer({
   imageUrls = [],
   images = [],
 }) {
+  useEffect(() => {
+    import('katex/dist/katex.min.css')
+  }, [])
+
   const rawContent = text ?? content ?? ''
   const normalizedPropImages = [
     imageFromUnknown(imageUrl),
