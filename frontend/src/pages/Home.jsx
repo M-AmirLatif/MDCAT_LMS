@@ -202,47 +202,58 @@ export default function Home() {
 
   const hasContent = stats && (stats.totalChapters > 0 || stats.totalMcqs > 0)
 
+  // Inject JSON-LD dynamically into document head for Google Rich Results Test compatibility
+  useEffect(() => {
+    // Clear any existing json-ld scripts we added previously to prevent duplicates on route change
+    document.querySelectorAll('script[data-json-ld="true"]').forEach(el => el.remove())
+
+    const addScript = (data) => {
+      const script = document.createElement('script')
+      script.type = 'application/ld+json'
+      script.setAttribute('data-json-ld', 'true')
+      script.text = JSON.stringify(data)
+      document.head.appendChild(script)
+    }
+
+    addScript({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "ACEMDCAT",
+      "url": "https://www.acemdcat.com",
+      "description": "Free MDCAT 2026 Preparation Platform with chapter-wise MCQs for Biology, Chemistry, Physics, and English."
+    })
+
+    if (seo.faq && seo.faq.length > 0) {
+      addScript({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": seo.faq.map((f) => ({
+          "@type": "Question",
+          "name": f.q,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": f.a
+          }
+        }))
+      })
+    }
+
+    return () => {
+      // Cleanup on unmount
+      document.querySelectorAll('script[data-json-ld="true"]').forEach(el => el.remove())
+    }
+  }, [seo])
+
   return (
     <main className="landing">
       <Helmet>
         <title>{seo.title}</title>
         <meta name="description" content={seo.desc} />
         <link rel="canonical" href={canonicalUrl} />
-        <meta property="og:title" content={seo.title} />
-        <meta property="og:description" content={seo.desc} />
-        <meta property="og:url" content={canonicalUrl} />
         <meta name="twitter:title" content={seo.title} />
         <meta name="twitter:description" content={seo.desc} />
       </Helmet>
       
-      {/* JSON-LD Structured Data (Rendered natively outside Helmet for guaranteed injection) */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{
-        __html: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          "name": "ACEMDCAT",
-          "url": "https://www.acemdcat.com",
-          "description": "Free MDCAT 2026 Preparation Platform with chapter-wise MCQs for Biology, Chemistry, Physics, and English."
-        })
-      }} />
-
-      {seo.faq && seo.faq.length > 0 && (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            "mainEntity": seo.faq.map((f) => ({
-              "@type": "Question",
-              "name": f.q,
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": f.a
-              }
-            }))
-          })
-        }} />
-      )}
-
       <header className="lp-nav">
         <Link className="lp-brand" to="/">
           <span className="lp-mark">M</span>
