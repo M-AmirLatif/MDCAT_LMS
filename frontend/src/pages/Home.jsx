@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link, useLocation } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import ThemeToggle from '../components/ThemeToggle'
 import { getAuthUser } from '../services/authStorage'
 import './Home.css'
