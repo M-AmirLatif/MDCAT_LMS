@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import ThemeToggle from '../components/ThemeToggle'
 import { getAuthUser } from '../services/authStorage'
 import './Home.css'
