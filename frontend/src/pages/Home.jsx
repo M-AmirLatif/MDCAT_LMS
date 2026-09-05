@@ -49,6 +49,7 @@ export default function Home() {
           desc: "Start your free MDCAT 2026 preparation with chapter-wise MCQs, timed test sessions, detailed explanations, and performance tracking.",
           heading: "Free MDCAT 2026 Preparation",
           subheading: "Faster, Smarter",
+          headingLine3: "Preparation at Home",
           p: "Focused MDCAT preparation from the comfort of your home. Real chapters, MCQs, and analytics, all in one platform."
         };
       case '/mdcat-biology-mcqs':
@@ -57,6 +58,7 @@ export default function Home() {
           desc: "Practice chapter-wise Biology MCQs for MDCAT 2026. Real test environment, timer-based quizzes, and detailed explanations.",
           heading: "Free MDCAT Biology MCQs",
           subheading: "Chapter Wise Practice",
+          headingLine3: "For MDCAT 2026",
           p: "Master Biology with our extensive collection of chapter-wise MCQs designed for MDCAT 2026.",
           subject: 'Biology',
           benefits: 'Focus on Cellular Life, Human Physiology, and Genetics. Practice timed tests and get instant explanations for Biology concepts.',
@@ -72,6 +74,7 @@ export default function Home() {
           desc: "Practice chapter-wise Chemistry MCQs for MDCAT 2026. Real test environment, timer-based quizzes, and detailed explanations.",
           heading: "Free MDCAT Chemistry MCQs",
           subheading: "Chapter Wise Practice",
+          headingLine3: "For MDCAT 2026",
           p: "Master Chemistry with our extensive collection of chapter-wise MCQs designed for MDCAT 2026.",
           subject: 'Chemistry',
           benefits: 'Sharpen your Organic and Inorganic Chemistry concepts. Solve complex equations and conceptual MCQs effortlessly.',
@@ -87,6 +90,7 @@ export default function Home() {
           desc: "Practice chapter-wise Physics MCQs for MDCAT 2026. Real test environment, timer-based quizzes, and detailed explanations.",
           heading: "Free MDCAT Physics MCQs",
           subheading: "Chapter Wise Practice",
+          headingLine3: "For MDCAT 2026",
           p: "Master Physics with our extensive collection of chapter-wise MCQs designed for MDCAT 2026.",
           subject: 'Physics',
           benefits: 'Improve your numerical problem-solving speed and conceptual clarity across all MDCAT Physics topics.',
@@ -102,6 +106,7 @@ export default function Home() {
           desc: "Practice chapter-wise English MCQs for MDCAT 2026. Real test environment, timer-based quizzes, and detailed explanations.",
           heading: "Free MDCAT English MCQs",
           subheading: "Chapter Wise Practice",
+          headingLine3: "For MDCAT 2026",
           p: "Master English with our extensive collection of chapter-wise MCQs designed for MDCAT 2026.",
           subject: 'English',
           benefits: 'Enhance your vocabulary, grammar, and sentence structure skills with PMDC-aligned English MCQs.',
@@ -117,6 +122,7 @@ export default function Home() {
           desc: "Learn about ACEMDCAT, a free platform built to help MDCAT students prepare for their medical entrance exams with chapter-wise MCQs.",
           heading: "About ACEMDCAT",
           subheading: "Our Mission",
+          headingLine3: "",
           p: "ACEMDCAT is built to provide high-quality, free MDCAT preparation for every student in Pakistan."
         };
       case '/contact':
@@ -125,6 +131,7 @@ export default function Home() {
           desc: "Get in touch with ACEMDCAT support for any questions regarding your free MDCAT 2026 preparation.",
           heading: "Contact Us",
           subheading: "We're here to help",
+          headingLine3: "",
           p: "Have a question or feedback? We'd love to hear from you."
         };
       case '/privacy-policy':
@@ -133,6 +140,7 @@ export default function Home() {
           desc: "Privacy Policy for ACEMDCAT free MDCAT preparation platform.",
           heading: "Privacy Policy",
           subheading: "Data Protection",
+          headingLine3: "",
           p: "We take your privacy seriously. Read our policies below."
         };
       case '/terms':
@@ -141,6 +149,7 @@ export default function Home() {
           desc: "Terms of Service for ACEMDCAT free MDCAT preparation platform.",
           heading: "Terms of Service",
           subheading: "User Agreement",
+          headingLine3: "",
           p: "Please read these terms carefully before using our platform."
         };
       default:
@@ -149,6 +158,7 @@ export default function Home() {
           desc: "Prepare for MDCAT 2026 with free chapter-wise Biology, Chemistry, Physics, and English MCQs, timed tests, explanations, and performance tracking.",
           heading: "MDCAT 2026:",
           subheading: "Faster, Smarter",
+          headingLine3: "Preparation at Home",
           p: "Focused MDCAT preparation from the comfort of your home. Real chapters, MCQs, and analytics, all in one platform."
         };
     }
@@ -265,7 +275,7 @@ export default function Home() {
           <h1>
             <span>{seo.heading}</span>
             <span className="lp-gradient-text">{seo.subheading}</span>
-            <span>Preparation at Home</span>
+            {seo.headingLine3 && <span>{seo.headingLine3}</span>}
           </h1>
           <p>{seo.p}</p>
           <div className="lp-hero-ctas">
@@ -419,7 +429,7 @@ export default function Home() {
             <Link to="/login">Login</Link>
             <Link to="/register">Register</Link>
           </nav>
-          <p>Ã‚Â© 2026 MDCAT LMS</p>
+          <p>Ãƒâ€šÃ‚Â© 2026 MDCAT LMS</p>
         </div>
       </footer>
     </main>
