@@ -24,6 +24,7 @@ const {
   uploadChapterMcqsCsv,
   getLatestChapterAttempt,
   submitChapterAttempt,
+  getTeacherAnalytics,
 } = require('../controllers/mcqController')
 const { protect, authorize } = require('../middlewares/auth')
 
@@ -66,4 +67,8 @@ router.post('/', protect, authorize('teacher', 'admin'), createMcq)
 router.put('/:mcqId', protect, authorize('teacher', 'admin'), updateMcq)
 router.delete('/:mcqId', protect, authorize('teacher', 'admin'), deleteMcq)
 
+router.get('/teacher/analytics', protect, authorize('teacher', 'admin'), getTeacherAnalytics)
+
 module.exports = router
+
+

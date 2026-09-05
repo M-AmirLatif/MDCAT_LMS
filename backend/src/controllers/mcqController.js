@@ -1,3 +1,4 @@
+const mongoose = require('mongoose')
 const MCQ = require('../models/MCQ')
 const Course = require('../models/Course')
 const TestSession = require('../models/TestSession')
@@ -2709,6 +2710,39 @@ exports.submitChapterAttempt = async (req, res) => {
         : context.chapter
     const attemptChapterName = responseChapter.name || context.chapter.name
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const lastPractice = req.user.lastPracticeDate ? new Date(req.user.lastPracticeDate) : null;
+    if (lastPractice) lastPractice.setHours(0, 0, 0, 0);
+    
+    const ONE_DAY = 24 * 60 * 60 * 1000;
+    let newStreak = req.user.currentStreak || 0;
+    
+    if (!lastPractice) {
+      newStreak = 1;
+    } else {
+      const diffDays = Math.round((today - lastPractice) / ONE_DAY);
+      if (diffDays === 1) {
+        newStreak += 1;
+      } else if (diffDays > 1) {
+        newStreak = 1;
+      }
+    }
+    
+    const newBadges = [...(req.user.badges || [])];
+    if (newStreak >= 7 && !newBadges.includes('7-Day Streak')) newBadges.push('7-Day Streak');
+    if (newStreak >= 30 && !newBadges.includes('30-Day Streak')) newBadges.push('30-Day Streak');
+    if (percentage === 100 && !newBadges.includes('Perfect Score')) newBadges.push('Perfect Score');
+    
+    await req.user.updateOne({
+      currentStreak: newStreak,
+      lastPracticeDate: new Date(),
+      badges: newBadges
+    });
+    
+    req.user.currentStreak = newStreak;
+    req.user.badges = newBadges;
+
     const testSession = await TestSession.create({
       studentId: req.user.id,
       courseId: context.course._id,
@@ -2764,4 +2798,59 @@ exports.submitChapterAttempt = async (req, res) => {
 
 
 
+
+
+// ==================== GET TEACHER ANALYTICS ====================
+exports.getTeacherAnalytics = async (req, res) => {
+  try {
+    const assignedSubject = req.user.assignedSubject || (req.user.assignedSubjects && req.user.assignedSubjects[0]);
+    if (!assignedSubject) {
+      return res.status(403).json({ error: 'You are not assigned to any subject' });
+    }
+
+    // 1. Get Top 5 Most Failed MCQs
+    // Aggregate from TestSession where subject matches
+    const failedMcqs = await TestSession.aggregate([
+      { $match: { subject: assignedSubject } },
+      { $unwind: '$answers' },
+      { $match: { 'answers.isCorrect': false, 'answers.skipped': false } },
+      { $group: { _id: '$answers.mcqId', failCount: { $sum: 1 } } },
+      { $sort: { failCount: -1 } },
+      { $limit: 5 }
+    ]);
+    
+    // We only have the IDs, let's populate the questions
+    const mcqIds = failedMcqs.map(f => mongoose.Types.ObjectId(f._id));
+    const mcqsData = await MCQ.find({ _id: { $in: mcqIds } }).lean();
+    
+    const topFailed = failedMcqs.map(f => {
+      const mcq = mcqsData.find(m => String(m._id) === String(f._id));
+      return {
+        id: f._id,
+        failCount: f.failCount,
+        questionText: mcq ? mcq.question.text : 'Question deleted'
+      };
+    });
+
+    // 2. Export Student Results (CSV data preparation)
+    const recentSessions = await TestSession.find({ subject: assignedSubject })
+      .sort({ submittedAt: -1 })
+      .limit(100)
+      .populate('studentId', 'firstName lastName email')
+      .lean();
+
+    const csvData = recentSessions.map(session => ({
+      studentName: session.studentId ? `${session.studentId.firstName} ${session.studentId.lastName}` : 'Unknown',
+      studentEmail: session.studentId ? session.studentId.email : '',
+      chapter: session.chapterName,
+      score: `${session.score}/${session.totalQuestions}`,
+      percentage: session.percentage,
+      date: session.submittedAt
+    }));
+
+    res.json({ topFailed, csvData });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
 

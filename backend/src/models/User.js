@@ -114,6 +114,18 @@ const userSchema = new mongoose.Schema(
       default: '',
       trim: true,
     },
+    currentStreak: {
+      type: Number,
+      default: 0,
+    },
+    lastPracticeDate: {
+      type: Date,
+      default: null,
+    },
+    badges: {
+      type: [String],
+      default: [],
+    },
     accessStatus: {
       type: String,
       enum: ['active', 'restricted', 'expired'],
@@ -180,3 +192,4 @@ userSchema.index({ role: 1, status: 1, assignedSubjects: 1 })
 userSchema.index({ 'subscriptions.subjectId': 1, 'subscriptions.endDate': 1 })
 
 module.exports = mongoose.model('User', userSchema)
+
