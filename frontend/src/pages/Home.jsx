@@ -213,6 +213,34 @@ export default function Home() {
         <meta property="og:url" content={canonicalUrl} />
         <meta name="twitter:title" content={seo.title} />
         <meta name="twitter:description" content={seo.desc} />
+
+        {/* JSON-LD Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "ACEMDCAT",
+            "url": "https://www.acemdcat.com",
+            "description": "Free MDCAT 2026 Preparation Platform with chapter-wise MCQs for Biology, Chemistry, Physics, and English."
+          })}
+        </script>
+
+        {seo.faq && seo.faq.length > 0 && (
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": seo.faq.map((f) => ({
+                "@type": "Question",
+                "name": f.q,
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": f.a
+                }
+              }))
+            })}
+          </script>
+        )}
       </Helmet>
       <header className="lp-nav">
         <Link className="lp-brand" to="/">
