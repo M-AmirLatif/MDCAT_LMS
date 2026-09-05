@@ -1,3 +1,5 @@
+import { HelmetProvider } from 'react-helmet-async'
+import GoogleAnalytics from './components/GoogleAnalytics'
 import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -39,7 +41,7 @@ function lazyWithRetry(importer, key) {
 // ==================== LAZY ROUTE IMPORTS ====================
 // Each page is loaded only when its route is visited, splitting the initial
 // bundle from ~one mega-chunk into per-route chunks.  Recharts, McqModule,
-// and role-specific pages are the biggest wins — they stay out of the
+// and role-specific pages are the biggest wins â€” they stay out of the
 // critical path until actually needed.
 
 const AppLayout = lazyWithRetry(() => import('./components/layout/AppLayout'), 'AppLayout')
@@ -149,12 +151,23 @@ const LazyTeacherAnalyticsPage = lazyWithRetry(() =>
 
 function App() {
   return (
+    <HelmetProvider>
     <Router>
       <ScrollToTop />
+      <GoogleAnalytics />
       <Suspense fallback={<RouteFallback />}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/start-free-mdcat-2026" element={<Home />} />
+          <Route path="/free-mdcat-preparation" element={<Home />} />
+          <Route path="/mdcat-biology-mcqs" element={<Home />} />
+          <Route path="/mdcat-chemistry-mcqs" element={<Home />} />
+          <Route path="/mdcat-physics-mcqs" element={<Home />} />
+          <Route path="/mdcat-english-mcqs" element={<Home />} />
+          <Route path="/about" element={<Home />} />
+          <Route path="/contact" element={<Home />} />
+          <Route path="/privacy-policy" element={<Home />} />
+          <Route path="/terms" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
@@ -315,6 +328,7 @@ function App() {
         </Routes>
       </Suspense>
     </Router>
+    </HelmetProvider>
   )
 }
 

@@ -37,6 +37,96 @@ function formatStat(value) {
 export default function Home() {
   const user = getAuthUser()
   const [menuOpen, setMenuOpen] = useState(false)
+  const location = useLocation()
+  
+  const getSeoContent = () => {
+    switch (location.pathname) {
+      case '/start-free-mdcat-2026':
+      case '/free-mdcat-preparation':
+        return {
+          title: "Free MDCAT 2026 Preparation | ACEMDCAT",
+          desc: "Start your free MDCAT 2026 preparation with chapter-wise MCQs, timed test sessions, detailed explanations, and performance tracking.",
+          heading: "Free MDCAT 2026 Preparation",
+          subheading: "Faster, Smarter",
+          p: "Focused MDCAT preparation from the comfort of your home. Real chapters, MCQs, and analytics, all in one platform."
+        };
+      case '/mdcat-biology-mcqs':
+        return {
+          title: "Free MDCAT Biology MCQs 2026 | Chapter Wise | ACEMDCAT",
+          desc: "Practice chapter-wise Biology MCQs for MDCAT 2026. Real test environment, timer-based quizzes, and detailed explanations.",
+          heading: "Free MDCAT Biology MCQs",
+          subheading: "Chapter Wise Practice",
+          p: "Master Biology with our extensive collection of chapter-wise MCQs designed for MDCAT 2026."
+        };
+      case '/mdcat-chemistry-mcqs':
+        return {
+          title: "Free MDCAT Chemistry MCQs 2026 | Chapter Wise | ACEMDCAT",
+          desc: "Practice chapter-wise Chemistry MCQs for MDCAT 2026. Real test environment, timer-based quizzes, and detailed explanations.",
+          heading: "Free MDCAT Chemistry MCQs",
+          subheading: "Chapter Wise Practice",
+          p: "Master Chemistry with our extensive collection of chapter-wise MCQs designed for MDCAT 2026."
+        };
+      case '/mdcat-physics-mcqs':
+        return {
+          title: "Free MDCAT Physics MCQs 2026 | Chapter Wise | ACEMDCAT",
+          desc: "Practice chapter-wise Physics MCQs for MDCAT 2026. Real test environment, timer-based quizzes, and detailed explanations.",
+          heading: "Free MDCAT Physics MCQs",
+          subheading: "Chapter Wise Practice",
+          p: "Master Physics with our extensive collection of chapter-wise MCQs designed for MDCAT 2026."
+        };
+      case '/mdcat-english-mcqs':
+        return {
+          title: "Free MDCAT English MCQs 2026 | Chapter Wise | ACEMDCAT",
+          desc: "Practice chapter-wise English MCQs for MDCAT 2026. Real test environment, timer-based quizzes, and detailed explanations.",
+          heading: "Free MDCAT English MCQs",
+          subheading: "Chapter Wise Practice",
+          p: "Master English with our extensive collection of chapter-wise MCQs designed for MDCAT 2026."
+        };
+      case '/about':
+        return {
+          title: "About ACEMDCAT | Free MDCAT Preparation Platform",
+          desc: "Learn about ACEMDCAT, a free platform built to help MDCAT students prepare for their medical entrance exams with chapter-wise MCQs.",
+          heading: "About ACEMDCAT",
+          subheading: "Our Mission",
+          p: "ACEMDCAT is built to provide high-quality, free MDCAT preparation for every student in Pakistan."
+        };
+      case '/contact':
+        return {
+          title: "Contact Us | ACEMDCAT",
+          desc: "Get in touch with ACEMDCAT support for any questions regarding your free MDCAT 2026 preparation.",
+          heading: "Contact Us",
+          subheading: "We're here to help",
+          p: "Have a question or feedback? We'd love to hear from you."
+        };
+      case '/privacy-policy':
+        return {
+          title: "Privacy Policy | ACEMDCAT",
+          desc: "Privacy Policy for ACEMDCAT free MDCAT preparation platform.",
+          heading: "Privacy Policy",
+          subheading: "Data Protection",
+          p: "We take your privacy seriously. Read our policies below."
+        };
+      case '/terms':
+        return {
+          title: "Terms of Service | ACEMDCAT",
+          desc: "Terms of Service for ACEMDCAT free MDCAT preparation platform.",
+          heading: "Terms of Service",
+          subheading: "User Agreement",
+          p: "Please read these terms carefully before using our platform."
+        };
+      default:
+        return {
+          title: "MDCAT LMS – Free MDCAT 2026 Preparation & MCQs",
+          desc: "Prepare for MDCAT 2026 with free chapter-wise Biology, Chemistry, Physics, and English MCQs, timed tests, explanations, and performance tracking.",
+          heading: "MDCAT 2026:",
+          subheading: "Faster, Smarter",
+          p: "Focused MDCAT preparation from the comfort of your home. Real chapters, MCQs, and analytics, all in one platform."
+        };
+    }
+  }
+
+  const seo = getSeoContent()
+  const canonicalUrl = "https://www.acemdcat.com" + (location.pathname === '/' ? '' : location.pathname)
 
   const statsQuery = useQuery({
     queryKey: ['public-stats'],
@@ -71,6 +161,16 @@ export default function Home() {
 
   return (
     <main className="landing">
+      <Helmet>
+        <title>{seo.title}</title>
+        <meta name="description" content={seo.desc} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content={seo.title} />
+        <meta property="og:description" content={seo.desc} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta name="twitter:title" content={seo.title} />
+        <meta name="twitter:description" content={seo.desc} />
+      </Helmet>
       <header className="lp-nav">
         <Link className="lp-brand" to="/">
           <span className="lp-mark">M</span>
@@ -131,14 +231,14 @@ export default function Home() {
           <strong>Join the batch first</strong>
         </div>
 
-        <div className="lp-hero-content reveal">
+                <div className="lp-hero-content reveal">
           <div className="lp-batch-pill"><i /> MDCAT 2026 Batch Now Open</div>
           <h1>
-            <span>MDCAT 2026:</span>
-            <span className="lp-gradient-text">Faster, Smarter</span>
+            <span>{seo.heading}</span>
+            <span className="lp-gradient-text">{seo.subheading}</span>
             <span>Preparation at Home</span>
           </h1>
-          <p>Focused MDCAT preparation from the comfort of your home. Real chapters, MCQs, and analytics, all in one platform.</p>
+          <p>{seo.p}</p>
           <div className="lp-hero-ctas">
             <Link className="lp-btn lp-btn-primary" to="/register">Start Your Preparation Now</Link>
             <Link className="lp-btn lp-btn-ghost" to="/login">I Already Have an Account</Link>
@@ -207,6 +307,38 @@ export default function Home() {
         </div>
       </section>
 
+            <section id="faq" className="lp-section lp-section-light">
+        <div className="lp-container reveal">
+          <h2 className="lp-section-title">Frequently Asked Questions</h2>
+          <div className="lp-faq-grid">
+            <div className="lp-faq-item">
+              <strong>Is ACEMDCAT free?</strong>
+              <p>Yes, ACEMDCAT is a completely free platform for MDCAT 2026 preparation.</p>
+            </div>
+            <div className="lp-faq-item">
+              <strong>Can I practice MDCAT MCQs chapter-wise?</strong>
+              <p>Absolutely! All our Biology, Chemistry, Physics, and English MCQs are organized by chapters and topics.</p>
+            </div>
+            <div className="lp-faq-item">
+              <strong>Does ACEMDCAT include Biology, Chemistry, Physics, and English?</strong>
+              <p>Yes, we offer comprehensive MCQ banks for all core MDCAT subjects.</p>
+            </div>
+            <div className="lp-faq-item">
+              <strong>Are explanations available after solving MCQs?</strong>
+              <p>Yes, detailed explanations are provided after each quiz attempt to help you learn from mistakes.</p>
+            </div>
+            <div className="lp-faq-item">
+              <strong>Can I practice with a timer?</strong>
+              <p>Yes, our test environment includes a timer to simulate the real MDCAT exam pressure.</p>
+            </div>
+            <div className="lp-faq-item">
+              <strong>Is ACEMDCAT useful for MDCAT 2026 preparation?</strong>
+              <p>Definitely! Our content is regularly updated to align with the latest PMC/PMDC MDCAT syllabus.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="lp-final-cta">
         <div className="lp-grid-bg" />
         <h2>Ready to Start Your MDCAT Journey?</h2>
@@ -226,9 +358,13 @@ export default function Home() {
             <Link to="/login">Login</Link>
             <Link to="/register">Register</Link>
           </nav>
-          <p>© 2026 MDCAT LMS</p>
+          <p>Â© 2026 MDCAT LMS</p>
         </div>
       </footer>
     </main>
   )
 }
+
+
+
+
