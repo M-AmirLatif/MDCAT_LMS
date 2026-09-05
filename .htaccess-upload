@@ -1,0 +1,3 @@
+<IfModule LiteSpeed>
+RewriteRule .* - [E=verifycaptcha:off]
+</IfModule>
