@@ -70,7 +70,7 @@ export default function AdminBlog() {
     <div className="platform-page">
       <Helmet><title>Admin Blog - MDCAT LMS</title></Helmet>
       
-      <div className="platform-header">
+      <div className="platform-header" style={{ marginBottom: '2rem' }}>
         <h1 className="platform-title">Blog Management</h1>
       </div>
 
