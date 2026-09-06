@@ -23,7 +23,7 @@ export default function AdminBlog() {
 
   const saveMutation = useMutation({
     mutationFn: (data) => {
-      if (editingId) return API.put(\/blog/\\, data)
+      if (editingId) return API.put(`/blog/${editingId}`, data)
       return API.post('/blog', data)
     },
     onSuccess: () => {
@@ -37,7 +37,7 @@ export default function AdminBlog() {
   })
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => API.delete(\/blog/\\),
+    mutationFn: (id) => API.delete(`/blog/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-blogs'] })
       toast.success('Blog deleted')
@@ -162,4 +162,3 @@ export default function AdminBlog() {
     </div>
   )
 }
-
