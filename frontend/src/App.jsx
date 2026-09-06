@@ -44,10 +44,12 @@ function lazyWithRetry(importer, key) {
 // and role-specific pages are the biggest wins â€” they stay out of the
 // critical path until actually needed.
 
+// Eager imports for critical public pages to guarantee instant load times without the blue fallback screen
+import Home from './pages/Home'
+import Login from './pages/Login'
+import Register from './pages/Register'
+
 const AppLayout = lazyWithRetry(() => import('./components/layout/AppLayout'), 'AppLayout')
-const Home = lazyWithRetry(() => import('./pages/Home'), 'Home')
-const Login = lazyWithRetry(() => import('./pages/Login'), 'Login')
-const Register = lazyWithRetry(() => import('./pages/Register'), 'Register')
 const VerifyEmail = lazyWithRetry(() => import('./pages/VerifyEmail'), 'VerifyEmail')
 const ForgotPassword = lazyWithRetry(() => import('./pages/ForgotPassword'), 'ForgotPassword')
 const SetPassword = lazyWithRetry(() => import('./pages/SetPassword'), 'SetPassword')
