@@ -90,4 +90,8 @@ router.get('/stats', async (req, res) => {
   }
 })
 
+const { generateSitemap } = require('../controllers/sitemapController');
+
+router.get('/sitemap', generateSitemap);
+
 module.exports = router
