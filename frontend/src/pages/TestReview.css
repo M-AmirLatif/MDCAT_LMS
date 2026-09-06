@@ -568,17 +568,7 @@ html[data-theme="dark"] body .mcq-attempt-layout .mcq-question-card .mcq-option-
   }
 }
 
-/* Global fix for MCQ option click jitter: Keep border width constant and remove focus outline */
-html body .mcq-attempt-layout .mcq-question-card .mcq-option-card {
-  outline: none !important;
-}
-html[data-theme="dark"] body .mcq-attempt-layout .mcq-question-card .mcq-option-card {
-  border: 3px solid transparent !important;
-}
-html:not([data-theme="dark"]) body .mcq-attempt-layout .mcq-question-card .mcq-option-card {
-  border-width: 3px !important;
-}
-/* Fixes for dark mode structure and instant transitions */
+
 
 /* Remove the line separators from dark mode */
 html[data-theme="dark"] body .mcq-attempt-layout .mcq-question-card .mcq-option-card::after {
@@ -621,7 +611,7 @@ html:not([data-theme="dark"]) body .mcq-attempt-layout .mcq-question-card .mcq-o
   border-width: 2px !important;
 }
 
-/* CORRECTED FIX FOR MCQ LAYOUT, JITTER, AND SELECTION STATE */
+
 
 /* Remove the line separators from dark mode */
 html[data-theme="dark"] body .mcq-attempt-layout .mcq-question-card .mcq-option-card::after {
@@ -682,6 +672,91 @@ html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-car
 html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected .mcq-option-text *,
 html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected .mcq-renderer,
 html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected .mcq-renderer * {
+  color: #020617 !important;
+  -webkit-text-fill-color: #020617 !important;
+}
+/* ==========================================================================
+   ULTIMATE MCQ FIX: Unified Layout, No Jitter, Permanent Selection, No Active Flashes
+   ========================================================================== */
+
+/* 1. Unify Layout: Both modes get separated pill options with borders, no grid borders, no line separators */
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-options-grid {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  gap: 12px !important;
+  padding: 8px 0 !important;
+  margin: 0 !important;
+}
+
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card::after {
+  display: none !important;
+}
+
+/* 2. Base Option Styles: 2px borders globally, no transitions */
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card,
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:active,
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:focus,
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:focus-visible {
+  transition: none !important;
+  animation: none !important;
+  outline: none !important;
+  border-width: 2px !important;
+  border-style: solid !important;
+  border-radius: 16px !important;
+  transform: none !important;
+}
+
+/* Dark Mode Base Options */
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected) {
+  background: var(--bg-surface-2, #1A1640) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):active {
+  background: var(--bg-surface-2, #1A1640) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: inherit !important;
+}
+
+/* Light Mode Base Options */
+html:not([data-theme="dark"]) body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected) {
+  background: #ffffff !important;
+  border-color: #b8c3da !important;
+}
+
+html:not([data-theme="dark"]) body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):active {
+  background: #ffffff !important;
+  border-color: #b8c3da !important;
+  color: inherit !important;
+}
+
+/* 3. Bulletproof Selected State (ID-level specificity to crush focus-loss bugs) */
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected,
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected:hover,
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected:focus,
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected:focus-visible,
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected:active {
+  background: #ffe58f !important;
+  border: 2px solid #f59e0b !important;
+  color: #020617 !important;
+  -webkit-text-fill-color: #020617 !important;
+  box-shadow: none !important;
+}
+
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected .mcq-option-letter,
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected:hover .mcq-option-letter,
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected:active .mcq-option-letter {
+  background: #fffdf4 !important;
+  border: 2px solid #f97316 !important;
+  color: #312e81 !important;
+  -webkit-text-fill-color: #312e81 !important;
+}
+
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected .mcq-option-text,
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected .mcq-option-text *,
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected .mcq-renderer,
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected .mcq-renderer * {
   color: #020617 !important;
   -webkit-text-fill-color: #020617 !important;
 }
