@@ -205,10 +205,7 @@ html[data-theme="dark"] .sidebar-item {
   color: rgba(255,255,255,0.50) !important;
 }
 
-html[data-theme="dark"] .sidebar-item:hover {
-  background: rgba(255,255,255,0.06) !important;
-  color: rgba(255,255,255,0.85) !important;
-}
+
 
 
 
@@ -565,11 +562,7 @@ html[data-theme="dark"] .nav-section-label {
 
 
 
-html[data-theme="dark"] .sidebar .nav-item:hover,
-html[data-theme="dark"] .sidebar-item:hover {
-  background: rgba(255,255,255,0.06) !important;
-  color: rgba(255,255,255,0.85) !important;
-}
+
 
 html[data-theme="dark"] .sidebar .user-card,
 html[data-theme="dark"] .sidebar-usercard {

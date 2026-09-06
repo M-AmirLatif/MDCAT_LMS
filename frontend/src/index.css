@@ -1021,10 +1021,7 @@ table tr:hover {
   color: rgba(255,255,255,0.50);
 }
 
-[data-theme="dark"] .sidebar-item:hover {
-  background: rgba(255,255,255,0.06);
-  color: rgba(255,255,255,0.85);
-}
+
 
 
 
