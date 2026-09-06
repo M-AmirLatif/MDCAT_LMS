@@ -75,64 +75,64 @@ export default function AdminBlog() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '2rem' }}>
-        <div className="stat-card">
-          <h2 style={{ marginBottom: '1.5rem' }}>Write Post</h2>
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <div className="blog-admin-card">
+          <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem' }}>Write Post</h2>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             
             <div>
-              <label className="platform-label">Post Title</label>
-              <input placeholder="Enter title..." value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} required className="platform-input" style={{ width: '100%' }} />
+              <label className="blog-admin-label">Post Title</label>
+              <input placeholder="Enter title..." value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} required className="blog-admin-input" />
             </div>
 
             <div>
-              <label className="platform-label">URL Slug</label>
-              <input placeholder="e.g. top-50-biology-mcqs" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} required className="platform-input" style={{ width: '100%' }} />
+              <label className="blog-admin-label">URL Slug</label>
+              <input placeholder="e.g. top-50-biology-mcqs" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} required className="blog-admin-input" />
             </div>
 
             <div>
-              <label className="platform-label">SEO Meta Description / Excerpt</label>
-              <textarea placeholder="Short summary for Google..." value={formData.excerpt} onChange={e => setFormData({...formData, excerpt: e.target.value, seoDescription: e.target.value})} rows="3" className="platform-input" style={{ width: '100%' }} />
+              <label className="blog-admin-label">SEO Meta Description / Excerpt</label>
+              <textarea placeholder="Short summary for Google..." value={formData.excerpt} onChange={e => setFormData({...formData, excerpt: e.target.value, seoDescription: e.target.value})} rows="3" className="blog-admin-input" />
             </div>
             
             <div>
-              <label className="platform-label">Markdown Content</label>
-              <textarea placeholder="Write your article here..." value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} required rows="15" className="platform-input" style={{ fontFamily: 'monospace', width: '100%' }} />
+              <label className="blog-admin-label">Markdown Content</label>
+              <textarea placeholder="Write your article here..." value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} required rows="12" className="blog-admin-input" style={{ fontFamily: 'monospace' }} />
             </div>
             
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', marginTop: '0.5rem' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}>
               <input type="checkbox" style={{ width: '1.25rem', height: '1.25rem' }} checked={formData.isPublished} onChange={e => setFormData({...formData, isPublished: e.target.checked})} />
-              <span className="platform-label" style={{ margin: 0 }}>Publish immediately?</span>
+              <span className="blog-admin-label" style={{ margin: 0 }}>Publish immediately?</span>
             </label>
 
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-              <button type="submit" className="lp-btn lp-btn-primary" disabled={saveMutation.isPending} style={{ flex: 1, padding: '0.75rem' }}>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button type="submit" className="blog-admin-btn blog-admin-btn-primary" disabled={saveMutation.isPending} style={{ flex: 1 }}>
                 {saveMutation.isPending ? 'Saving...' : (editingId ? 'Update Post' : 'Create Post')}
               </button>
               {editingId && (
-                <button type="button" onClick={handleCancel} className="lp-btn lp-btn-ghost" style={{ flex: 1, padding: '0.75rem' }}>Cancel</button>
+                <button type="button" onClick={handleCancel} className="blog-admin-btn blog-admin-btn-ghost" style={{ flex: 1 }}>Cancel</button>
               )}
             </div>
           </form>
         </div>
 
-        <div className="stat-card" style={{ display: 'flex', flexDirection: 'column' }}>
-          <h2 style={{ marginBottom: '1.5rem' }}>Live Preview</h2>
-          <div className="blog-content" style={{ flex: 1, padding: '1.5rem', border: '1px solid var(--border-color)', borderRadius: '12px', background: 'var(--bg-main)', color: 'var(--text-main)', overflowY: 'auto', maxHeight: '800px' }}>
+        <div className="blog-admin-card" style={{ display: 'flex', flexDirection: 'column' }}>
+          <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem' }}>Live Preview</h2>
+          <div className="blog-content" style={{ flex: 1, padding: '2rem', border: '1px solid var(--border-color)', borderRadius: '12px', background: 'var(--bg-main)', color: 'var(--text-main)', overflowY: 'auto', maxHeight: '800px', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}>
             <h1 style={{ color: 'var(--text-dark)', marginBottom: '2rem' }}>{formData.title || 'Post Title Preview'}</h1>
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{formData.content || '*Content will appear here...*'}</ReactMarkdown>
           </div>
         </div>
       </div>
 
-      <div className="stat-card" style={{ marginTop: '2rem' }}>
-        <h2 style={{ marginBottom: '1.5rem' }}>All Posts</h2>
-        <div style={{ overflowX: 'auto' }}>
-          <table className="platform-table" style={{ width: '100%' }}>
+      <div className="blog-admin-card" style={{ marginTop: '2rem' }}>
+        <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem' }}>All Posts</h2>
+        <div style={{ overflowX: 'auto', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
+          <table className="platform-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr>
-                <th style={{ textAlign: 'left', padding: '1rem' }}>Title</th>
-                <th style={{ textAlign: 'left', padding: '1rem' }}>Status</th>
-                <th style={{ textAlign: 'left', padding: '1rem' }}>Actions</th>
+              <tr style={{ background: 'var(--bg-main)', borderBottom: '1px solid var(--border-color)' }}>
+                <th style={{ textAlign: 'left', padding: '1rem', fontWeight: 600, color: 'var(--text-muted)' }}>Title</th>
+                <th style={{ textAlign: 'left', padding: '1rem', fontWeight: 600, color: 'var(--text-muted)' }}>Status</th>
+                <th style={{ textAlign: 'left', padding: '1rem', fontWeight: 600, color: 'var(--text-muted)' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -143,15 +143,15 @@ export default function AdminBlog() {
               )}
               {blogs?.data?.map(blog => (
                 <tr key={blog.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                  <td style={{ padding: '1rem', color: 'var(--text-main)' }}>{blog.title}</td>
+                  <td style={{ padding: '1rem', color: 'var(--text-main)', fontWeight: 500 }}>{blog.title}</td>
                   <td style={{ padding: '1rem' }}>
-                    <span style={{ padding: '0.25rem 0.75rem', borderRadius: '999px', fontSize: '0.875rem', background: blog.isPublished ? 'rgba(34, 197, 94, 0.1)' : 'rgba(234, 179, 8, 0.1)', color: blog.isPublished ? '#22c55e' : '#eab308' }}>
-                      {blog.isPublished ? 'Published' : 'Draft'}
+                    <span style={{ padding: '0.25rem 0.75rem', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 600, background: blog.isPublished ? 'rgba(34, 197, 94, 0.15)' : 'rgba(234, 179, 8, 0.15)', color: blog.isPublished ? '#22c55e' : '#eab308' }}>
+                      {blog.isPublished ? 'PUBLISHED' : 'DRAFT'}
                     </span>
                   </td>
                   <td style={{ padding: '1rem', display: 'flex', gap: '1rem' }}>
-                    <button onClick={() => handleEdit(blog)} style={{ color: 'var(--primary-color)', fontWeight: '500', background: 'none', border: 'none', cursor: 'pointer' }}>Edit</button>
-                    <button onClick={() => { if(window.confirm('Delete this post forever?')) deleteMutation.mutate(blog.id) }} style={{ color: '#ef4444', fontWeight: '500', background: 'none', border: 'none', cursor: 'pointer' }}>Delete</button>
+                    <button onClick={() => handleEdit(blog)} style={{ color: 'var(--primary-color)', fontWeight: '600', background: 'none', border: 'none', cursor: 'pointer', padding: '0.5rem' }}>Edit</button>
+                    <button onClick={() => { if(window.confirm('Delete this post forever?')) deleteMutation.mutate(blog.id) }} style={{ color: '#ef4444', fontWeight: '600', background: 'none', border: 'none', cursor: 'pointer', padding: '0.5rem' }}>Delete</button>
                   </td>
                 </tr>
               ))}
