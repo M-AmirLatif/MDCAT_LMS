@@ -1026,11 +1026,7 @@ table tr:hover {
   color: rgba(255,255,255,0.85);
 }
 
-[data-theme="dark"] .sidebar-item--active,
-[data-theme="dark"] .sidebar-item.active {
-  background: linear-gradient(135deg, #6C47FF, #4A90E2);
-  color: #fff;
-}
+
 
 [data-theme="dark"] .lp-section-light,
 [data-theme="dark"] .landing {

@@ -210,11 +210,7 @@ html[data-theme="dark"] .sidebar-item:hover {
   color: rgba(255,255,255,0.85) !important;
 }
 
-html[data-theme="dark"] .sidebar-item--active,
-html[data-theme="dark"] .sidebar-item.active {
-  background: linear-gradient(135deg, #6C47FF, #4A90E2) !important;
-  color: #fff !important;
-}
+
 
 html[data-theme="dark"] .lp-section-light,
 html[data-theme="dark"] .landing {
@@ -567,17 +563,7 @@ html[data-theme="dark"] .nav-section-label {
   color: rgba(255,255,255,0.30) !important;
 }
 
-html[data-theme="dark"] .sidebar .active,
-html[data-theme="dark"] .sidebar .nav-item.active,
-html[data-theme="dark"] .sidebar-item--active {
-  background: linear-gradient(135deg, #6C47FF, #4A90E2) !important;
-  color: #FFFFFF !important;
-}
 
-html[data-theme="dark"] .sidebar .active *,
-html[data-theme="dark"] .sidebar-item--active * {
-  color: #FFFFFF !important;
-}
 
 html[data-theme="dark"] .sidebar .nav-item:hover,
 html[data-theme="dark"] .sidebar-item:hover {
