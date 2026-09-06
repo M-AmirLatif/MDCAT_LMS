@@ -49,10 +49,10 @@ import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
 
-const AppLayout = lazyWithRetry(() => import('./components/layout/AppLayout'), 'AppLayout')
-const VerifyEmail = lazyWithRetry(() => import('./pages/VerifyEmail'), 'VerifyEmail')
-const ForgotPassword = lazyWithRetry(() => import('./pages/ForgotPassword'), 'ForgotPassword')
-const SetPassword = lazyWithRetry(() => import('./pages/SetPassword'), 'SetPassword')
+import AppLayout from './components/layout/AppLayout'
+import VerifyEmail from './pages/VerifyEmail'
+import ForgotPassword from './pages/ForgotPassword'
+import SetPassword from './pages/SetPassword'
 
 // Platform pages (authenticated)
 import PlatformDashboard from './pages/PlatformDashboard'
