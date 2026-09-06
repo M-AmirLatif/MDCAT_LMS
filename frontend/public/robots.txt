@@ -14,4 +14,4 @@ Disallow: /register
 Disallow: /forgot-password
 Disallow: /verify-email
 
-Sitemap: https://www.acemdcat.com/sitemap.xml
+Sitemap: https://api.acemdcat.com/api/public/sitemap
