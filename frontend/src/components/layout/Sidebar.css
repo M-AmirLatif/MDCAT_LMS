@@ -142,19 +142,33 @@
   transition: all 0.2s ease;
 }
 
+.sidebar-item:focus {
+  outline: none;
+}
+
+.sidebar-item:focus-visible {
+  outline: 2px solid rgba(108, 71, 255, 0.3);
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+
 .sidebar-item:hover {
   background: rgba(255, 255, 255, 0.08);
   color: #fff;
 }
 
+.sidebar-item:active {
+  transform: scale(0.97);
+}
+
 .sidebar-item--active {
-  background: rgba(108, 71, 255, 0.15) !important;
+  background: rgba(108, 71, 255, 0.2) !important;
   color: #fff !important;
   box-shadow: inset 3px 0 0 var(--purple);
 }
 
 .sidebar-item--active:hover {
-  background: rgba(108, 71, 255, 0.22) !important;
+  background: rgba(108, 71, 255, 0.25) !important;
 }
 
 .sidebar-item-icon {
