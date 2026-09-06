@@ -1369,3 +1369,20 @@ html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-opti
   color: #020617 !important;
   -webkit-text-fill-color: #020617 !important;
 }
+
+/* INCREASE BORDER STRENGTH AS REQUESTED */
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected) {
+  border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):active {
+  border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+html:not([data-theme="dark"]) body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected) {
+  border-color: #8b9dc3 !important;
+}
+
+html:not([data-theme="dark"]) body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):active {
+  border-color: #8b9dc3 !important;
+}
