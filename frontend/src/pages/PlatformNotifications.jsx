@@ -223,38 +223,37 @@ export default function PlatformNotifications() {
         </div>
       </section>
 
-      <div className="card-grid">
-        <div className="stat-tile stat-tile--purple">
-          <div className="stat-tile-top"><span>Total inbox</span><span className="badge badge-purple">Today</span></div>
-          <strong>{String(notifications.length).padStart(2, '0')}</strong>
-          <small>Every real alert, reminder, and announcement in one stream.</small>
+        <div className="card-grid">
+          <div className="stat-tile stat-tile--purple">
+            <div className="stat-tile-top"><span>Total inbox</span><span className="badge badge-purple">Today</span></div>
+            <strong>{loading ? '...' : String(notifications.length).padStart(2, '0')}</strong>
+            <small>Every real alert, reminder, and announcement in one stream.</small>
+          </div>
+          <div className="stat-tile stat-tile--teal">
+            <div className="stat-tile-top"><span>Unread items</span><span className="badge badge-teal">Needs Action</span></div>
+            <strong>{loading ? '...' : String(unreadCount).padStart(2, '0')}</strong>
+            <small>New alerts since your last visit.</small>
+          </div>
+          <div className="stat-tile stat-tile--amber">
+            <div className="stat-tile-top"><span>Payments</span><span className="badge badge-amber">Billing</span></div>
+            <strong>{loading ? '...' : String(paymentCount).padStart(2, '0')}</strong>
+            <small>Subscription and transaction updates.</small>
+          </div>
+          <div className="stat-tile stat-tile--coral">
+            <div className="stat-tile-top"><span>Live Classes</span><span className="badge badge-coral">Schedule</span></div>
+            <strong>{loading ? '...' : String(liveClassCount).padStart(2, '0')}</strong>
+            <small>Links and timers for live sessions.</small>
+          </div>
         </div>
-        <div className="stat-tile stat-tile--teal">
-          <div className="stat-tile-top"><span>Live classes</span><span className="badge badge-teal">Action</span></div>
-          <strong>{String(liveClassCount).padStart(2, '0')}</strong>
-          <small>Class alerts will appear after sessions are scheduled.</small>
-        </div>
-        <div className="stat-tile stat-tile--amber">
-          <div className="stat-tile-top"><span>Payments</span><span className="badge badge-amber">Due</span></div>
-          <strong>{String(paymentCount).padStart(2, '0')}</strong>
-          <small>Subscription and invoice alerts will appear after real transactions.</small>
-        </div>
-        <div className="stat-tile stat-tile--coral">
-          <div className="stat-tile-top"><span>System notes</span><span className="badge badge-coral">Broadcast</span></div>
-          <strong>{String(systemCount).padStart(2, '0')}</strong>
-          <small>Operational notices will appear when admins publish them.</small>
-        </div>
-      </div>
 
-      <div className="workspace-section-grid">
-        <div className="workspace-card notification-feed-card">
+        <section className="workspace-card notification-inbox-card">
           <div className="workspace-card-head">
             <div>
-              <div className="label-xs">Latest activity</div>
+              <div className="label-xs">Active Notifications</div>
               <h2 className="workspace-card-title">Priority inbox</h2>
               <p>{filterLabel} notifications are shown here. Open marks a notification as read; Archive removes it from the active inbox.</p>
             </div>
-            <span className="state-chip state-chip--neutral">{inboxItems.length} Active</span>
+            <span className="state-chip state-chip--neutral">{loading ? '...' : inboxItems.length} Active</span>
           </div>
           <div className="workspace-card-body list-stack">
             {inboxItems.map((item) => (

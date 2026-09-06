@@ -123,7 +123,7 @@ export default function PlatformLeaderboard() {
         <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Total Ranked</span></div><strong>{loading ? '...' : totalRanked || 0}</strong><small>{activeTab === 'overall' ? 'Overall students' : `${activeTab} students`}</small></div>
         <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Average Accuracy</span></div><strong>{loading ? '...' : `${averageAccuracy}%`}</strong><small>Visible top leaderboard average</small></div>
         <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Your Rank</span></div><strong>{currentStudent ? `#${currentStudent.rank}` : '-'}</strong><small>{user?.role === 'student' ? 'Based on your submitted attempts' : 'Student-only metric'}</small></div>
-        <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>Subjects</span></div><strong>{data?.summary?.visibleSubjects?.length || 0}</strong><small>{user?.role === 'teacher' ? 'Assigned subjects only' : 'MDCAT subjects'}</small></div>
+        <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>Subjects</span></div><strong>{loading ? '...' : data?.summary?.visibleSubjects?.length || 0}</strong><small>{user?.role === 'teacher' ? 'Assigned subjects only' : 'MDCAT subjects'}</small></div>
       </div>
 
       <section className="workspace-card leaderboard-card">

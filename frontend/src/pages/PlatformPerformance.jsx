@@ -126,7 +126,9 @@ export default function PlatformPerformance() {
   const studentData = useStudentPerformanceData()
   const bankData = useMcqSubjectSummary()
   const isStudent = role === 'student'
-  const { summary, subjects, performanceTrend, overallTrend, practiceAttempts, loading } = studentData
+  const { summary, subjects, performanceTrend, overallTrend, practiceAttempts, loading: studentLoading } = studentData
+  const loading = isStudent ? studentLoading : bankData.loading
+
   const visibleSubjects = isStudent
     ? (subjects.length ? subjects : mdcatSubjects)
     : (bankData.subjects.length ? bankData.subjects : mdcatSubjects)
