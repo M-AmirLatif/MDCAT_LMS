@@ -4,12 +4,22 @@ exports.generateSitemap = async (req, res) => {
   try {
     const baseUrl = 'https://www.acemdcat.com'
     
-    // Static routes
+    // Static routes merged from old sitemap.xml
     const staticRoutes = [
-      '',
-      '/mdcat-tips',
-      '/login',
-      '/register',
+      { path: '/', priority: '1.0', freq: 'daily' },
+      { path: '/start-free-mdcat-2026', priority: '0.9', freq: 'weekly' },
+      { path: '/free-mdcat-preparation', priority: '0.9', freq: 'weekly' },
+      { path: '/mdcat-tips', priority: '0.9', freq: 'daily' },
+      { path: '/mdcat-biology-mcqs', priority: '0.8', freq: 'weekly' },
+      { path: '/mdcat-chemistry-mcqs', priority: '0.8', freq: 'weekly' },
+      { path: '/mdcat-physics-mcqs', priority: '0.8', freq: 'weekly' },
+      { path: '/mdcat-english-mcqs', priority: '0.8', freq: 'weekly' },
+      { path: '/about', priority: '0.5', freq: 'monthly' },
+      { path: '/contact', priority: '0.5', freq: 'monthly' },
+      { path: '/privacy-policy', priority: '0.3', freq: 'monthly' },
+      { path: '/terms', priority: '0.3', freq: 'monthly' },
+      { path: '/login', priority: '0.3', freq: 'monthly' },
+      { path: '/register', priority: '0.3', freq: 'monthly' },
     ]
 
     // Fetch dynamic blog posts
@@ -21,9 +31,9 @@ exports.generateSitemap = async (req, res) => {
     // Add static routes
     staticRoutes.forEach(route => {
       xml += '  <url>\n'
-      xml += `    <loc>${baseUrl}${route}</loc>\n`
-      xml += '    <changefreq>daily</changefreq>\n'
-      xml += '    <priority>0.8</priority>\n'
+      xml += `    <loc>${baseUrl}${route.path}</loc>\n`
+      xml += `    <changefreq>${route.freq}</changefreq>\n`
+      xml += `    <priority>${route.priority}</priority>\n`
       xml += '  </url>\n'
     })
 
