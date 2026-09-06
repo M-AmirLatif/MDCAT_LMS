@@ -55,23 +55,23 @@ const ForgotPassword = lazyWithRetry(() => import('./pages/ForgotPassword'), 'Fo
 const SetPassword = lazyWithRetry(() => import('./pages/SetPassword'), 'SetPassword')
 
 // Platform pages (authenticated)
-const PlatformDashboard = lazyWithRetry(() => import('./pages/PlatformDashboard'), 'PlatformDashboard')
-const PlatformPerformance = lazyWithRetry(() => import('./pages/PlatformPerformance'), 'PlatformPerformance')
-const PlatformLeaderboard = lazyWithRetry(() => import('./pages/PlatformLeaderboard'), 'PlatformLeaderboard')
-const PlatformLiveClasses = lazyWithRetry(() => import('./pages/PlatformLiveClasses'), 'PlatformLiveClasses')
-const PlatformPayments = lazyWithRetry(() => import('./pages/PlatformPayments'), 'PlatformPayments')
-const PlatformNotifications = lazyWithRetry(() => import('./pages/PlatformNotifications'), 'PlatformNotifications')
-const PlatformProfile = lazyWithRetry(() => import('./pages/PlatformProfile'), 'PlatformProfile')
+import PlatformDashboard from './pages/PlatformDashboard'
+import PlatformPerformance from './pages/PlatformPerformance'
+import PlatformLeaderboard from './pages/PlatformLeaderboard'
+import PlatformLiveClasses from './pages/PlatformLiveClasses'
+import PlatformPayments from './pages/PlatformPayments'
+import PlatformNotifications from './pages/PlatformNotifications'
+import PlatformProfile from './pages/PlatformProfile'
 
 // Individual course/lecture/test pages
-const CourseDetail = lazyWithRetry(() => import('./pages/CourseDetail'), 'CourseDetail')
-const LecturePlayer = lazyWithRetry(() => import('./pages/LecturePlayer'), 'LecturePlayer')
-const MCQTest = lazyWithRetry(() => import('./pages/MCQTest'), 'MCQTest')
-const TestReview = lazyWithRetry(() => import('./pages/TestReview'), 'TestReview')
-const NotFound = lazyWithRetry(() => import('./pages/NotFound'), 'NotFound')
-const BlogList = lazyWithRetry(() => import('./pages/BlogList'), 'BlogList')
-const BlogPost = lazyWithRetry(() => import('./pages/BlogPost'), 'BlogPost')
-const AdminBlog = lazyWithRetry(() => import('./pages/AdminBlog'), 'AdminBlog')
+import CourseDetail from './pages/CourseDetail'
+import LecturePlayer from './pages/LecturePlayer'
+import MCQTest from './pages/MCQTest'
+import TestReview from './pages/TestReview'
+import NotFound from './pages/NotFound'
+import BlogList from './pages/BlogList'
+import BlogPost from './pages/BlogPost'
+import AdminBlog from './pages/AdminBlog'
 
 // ==================== SUSPENSE FALLBACK ====================
 function RouteFallback() {
@@ -93,49 +93,9 @@ function ScrollToTop() {
   return null
 }
 
-// ==================== LAZY WRAPPERS ====================
-// These resolve named exports from lazy-loaded modules so React.lazy can use them.
-const LazyMcqCourseSelection = lazyWithRetry(() =>
-  import('./pages/McqModule').then((m) => ({ default: m.CourseSelection })),
-  'CourseSelection')
-const LazyMcqChapterList = lazyWithRetry(() =>
-  import('./pages/McqModule').then((m) => ({ default: m.ChapterList })),
-  'ChapterList')
-const LazyMcqMcqList = lazyWithRetry(() =>
-  import('./pages/McqModule').then((m) => ({ default: m.McqList })),
-  'McqList')
-const LazyMcqQuizAttempt = lazyWithRetry(() =>
-  import('./pages/McqModule').then((m) => ({ default: m.QuizAttempt })),
-  'QuizAttempt')
-const LazyMcqQuizResult = lazyWithRetry(() =>
-  import('./pages/McqModule').then((m) => ({ default: m.QuizResult })),
-  'QuizResult')
-
-// Role pages lazy wrappers
-const LazyAdminCoursesPage = lazyWithRetry(() =>
-  import('./pages/PlatformRolePages').then((m) => ({ default: m.AdminCoursesPage })),
-  'AdminCoursesPage')
-const LazyAdminStudentsPage = lazyWithRetry(() =>
-  import('./pages/PlatformRolePages').then((m) => ({ default: m.AdminStudentsPage })),
-  'AdminStudentsPage')
-const LazyAdminTeachersPage = lazyWithRetry(() =>
-  import('./pages/PlatformRolePages').then((m) => ({ default: m.AdminTeachersPage })),
-  'AdminTeachersPage')
-const LazyAdminAnnouncementsPage = lazyWithRetry(() =>
-  import('./pages/PlatformRolePages').then((m) => ({ default: m.AdminAnnouncementsPage })),
-  'AdminAnnouncementsPage')
-const LazyAdminReportsPage = lazyWithRetry(() =>
-  import('./pages/PlatformRolePages').then((m) => ({ default: m.AdminReportsPage })),
-  'AdminReportsPage')
-const LazyAdminSettingsPage = lazyWithRetry(() =>
-  import('./pages/PlatformRolePages').then((m) => ({ default: m.AdminSettingsPage })),
-  'AdminSettingsPage')
-const LazyTeacherStudentsPage = lazyWithRetry(() =>
-  import('./pages/PlatformRolePages').then((m) => ({ default: m.TeacherStudentsPage })),
-  'TeacherStudentsPage')
-const LazyTeacherAnalyticsPage = lazyWithRetry(() =>
-  import('./pages/PlatformRolePages').then((m) => ({ default: m.TeacherAnalyticsPage })),
-  'TeacherAnalyticsPage')
+// ==================== EAGER IMPORTS ====================
+import { CourseSelection as LazyMcqCourseSelection, ChapterList as LazyMcqChapterList, McqList as LazyMcqMcqList, QuizAttempt as LazyMcqQuizAttempt, QuizResult as LazyMcqQuizResult } from './pages/McqModule'
+import { AdminCoursesPage as LazyAdminCoursesPage, AdminStudentsPage as LazyAdminStudentsPage, AdminTeachersPage as LazyAdminTeachersPage, AdminAnnouncementsPage as LazyAdminAnnouncementsPage, AdminReportsPage as LazyAdminReportsPage, AdminSettingsPage as LazyAdminSettingsPage, TeacherStudentsPage as LazyTeacherStudentsPage, TeacherAnalyticsPage as LazyTeacherAnalyticsPage } from './pages/PlatformRolePages'
 
 function App() {
   return (

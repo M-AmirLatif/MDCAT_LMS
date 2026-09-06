@@ -135,29 +135,26 @@
   gap: 12px;
   width: 100%;
   padding: 12px 14px;
-  border-radius: 24px;
+  border-radius: 12px;
   background: transparent;
   color: rgba(255, 255, 255, 0.72);
   text-align: left;
-  transition: transform var(--ease), background var(--ease), color var(--ease), box-shadow var(--ease);
+  transition: all 0.2s ease;
 }
 
 .sidebar-item:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
   color: #fff;
-  font-weight: 700;
 }
 
 .sidebar-item--active {
-  background: var(--grad-purple) !important;
+  background: rgba(108, 71, 255, 0.15) !important;
   color: #fff !important;
-  font-weight: 700;
-  box-shadow: 0 8px 24px rgba(108, 71, 255, 0.38);
+  box-shadow: inset 3px 0 0 var(--purple);
 }
 
 .sidebar-item--active:hover {
-  background: var(--grad-purple) !important;
-  color: #fff !important;
+  background: rgba(108, 71, 255, 0.22) !important;
 }
 
 .sidebar-item-icon {
@@ -167,11 +164,12 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  color: inherit;
 }
 
 .sidebar-item-label {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   white-space: nowrap;
 }
 
