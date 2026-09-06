@@ -63,6 +63,7 @@ export const PLATFORM_NAV = {
         { key: 'payments', label: 'Subscriptions & Payments', path: '/admin/payments', icon: 'payments' },
         { key: 'teachers', label: 'Teachers', path: '/admin/teachers', icon: 'teachers' },
         { key: 'leaderboard', label: 'Leaderboards', path: '/leaderboard', icon: 'analytics' },
+        { key: 'blog', label: 'Blog Manager', path: '/admin/blog', icon: 'courses' },
       ],
     },
   ],

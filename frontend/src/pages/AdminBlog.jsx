@@ -23,7 +23,7 @@ export default function AdminBlog() {
 
   const saveMutation = useMutation({
     mutationFn: (data) => {
-      if (editingId) return API.put(`/blog/${editingId}`, data)
+      if (editingId) return API.put(\/blog/\\, data)
       return API.post('/blog', data)
     },
     onSuccess: () => {
@@ -37,7 +37,7 @@ export default function AdminBlog() {
   })
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => API.delete(`/blog/${id}`),
+    mutationFn: (id) => API.delete(\/blog/\\),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-blogs'] })
       toast.success('Blog deleted')
@@ -51,6 +51,7 @@ export default function AdminBlog() {
       content: blog.content, seoTitle: blog.seoTitle || '',
       seoDescription: blog.seoDescription || '', isPublished: blog.isPublished
     })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const handleCancel = () => {
@@ -73,66 +74,92 @@ export default function AdminBlog() {
         <h1 className="platform-title">Blog Management</h1>
       </div>
 
-      <div className="dashboard-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '2rem' }}>
         <div className="stat-card">
-          <h2>Write Post</h2>
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
-            <input placeholder="Title" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} required className="platform-input" />
-            <input placeholder="URL Slug (e.g. top-50-biology-mcqs)" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} required className="platform-input" />
-            <input placeholder="SEO Title (Optional)" value={formData.seoTitle} onChange={e => setFormData({...formData, seoTitle: e.target.value})} className="platform-input" />
-            <textarea placeholder="SEO Meta Description / Excerpt" value={formData.excerpt} onChange={e => setFormData({...formData, excerpt: e.target.value, seoDescription: e.target.value})} rows="3" className="platform-input" />
+          <h2 style={{ marginBottom: '1.5rem' }}>Write Post</h2>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             
-            <textarea placeholder="Markdown Content" value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} required rows="15" className="platform-input" style={{ fontFamily: 'monospace' }} />
+            <div>
+              <label className="platform-label">Post Title</label>
+              <input placeholder="Enter title..." value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} required className="platform-input" style={{ width: '100%' }} />
+            </div>
+
+            <div>
+              <label className="platform-label">URL Slug</label>
+              <input placeholder="e.g. top-50-biology-mcqs" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} required className="platform-input" style={{ width: '100%' }} />
+            </div>
+
+            <div>
+              <label className="platform-label">SEO Meta Description / Excerpt</label>
+              <textarea placeholder="Short summary for Google..." value={formData.excerpt} onChange={e => setFormData({...formData, excerpt: e.target.value, seoDescription: e.target.value})} rows="3" className="platform-input" style={{ width: '100%' }} />
+            </div>
             
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <input type="checkbox" checked={formData.isPublished} onChange={e => setFormData({...formData, isPublished: e.target.checked})} />
-              Publish immediately?
+            <div>
+              <label className="platform-label">Markdown Content</label>
+              <textarea placeholder="Write your article here..." value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} required rows="15" className="platform-input" style={{ fontFamily: 'monospace', width: '100%' }} />
+            </div>
+            
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', marginTop: '0.5rem' }}>
+              <input type="checkbox" style={{ width: '1.25rem', height: '1.25rem' }} checked={formData.isPublished} onChange={e => setFormData({...formData, isPublished: e.target.checked})} />
+              <span className="platform-label" style={{ margin: 0 }}>Publish immediately?</span>
             </label>
 
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <button type="submit" className="lp-btn lp-btn-primary" disabled={saveMutation.isPending}>
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+              <button type="submit" className="lp-btn lp-btn-primary" disabled={saveMutation.isPending} style={{ flex: 1, padding: '0.75rem' }}>
                 {saveMutation.isPending ? 'Saving...' : (editingId ? 'Update Post' : 'Create Post')}
               </button>
               {editingId && (
-                <button type="button" onClick={handleCancel} className="lp-btn lp-btn-ghost">Cancel</button>
+                <button type="button" onClick={handleCancel} className="lp-btn lp-btn-ghost" style={{ flex: 1, padding: '0.75rem' }}>Cancel</button>
               )}
             </div>
           </form>
         </div>
 
-        <div className="stat-card">
-          <h2>Live Preview</h2>
-          <div className="blog-content" style={{ marginTop: '1rem', padding: '1rem', border: '1px dashed #ccc', borderRadius: '8px', minHeight: '400px', background: 'var(--bg-main)' }}>
-            <h1>{formData.title || 'Post Title'}</h1>
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{formData.content}</ReactMarkdown>
+        <div className="stat-card" style={{ display: 'flex', flexDirection: 'column' }}>
+          <h2 style={{ marginBottom: '1.5rem' }}>Live Preview</h2>
+          <div className="blog-content" style={{ flex: 1, padding: '1.5rem', border: '1px solid var(--border-color)', borderRadius: '12px', background: 'var(--bg-main)', color: 'var(--text-main)', overflowY: 'auto', maxHeight: '800px' }}>
+            <h1 style={{ color: 'var(--text-dark)', marginBottom: '2rem' }}>{formData.title || 'Post Title Preview'}</h1>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{formData.content || '*Content will appear here...*'}</ReactMarkdown>
           </div>
         </div>
       </div>
 
       <div className="stat-card" style={{ marginTop: '2rem' }}>
-        <h2>All Posts</h2>
-        <table className="platform-table" style={{ width: '100%', marginTop: '1rem' }}>
-          <thead>
-            <tr>
-              <th style={{ textAlign: 'left' }}>Title</th>
-              <th style={{ textAlign: 'left' }}>Status</th>
-              <th style={{ textAlign: 'left' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {blogs?.data?.map(blog => (
-              <tr key={blog.id}>
-                <td>{blog.title}</td>
-                <td>{blog.isPublished ? 'Published' : 'Draft'}</td>
-                <td>
-                  <button onClick={() => handleEdit(blog)} style={{ marginRight: '1rem', color: 'var(--primary-color)' }}>Edit</button>
-                  <button onClick={() => { if(window.confirm('Delete?')) deleteMutation.mutate(blog.id) }} style={{ color: 'red' }}>Delete</button>
-                </td>
+        <h2 style={{ marginBottom: '1.5rem' }}>All Posts</h2>
+        <div style={{ overflowX: 'auto' }}>
+          <table className="platform-table" style={{ width: '100%' }}>
+            <thead>
+              <tr>
+                <th style={{ textAlign: 'left', padding: '1rem' }}>Title</th>
+                <th style={{ textAlign: 'left', padding: '1rem' }}>Status</th>
+                <th style={{ textAlign: 'left', padding: '1rem' }}>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {blogs?.data?.length === 0 && (
+                <tr>
+                  <td colSpan="3" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No posts found.</td>
+                </tr>
+              )}
+              {blogs?.data?.map(blog => (
+                <tr key={blog.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                  <td style={{ padding: '1rem', color: 'var(--text-main)' }}>{blog.title}</td>
+                  <td style={{ padding: '1rem' }}>
+                    <span style={{ padding: '0.25rem 0.75rem', borderRadius: '999px', fontSize: '0.875rem', background: blog.isPublished ? 'rgba(34, 197, 94, 0.1)' : 'rgba(234, 179, 8, 0.1)', color: blog.isPublished ? '#22c55e' : '#eab308' }}>
+                      {blog.isPublished ? 'Published' : 'Draft'}
+                    </span>
+                  </td>
+                  <td style={{ padding: '1rem', display: 'flex', gap: '1rem' }}>
+                    <button onClick={() => handleEdit(blog)} style={{ color: 'var(--primary-color)', fontWeight: '500', background: 'none', border: 'none', cursor: 'pointer' }}>Edit</button>
+                    <button onClick={() => { if(window.confirm('Delete this post forever?')) deleteMutation.mutate(blog.id) }} style={{ color: '#ef4444', fontWeight: '500', background: 'none', border: 'none', cursor: 'pointer' }}>Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )
 }
+
