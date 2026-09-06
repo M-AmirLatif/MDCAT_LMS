@@ -331,10 +331,10 @@ function AdminPayments() {
   return (
     <div className="workspace-page workspace-page--payments admin-payments-page animate-fade-up">
       <div className="card-grid">
-        <div className="stat-tile"><span>Total Requests</span><strong>{totals.total}</strong><small>Manual submissions</small></div>
-        <div className="stat-tile"><span>Pending</span><strong>{totals.pending}</strong><small>Need verification</small></div>
-        <div className="stat-tile"><span>Approved</span><strong>{totals.approved}</strong><small>Subscriptions activated</small></div>
-        <div className="stat-tile"><span>Approved Revenue</span><strong>Rs {totals.revenue}</strong><small>Manual verified amount</small></div>
+        <div className="stat-tile"><span>Total Requests</span><strong>{loading ? '...' : totals.total}</strong><small>Manual submissions</small></div>
+        <div className="stat-tile"><span>Pending</span><strong>{loading ? '...' : totals.pending}</strong><small>Need verification</small></div>
+        <div className="stat-tile"><span>Approved</span><strong>{loading ? '...' : totals.approved}</strong><small>Subscriptions activated</small></div>
+        <div className="stat-tile"><span>Approved Revenue</span><strong>{loading ? '...' : `Rs ${totals.revenue}`}</strong><small>Manual verified amount</small></div>
       </div>
 
       <section className="workspace-card payments-history-card">

@@ -297,8 +297,8 @@ function StudentDashboard({ firstName, user }) {
 
 function TeacherDashboard() {
   const { user } = useAuth()
-  const { subjects, totals, teacherSummary } = useMcqSubjectSummary()
-  const { summary, studentRows } = useTeacherAnalyticsData()
+  const { subjects, totals, teacherSummary, loading: loadingSubjects } = useMcqSubjectSummary()
+  const { summary, studentRows, loading: loadingAnalytics } = useTeacherAnalyticsData()
   const teacherSubjects = getAssignedSubjectNames(user)
   const visibleSubjects = teacherSubjects.length
     ? subjects.filter((subject) => teacherSubjects.includes(subject.name || subject.subject))
@@ -311,6 +311,8 @@ function TeacherDashboard() {
   const totalMcqs = teacherSubjects.length ? visibleTotalMcqs : totals.totalMcqs
   const totalChapters = teacherSubjects.length ? visibleTotalChapters : totals.totalChapters
   const dashboardStudents = studentRows.slice(0, 5)
+
+  const isLoading = loadingSubjects || loadingAnalytics
 
   return (
     <div className="workspace-page animate-fade-up">
@@ -328,12 +330,12 @@ function TeacherDashboard() {
           <div className="workspace-hero-stats">
             <div className="hero-mini-card">
               <span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Total Uploaded MCQs</span>
-              <strong>{totalMcqs}</strong>
+              <strong>{isLoading ? '...' : totalMcqs}</strong>
               <p>Live chapter bank count</p>
             </div>
             <div className="hero-mini-card">
               <span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Student Attempts</span>
-              <strong>{summary.totalAttempts}</strong>
+              <strong>{isLoading ? '...' : summary.totalAttempts}</strong>
               <p>Live submissions from student practice</p>
             </div>
           </div>
@@ -341,10 +343,10 @@ function TeacherDashboard() {
       </section>
 
       <div className="card-grid">
-        <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Total MCQs</span><span className="badge badge-teal">Bank</span></div><strong>{totalMcqs}</strong><small>Live count from uploaded subject banks</small></div>
-        <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Total Chapters</span><span className="badge badge-purple">Coverage</span></div><strong>{totalChapters}</strong><small>Chapter count across MDCAT subjects</small></div>
-        <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Student Attempts</span><span className="badge badge-amber">Active</span></div><strong>{summary.totalAttempts}</strong><small>Real chapter submissions from students</small></div>
-        <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>Average Score</span><span className="badge badge-coral">Class</span></div><strong>{summary.classAverage}%</strong><small>Average across recorded submissions</small></div>
+        <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Total MCQs</span><span className="badge badge-teal">Bank</span></div><strong>{isLoading ? '...' : totalMcqs}</strong><small>Live count from uploaded subject banks</small></div>
+        <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Total Chapters</span><span className="badge badge-purple">Coverage</span></div><strong>{isLoading ? '...' : totalChapters}</strong><small>Chapter count across MDCAT subjects</small></div>
+        <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Student Attempts</span><span className="badge badge-amber">Active</span></div><strong>{isLoading ? '...' : summary.totalAttempts}</strong><small>Real chapter submissions from students</small></div>
+        <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>Average Score</span><span className="badge badge-coral">Class</span></div><strong>{isLoading ? '...' : `${summary.classAverage}%`}</strong><small>Average across recorded submissions</small></div>
       </div>
 
       <section className="workspace-card">
@@ -426,8 +428,8 @@ function TeacherDashboard() {
 }
 
 function AdminDashboard() {
-  const { subjects = [] } = useMcqSubjectSummary()
-  const { overview = {}, recentStudents = [] } = useAdminPanelData()
+  const { subjects = [], loading: loadingSubjects } = useMcqSubjectSummary()
+  const { overview = {}, recentStudents = [], loadingOverview } = useAdminPanelData()
   const safeSubjects = Array.isArray(subjects) ? subjects : []
   const safeRecentStudents = Array.isArray(recentStudents) ? recentStudents : []
   const subjectMix = safeSubjects.map((subject) => ({
@@ -446,17 +448,17 @@ function AdminDashboard() {
             <p>Phase 1 is focused on operations: student access, subscription visibility, payment follow-up, and live MCQ coverage across Biology, Chemistry, Physics, and English.</p>
           </div>
           <div className="workspace-hero-stats">
-            <div className="hero-mini-card"><span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Active Subscriptions</span><strong>{overview.activeSubscriptions}</strong><p>Students with current paid access</p></div>
-            <div className="hero-mini-card"><span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Pending Payments</span><strong>{overview.pendingPayments}</strong><p>Manual payment follow-up queue</p></div>
+            <div className="hero-mini-card"><span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Active Subscriptions</span><strong>{loadingOverview ? '...' : overview.activeSubscriptions}</strong><p>Students with current paid access</p></div>
+            <div className="hero-mini-card"><span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Pending Payments</span><strong>{loadingOverview ? '...' : overview.pendingPayments}</strong><p>Manual payment follow-up queue</p></div>
           </div>
         </div>
       </section>
 
       <div className="card-grid">
-        <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Total Students</span><span className="badge badge-purple">Live</span></div><strong>{overview.totalStudents}</strong><small>{overview.activeStudents} active accounts</small></div>
-        <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Active Subscriptions</span><span className="badge badge-teal">Billing</span></div><strong>{overview.activeSubscriptions}</strong><small>{overview.expiringSoon} expiring within 7 days</small></div>
-        <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Total Attempts</span><span className="badge badge-amber">Usage</span></div><strong>{overview.totalAttempts}</strong><small>Real chapter submissions from students</small></div>
-        <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>Monthly Revenue</span><span className="badge badge-coral">Cashflow</span></div><strong>Rs {overview.monthlyRevenue || 0}</strong><small>{overview.pendingPayments} payments still pending review</small></div>
+        <div className="stat-tile stat-tile--purple"><div className="stat-tile-top"><span>Total Students</span><span className="badge badge-purple">Live</span></div><strong>{loadingOverview ? '...' : overview.totalStudents}</strong><small>{loadingOverview ? '...' : overview.activeStudents} active accounts</small></div>
+        <div className="stat-tile stat-tile--teal"><div className="stat-tile-top"><span>Active Subscriptions</span><span className="badge badge-teal">Billing</span></div><strong>{loadingOverview ? '...' : overview.activeSubscriptions}</strong><small>{loadingOverview ? '...' : overview.expiringSoon} expiring within 7 days</small></div>
+        <div className="stat-tile stat-tile--amber"><div className="stat-tile-top"><span>Total Attempts</span><span className="badge badge-amber">Usage</span></div><strong>{loadingOverview ? '...' : overview.totalAttempts}</strong><small>Real chapter submissions from students</small></div>
+        <div className="stat-tile stat-tile--coral"><div className="stat-tile-top"><span>Monthly Revenue</span><span className="badge badge-coral">Cashflow</span></div><strong>{loadingOverview ? '...' : `Rs ${overview.monthlyRevenue || 0}`}</strong><small>{loadingOverview ? '...' : overview.pendingPayments} payments still pending review</small></div>
       </div>
 
       <div className="workspace-section-grid">
