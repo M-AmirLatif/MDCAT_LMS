@@ -1440,3 +1440,14 @@ table tr:hover {
 }
 
 
+
+/* Global fix for MCQ option click jitter: Keep border width constant and remove focus outline */
+html body .mcq-attempt-layout .mcq-question-card .mcq-option-card {
+  outline: none !important;
+}
+html[data-theme="dark"] body .mcq-attempt-layout .mcq-question-card .mcq-option-card {
+  border: 3px solid transparent !important;
+}
+html:not([data-theme="dark"]) body .mcq-attempt-layout .mcq-question-card .mcq-option-card {
+  border-width: 3px !important;
+}
