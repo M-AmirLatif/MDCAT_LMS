@@ -1,0 +1,138 @@
+import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { Helmet } from 'react-helmet-async'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import toast from 'react-hot-toast'
+import API from '../services/api'
+import './Blog.css'
+
+export default function AdminBlog() {
+  const queryClient = useQueryClient()
+  const [editingId, setEditingId] = useState(null)
+  
+  const [formData, setFormData] = useState({
+    title: '', slug: '', excerpt: '', content: '',
+    seoTitle: '', seoDescription: '', isPublished: false
+  })
+
+  const { data: blogs, isLoading } = useQuery({
+    queryKey: ['admin-blogs'],
+    queryFn: () => API.get('/blog').then(res => res.data)
+  })
+
+  const saveMutation = useMutation({
+    mutationFn: (data) => {
+      if (editingId) return API.put(`/blog/${editingId}`, data)
+      return API.post('/blog', data)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-blogs'] })
+      toast.success('Blog saved successfully!')
+      handleCancel()
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || 'Failed to save blog')
+    }
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => API.delete(`/blog/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-blogs'] })
+      toast.success('Blog deleted')
+    }
+  })
+
+  const handleEdit = (blog) => {
+    setEditingId(blog.id)
+    setFormData({
+      title: blog.title, slug: blog.slug, excerpt: blog.excerpt || '',
+      content: blog.content, seoTitle: blog.seoTitle || '',
+      seoDescription: blog.seoDescription || '', isPublished: blog.isPublished
+    })
+  }
+
+  const handleCancel = () => {
+    setEditingId(null)
+    setFormData({ title: '', slug: '', excerpt: '', content: '', seoTitle: '', seoDescription: '', isPublished: false })
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    saveMutation.mutate(formData)
+  }
+
+  if (isLoading) return <div className="route-loading">Loading Admin...</div>
+
+  return (
+    <div className="platform-page">
+      <Helmet><title>Admin Blog - MDCAT LMS</title></Helmet>
+      
+      <div className="platform-header">
+        <h1 className="platform-title">Blog Management</h1>
+      </div>
+
+      <div className="dashboard-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+        <div className="stat-card">
+          <h2>Write Post</h2>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
+            <input placeholder="Title" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} required className="platform-input" />
+            <input placeholder="URL Slug (e.g. top-50-biology-mcqs)" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} required className="platform-input" />
+            <input placeholder="SEO Title (Optional)" value={formData.seoTitle} onChange={e => setFormData({...formData, seoTitle: e.target.value})} className="platform-input" />
+            <textarea placeholder="SEO Meta Description / Excerpt" value={formData.excerpt} onChange={e => setFormData({...formData, excerpt: e.target.value, seoDescription: e.target.value})} rows="3" className="platform-input" />
+            
+            <textarea placeholder="Markdown Content" value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} required rows="15" className="platform-input" style={{ fontFamily: 'monospace' }} />
+            
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <input type="checkbox" checked={formData.isPublished} onChange={e => setFormData({...formData, isPublished: e.target.checked})} />
+              Publish immediately?
+            </label>
+
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button type="submit" className="lp-btn lp-btn-primary" disabled={saveMutation.isPending}>
+                {saveMutation.isPending ? 'Saving...' : (editingId ? 'Update Post' : 'Create Post')}
+              </button>
+              {editingId && (
+                <button type="button" onClick={handleCancel} className="lp-btn lp-btn-ghost">Cancel</button>
+              )}
+            </div>
+          </form>
+        </div>
+
+        <div className="stat-card">
+          <h2>Live Preview</h2>
+          <div className="blog-content" style={{ marginTop: '1rem', padding: '1rem', border: '1px dashed #ccc', borderRadius: '8px', minHeight: '400px', background: 'var(--bg-main)' }}>
+            <h1>{formData.title || 'Post Title'}</h1>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{formData.content}</ReactMarkdown>
+          </div>
+        </div>
+      </div>
+
+      <div className="stat-card" style={{ marginTop: '2rem' }}>
+        <h2>All Posts</h2>
+        <table className="platform-table" style={{ width: '100%', marginTop: '1rem' }}>
+          <thead>
+            <tr>
+              <th style={{ textAlign: 'left' }}>Title</th>
+              <th style={{ textAlign: 'left' }}>Status</th>
+              <th style={{ textAlign: 'left' }}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {blogs?.data?.map(blog => (
+              <tr key={blog.id}>
+                <td>{blog.title}</td>
+                <td>{blog.isPublished ? 'Published' : 'Draft'}</td>
+                <td>
+                  <button onClick={() => handleEdit(blog)} style={{ marginRight: '1rem', color: 'var(--primary-color)' }}>Edit</button>
+                  <button onClick={() => { if(window.confirm('Delete?')) deleteMutation.mutate(blog.id) }} style={{ color: 'red' }}>Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}

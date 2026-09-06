@@ -315,6 +315,7 @@ app.use('/api/payments', paymentRoutes)
 app.use('/api/subscriptions', subscriptionRoutes)
 app.use('/api/uploads', uploadRoutes)
 app.use('/api/public', publicRoutes)
+app.use('/api/blog', require('./routes/blogRoutes'))
 
 // ==================== NOTIFICATION SCHEDULER ====================
 // Hardened scheduler: uses lean() for read efficiency, atomic findOneAndUpdate

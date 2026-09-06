@@ -67,6 +67,9 @@ const LecturePlayer = lazyWithRetry(() => import('./pages/LecturePlayer'), 'Lect
 const MCQTest = lazyWithRetry(() => import('./pages/MCQTest'), 'MCQTest')
 const TestReview = lazyWithRetry(() => import('./pages/TestReview'), 'TestReview')
 const NotFound = lazyWithRetry(() => import('./pages/NotFound'), 'NotFound')
+const BlogList = lazyWithRetry(() => import('./pages/BlogList'), 'BlogList')
+const BlogPost = lazyWithRetry(() => import('./pages/BlogPost'), 'BlogPost')
+const AdminBlog = lazyWithRetry(() => import('./pages/AdminBlog'), 'AdminBlog')
 
 // ==================== SUSPENSE FALLBACK ====================
 function RouteFallback() {
@@ -151,6 +154,8 @@ function App() {
           <Route path="/contact" element={<Home />} />
           <Route path="/privacy-policy" element={<Home />} />
           <Route path="/terms" element={<Home />} />
+          <Route path="/mdcat-tips" element={<BlogList />} />
+          <Route path="/mdcat-tips/:slug" element={<BlogPost />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
@@ -302,6 +307,14 @@ function App() {
               element={
                 <ProtectedRoute roles={['admin']}>
                   <LazyAdminSettingsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/blog"
+              element={
+                <ProtectedRoute roles={['admin']}>
+                  <AdminBlog />
                 </ProtectedRoute>
               }
             />
