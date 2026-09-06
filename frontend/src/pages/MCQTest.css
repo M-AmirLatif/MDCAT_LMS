@@ -1187,3 +1187,110 @@ html[data-theme="dark"] body .mcq-attempt-layout .mcq-question-card .mcq-option-
 html:not([data-theme="dark"]) body .mcq-attempt-layout .mcq-question-card .mcq-option-card {
   border-width: 3px !important;
 }
+/* Fixes for dark mode structure and instant transitions */
+
+/* Remove the line separators from dark mode */
+html[data-theme="dark"] body .mcq-attempt-layout .mcq-question-card .mcq-option-card::after {
+  display: none !important;
+}
+
+/* Force dark mode to use the separated pill layout with borders */
+html[data-theme="dark"] body .mcq-attempt-layout .mcq-question-card .mcq-options-grid {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  gap: 10px !important;
+}
+
+html[data-theme="dark"] body .mcq-attempt-layout .mcq-question-card .mcq-option-card {
+  border: 2px solid rgba(255, 255, 255, 0.12) !important;
+  background: var(--bg-surface-2, #1A1640) !important;
+  border-radius: 18px !important;
+  margin-bottom: 0 !important;
+  transition: none !important;
+}
+
+html[data-theme="dark"] body .mcq-attempt-layout .mcq-question-card .mcq-option-card * {
+  transition: none !important;
+}
+
+html:not([data-theme="dark"]) body .mcq-attempt-layout .mcq-question-card .mcq-option-card,
+html:not([data-theme="dark"]) body .mcq-attempt-layout .mcq-question-card .mcq-option-card * {
+  transition: none !important;
+}
+
+/* Ensure selected state has EXACTLY 2px border so it NEVER jitters */
+html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected {
+  border-width: 2px !important;
+  border-left-width: 2px !important;
+}
+
+/* Enforce 2px border globally for light mode too to match */
+html:not([data-theme="dark"]) body .mcq-attempt-layout .mcq-question-card .mcq-option-card {
+  border-width: 2px !important;
+}
+
+/* CORRECTED FIX FOR MCQ LAYOUT, JITTER, AND SELECTION STATE */
+
+/* Remove the line separators from dark mode */
+html[data-theme="dark"] body .mcq-attempt-layout .mcq-question-card .mcq-option-card::after {
+  display: none !important;
+}
+
+/* Force dark mode to use the separated pill layout with borders */
+html[data-theme="dark"] body .mcq-attempt-layout .mcq-question-card .mcq-options-grid {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  gap: 10px !important;
+}
+
+/* Base style for unselected options (dark mode) */
+html[data-theme="dark"] body .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected) {
+  border: 2px solid rgba(255, 255, 255, 0.12) !important;
+  background: var(--bg-surface-2, #1A1640) !important;
+  border-radius: 18px !important;
+  margin-bottom: 0 !important;
+}
+
+/* Base style for unselected options (light mode) */
+html:not([data-theme="dark"]) body .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected) {
+  border-width: 2px !important;
+}
+
+/* Remove all transitions for instant visual updates */
+html body .mcq-attempt-layout .mcq-question-card .mcq-option-card,
+html body .mcq-attempt-layout .mcq-question-card .mcq-option-card * {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* FORCE the selected background and border permanently to override everything else */
+html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected,
+html[data-theme="dark"] body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected,
+html:not([data-theme="dark"]) body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected {
+  background: #ffe58f !important;
+  border: 2px solid #f59e0b !important;
+  border-left: 2px solid #f59e0b !important;
+  color: #020617 !important;
+  -webkit-text-fill-color: #020617 !important;
+  border-radius: 18px !important;
+}
+
+/* FORCE the selected letter styles */
+html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected .mcq-option-letter,
+html[data-theme="dark"] body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected .mcq-option-letter {
+  background: #fffdf4 !important;
+  border: 2px solid #f97316 !important;
+  color: #312e81 !important;
+  -webkit-text-fill-color: #312e81 !important;
+}
+
+/* FORCE the selected text colors */
+html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected .mcq-option-text,
+html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected .mcq-option-text *,
+html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected .mcq-renderer,
+html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-card--selected .mcq-renderer * {
+  color: #020617 !important;
+  -webkit-text-fill-color: #020617 !important;
+}
