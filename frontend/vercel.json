@@ -1,9 +1,12 @@
 {
-  "rewrites": [
+  "redirects": [
     {
       "source": "/sitemap.xml",
-      "destination": "https://api.acemdcat.com/api/public/sitemap"
-    },
+      "destination": "https://api.acemdcat.com/api/public/sitemap",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
     {
       "source": "/(.*)",
       "destination": "/index.html"
