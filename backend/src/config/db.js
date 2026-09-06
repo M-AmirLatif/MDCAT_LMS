@@ -122,7 +122,7 @@ const connectWithRetry = async (attempt = 1) => {
       // Connection pool — prevents exhaustion under concurrent load
       maxPoolSize: parseInt(process.env.MONGO_POOL_SIZE, 10) || 10,
       minPoolSize: 1,
-      // Shared hosting has contended CPU and slower DNS/TLS than Railway did.
+      // Shared hosting has contended CPU and slower DNS/TLS.
       // 5s was too aggressive and was the main source of boot-time failures.
       serverSelectionTimeoutMS:
         parseInt(process.env.MONGO_SERVER_SELECTION_TIMEOUT_MS, 10) || 20000,

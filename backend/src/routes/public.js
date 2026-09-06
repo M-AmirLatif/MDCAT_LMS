@@ -11,7 +11,7 @@ const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English']
 
 // Keep a fresh value for five minutes and retain the last good value for a day.
 // The Vercel edge cache uses the same policy, so cold/new visitors do not wait
-// for Railway and MongoDB whenever a recent public response exists.
+// for MongoDB whenever a recent public response exists.
 let cachedStats = null
 let cacheExpiry = 0
 const CACHE_TTL_MS = 5 * 60 * 1000

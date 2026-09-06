@@ -32,4 +32,4 @@ MERN-based MDCAT LMS for student MCQ practice, teacher MCQ management, and admin
 
 ## Deployment
 
-Use `DEPLOYMENT.md` for the full MongoDB Atlas, Railway backend, and Vercel frontend setup.
+Use `DEPLOYMENT.md` for the full MongoDB Atlas, Hostinger backend, and Vercel frontend setup.

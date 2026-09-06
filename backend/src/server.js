@@ -79,7 +79,7 @@ const app = express()
 const INSTANCE_ID = `${process.pid}-${Date.now().toString(36)}`
 
 // Only ONE deployment may run the notification scheduler. While both Hostinger
-// and Railway were live against the same Atlas database, both were claiming and
+// live against the same Atlas database, both were claiming and
 // sending the same jobs.
 const SCHEDULER_ENABLED = process.env.ENABLE_SCHEDULER !== 'false'
 
@@ -103,7 +103,7 @@ const KEEP_ALIVE_INTERVAL_MS = Math.max(
   parseInt(process.env.KEEP_ALIVE_INTERVAL_MS, 10) || 4 * 60 * 1000,
 )
 
-// Hostinger (LiteSpeed/Passenger) and Railway both terminate HTTPS in front of
+// Hostinger (LiteSpeed/Passenger) terminates HTTPS in front of
 // the Node process. The number of proxy hops differs per host, so make it
 // configurable — getting this wrong makes every client look like one IP, which
 // collapses rate limiting into a single shared bucket.
@@ -265,7 +265,7 @@ app.get('/api/health/email', (req, res) => {
 })
 
 // Deployment identity + database reachability. Use this to confirm which backend
-// a domain actually resolves to (Hostinger vs the old Railway service) and
+// a domain actually resolves to and
 // whether Mongo is connected, without needing shell access.
 app.get('/api/health/db', (req, res) => {
   const ready = isDbReady()

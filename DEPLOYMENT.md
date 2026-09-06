@@ -3,10 +3,10 @@
 This project is deployed as two services:
 
 - Frontend: Vercel, using the `frontend/` Vite app.
-- Backend API: Railway, using the `backend/` Express app.
+- Backend API: Hostinger, using the `backend/` Express app.
 - Database: MongoDB Atlas.
 
-Do not put real secrets into the codebase. Put production secrets only in MongoDB Atlas, Railway variables, Vercel variables, and your local untracked `.env` files.
+Do not put real secrets into the codebase. Put production secrets only in MongoDB Atlas, Hostinger variables, Vercel variables, and your local untracked `.env` files.
 
 ## 1. MongoDB Atlas
 
@@ -19,9 +19,9 @@ Do not put real secrets into the codebase. Put production secrets only in MongoD
    - Built-in role: `Read and write to any database` is enough for this app.
 5. Open `Network Access`.
 6. Add an IP access rule:
-   - For easiest Railway deployment: `0.0.0.0/0`
-   - Description: `Railway backend`
-   - This allows Railway dynamic outbound IPs. If you later use a fixed egress provider, replace this with the fixed IP.
+   - For easiest Hostinger deployment: `0.0.0.0/0`
+   - Description: `Hostinger backend`
+   - This allows Hostinger dynamic outbound IPs. If you later use a fixed egress provider, replace this with the fixed IP.
 7. Open `Database > Clusters > Connect > Drivers`.
 8. Copy the SRV connection string and set the database name to `mdcat_lms`.
 9. Final production `MONGO_URI` format:
@@ -31,16 +31,16 @@ Do not put real secrets into the codebase. Put production secrets only in MongoD
 10. Replace `<password>` with the database user password.
 11. If the password contains special characters like `@`, `#`, `/`, `?`, `:`, or `%`, URL-encode the password before pasting it into the URI.
 
-## 2. Railway Backend
+## 2. Hostinger Backend
 
-1. Open Railway.
+1. Open Hostinger.
 2. Create a new project from GitHub and select this repo.
 3. Select the backend service, or create a new service from the repo.
 4. Set the service root directory to:
    ```text
    /backend
    ```
-5. Railway will use `backend/railway.json`.
+5. Hostinger will use `backend/Hostinger.json`.
 6. Build command can stay empty because Nixpacks detects Node.
 7. Start command is already configured as:
    ```bash
@@ -56,7 +56,7 @@ Do not put real secrets into the codebase. Put production secrets only in MongoD
    GOOGLE_CLIENT_ID=your-google-oauth-client-id.apps.googleusercontent.com
    ALLOW_DEBUG_OTP=false
    ```
-9. Do not manually set `PORT` on Railway unless Railway asks for it. Railway injects `PORT` automatically.
+9. Do not manually set `PORT` on Hostinger unless Hostinger asks for it. Hostinger injects `PORT` automatically.
 10. For email delivery, choose one option.
 
 ### Email Option A: Resend
@@ -93,28 +93,28 @@ SMTP_GREETING_TIMEOUT_MS=10000
 SMTP_SOCKET_TIMEOUT_MS=15000
 ```
 
-### Railway Domain
+### Hostinger Domain
 
 1. Open backend service `Settings > Networking`.
 2. Click `Generate Domain`.
 3. Copy the public domain, for example:
    ```text
-   https://mdcat-lms-backend-production.up.railway.app
+   https://mdcat-lms-backend-production.up.Hostinger.app
    ```
 4. Your frontend API base URL must include `/api`:
    ```text
-   https://mdcat-lms-backend-production.up.railway.app/api
+   https://mdcat-lms-backend-production.up.Hostinger.app/api
    ```
 5. Test the health endpoint:
    ```text
-   https://mdcat-lms-backend-production.up.railway.app/api/health
+   https://mdcat-lms-backend-production.up.Hostinger.app/api/health
    ```
 
 ### Seed Data
 
-After Railway deploys successfully, seed the MongoDB Atlas database once.
+After Hostinger deploys successfully, seed the MongoDB Atlas database once.
 
-Option 1, from Railway shell:
+Option 1, from Hostinger shell:
 
 ```bash
 npm run seed
@@ -149,7 +149,7 @@ This repo includes a root `vercel.json` that deploys the Vite frontend only.
    - Output directory: `frontend/dist`
 6. Open `Environment Variables` and add:
    ```env
-   VITE_API_BASE_URL=https://your-railway-backend.up.railway.app/api
+   VITE_API_BASE_URL=https://your-Hostinger-backend.up.Hostinger.app/api
    VITE_API_TIMEOUT_MS=20000
    VITE_GOOGLE_CLIENT_ID=your-google-oauth-client-id.apps.googleusercontent.com
    ```
@@ -158,11 +158,11 @@ This repo includes a root `vercel.json` that deploys the Vite frontend only.
    ```text
    https://mdcat-lms.vercel.app
    ```
-9. Go back to Railway and update `CORS_ORIGINS`:
+9. Go back to Hostinger and update `CORS_ORIGINS`:
    ```env
    CORS_ORIGINS=http://localhost:5173,https://mdcat-lms.vercel.app
    ```
-10. Redeploy Railway after changing `CORS_ORIGINS`.
+10. Redeploy Hostinger after changing `CORS_ORIGINS`.
 
 ## 4. Google OAuth
 
@@ -185,7 +185,7 @@ This repo includes a root `vercel.json` that deploys the Vite frontend only.
 10. Copy the Client ID.
 11. Put the same Client ID in:
    - Vercel: `VITE_GOOGLE_CLIENT_ID`
-   - Railway: `GOOGLE_CLIENT_ID`
+   - Hostinger: `GOOGLE_CLIENT_ID`
    - Local frontend `.env`: `VITE_GOOGLE_CLIENT_ID`
    - Local backend `.env`: `GOOGLE_CLIENT_ID`
 
@@ -214,8 +214,8 @@ ALLOW_DEBUG_OTP=true
 
 ## 6. Important Production Notes
 
-- Photo uploads currently use backend local disk storage under `backend/uploads`. This works during a Railway container lifetime but is not permanent across redeploys. For production-grade profile photos, move uploads to Cloudinary, S3, or another object storage provider.
-- Always update Railway `CORS_ORIGINS` after Vercel gives you the final production URL.
+- Photo uploads currently use backend local disk storage under `backend/uploads`. This works during a Hostinger container lifetime but is not permanent across redeploys. For production-grade profile photos, move uploads to Cloudinary, S3, or another object storage provider.
+- Always update Hostinger `CORS_ORIGINS` after Vercel gives you the final production URL.
 - Always include `/api` at the end of `VITE_API_BASE_URL`.
 - Never paste the MongoDB password, JWT secret, SMTP password, Resend key, or Brevo key into frontend code.
 - Vercel environment variables with `VITE_` are public in the built frontend. Do not put secrets in `VITE_` variables.
