@@ -38,10 +38,22 @@ export default function BlogPost() {
         <title>{blog.seoTitle || blog.title}</title>
         <meta name="description" content={blog.seoDescription || blog.excerpt} />
         <link rel="canonical" href={canonicalUrl} />
+        
+        {/* Open Graph / WhatsApp / Facebook */}
+        <meta property="og:type" content="article" />
         <meta property="og:title" content={blog.seoTitle || blog.title} />
         <meta property="og:description" content={blog.seoDescription || blog.excerpt} />
         <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:site_name" content="MDCAT LMS" />
+        {/* Default image if no blog specific image exists */}
+        <meta property="og:image" content="https://www.acemdcat.com/mdcat-lms-home-july-2026.png" />
         
+        {/* Twitter / X */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={blog.seoTitle || blog.title} />
+        <meta name="twitter:description" content={blog.seoDescription || blog.excerpt} />
+        <meta name="twitter:image" content="https://www.acemdcat.com/mdcat-lms-home-july-2026.png" />
+
         <script type="application/ld+json">
           {`
             {
@@ -49,11 +61,24 @@ export default function BlogPost() {
               "@type": "Article",
               "headline": "${(blog.seoTitle || blog.title).replace(/"/g, '\\"')}",
               "description": "${(blog.seoDescription || blog.excerpt || '').replace(/"/g, '\\"')}",
+              "datePublished": "${blog.publishedAt}",
+              "dateModified": "${blog.updatedAt || blog.publishedAt}",
               "author": {
                 "@type": "Person",
-                "name": "${blog.author?.firstName} ${blog.author?.lastName}"
+                "name": "${blog.author?.firstName || 'MDCAT'} ${blog.author?.lastName || 'Expert'}"
               },
-              "datePublished": "${blog.publishedAt || blog.createdAt}"
+              "publisher": {
+                "@type": "Organization",
+                "name": "MDCAT LMS",
+                "logo": {
+                  "@type": "ImageObject",
+                  "url": "https://www.acemdcat.com/favicon.svg"
+                }
+              },
+              "mainEntityOfPage": {
+                "@type": "WebPage",
+                "@id": "${canonicalUrl}"
+              }
             }
           `}
         </script>
