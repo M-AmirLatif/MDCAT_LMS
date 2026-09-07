@@ -147,7 +147,7 @@ exports.createUser = async (req, res) => {
     const password = req.body.password
     const roleInput = normalizeString(req.body.role)
     const role = roleInput ? normalizeRoleName(roleInput) : 'teacher'
-    const assignedSubjects = normalizeSubjects(req.body.assignedSubjects, req.body.subjectIds, req.body.assignedSubject, req.body.subjectId)
+    const assignedSubjects = normalizeSubjects((req.body || {}).assignedSubjects, (req.body || {}).subjectIds, (req.body || {}).assignedSubject, (req.body || {}).subjectId)
     const assignedSubject = assignedSubjects[0] || ''
 
     if (!firstName || !lastName || !email || !password) {
@@ -707,7 +707,7 @@ exports.approveTeacher = async (req, res) => {
 
       if (!teacher) return res.status(404).json({ error: 'Teacher request not found' })
 
-      const assignedSubjects = normalizeSubjects(req.body.assignedSubjects, req.body.subjectIds, req.body.assignedSubject, teacher.assignedSubjects, teacher.assignedSubject)
+      const assignedSubjects = normalizeSubjects((req.body || {}).assignedSubjects, (req.body || {}).subjectIds, (req.body || {}).assignedSubject, teacher.assignedSubjects, teacher.assignedSubject)
       if (!assignedSubjects.length) {
         return res.status(400).json({ error: 'Teacher must have at least one valid assigned subject' })
       }
@@ -747,7 +747,7 @@ exports.rejectTeacher = async (req, res) => {
     teacher.status = 'rejected'
     teacher.isActive = true
     teacher.rejectedAt = new Date()
-    teacher.rejectionReason = normalizeString(req.body.rejectionReason || req.body.reason)
+    teacher.rejectionReason = normalizeString((req.body || {}).rejectionReason || (req.body || {}).reason)
     await teacher.save()
 
     res.status(200).json({
@@ -772,7 +772,7 @@ exports.restrictTeacher = async (req, res) => {
     teacher.status = 'restricted'
     teacher.isActive = true
     teacher.rejectedAt = new Date()
-    teacher.rejectionReason = normalizeString(req.body.restrictionReason || req.body.reason)
+    teacher.rejectionReason = normalizeString((req.body || {}).restrictionReason || (req.body || {}).reason)
     await teacher.save()
 
     res.status(200).json({
