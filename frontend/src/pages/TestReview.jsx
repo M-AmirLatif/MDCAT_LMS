@@ -40,11 +40,34 @@ const mcqOptionImages = (mcq, option, letter) => compactImageList(
   mcq?.[`option${letter}ImageUrls`],
 )
 
-
 export default function TestReview() {
   const location = useLocation()
   const navigate = useNavigate()
   const reviewState = location.state
+
+  const [savedStatus, setSavedStatus] = useState({})
+
+  useEffect(() => {
+    if (!reviewState?.result?.detailed) return
+    const ids = reviewState.result.detailed.map(d => d.id)
+    API.post('/flashcards/status', { mcqIds: ids })
+      .then(res => setSavedStatus(res.data.savedStatus || {}))
+      .catch(() => {})
+  }, [reviewState])
+
+  const toggleFlashcard = (mcqId) => {
+    if (!reviewState?.subject || !reviewState?.chapter) return
+    API.post('/flashcards/toggle', {
+      mcqId,
+      subject: reviewState.subject.name,
+      chapterId: reviewState.chapter.id,
+    })
+      .then(res => {
+        setSavedStatus(prev => ({ ...prev, [mcqId]: res.data.saved }))
+        toast.success(res.data.saved ? 'Saved to Flashcards' : 'Removed from Flashcards')
+      })
+      .catch(() => toast.error('Could not save flashcard'))
+  }
 
   if (!reviewState?.result || !reviewState?.subject || !reviewState?.chapter) {
     return (
@@ -60,23 +83,6 @@ export default function TestReview() {
   }
 
   const { subject, chapter, result } = reviewState
-  const [savedStatus, setSavedStatus] = useState({})
-
-  useEffect(() => {
-    const ids = result.detailed.map(d => d.id)
-    API.post('/flashcards/status', { mcqIds: ids })
-      .then(res => setSavedStatus(res.data.savedStatus || {}))
-      .catch(() => {})
-  }, [result])
-
-  const toggleFlashcard = (mcqId) => {
-    API.post('/flashcards/toggle', { mcqId, subject: subject.name, chapterId: chapter.id })
-      .then(res => {
-        setSavedStatus(prev => ({ ...prev, [mcqId]: res.data.saved }))
-        toast.success(res.data.saved ? 'Saved to Flashcards' : 'Removed from Flashcards')
-      })
-      .catch(() => toast.error('Could not save flashcard'))
-  }
 
   return (
     <div className="mcq-review-page animate-fade-up">
@@ -104,6 +110,13 @@ export default function TestReview() {
                 <span className={`state-chip ${item.isCorrect ? 'state-chip--success' : 'state-chip--warning'}`}>
                   {item.isCorrect ? 'Correct' : 'Needs Review'}
                 </span>
+                <button
+                  type="button"
+                  onClick={() => toggleFlashcard(item.id)}
+                  className="review-save-btn"
+                >
+                  {savedStatus[item.id] ? '⭐ Saved' : '☆ Save'}
+                </button>
               </div>
               <div className="review-question-title">
                 <MCQRenderer text={item.questionText || item.question} images={mcqQuestionImages(item)} />
@@ -115,7 +128,7 @@ export default function TestReview() {
                   const selected = item.selectedIndex === optionIndex
                   return (
                     <div
-                      key={`${item.id}-${option}`}
+                      key={`${item.id}-${optionIndex}`}
                       className={`review-option-row ${correct ? 'review-option-row--correct' : ''} ${selected && !correct ? 'review-option-row--wrong' : ''}`}
                     >
                       <span className="review-option-letter">{String.fromCharCode(65 + optionIndex)}</span>
