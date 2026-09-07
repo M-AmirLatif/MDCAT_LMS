@@ -67,6 +67,7 @@ const paymentRoutes = require('./routes/payments')
 const subscriptionRoutes = require('./routes/subscriptions')
 const uploadRoutes = require('./routes/uploads')
 const publicRoutes = require('./routes/public')
+const flashcardRoutes = require('./routes/flashcards')
 const { serveUpload } = require('./controllers/uploadController')
 const NotificationJob = require('./models/NotificationJob')
 const Notification = require('./models/Notification')
@@ -316,6 +317,7 @@ app.use('/api/subscriptions', subscriptionRoutes)
 app.use('/api/uploads', uploadRoutes)
 app.use('/api/public', publicRoutes)
 app.use('/api/blog', require('./routes/blogRoutes'))
+app.use('/api/flashcards', flashcardRoutes)
 
 // ==================== NOTIFICATION SCHEDULER ====================
 // Hardened scheduler: uses lean() for read efficiency, atomic findOneAndUpdate
