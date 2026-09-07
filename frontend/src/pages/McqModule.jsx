@@ -2633,7 +2633,27 @@ function QuizResult() {
   const result =
     location.state?.result || readStoredQuizResult(quizUserKey, subject, chapterAttemptId)
 
-  const solveAgain = () => {
+  const [savedStatus, setSavedStatus] = useState({})
+
+  useEffect(() => {
+    if (!result?.detailed) return
+    const ids = result.detailed.map(d => d.mcqId || d.id).filter(Boolean)
+    if (!ids.length) return
+    API.post('/flashcards/status', { mcqIds: ids })
+      .then(res => setSavedStatus(res.data.savedStatus || {}))
+      .catch(() => {})
+  }, [result])
+
+  const toggleFlashcard = (mcqId, subjectName, chapId) => {
+    API.post('/flashcards/toggle', { mcqId, subject: subjectName, chapterId: chapId })
+      .then(res => {
+        setSavedStatus(prev => ({ ...prev, [mcqId]: res.data.saved }))
+        toast.success(res.data.saved ? 'Saved to Flashcards' : 'Removed from Flashcards')
+      })
+      .catch(() => toast.error('Could not save flashcard'))
+  }
+
+    const solveAgain = () => {
     clearStoredQuizResult(quizUserKey, subject, chapterAttemptId)
     navigate(`/mcqs/${subject}/${chapterId}/attempt${testPartQuery}`, {
       replace: true,
@@ -2759,6 +2779,13 @@ function ReviewSection({ title, items }) {
             <span className="review-question-number">
               Question {getMcqDisplayNumber(item, index)}
             </span>
+            <button
+              type="button"
+              onClick={() => toggleFlashcard(String(item.mcqId), meta?.name, chapterId)}
+              className="review-save-btn"
+            >
+              {savedStatus[String(item.mcqId)] ? '⭐ Saved' : '☆ Save'}
+            </button>
           </div>
           <div className="review-question-title">
             <MCQRenderer text={item.questionText || item.question} images={mcqQuestionImages(item)} />
