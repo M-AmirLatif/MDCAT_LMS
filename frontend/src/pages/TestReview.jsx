@@ -102,11 +102,18 @@ export default function TestReview() {
         <div className="review-question-stack">
           {result.detailed.map((item, index) => (
             <article key={item.id} className={`review-question-card ${item.isCorrect ? 'review-question-card--correct' : 'review-question-card--wrong'}`}>
-              <div className="review-question-top">
+              <div className="review-question-top" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span className="review-question-number">Question {index + 1}</span>
                 <span className={`state-chip ${item.isCorrect ? 'state-chip--success' : 'state-chip--warning'}`}>
                   {item.isCorrect ? 'Correct' : 'Needs Review'}
                 </span>
+                <button
+                  type="button"
+                  onClick={() => toggleFlashcard(item.id)}
+                  style={{ marginLeft: 'auto', background: 'transparent', border: '1px solid rgba(255,255,255,0.15)', color: savedStatus[item.id] ? '#f59e0b' : '#94a3b8', padding: '4px 10px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem' }}
+                >
+                  {savedStatus[item.id] ? '⭐ Saved' : '☆ Save'}
+                </button>
               </div>
               <div className="review-question-title">
                 <MCQRenderer text={item.questionText || item.question} images={mcqQuestionImages(item)} />
