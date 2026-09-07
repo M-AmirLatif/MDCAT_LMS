@@ -1653,3 +1653,48 @@ html:not([data-theme="dark"]) body #root .mcq-attempt-layout .mcq-question-card 
   color: #0f172a !important;
   -webkit-text-fill-color: #0f172a !important;
 }
+
+/* CORRECTLY CANCEL :ACTIVE LETTER STYLES WITHOUT RUINING THEIR BEAUTIFUL COLORS */
+
+/* Light Mode Letter Reset */
+html:not([data-theme="dark"]) body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):active .mcq-option-letter {
+  background: #eef5ff !important;
+  border: 3px solid #2f6fed !important;
+  color: #2f2bd1 !important;
+  -webkit-text-fill-color: #2f2bd1 !important;
+  box-shadow: none !important;
+}
+
+/* Dark Mode Generic Letter Reset */
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):active .mcq-option-letter {
+  border-color: transparent !important;
+  border-width: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Dark Mode Specific Colors (A, B, C, D) */
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(1):not(.mcq-option-card--selected):active .mcq-option-letter {
+  background: rgba(165, 144, 255, 0.18) !important;
+  color: #c3b5ff !important;
+  -webkit-text-fill-color: #c3b5ff !important;
+}
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(2):not(.mcq-option-card--selected):active .mcq-option-letter {
+  background: rgba(45, 217, 155, 0.18) !important;
+  color: #7ef0c2 !important;
+  -webkit-text-fill-color: #7ef0c2 !important;
+}
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(3):not(.mcq-option-card--selected):active .mcq-option-letter {
+  background: rgba(106, 171, 255, 0.18) !important;
+  color: #9dccff !important;
+  -webkit-text-fill-color: #9dccff !important;
+}
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(4):not(.mcq-option-card--selected):active .mcq-option-letter {
+  background: rgba(251, 176, 64, 0.18) !important;
+  color: #ffd08a !important;
+  -webkit-text-fill-color: #ffd08a !important;
+}
+
+/* Also ensure dark mode letters don't get borders by default at all (fixing previous bug) */
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected) .mcq-option-letter {
+  border: none !important;
+}
