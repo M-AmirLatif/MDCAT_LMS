@@ -2633,19 +2633,26 @@ function QuizResult() {
   const result =
     location.state?.result || readStoredQuizResult(quizUserKey, subject, chapterAttemptId)
 
+  const solveAgain = () => {
+    clearStoredQuizResult(quizUserKey, subject, chapterAttemptId)
+    navigate(`/mcqs/${subject}/${chapterId}/attempt${testPartQuery}`, {
+      replace: true,
+      state: { retake: true },
+    })
+  }
   const [savedStatus, setSavedStatus] = useState({})
 
   useEffect(() => {
     if (!result?.detailed) return
     const ids = result.detailed.map(d => d.mcqId || d.id).filter(Boolean)
     if (!ids.length) return
-    API.post('/flashcards/status', { mcqIds: ids })
+    API.post('/flashcards/status', { mcqIds: ids }, { skipQueryCache: true })
       .then(res => setSavedStatus(res.data.savedStatus || {}))
       .catch(() => {})
   }, [result])
 
   const toggleFlashcard = (mcqId, subjectName, chapId) => {
-    API.post('/flashcards/toggle', { mcqId, subject: subjectName, chapterId: chapId })
+    API.post('/flashcards/toggle', { mcqId, subject: subjectName, chapterId: chapId }, { skipQueryCache: true })
       .then(res => {
         setSavedStatus(prev => ({ ...prev, [mcqId]: res.data.saved }))
         toast.success(res.data.saved ? 'Saved to Flashcards' : 'Removed from Flashcards')
@@ -2653,13 +2660,6 @@ function QuizResult() {
       .catch(() => toast.error('Could not save flashcard'))
   }
 
-    const solveAgain = () => {
-    clearStoredQuizResult(quizUserKey, subject, chapterAttemptId)
-    navigate(`/mcqs/${subject}/${chapterId}/attempt${testPartQuery}`, {
-      replace: true,
-      state: { retake: true },
-    })
-  }
   if (!result) {
     return (
       <div className="workspace-page">
