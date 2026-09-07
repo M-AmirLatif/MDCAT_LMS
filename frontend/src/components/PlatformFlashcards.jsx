@@ -27,7 +27,9 @@ export default function PlatformFlashcards() {
       setStats({ total: statsRes.data.total, due: statsRes.data.due })
       setCards(cardsRes.data.flashcards || [])
     } catch (err) {
-      toast.error('Could not load flashcards')
+      // Silently fail - show empty state instead of error toast
+      setStats({ total: 0, due: 0 })
+      setCards([])
     } finally {
       setLoading(false)
     }
