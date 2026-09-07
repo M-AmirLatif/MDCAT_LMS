@@ -2273,8 +2273,13 @@ function QuizAttempt() {
             : undefined,
       })
       
-      if (res.data.newStreak !== undefined) {
-        updateUser({ ...user, currentStreak: res.data.newStreak, badges: res.data.newBadges || user.badges })
+      try {
+        const profileRes = await API.get('/auth/profile');
+        if (profileRes.data && profileRes.data.user) {
+          updateUser(profileRes.data.user);
+        }
+      } catch (err) {
+        console.error('Could not refresh user profile for streak:', err);
       }
       localStorage.removeItem(quizStorageKey)
       const resultPayload = JSON.stringify(res.data)
