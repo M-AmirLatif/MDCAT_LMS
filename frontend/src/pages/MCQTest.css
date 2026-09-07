@@ -1601,3 +1601,14 @@ html:not([data-theme="dark"]) body #root .mcq-attempt-layout .mcq-question-card 
   -webkit-text-fill-color: #2f2bd1 !important;
   border: 3px solid #2f6fed !important;
 }
+
+/* OVERRIDE THE PREVIOUS RAINBOW LOCK WITH EQUAL/HIGHER SPECIFICITY (:nth-child(n)) */
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(n):not(.mcq-option-card--selected) .mcq-option-letter,
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(n):not(.mcq-option-card--selected):hover .mcq-option-letter,
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(n):not(.mcq-option-card--selected):focus .mcq-option-letter,
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(n):not(.mcq-option-card--selected):active .mcq-option-letter {
+  background: rgba(165, 144, 255, 0.15) !important;
+  color: #c3b5ff !important;
+  -webkit-text-fill-color: #c3b5ff !important;
+  border: 3px solid rgba(165, 144, 255, 0.4) !important;
+}
