@@ -777,3 +777,47 @@ html:not([data-theme="dark"]) body #root .mcq-attempt-layout .mcq-question-card 
 html:not([data-theme="dark"]) body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):active {
   border-color: #8b9dc3 !important;
 }
+
+/* Nuke :active state changes for inner elements of UNSELECTED options */
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):active .mcq-option-letter {
+  background: inherit !important;
+  border-color: inherit !important;
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+  box-shadow: inherit !important;
+}
+
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):active .mcq-option-text,
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):active .mcq-option-text *,
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):active .mcq-renderer,
+html body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):active .mcq-renderer * {
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+}
+
+/* Specifically preserve dark mode unselected letter colors so 'inherit' doesn't break them */
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):active .mcq-option-letter {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+}
+
+html:not([data-theme="dark"]) body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):active .mcq-option-letter {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):active .mcq-option-text,
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):active .mcq-option-text * {
+  color: rgba(255, 255, 255, 0.9) !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+html:not([data-theme="dark"]) body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):active .mcq-option-text,
+html:not([data-theme="dark"]) body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):active .mcq-option-text * {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
