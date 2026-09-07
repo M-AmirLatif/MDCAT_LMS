@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'reac
 import toast from 'react-hot-toast'
 import API, { getUserFriendlyErrorMessage } from '../services/api'
 import { useAuth } from '../context/AuthContext'
+import { Helmet } from 'react-helmet-async'
 import MCQRenderer from '../components/MCQRenderer'
 import { normalizeImageUrl } from '../utils/mediaUrls'
 import './PlatformPages.css'
@@ -487,6 +488,13 @@ function CourseSelection() {
 
   return (
     <div className="workspace-page animate-fade-up">
+      <Helmet>
+        <title>MDCAT Subjects & MCQs Practice | ACE MDCAT</title>
+        <meta name="description" content="Select a subject to practice MDCAT MCQs. Biology, Chemistry, Physics, and English chapter-wise tests." />
+        <link rel="canonical" href="https://acemdcat.com/mcqs" />
+        <meta property="og:title" content="MDCAT Subjects & MCQs Practice | ACE MDCAT" />
+        <meta property="og:description" content="Select a subject to practice MDCAT MCQs. Biology, Chemistry, Physics, and English chapter-wise tests." />
+      </Helmet>
       <section className="workspace-card subject-browser-hero">
         <div className="workspace-card-head">
           <div>
@@ -727,6 +735,28 @@ function ChapterList() {
 
   return (
     <div className="workspace-page animate-fade-up">
+      <Helmet>
+        <title>{meta.name} MDCAT MCQs & Past Papers | ACE MDCAT</title>
+        <meta name="description" content={`Practice chapter-wise ${meta.name} MCQs for MDCAT. Free online tests, past papers, and detailed explanations.`} />
+        <link rel="canonical" href={`https://acemdcat.com/mcqs/${subject}`} />
+        <meta property="og:title" content={`${meta.name} MDCAT MCQs & Past Papers | ACE MDCAT`} />
+        <meta property="og:description" content={`Practice chapter-wise ${meta.name} MCQs for MDCAT. Free online tests, past papers, and detailed explanations.`} />
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "Course",
+              "name": "${meta.name} MDCAT Preparation",
+              "description": "Comprehensive chapter-wise MCQs and past papers for MDCAT ${meta.name}.",
+              "provider": {
+                "@type": "Organization",
+                "name": "ACE MDCAT",
+                "sameAs": "https://acemdcat.com"
+              }
+            }
+          `}
+        </script>
+      </Helmet>
       <section className="workspace-card">
         <div className="workspace-card-head">
           <div>
@@ -1666,6 +1696,28 @@ function McqList() {
   if (lockMessage) {
     return (
       <div className="workspace-page animate-fade-up">
+      <Helmet>
+        <title>{chapter?.name} - {meta?.name} MCQs | ACE MDCAT</title>
+        <meta name="description" content={`Solve ${chapter?.name} MCQs for ${meta?.name} MDCAT preparation. Get instant feedback and detailed explanations.`} />
+        <link rel="canonical" href={`https://acemdcat.com/mcqs/${subject}/${chapterId}`} />
+        <meta property="og:title" content={`${chapter?.name} - ${meta?.name} MCQs | ACE MDCAT`} />
+        <meta property="og:description" content={`Solve ${chapter?.name} MCQs for ${meta?.name} MDCAT preparation. Get instant feedback and detailed explanations.`} />
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "Quiz",
+              "name": "${chapter?.name} - ${meta?.name} MCQs",
+              "description": "Interactive ${chapter?.name} MCQ test for ${meta?.name}.",
+              "educationalAlignment": {
+                "@type": "AlignmentObject",
+                "alignmentType": "educationalSubject",
+                "targetName": "${meta?.name}"
+              }
+            }
+          `}
+        </script>
+      </Helmet>
         <EmptyState
           title="Subscription required"
           text={lockMessage}
