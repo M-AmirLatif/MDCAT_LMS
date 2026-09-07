@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import API, { getUserFriendlyErrorMessage } from '../services/api'
 import { useAuth } from '../context/AuthContext'
-import MCQRenderer from './layout/MCQRenderer'
+import MCQRenderer from './MCQRenderer'
 
 export default function PlatformFlashcards() {
   const { user } = useAuth()

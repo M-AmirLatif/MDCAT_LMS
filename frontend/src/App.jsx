@@ -57,6 +57,7 @@ import SetPassword from './pages/SetPassword'
 // Platform pages (authenticated)
 import PlatformDashboard from './pages/PlatformDashboard'
 import PlatformPerformance from './pages/PlatformPerformance'
+import PlatformFlashcards from './components/PlatformFlashcards'
 import PlatformLeaderboard from './pages/PlatformLeaderboard'
 import PlatformLiveClasses from './pages/PlatformLiveClasses'
 import PlatformPayments from './pages/PlatformPayments'
