@@ -49,6 +49,14 @@ export default function TestReview() {
         <div className="empty-state">
           <div className="empty-orb" />
           <h3>Review data is unavailable</h3>
+                <button 
+                  type="button" 
+                  onClick={() => toggleFlashcard(item.id)} 
+                  style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', color: savedStatus[item.id] ? '#f59e0b' : '#94a3b8', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', display: 'flex', gap: '6px', alignItems: 'center', transition: 'all 0.2s', marginLeft: '12px' }}
+                >
+                  {savedStatus[item.id] ? '? Saved' : '? Save to Flashcards'}
+                </button>
+              </div>
           <p>Start a practice set first, then open the detailed review page from the result summary.</p>
           <Link className="btn btn-primary" to="/courses">Back to Subjects</Link>
         </div>
@@ -57,6 +65,29 @@ export default function TestReview() {
   }
 
   const { subject, chapter, result } = reviewState
+  const [savedStatus, setSavedStatus] = useState({})
+  
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const mcqIds = result.detailed.map(d => d.id)
+        const res = await API.post('/flashcards/status', { mcqIds })
+        setSavedStatus(res.data.savedStatus || {})
+      } catch (err) {}
+    }
+    fetchStatus()
+  }, [result])
+
+  const toggleFlashcard = async (mcqId) => {
+    try {
+      const res = await API.post('/flashcards/toggle', { mcqId, subject: subject.name, chapterId: chapter.id })
+      setSavedStatus(prev => ({ ...prev, [mcqId]: res.data.saved }))
+      if (res.data.saved) toast.success('Saved to Flashcards')
+      else toast.success('Removed from Flashcards')
+    } catch (err) {
+      toast.error('Could not save flashcard')
+    }
+  }
 
   return (
     <div className="mcq-review-page animate-fade-up">
