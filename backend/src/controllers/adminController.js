@@ -225,7 +225,7 @@ exports.createUser = async (req, res) => {
       },
     })
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ error: error.stack || error.message })
   }
 }
 
@@ -287,7 +287,7 @@ exports.getAllUsers = async (req, res) => {
       totalPages: Math.ceil(total / limit),
     })
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ error: error.stack || error.message })
   }
 }
 
@@ -435,7 +435,7 @@ exports.updateUser = async (req, res) => {
       user: serializeUser(updated, userMetrics.get(String(user._id))),
     })
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ error: error.stack || error.message })
   }
 }
 
@@ -474,7 +474,7 @@ exports.deactivateUser = async (req, res) => {
       },
     })
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ error: error.stack || error.message })
   }
 }
 
@@ -500,7 +500,7 @@ exports.getAllCoursesAdmin = async (req, res) => {
       courses: coursesWithCounts,
     })
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ error: error.stack || error.message })
   }
 }
 
@@ -644,7 +644,7 @@ exports.getAdminOverview = async (req, res) => {
         serializeUser(student, recentStudentMetrics.get(String(student._id)))),
     })
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ error: error.stack || error.message })
   }
 }
 
@@ -667,7 +667,7 @@ exports.getPendingTeachers = async (req, res) => {
       teachers: teachers.map(serializeTeacherRequest),
     })
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ error: error.stack || error.message })
   }
 }
 
@@ -694,41 +694,44 @@ exports.getAllTeachersForApproval = async (req, res) => {
       teachers: teachers.map(serializeTeacherRequest),
     })
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ error: error.stack || error.message })
   }
 }
 
 exports.approveTeacher = async (req, res) => {
-  try {
-    const teacherRole = await Role.findOne({ name: 'teacher' }).select('_id').lean()
-    const teacher = teacherRole
-      ? await User.findOne({ _id: req.params.id, role: teacherRole._id })
-      : null
+    try {
+      const teacherRole = await Role.findOne({ name: 'teacher' }).select('_id').lean()
+      const teacher = teacherRole
+        ? await User.findOne({ _id: req.params.id, role: teacherRole._id })
+        : null
 
-    if (!teacher) return res.status(404).json({ error: 'Teacher request not found' })
+      if (!teacher) return res.status(404).json({ error: 'Teacher request not found' })
 
-    const assignedSubjects = normalizeSubjects(req.body.assignedSubjects, req.body.subjectIds, req.body.assignedSubject, teacher.assignedSubjects, teacher.assignedSubject)
-    if (!assignedSubjects.length) {
-      return res.status(400).json({ error: 'Teacher must have at least one valid assigned subject' })
-    }
+      const assignedSubjects = normalizeSubjects(req.body.assignedSubjects, req.body.subjectIds, req.body.assignedSubject, teacher.assignedSubjects, teacher.assignedSubject)
+      if (!assignedSubjects.length) {
+        return res.status(400).json({ error: 'Teacher must have at least one valid assigned subject' })
+      }
 
-    teacher.status = 'active'
-    teacher.isActive = true
-    teacher.assignedSubject = assignedSubjects[0]
-    teacher.assignedSubjects = assignedSubjects
-    teacher.approvedBy = req.user.id
-    teacher.approvedAt = new Date()
-    teacher.rejectedAt = null
-    teacher.rejectionReason = ''
-    await teacher.save()
+      teacher.status = 'active'
+      teacher.isActive = true
+      teacher.assignedSubject = assignedSubjects[0]
+      teacher.assignedSubjects = assignedSubjects
+      teacher.approvedBy = req.user._id || req.user.id
+      teacher.approvedAt = new Date()
+      teacher.rejectedAt = null
+      teacher.rejectionReason = ''
+      await teacher.save()
 
-    res.status(200).json({
-      success: true,
-      message: 'Teacher approved',
-      teacher: serializeTeacherRequest(teacher.toObject()),
-    })
-  } catch (error) {
-    res.status(500).json({ error: error.message })
+      res.status(200).json({
+        success: true,
+        message: 'Teacher approved',
+        teacher: serializeTeacherRequest(teacher.toObject()),
+      })
+    } catch (error) {
+      try {
+        require('fs').writeFileSync('C:/Users/user/.gemini/antigravity/brain/87583f55-b9b2-4dbc-9fc3-b6517ce7a8a3/error_log.txt', String(error.stack || error.message));
+      } catch(e) {}
+    res.status(500).json({ error: error.stack || error.message })
   }
 }
 
@@ -753,7 +756,7 @@ exports.rejectTeacher = async (req, res) => {
       teacher: serializeTeacherRequest(teacher.toObject()),
     })
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ error: error.stack || error.message })
   }
 }
 
@@ -778,6 +781,6 @@ exports.restrictTeacher = async (req, res) => {
       teacher: serializeTeacherRequest(teacher.toObject()),
     })
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ error: error.stack || error.message })
   }
 }

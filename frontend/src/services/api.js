@@ -119,7 +119,7 @@ export const getUserFriendlyErrorMessage = (error, fallback = 'Something went wr
   }
 
   if (status >= 500) {
-    return 'A server error occurred. Please try again shortly.'
+    return 'A server error occurred: ' + (error?.response?.data?.error || error?.message || 'Unknown');
   }
 
   if (message) return message
