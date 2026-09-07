@@ -177,7 +177,7 @@ function StudentDashboard({ firstName, user }) {
             </div>
             <div className="hero-mini-card">
               <span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Average Score</span>
-              <strong>{loading ? '...' : `${summary.overallAverage}%`}</strong>
+              <strong>{loading ? '...' : `${summary.overallAccuracy}%`}</strong>
               <p>Total recorded accuracy percentage</p>
             </div>
             <div className="hero-mini-card">
