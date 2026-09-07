@@ -148,6 +148,7 @@ function App() {
             <Route path="/mcqs/:subject/:chapterId/attempt" element={<LazyMcqQuizAttempt />} />
             <Route path="/mcqs/:subject/:chapterId/result" element={<LazyMcqQuizResult />} />
             <Route path="/performance" element={<PlatformPerformance />} />
+            <Route path="/flashcards" element={<PlatformFlashcards />} />
             <Route path="/leaderboard" element={<PlatformLeaderboard />} />
             <Route path="/live-sessions" element={<PlatformLiveClasses />} />
             <Route path="/payments" element={<PlatformPayments />} />
