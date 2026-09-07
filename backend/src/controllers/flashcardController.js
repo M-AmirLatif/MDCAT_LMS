@@ -2,7 +2,8 @@ const Flashcard = require('../models/Flashcard')
 
 exports.toggleFlashcard = async (req, res) => {
   try {
-    const { mcqId, subject, chapterId } = req.body
+    const { mcqId, subject: rawSubject, chapterId } = req.body
+    const subject = rawSubject ? rawSubject.charAt(0).toUpperCase() + rawSubject.slice(1).toLowerCase() : rawSubject
     
     const existing = await Flashcard.findOne({ studentId: req.user.id, mcqId })
     
