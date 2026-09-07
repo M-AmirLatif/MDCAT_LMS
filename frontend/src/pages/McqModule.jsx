@@ -2757,13 +2757,13 @@ function QuizResult() {
             <strong>{result.percentage}%</strong>
           </div>
         </div>
-        <ReviewSection title="Answer Key & Explanations" items={answerKeyItems} />
+        <ReviewSection title="Answer Key & Explanations" items={answerKeyItems} savedStatus={savedStatus} toggleFlashcard={toggleFlashcard} subjectName={subject} chapterId={chapterId} />
       </section>
     </div>
   )
 }
 
-function ReviewSection({ title, items }) {
+function ReviewSection({ title, items, savedStatus, toggleFlashcard, subjectName, chapterId }) {
   return (
     <div className="review-question-stack">
       <h2>{title}</h2>
@@ -2781,7 +2781,7 @@ function ReviewSection({ title, items }) {
             </span>
             <button
               type="button"
-              onClick={() => toggleFlashcard(String(item.mcqId), meta?.name, chapterId)}
+              onClick={() => toggleFlashcard(String(item.mcqId), subjectName, chapterId)}
               className="review-save-btn"
             >
               {savedStatus[String(item.mcqId)] ? '⭐ Saved' : '☆ Save'}
