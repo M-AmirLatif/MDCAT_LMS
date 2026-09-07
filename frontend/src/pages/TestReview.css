@@ -236,18 +236,20 @@
 
 /* ── Explanation Box ── */
 .review-explanation-box {
-  margin-top: 8px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  background: var(--bg-surface, #fafafa);
+  margin-top: 6px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: transparent;
   border: none;
+  box-shadow: none;
+  outline: none;
 }
 
 .review-explanation-box strong {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 2px;
   color: var(--purple, #6C47FF);
-  font-size: 12px;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -255,8 +257,22 @@
 .review-explanation-box p,
 .review-explanation-text {
   color: var(--text-secondary);
-  font-size: 14px;
-  line-height: 1.65;
+  font-size: 13px;
+  line-height: 1.5;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+}
+
+.review-explanation-text * {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: transparent !important;
 }
 
 /* ═══ Dark Mode ═══ */
@@ -321,8 +337,9 @@
 }
 
 [data-theme="dark"] .review-explanation-box {
-  background: var(--bg-surface-2, #1a1640);
+  background: transparent;
   border: none;
+  box-shadow: none;
 }
 
 [data-theme="dark"] .review-explanation-box strong {
