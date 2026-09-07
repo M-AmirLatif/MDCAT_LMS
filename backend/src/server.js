@@ -461,3 +461,4 @@ const shutdown = (signal) => {
 ;['SIGTERM', 'SIGINT'].forEach((signal) => {
   process.on(signal, () => shutdown(signal))
 })
+
