@@ -1,4 +1,7 @@
+import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
+import API from '../services/api'
 import MCQRenderer from '../components/MCQRenderer'
 import './TestReview.css'
 
@@ -58,27 +61,21 @@ export default function TestReview() {
 
   const { subject, chapter, result } = reviewState
   const [savedStatus, setSavedStatus] = useState({})
-  
+
   useEffect(() => {
-    const fetchStatus = async () => {
-      try {
-        const mcqIds = result.detailed.map(d => d.id)
-        const res = await API.post('/flashcards/status', { mcqIds })
-        setSavedStatus(res.data.savedStatus || {})
-      } catch (err) {}
-    }
-    fetchStatus()
+    const ids = result.detailed.map(d => d.id)
+    API.post('/flashcards/status', { mcqIds: ids })
+      .then(res => setSavedStatus(res.data.savedStatus || {}))
+      .catch(() => {})
   }, [result])
 
-  const toggleFlashcard = async (mcqId) => {
-    try {
-      const res = await API.post('/flashcards/toggle', { mcqId, subject: subject.name, chapterId: chapter.id })
-      setSavedStatus(prev => ({ ...prev, [mcqId]: res.data.saved }))
-      if (res.data.saved) toast.success('Saved to Flashcards')
-      else toast.success('Removed from Flashcards')
-    } catch (err) {
-      toast.error('Could not save flashcard')
-    }
+  const toggleFlashcard = (mcqId) => {
+    API.post('/flashcards/toggle', { mcqId, subject: subject.name, chapterId: chapter.id })
+      .then(res => {
+        setSavedStatus(prev => ({ ...prev, [mcqId]: res.data.saved }))
+        toast.success(res.data.saved ? 'Saved to Flashcards' : 'Removed from Flashcards')
+      })
+      .catch(() => toast.error('Could not save flashcard'))
   }
 
   return (
@@ -102,18 +99,11 @@ export default function TestReview() {
         <div className="review-question-stack">
           {result.detailed.map((item, index) => (
             <article key={item.id} className={`review-question-card ${item.isCorrect ? 'review-question-card--correct' : 'review-question-card--wrong'}`}>
-              <div className="review-question-top" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div className="review-question-top">
                 <span className="review-question-number">Question {index + 1}</span>
                 <span className={`state-chip ${item.isCorrect ? 'state-chip--success' : 'state-chip--warning'}`}>
                   {item.isCorrect ? 'Correct' : 'Needs Review'}
                 </span>
-                <button
-                  type="button"
-                  onClick={() => toggleFlashcard(item.id)}
-                  style={{ marginLeft: 'auto', background: 'transparent', border: '1px solid rgba(255,255,255,0.15)', color: savedStatus[item.id] ? '#f59e0b' : '#94a3b8', padding: '4px 10px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem' }}
-                >
-                  {savedStatus[item.id] ? '⭐ Saved' : '☆ Save'}
-                </button>
               </div>
               <div className="review-question-title">
                 <MCQRenderer text={item.questionText || item.question} images={mcqQuestionImages(item)} />
