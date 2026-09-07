@@ -1028,118 +1028,27 @@ html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-o
 /* ==================== FLASHCARD SAVE BUTTON ==================== */
 .review-save-btn {
   margin-left: auto;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #94a3b8;
-  padding: 3px 10px;
-  border-radius: 6px;
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  border: none;
+  color: #fff;
+  padding: 6px 16px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 0.78rem;
-  transition: all 0.2s;
+  font-size: 0.85rem;
+  font-weight: 700;
+  transition: transform 0.15s, box-shadow 0.15s;
   white-space: nowrap;
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
 }
 .review-save-btn:hover {
-  border-color: #f59e0b;
-  color: #f59e0b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.45);
 }
 
-/* ==================== COMPACT REVIEW CARDS ==================== */
-.review-question-card {
-  border-radius: 10px !important;
-  padding: 14px 16px !important;
-  margin-bottom: 12px !important;
-  border-width: 2px !important;
-  border-style: solid !important;
+[data-theme="dark"] .review-save-btn {
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
 }
 
-.review-question-card--correct {
-  border-color: #22c55e !important;
-  background: rgba(34, 197, 94, 0.05) !important;
-}
-
-.review-question-card--wrong {
-  border-color: #ef4444 !important;
-  background: rgba(239, 68, 68, 0.05) !important;
-}
-
-.review-question-top {
-  display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  margin-bottom: 8px !important;
-  flex-wrap: nowrap !important;
-}
-
-.review-question-title {
-  font-size: 0.9rem !important;
-  margin-bottom: 10px !important;
-  line-height: 1.45 !important;
-}
-
-/* ==================== STRONG OPTION COLORS (no hover strip) ==================== */
-.review-option-row {
-  display: flex !important;
-  align-items: center !important;
-  gap: 10px !important;
-  padding: 8px 12px !important;
-  border-radius: 8px !important;
-  margin-bottom: 6px !important;
-  border: 1.5px solid var(--border-color, rgba(255,255,255,0.1)) !important;
-  background: var(--bg-layer-2, rgba(255,255,255,0.03)) !important;
-  transition: none !important;
-  cursor: default !important;
-}
-
-.review-option-row--correct {
-  border-color: #22c55e !important;
-  background: rgba(34, 197, 94, 0.12) !important;
-}
-
-.review-option-row--wrong {
-  border-color: #ef4444 !important;
-  background: rgba(239, 68, 68, 0.12) !important;
-}
-
-/* Kill any hover that strips color */
-.review-option-row:hover,
-.review-option-row--correct:hover,
-.review-option-row--wrong:hover {
-  border-color: inherit !important;
-  background: inherit !important;
-  opacity: 1 !important;
-}
-
-.review-option-row--correct:hover {
-  border-color: #22c55e !important;
-  background: rgba(34, 197, 94, 0.12) !important;
-}
-
-.review-option-row--wrong:hover {
-  border-color: #ef4444 !important;
-  background: rgba(239, 68, 68, 0.12) !important;
-}
-
-/* ==================== EXPLANATION BOX ==================== */
-.review-explanation-box {
-  margin-top: 10px !important;
-  padding: 10px 14px !important;
-  border-radius: 8px !important;
-  border: none !important;
-  background: var(--bg-layer-2, rgba(255,255,255,0.04)) !important;
-  font-size: 0.85rem !important;
-}
-
-/* Remove border in light (white) mode too */
-[data-theme="light"] .review-explanation-box,
-:root .review-explanation-box {
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-.review-explanation-text {
-  margin-top: 4px !important;
-  font-size: 0.85rem !important;
-  line-height: 1.5 !important;
-}
