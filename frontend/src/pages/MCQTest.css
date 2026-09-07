@@ -1579,3 +1579,25 @@ html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-o
 html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(n+5):not(.mcq-option-card--selected):active .mcq-option-letter {
   border: 2px solid rgba(195, 181, 255, 0.4) !important;
 }
+
+/* UNIFORM COLORS FOR DARK MODE (Matches Light Mode's uniform structural design) */
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected) .mcq-option-letter,
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):hover .mcq-option-letter,
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):focus .mcq-option-letter,
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):active .mcq-option-letter {
+  background: rgba(165, 144, 255, 0.15) !important;
+  color: #c3b5ff !important;
+  -webkit-text-fill-color: #c3b5ff !important;
+  border: 3px solid rgba(165, 144, 255, 0.4) !important;
+}
+
+/* Let's also ensure Light Mode has the 3px border explicitly forced in all states to be safe */
+html:not([data-theme="dark"]) body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected) .mcq-option-letter,
+html:not([data-theme="dark"]) body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):hover .mcq-option-letter,
+html:not([data-theme="dark"]) body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):focus .mcq-option-letter,
+html:not([data-theme="dark"]) body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:not(.mcq-option-card--selected):active .mcq-option-letter {
+  background: #eef5ff !important;
+  color: #2f2bd1 !important;
+  -webkit-text-fill-color: #2f2bd1 !important;
+  border: 3px solid #2f6fed !important;
+}
