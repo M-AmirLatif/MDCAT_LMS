@@ -455,7 +455,7 @@ function Modal({ title, children, onClose }) {
 }
 
 function CourseSelection() {
-  const { user } = useAuth()
+  const { user, updateUser } = useAuth()
   const [subjects, setSubjects] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -2272,6 +2272,10 @@ function QuizAttempt() {
             ? new Date(startedAt).toISOString()
             : undefined,
       })
+      
+      if (res.data.newStreak !== undefined) {
+        updateUser({ ...user, currentStreak: res.data.newStreak, badges: res.data.newBadges || user.badges })
+      }
       localStorage.removeItem(quizStorageKey)
       const resultPayload = JSON.stringify(res.data)
       const resultKey = getQuizResultStorageKey(quizUserKey, subject, chapterAttemptId)

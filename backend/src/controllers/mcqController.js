@@ -2781,6 +2781,8 @@ exports.submitChapterAttempt = async (req, res) => {
       score: correct,
       percentage,
       detailed,
+      newStreak,
+      newBadges,
     })
   } catch (error) {
     res.status(500).json({ error: error.message })
