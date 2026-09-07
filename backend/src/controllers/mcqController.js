@@ -2710,10 +2710,11 @@ exports.submitChapterAttempt = async (req, res) => {
         : context.chapter
     const attemptChapterName = responseChapter.name || context.chapter.name
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const lastPractice = req.user.lastPracticeDate ? new Date(req.user.lastPracticeDate) : null;
-    if (lastPractice) lastPractice.setHours(0, 0, 0, 0);
+    const PKT_OFFSET = 5 * 60 * 60 * 1000;
+      const today = new Date(Date.now() + PKT_OFFSET);
+      today.setUTCHours(0, 0, 0, 0);
+      const lastPractice = req.user.lastPracticeDate ? new Date(req.user.lastPracticeDate.getTime() + PKT_OFFSET) : null;
+      if (lastPractice) lastPractice.setUTCHours(0, 0, 0, 0);
     
     const ONE_DAY = 24 * 60 * 60 * 1000;
     let newStreak = req.user.currentStreak || 0;
