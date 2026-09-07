@@ -1760,3 +1760,45 @@ html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-o
   border-color: transparent !important;
   border-width: 0 !important;
 }
+
+/* GIVE BORDERS TO LETTERS IN DARK MODE TO MATCH LIGHT MODE STRUCTURE */
+
+/* A */
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(1):not(.mcq-option-card--selected) .mcq-option-letter,
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(1):not(.mcq-option-card--selected):hover .mcq-option-letter,
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(1):not(.mcq-option-card--selected):focus .mcq-option-letter,
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(1):not(.mcq-option-card--selected):active .mcq-option-letter {
+  border: 2px solid rgba(195, 181, 255, 0.4) !important;
+}
+
+/* B */
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(2):not(.mcq-option-card--selected) .mcq-option-letter,
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(2):not(.mcq-option-card--selected):hover .mcq-option-letter,
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(2):not(.mcq-option-card--selected):focus .mcq-option-letter,
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(2):not(.mcq-option-card--selected):active .mcq-option-letter {
+  border: 2px solid rgba(126, 240, 194, 0.4) !important;
+}
+
+/* C */
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(3):not(.mcq-option-card--selected) .mcq-option-letter,
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(3):not(.mcq-option-card--selected):hover .mcq-option-letter,
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(3):not(.mcq-option-card--selected):focus .mcq-option-letter,
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(3):not(.mcq-option-card--selected):active .mcq-option-letter {
+  border: 2px solid rgba(157, 204, 255, 0.4) !important;
+}
+
+/* D */
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(4):not(.mcq-option-card--selected) .mcq-option-letter,
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(4):not(.mcq-option-card--selected):hover .mcq-option-letter,
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(4):not(.mcq-option-card--selected):focus .mcq-option-letter,
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(4):not(.mcq-option-card--selected):active .mcq-option-letter {
+  border: 2px solid rgba(255, 208, 138, 0.4) !important;
+}
+
+/* E, F, G just in case */
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(n+5):not(.mcq-option-card--selected) .mcq-option-letter,
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(n+5):not(.mcq-option-card--selected):hover .mcq-option-letter,
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(n+5):not(.mcq-option-card--selected):focus .mcq-option-letter,
+html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-option-card:nth-child(n+5):not(.mcq-option-card--selected):active .mcq-option-letter {
+  border: 2px solid rgba(195, 181, 255, 0.4) !important;
+}
