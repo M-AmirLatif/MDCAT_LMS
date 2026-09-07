@@ -184,7 +184,7 @@ export default function PlatformNotifications() {
           <div className="workspace-hero-stats notification-hero-stats">
             <div className="hero-mini-card notification-hero-card">
               <span className="label-xs" style={{ color: 'rgba(255,255,255,0.82)' }}>Unread now</span>
-              <strong>{String(unreadCount).padStart(2, '0')}</strong>
+              <strong>{loading ? '...' : String(unreadCount).padStart(2, '0')}</strong>
               <p>Priority updates from classes, payments, and system events.</p>
             </div>
             <div className="notification-hero-panel">
@@ -287,7 +287,7 @@ export default function PlatformNotifications() {
               </div>
             ) : null}
           </div>
-        </div>
+        </section>
 
         <aside className="summary-card notification-summary-card">
           <div className="label-xs">This Week</div>
@@ -298,15 +298,15 @@ export default function PlatformNotifications() {
           </div>
           <div className="summary-row">
             <div className="summary-meta"><span className="summary-dot summary-dot--teal" /><span>Live class alert</span></div>
-            <strong>{String(liveClassCount).padStart(2, '0')}</strong>
+            <strong>{loading ? '...' : String(liveClassCount).padStart(2, '0')}</strong>
           </div>
           <div className="summary-row">
             <div className="summary-meta"><span className="summary-dot summary-dot--amber" /><span>Payment reminder</span></div>
-            <strong>{String(paymentCount).padStart(2, '0')}</strong>
+            <strong>{loading ? '...' : String(paymentCount).padStart(2, '0')}</strong>
           </div>
           <div className="summary-row">
             <div className="summary-meta"><span className="summary-dot summary-dot--red" /><span>System notice</span></div>
-            <strong>{String(systemCount).padStart(2, '0')}</strong>
+            <strong>{loading ? '...' : String(systemCount).padStart(2, '0')}</strong>
           </div>
 
           <div className="notification-summary-panel">
@@ -333,6 +333,5 @@ export default function PlatformNotifications() {
           <button className="btn btn-ghost notification-summary-button" type="button" onClick={markAllRead} disabled={unreadCount === 0}>Mark All Read</button>
         </aside>
       </div>
-    </div>
   )
 }

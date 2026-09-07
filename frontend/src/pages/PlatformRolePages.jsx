@@ -431,9 +431,9 @@ export function TeacherAnalyticsPage() {
       )}
 
       <div className="card-grid">
-        <div className="stat-tile"><span>Class Average</span><strong>{loading ? '...' : ${summary.classAverage}%}</strong></div>
-        <div className="stat-tile"><span>Submission Rate</span><strong>{loading ? '...' : ${summary.submissionRate}%}</strong></div>
-        <div className="stat-tile"><span>Live Attendance</span><strong>{loading ? '...' : ${summary.liveAttendance}%}</strong></div>
+        <div className="stat-tile"><span>Class Average</span><strong>{loading ? '...' : `${summary.classAverage}%`}</strong></div>
+        <div className="stat-tile"><span>Submission Rate</span><strong>{loading ? '...' : `${summary.submissionRate}%`}</strong></div>
+        <div className="stat-tile"><span>Live Attendance</span><strong>{loading ? '...' : `${summary.liveAttendance}%`}</strong></div>
         <div className="stat-tile"><span>At Risk</span><strong>{loading ? '...' : summary.atRisk}</strong></div>
       </div>
 
