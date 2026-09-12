@@ -1211,6 +1211,29 @@ exports.updateMcq = async (req, res) => {
 }
 
 // ==================== DELETE MCQ ====================
+// ==================== RENUMBER CHAPTER MCQs ====================
+// After deleting an MCQ, renumber remaining MCQs in the same chapter
+// sequentially (1, 2, 3, ...) so there are no gaps.
+const renumberChapterMcqs = async (courseId, chapterId) => {
+  if (!courseId || !chapterId) return
+  const mcqs = sortMcqsByOriginalOrder(
+    await MCQ.find({ courseId, chapterId }).select('questionNumber originalQuestionNumberSort').lean()
+  )
+  const bulkOps = []
+  mcqs.forEach((mcq, idx) => {
+    const newNum = String(idx + 1)
+    if (mcq.questionNumber !== newNum) {
+      bulkOps.push({
+        updateOne: {
+          filter: { _id: mcq._id },
+          update: { $set: { questionNumber: newNum, originalQuestionNumber: newNum, originalQuestionNumberSort: idx + 1 } },
+        },
+      })
+    }
+  })
+  if (bulkOps.length) await MCQ.bulkWrite(bulkOps)
+}
+
 exports.deleteMcq = async (req, res) => {
   try {
     const mcq = await MCQ.findById(req.params.mcqId).populate('courseId', 'category subject')
@@ -1225,7 +1248,13 @@ exports.deleteMcq = async (req, res) => {
         .json({ error: 'Not authorized to delete this MCQ' })
     }
 
+    const courseId = mcq.courseId._id || mcq.courseId
+    const chapterId = mcq.chapterId
+
     await MCQ.findByIdAndDelete(req.params.mcqId)
+
+    // Renumber remaining MCQs so there are no gaps
+    await renumberChapterMcqs(courseId, chapterId)
 
     res.status(200).json({
       success: true,
@@ -2344,6 +2373,9 @@ exports.deleteCsvReviewItem = async (req, res) => {
 
     chapter.reviewQueue = nextQueue
     await course.save()
+
+    // Renumber remaining MCQs so there are no gaps
+    await renumberChapterMcqs(course._id, chapter.id)
 
     res
       .status(200)
