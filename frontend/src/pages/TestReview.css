@@ -1052,3 +1052,40 @@ html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-o
   box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
 }
 
+/* ==================== CHAPTER TESTS GRID & CARDS ==================== */
+.chapter-tests-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+  gap: 20px !important;
+  width: 100% !important;
+}
+
+.chapter-test-card {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  padding: 24px !important;
+  border-radius: 18px !important;
+  border: 2px solid rgba(139, 111, 255, 0.45) !important;
+  background: linear-gradient(145deg, rgba(25, 22, 58, 0.95), rgba(17, 23, 53, 0.95)) !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35) !important;
+  gap: 16px !important;
+  box-sizing: border-box !important;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+  min-height: 220px !important;
+}
+
+.chapter-test-card:hover {
+  transform: translateY(-3px) !important;
+  border-color: #8B6FFF !important;
+  box-shadow: 0 14px 34px rgba(108, 71, 255, 0.25) !important;
+}
+
+[data-theme="light"] .chapter-test-card,
+:root:not([data-theme="dark"]) .chapter-test-card {
+  background: #ffffff !important;
+  border: 2px solid rgba(108, 71, 255, 0.35) !important;
+  box-shadow: 0 10px 24px rgba(30, 41, 75, 0.08) !important;
+}
+
+

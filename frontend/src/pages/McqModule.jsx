@@ -2134,22 +2134,11 @@ function McqList() {
                   </div>
 
                   {virtualTests.length > 0 ? (
-                    <div className="chapter-browser-grid">
+                    <div className="chapter-tests-grid">
                       {virtualTests.map((test) => (
                         <article
                           key={`test-part-${test.testPart}`}
-                          className="workspace-card"
-                          style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'space-between',
-                            padding: '24px',
-                            borderRadius: '16px',
-                            border: '1.5px solid rgba(139, 111, 255, 0.3)',
-                            background: 'linear-gradient(145deg, rgba(25, 22, 58, 0.95), rgba(17, 23, 53, 0.95))',
-                            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
-                            gap: '16px',
-                          }}
+                          className="workspace-card chapter-test-card"
                         >
                           <div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
@@ -2192,20 +2181,9 @@ function McqList() {
                       ))}
                     </div>
                   ) : (
-                    <div className="chapter-browser-grid">
+                    <div className="chapter-tests-grid">
                       <article
-                        className="workspace-card"
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'space-between',
-                          padding: '24px',
-                          borderRadius: '16px',
-                          border: '1.5px solid rgba(139, 111, 255, 0.3)',
-                          background: 'linear-gradient(145deg, rgba(25, 22, 58, 0.95), rgba(17, 23, 53, 0.95))',
-                          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
-                          gap: '16px',
-                        }}
+                        className="workspace-card chapter-test-card"
                       >
                         <div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
