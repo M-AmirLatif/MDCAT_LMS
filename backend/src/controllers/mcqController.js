@@ -2021,6 +2021,7 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
       columns: false,
       skip_empty_lines: true,
       relax_column_count: true,
+      relax_quotes: true,
       trim: false,
     })
     if (!parsedRows.length) {
