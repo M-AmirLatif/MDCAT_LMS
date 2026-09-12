@@ -2138,58 +2138,111 @@ function McqList() {
                       {virtualTests.map((test) => (
                         <article
                           key={`test-part-${test.testPart}`}
-                          className="workspace-card chapter-practice-card"
-                          style={{ border: '1.5px solid rgba(139, 111, 255, 0.25)' }}
+                          className="workspace-card"
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'space-between',
+                            padding: '24px',
+                            borderRadius: '16px',
+                            border: '1.5px solid rgba(139, 111, 255, 0.3)',
+                            background: 'linear-gradient(145deg, rgba(25, 22, 58, 0.95), rgba(17, 23, 53, 0.95))',
+                            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
+                            gap: '16px',
+                          }}
                         >
-                          <div className="workspace-card-head">
-                            <div>
-                              <div className="label-xs" style={{ color: meta?.accent }}>
-                                {meta?.name}
-                              </div>
-                              <h3 className="workspace-card-title">{test.name}</h3>
-                              <p>{test.description}</p>
+                          <div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
+                              <span className="label-xs" style={{ color: meta?.accent || '#8B6FFF', fontWeight: 800, letterSpacing: '0.1em' }}>
+                                {meta?.name || 'MDCAT'}
+                              </span>
+                              <span className="state-chip state-chip--neutral" style={{ padding: '4px 12px', fontSize: '0.82rem', fontWeight: 800, borderRadius: '20px' }}>
+                                {test.mcqCount} MCQs
+                              </span>
                             </div>
-                            <span className="state-chip state-chip--neutral">
-                              {test.mcqCount} MCQs
-                            </span>
+                            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', margin: '12px 0 6px' }}>
+                              {test.name}
+                            </h3>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: 0, lineHeight: 1.45 }}>
+                              {test.description}
+                            </p>
                           </div>
-                          <div className="workspace-card-body">
-                            <div className="inline-actions">
-                              <Link
-                                className="btn btn-primary btn-sm"
-                                to={`/mcqs/${subject}/${chapterId}/attempt?testPart=${test.testPart}${selectedTopicId ? `&topicId=${selectedTopicId}` : ''}`}
-                              >
-                                Start Test {test.testPart}
-                              </Link>
-                            </div>
+                          <div style={{ marginTop: 'auto', paddingTop: '10px' }}>
+                            <Link
+                              className="btn btn-primary"
+                              style={{
+                                width: '100%',
+                                padding: '12px 20px',
+                                fontWeight: 800,
+                                fontSize: '0.92rem',
+                                borderRadius: '10px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                background: 'linear-gradient(135deg, #7447ff 0%, #4a90e2 100%)',
+                                boxShadow: '0 4px 14px rgba(116, 71, 255, 0.3)',
+                                textAlign: 'center',
+                              }}
+                              to={`/mcqs/${subject}/${chapterId}/attempt?testPart=${test.testPart}${selectedTopicId ? `&topicId=${selectedTopicId}` : ''}`}
+                            >
+                              Start Test {test.testPart} →
+                            </Link>
                           </div>
                         </article>
                       ))}
                     </div>
                   ) : (
                     <div className="chapter-browser-grid">
-                      <article className="workspace-card chapter-practice-card">
-                        <div className="workspace-card-head">
-                          <div>
-                            <div className="label-xs" style={{ color: meta?.accent }}>
-                              {meta?.name}
-                            </div>
-                            <h3 className="workspace-card-title">{chapter?.name} - Full Chapter Test</h3>
-                            <p>Complete practice containing all {totalBankCount} MCQs.</p>
+                      <article
+                        className="workspace-card"
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'space-between',
+                          padding: '24px',
+                          borderRadius: '16px',
+                          border: '1.5px solid rgba(139, 111, 255, 0.3)',
+                          background: 'linear-gradient(145deg, rgba(25, 22, 58, 0.95), rgba(17, 23, 53, 0.95))',
+                          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
+                          gap: '16px',
+                        }}
+                      >
+                        <div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
+                            <span className="label-xs" style={{ color: meta?.accent || '#8B6FFF', fontWeight: 800, letterSpacing: '0.1em' }}>
+                              {meta?.name || 'MDCAT'}
+                            </span>
+                            <span className="state-chip state-chip--neutral" style={{ padding: '4px 12px', fontSize: '0.82rem', fontWeight: 800, borderRadius: '20px' }}>
+                              {totalBankCount} MCQs
+                            </span>
                           </div>
-                          <span className="state-chip state-chip--neutral">
-                            {totalBankCount} MCQs
-                          </span>
+                          <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', margin: '12px 0 6px' }}>
+                            {chapter?.name} - Full Chapter Test
+                          </h3>
+                          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: 0, lineHeight: 1.45 }}>
+                            Complete practice containing all {totalBankCount} MCQs.
+                          </p>
                         </div>
-                        <div className="workspace-card-body">
-                          <div className="inline-actions">
-                            <Link
-                              className="btn btn-primary btn-sm"
-                              to={`/mcqs/${subject}/${chapterId}/attempt${selectedTopicId ? `?topicId=${selectedTopicId}` : ''}`}
-                            >
-                              Start Full Test
-                            </Link>
-                          </div>
+                        <div style={{ marginTop: 'auto', paddingTop: '10px' }}>
+                          <Link
+                            className="btn btn-primary"
+                            style={{
+                              width: '100%',
+                              padding: '12px 20px',
+                              fontWeight: 800,
+                              fontSize: '0.92rem',
+                              borderRadius: '10px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              background: 'linear-gradient(135deg, #7447ff 0%, #4a90e2 100%)',
+                              boxShadow: '0 4px 14px rgba(116, 71, 255, 0.3)',
+                              textAlign: 'center',
+                            }}
+                            to={`/mcqs/${subject}/${chapterId}/attempt${selectedTopicId ? `?topicId=${selectedTopicId}` : ''}`}
+                          >
+                            Start Full Test →
+                          </Link>
                         </div>
                       </article>
                     </div>
