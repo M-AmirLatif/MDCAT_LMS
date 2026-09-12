@@ -642,7 +642,6 @@ function ChapterList() {
   const buildChapterMcqPath = (chapter) => {
     const params = new URLSearchParams()
     if (chapter.topicId) params.set('topicId', chapter.topicId)
-    if (chapter.testPart) params.set('testPart', chapter.testPart)
     const query = params.toString()
     return `/mcqs/${subject}/${chapter.id}${query ? `?${query}` : ''}`
   }
@@ -1412,6 +1411,9 @@ function McqList() {
   const [chapter, setChapter] = useState(null)
   const [topics, setTopics] = useState([])
   const [mcqs, setMcqs] = useState([])
+  const [virtualTests, setVirtualTests] = useState([])
+  const [totalChapterMcqs, setTotalChapterMcqs] = useState(0)
+  const [customCount, setCustomCount] = useState(20)
   const [reviewQueue, setReviewQueue] = useState([])
   const [loading, setLoading] = useState(true)
   const [modal, setModal] = useState(null)
@@ -1431,6 +1433,28 @@ function McqList() {
     const query = params.toString()
     return query ? `?${query}` : ''
   }, [selectedTopicId, testPart, topicIdParam])
+
+  const totalBankCount = totalChapterMcqs || mcqs.length || 0
+
+  const presetOptions = useMemo(() => {
+    const defaultSteps = [10, 20, 30, 40, 50]
+    const filtered = defaultSteps.filter((n) => n < totalBankCount)
+    if (totalBankCount > 0 && !filtered.includes(totalBankCount)) {
+      filtered.push(totalBankCount)
+    }
+    return filtered.length ? filtered : [totalBankCount || 10]
+  }, [totalBankCount])
+
+  const allCountOptions = useMemo(() => {
+    const options = []
+    for (let i = 10; i < totalBankCount; i += 10) {
+      options.push(i)
+    }
+    if (totalBankCount > 0 && !options.includes(totalBankCount)) {
+      options.push(totalBankCount)
+    }
+    return options.length ? options : [10]
+  }, [totalBankCount])
 
   const selectedTopic =
     topics.find((topic) => topic.id === selectedTopicId) || null
@@ -1456,6 +1480,12 @@ function McqList() {
       setChapter(res.data.chapter)
       setTopics(res.data.topics || [])
       setMcqs(res.data.mcqs || [])
+      setVirtualTests(res.data.virtualTests || [])
+      const totalCount = res.data.totalChapterMcqs || res.data.totalMcqs || (res.data.mcqs || []).length
+      setTotalChapterMcqs(totalCount)
+      if (totalCount > 0) {
+        setCustomCount((prev) => (prev > totalCount ? Math.min(20, totalCount) : prev))
+      }
       setReviewQueue(res.data.reviewQueue || [])
     } catch (error) {
       if (error?.response?.data?.code === 'SUBSCRIPTION_REQUIRED') {
@@ -1933,93 +1963,249 @@ function McqList() {
             </div>
           )
         ) : (
-          <div className="workspace-card">
-            <div className="workspace-card-body">
-              <div className="student-quiz-summary-grid">
-                <div className="student-quiz-summary-card">
-                  <span className="student-quiz-summary-icon">?</span>
-                  <div>
-                    <small>Total MCQs</small>
-                    <strong>{mcqs.length}</strong>
-                  </div>
-                </div>
-                <div className="student-quiz-summary-card">
-                  <span className="student-quiz-summary-icon student-quiz-summary-icon--timer">
-                    <svg
-                      viewBox="0 0 24 24"
-                      width="22"
-                      height="22"
-                      fill="none"
-                      aria-hidden="true"
-                    >
-                      <circle
-                        cx="12"
-                        cy="13"
-                        r="8"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      />
-                      <path
-                        d="M9 2h6M12 7v6l4 2"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
-                  <div>
-                    <small>Quiz Time</small>
-                    <strong>{formattedTime}</strong>
-                  </div>
-                </div>
-                <div className="student-quiz-summary-card">
-                  <span className="student-quiz-summary-icon">50s</span>
-                  <div>
-                    <small>Per MCQ</small>
-                    <strong>50 sec</strong>
-                  </div>
+          <div className="student-chapter-hub" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {/* Top Stats Banner */}
+            <div className="student-quiz-summary-grid">
+              <div className="student-quiz-summary-card">
+                <span className="student-quiz-summary-icon" style={{ fontSize: '1.2rem' }}>📚</span>
+                <div>
+                  <small>Chapter MCQ Bank</small>
+                  <strong>{totalBankCount} MCQs</strong>
                 </div>
               </div>
-              {mcqs.length > 0 ? (
-                <div className="student-quiz-motivation">
-                  <div className="student-quiz-motivation-copy">
-                    <span className="student-quiz-motivation-kicker">
-                      Practice mindset
-                    </span>
-                    <h3>
-                      One focused attempt can expose your weak spots before the
-                      exam does.
+              <div className="student-quiz-summary-card">
+                <span className="student-quiz-summary-icon student-quiz-summary-icon--timer">
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="22"
+                    height="22"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <circle
+                      cx="12"
+                      cy="13"
+                      r="8"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    />
+                    <path
+                      d="M9 2h6M12 7v6l4 2"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+                <div>
+                  <small>Time per Question</small>
+                  <strong>50 seconds</strong>
+                </div>
+              </div>
+              <div className="student-quiz-summary-card">
+                <span className="student-quiz-summary-icon" style={{ fontSize: '1.2rem' }}>🎯</span>
+                <div>
+                  <small>Standard Tests</small>
+                  <strong>{virtualTests.length > 0 ? `${virtualTests.length} Tests (50 MCQs)` : '1 Full Test'}</strong>
+                </div>
+              </div>
+            </div>
+
+            {totalBankCount > 0 ? (
+              <>
+                {/* FEATURE 1: Custom Random Practice */}
+                <section
+                  className="workspace-card"
+                  style={{
+                    border: '2px solid rgba(139, 111, 255, 0.4)',
+                    background: 'linear-gradient(135deg, rgba(139, 111, 255, 0.1), rgba(45, 217, 155, 0.05))',
+                    borderRadius: '16px',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <div className="workspace-card-head" style={{ borderBottom: 'none', paddingBottom: '4px' }}>
+                    <div>
+                      <div className="label-xs" style={{ color: '#8B6FFF', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                        ⚡ Custom Random Practice
+                      </div>
+                      <h3 className="workspace-card-title" style={{ fontSize: '1.25rem', marginTop: '4px' }}>
+                        Solve Any Number of Random MCQs
+                      </h3>
+                      <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '4px' }}>
+                        Select how many questions you want to solve. Every time you practice, questions are picked completely at random from this chapter's MCQ bank.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="workspace-card-body" style={{ paddingTop: '12px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      {/* Quick Select Buttons */}
+                      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>
+                          Quick Options:
+                        </span>
+                        {presetOptions.map((countVal) => (
+                          <button
+                            key={countVal}
+                            type="button"
+                            onClick={() => setCustomCount(countVal)}
+                            className={`btn btn-sm ${customCount === countVal ? 'btn-primary' : 'btn-secondary'}`}
+                            style={{
+                              borderRadius: '20px',
+                              padding: '5px 14px',
+                              fontWeight: 700,
+                              fontSize: '0.82rem',
+                            }}
+                          >
+                            {countVal === totalBankCount ? `All (${countVal})` : `${countVal} MCQs`}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Dropdown Selector + Launch Button */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                        <label htmlFor="custom-mcq-dropdown" style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                          Select Count:
+                        </label>
+                        <select
+                          id="custom-mcq-dropdown"
+                          value={customCount}
+                          onChange={(e) => setCustomCount(Number(e.target.value))}
+                          style={{
+                            padding: '9px 16px',
+                            borderRadius: '10px',
+                            border: '1.5px solid rgba(139, 111, 255, 0.4)',
+                            background: 'var(--bg-surface, #1A1640)',
+                            color: 'var(--text-primary)',
+                            fontWeight: 700,
+                            fontSize: '0.9rem',
+                            cursor: 'pointer',
+                            minWidth: '220px',
+                          }}
+                        >
+                          {allCountOptions.map((opt) => (
+                            <option key={opt} value={opt}>
+                              {opt === totalBankCount ? `All ${opt} MCQs (Approx. ${Math.ceil((opt * 50) / 60)} mins)` : `${opt} MCQs (Approx. ${Math.ceil((opt * 50) / 60)} mins)`}
+                            </option>
+                          ))}
+                        </select>
+
+                        <button
+                          className="btn btn-primary"
+                          type="button"
+                          style={{
+                            padding: '10px 24px',
+                            fontSize: '0.95rem',
+                            fontWeight: 800,
+                            background: 'linear-gradient(135deg, #8B6FFF, #6C47FF)',
+                            boxShadow: '0 4px 14px rgba(108, 71, 255, 0.35)',
+                            borderRadius: '10px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                          }}
+                          onClick={() => {
+                            const query = new URLSearchParams()
+                            if (selectedTopicId) query.set('topicId', selectedTopicId)
+                            query.set('mode', 'random')
+                            query.set('count', String(customCount))
+                            navigate(`/mcqs/${subject}/${chapterId}/attempt?${query.toString()}`)
+                          }}
+                        >
+                          <span>⚡ Start Random Test ({customCount} MCQs)</span>
+                          <span aria-hidden="true">→</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* FEATURE 2: Standard Chapter Tests */}
+                <section style={{ marginTop: '10px' }}>
+                  <div style={{ marginBottom: '14px' }}>
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
+                      📚 Standard Chapter Tests
                     </h3>
-                    <p>
-                      Answer calmly, skip what blocks you, then review every
-                      explanation. Chapter practice improves accuracy faster
-                      than random revision.
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: '3px 0 0' }}>
+                      {virtualTests.length > 0
+                        ? `This chapter has ${totalBankCount} MCQs divided into ${virtualTests.length} tests (50 MCQs each).`
+                        : `Attempt the full chapter test containing all ${totalBankCount} MCQs.`}
                     </p>
                   </div>
-                  <div
-                    className="student-quiz-motivation-steps"
-                    aria-label="Practice approach"
-                  >
-                    <span>
-                      <b>1</b> Attempt every MCQ
-                    </span>
-                    <span>
-                      <b>2</b> Mark difficult questions
-                    </span>
-                    <span>
-                      <b>3</b> Review explanations
-                    </span>
-                  </div>
-                  <Link
-                    className="btn btn-primary"
-                    to={`/mcqs/${subject}/${chapterId}/attempt${!isTeacher ? studentMcqQuery : ''}`}
-                  >
-                    Start focused practice
-                  </Link>
+
+                  {virtualTests.length > 0 ? (
+                    <div className="chapter-browser-grid">
+                      {virtualTests.map((test) => (
+                        <article
+                          key={`test-part-${test.testPart}`}
+                          className="workspace-card chapter-practice-card"
+                          style={{ border: '1.5px solid rgba(139, 111, 255, 0.25)' }}
+                        >
+                          <div className="workspace-card-head">
+                            <div>
+                              <div className="label-xs" style={{ color: meta?.accent }}>
+                                {meta?.name}
+                              </div>
+                              <h3 className="workspace-card-title">{test.name}</h3>
+                              <p>{test.description}</p>
+                            </div>
+                            <span className="state-chip state-chip--neutral">
+                              {test.mcqCount} MCQs
+                            </span>
+                          </div>
+                          <div className="workspace-card-body">
+                            <div className="inline-actions">
+                              <Link
+                                className="btn btn-primary btn-sm"
+                                to={`/mcqs/${subject}/${chapterId}/attempt?testPart=${test.testPart}${selectedTopicId ? `&topicId=${selectedTopicId}` : ''}`}
+                              >
+                                Start Test {test.testPart}
+                              </Link>
+                            </div>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="chapter-browser-grid">
+                      <article className="workspace-card chapter-practice-card">
+                        <div className="workspace-card-head">
+                          <div>
+                            <div className="label-xs" style={{ color: meta?.accent }}>
+                              {meta?.name}
+                            </div>
+                            <h3 className="workspace-card-title">{chapter?.name} - Full Chapter Test</h3>
+                            <p>Complete practice containing all {totalBankCount} MCQs.</p>
+                          </div>
+                          <span className="state-chip state-chip--neutral">
+                            {totalBankCount} MCQs
+                          </span>
+                        </div>
+                        <div className="workspace-card-body">
+                          <div className="inline-actions">
+                            <Link
+                              className="btn btn-primary btn-sm"
+                              to={`/mcqs/${subject}/${chapterId}/attempt${selectedTopicId ? `?topicId=${selectedTopicId}` : ''}`}
+                            >
+                              Start Full Test
+                            </Link>
+                          </div>
+                        </div>
+                      </article>
+                    </div>
+                  )}
+                </section>
+              </>
+            ) : (
+              <div className="workspace-card">
+                <div className="workspace-card-body">
+                  <EmptyState
+                    title="No MCQs in this chapter yet"
+                    text="MCQs will appear here once added by the instructor."
+                  />
                 </div>
-              ) : null}
-            </div>
+              </div>
+            )}
           </div>
         )
       ) : null}
@@ -2070,10 +2256,14 @@ function QuizAttempt() {
   const meta = subjectById(subject)
   const testPart = searchParams.get('testPart')
   const topicIdParam = searchParams.get('topicId')
+  const modeParam = searchParams.get('mode')
+  const countParam = searchParams.get('count')
+  const isRandom = Boolean(modeParam === 'random' || Number(countParam) > 0)
   const chapterAttemptId = [
     chapterId,
     topicIdParam ? `topic-${topicIdParam}` : null,
     testPart ? `part-${testPart}` : null,
+    isRandom ? `random-${countParam || 'custom'}` : null,
   ]
     .filter(Boolean)
     .join('-')
@@ -2081,6 +2271,8 @@ function QuizAttempt() {
     const params = new URLSearchParams()
     if (topicIdParam) params.set('topicId', topicIdParam)
     if (testPart) params.set('testPart', testPart)
+    if (modeParam) params.set('mode', modeParam)
+    if (countParam) params.set('count', countParam)
     const query = params.toString()
     return query ? `?${query}` : ''
   })()
@@ -2317,6 +2509,8 @@ function QuizAttempt() {
       )
       const res = await API.post(`/mcqs/${subject}/${chapterId}/submit${testPartQuery}`, {
         answers,
+        mcqIds: mcqs.map((m) => String(m._id)),
+        isRandom,
         timeLimitSeconds,
         timeSpentSeconds,
         startedAt:
@@ -2612,10 +2806,14 @@ function QuizResult() {
   const { user } = useAuth()
   const testPart = searchParams.get('testPart')
   const topicIdParam = searchParams.get('topicId')
+  const modeParam = searchParams.get('mode')
+  const countParam = searchParams.get('count')
+  const isRandom = Boolean(modeParam === 'random' || Number(countParam) > 0)
   const chapterAttemptId = [
     chapterId,
     topicIdParam ? `topic-${topicIdParam}` : null,
     testPart ? `part-${testPart}` : null,
+    isRandom ? `random-${countParam || 'custom'}` : null,
   ]
     .filter(Boolean)
     .join('-')
@@ -2623,6 +2821,8 @@ function QuizResult() {
     const params = new URLSearchParams()
     if (topicIdParam) params.set('topicId', topicIdParam)
     if (testPart) params.set('testPart', testPart)
+    if (modeParam) params.set('mode', modeParam)
+    if (countParam) params.set('count', countParam)
     const query = params.toString()
     return query ? `?${query}` : ''
   })()

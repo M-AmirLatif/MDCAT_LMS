@@ -1378,53 +1378,7 @@ exports.getChaptersBySubject = async (req, res) => {
         topics,
       }
 
-      if (teacherRoleNames.has(userRoleName(req.user))) return [baseChapter]
-
-      if (topics.length) {
-        return topics.flatMap((topic) => {
-          const topicBase = {
-            ...baseChapter,
-            topicId: topic.id,
-            topicName: topic.name,
-            name: `${chapter.name} - ${topic.name}`,
-            description: topic.description || `${chapter.name} - ${topic.name} MCQs`,
-            mcqCount: topic.mcqCount,
-            isTopicTest: true,
-            isLocked: baseLocked,
-            lockReason: baseLocked ? 'Please subscribe to access this test/past paper.' : null,
-          }
-          const virtualTopicTests = buildVirtualChapterTests(chapter, topic.mcqCount, {
-            topicId: topic.id,
-            topicName: topic.name,
-          })
-          if (!virtualTopicTests.length) return [topicBase]
-          return virtualTopicTests.map((test) => {
-            const locked = !canAccessChapterTest(req.user, subject, index, test.testPart)
-            return {
-              ...topicBase,
-              ...test,
-              originalChapterName: chapter.name,
-              isVirtualTest: true,
-              isLocked: locked,
-              lockReason: locked ? 'Please subscribe to access this test/past paper.' : null,
-            }
-          })
-        })
-      }
-
-      const virtualTests = buildVirtualChapterTests(chapter, mcqCount)
-      if (!virtualTests.length) return [baseChapter]
-      return virtualTests.map((test) => {
-        const locked = !canAccessChapterTest(req.user, subject, index, test.testPart)
-        return {
-          ...baseChapter,
-          ...test,
-          originalChapterName: chapter.name,
-          isVirtualTest: true,
-          isLocked: locked,
-          lockReason: locked ? 'Please subscribe to access this test/past paper.' : null,
-        }
-      })
+      return [baseChapter]
     })
 
     res
@@ -1787,7 +1741,18 @@ exports.getMcqsByChapter = async (req, res) => {
     }
     const allMcqs = sortMcqsByOriginalOrder(await mcqQuery.lean())
     const selectedTestPart = teacherRoleNames.has(role) ? null : normalizeTestPart(req.query.testPart)
-    const mcqs = sliceMcqsForVirtualTest(allMcqs, selectedTestPart)
+    const randomCount = Number(req.query.count || req.query.randomCount || 0)
+    const isRandomMode = !teacherRoleNames.has(role) && (req.query.mode === 'random' || randomCount > 0)
+    
+    let mcqs = allMcqs
+    if (isRandomMode) {
+      const shuffled = [...allMcqs].sort(() => 0.5 - Math.random())
+      const limit = randomCount > 0 ? Math.min(randomCount, allMcqs.length) : Math.min(20, allMcqs.length)
+      mcqs = shuffled.slice(0, limit)
+    } else if (selectedTestPart) {
+      mcqs = sliceMcqsForVirtualTest(allMcqs, selectedTestPart)
+    }
+
     const safeMcqs = includeFull ? serializeMcqsMedia(mcqs) : stripCorrectOptions(mcqs)
     const responseChapterBase = includeFull
       ? context.chapter
@@ -1799,27 +1764,46 @@ exports.getMcqsByChapter = async (req, res) => {
     const responseTitleBase = context.topic
       ? `${context.chapter.name} - ${context.topic.name}`
       : context.chapter.name
-    const responseChapter = selectedTestPart
+    const responseChapter = isRandomMode
       ? {
           ...responseChapterBase,
           originalName: context.chapter.name,
           topicId: context.topic?.id || null,
           topicName: context.topic?.name || null,
-          name: `${responseTitleBase} - Test ${selectedTestPart}`,
+          name: `${responseTitleBase} - Random Practice (${mcqs.length} MCQs)`,
           isVirtualTest: true,
-          testPart: selectedTestPart,
+          isRandomTest: true,
           totalChapterMcqs: allMcqs.length,
         }
-      : context.topic
+      : selectedTestPart
         ? {
             ...responseChapterBase,
             originalName: context.chapter.name,
-            topicId: context.topic.id,
-            topicName: context.topic.name,
-            name: responseTitleBase,
+            topicId: context.topic?.id || null,
+            topicName: context.topic?.name || null,
+            name: `${responseTitleBase} - Test ${selectedTestPart}`,
+            isVirtualTest: true,
+            testPart: selectedTestPart,
             totalChapterMcqs: allMcqs.length,
           }
-        : responseChapterBase
+        : context.topic
+          ? {
+              ...responseChapterBase,
+              originalName: context.chapter.name,
+              topicId: context.topic.id,
+              topicName: context.topic.name,
+              name: responseTitleBase,
+              totalChapterMcqs: allMcqs.length,
+            }
+          : {
+              ...responseChapterBase,
+              totalChapterMcqs: allMcqs.length,
+            }
+
+    const virtualTests = buildVirtualChapterTests(context.chapter, allMcqs.length, {
+      topicId: context.topic?.id,
+      topicName: context.topic?.name,
+    })
 
     res.status(200).json({
       success: true,
@@ -1828,6 +1812,9 @@ exports.getMcqsByChapter = async (req, res) => {
       chapter: responseChapter,
       topics: getChapterTopics(context.chapter),
       selectedTopic: context.topic,
+      virtualTests,
+      totalMcqs: allMcqs.length,
+      totalChapterMcqs: allMcqs.length,
       reviewQueue: includeFull
         ? getChapterReviewQueue(context.chapter)
           .filter((item) => {
@@ -2686,13 +2673,34 @@ exports.submitChapterAttempt = async (req, res) => {
     }
 
     const answers = req.body.answers || {}
-    const allMcqs = sortMcqsByOriginalOrder(
-      await MCQ.find(context.filter)
+    const answerIds = Array.isArray(req.body.mcqIds) && req.body.mcqIds.length
+      ? req.body.mcqIds.map(String)
+      : Object.keys(answers).filter(Boolean)
+    const isRandomAttempt = Boolean(req.query.mode === 'random' || req.body.mode === 'random' || req.body.isRandom)
+
+    let mcqs = []
+    let allMcqs = []
+
+    if (isRandomAttempt && answerIds.length > 0) {
+      const queriedMcqs = await MCQ.find({
+        ...context.filter,
+        _id: { $in: answerIds },
+      })
         .select('-createdBy -reviewReason -validationErrors -importBatchId')
-        .lean(),
-    )
-    const selectedTestPart = normalizeTestPart(req.query.testPart)
-    const mcqs = sliceMcqsForVirtualTest(allMcqs, selectedTestPart)
+        .lean()
+      const mcqMap = new Map(queriedMcqs.map((m) => [String(m._id), m]))
+      mcqs = answerIds.map((id) => mcqMap.get(String(id))).filter(Boolean)
+      allMcqs = mcqs
+    } else {
+      allMcqs = sortMcqsByOriginalOrder(
+        await MCQ.find(context.filter)
+          .select('-createdBy -reviewReason -validationErrors -importBatchId')
+          .lean(),
+      )
+      const selectedTestPart = normalizeTestPart(req.query.testPart)
+      mcqs = sliceMcqsForVirtualTest(allMcqs, selectedTestPart)
+    }
+
     if (!mcqs.length)
       return res.status(404).json({ error: 'No MCQs found for this chapter' })
 
@@ -2733,27 +2741,39 @@ exports.submitChapterAttempt = async (req, res) => {
     const responseTitleBase = context.topic
       ? `${context.chapter.name} - ${context.topic.name}`
       : context.chapter.name
-    const responseChapter = selectedTestPart
+    const selectedTestPart = normalizeTestPart(req.query.testPart)
+    const responseChapter = isRandomAttempt
       ? {
           ...context.chapter,
           originalName: context.chapter.name,
           topicId: context.topic?.id || null,
           topicName: context.topic?.name || null,
-          name: `${responseTitleBase} - Test ${selectedTestPart}`,
+          name: `${responseTitleBase} - Random Practice (${mcqs.length} MCQs)`,
           isVirtualTest: true,
-          testPart: selectedTestPart,
-          totalChapterMcqs: allMcqs.length,
+          isRandomTest: true,
+          totalChapterMcqs: mcqs.length,
         }
-      : context.topic
+      : selectedTestPart
         ? {
             ...context.chapter,
             originalName: context.chapter.name,
-            topicId: context.topic.id,
-            topicName: context.topic.name,
-            name: responseTitleBase,
+            topicId: context.topic?.id || null,
+            topicName: context.topic?.name || null,
+            name: `${responseTitleBase} - Test ${selectedTestPart}`,
+            isVirtualTest: true,
+            testPart: selectedTestPart,
             totalChapterMcqs: allMcqs.length,
           }
-        : context.chapter
+        : context.topic
+          ? {
+              ...context.chapter,
+              originalName: context.chapter.name,
+              topicId: context.topic.id,
+              topicName: context.topic.name,
+              name: responseTitleBase,
+              totalChapterMcqs: allMcqs.length,
+            }
+          : context.chapter
     const attemptChapterName = responseChapter.name || context.chapter.name
 
     const PKT_OFFSET = 5 * 60 * 60 * 1000;
