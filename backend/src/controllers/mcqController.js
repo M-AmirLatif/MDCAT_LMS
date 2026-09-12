@@ -2614,6 +2614,9 @@ exports.approveCsvReviewItem = async (req, res) => {
 // ==================== GET LATEST CHAPTER ATTEMPT ====================
 exports.getLatestChapterAttempt = async (req, res) => {
   try {
+    if (req.query.mode === 'random' || Number(req.query.count || req.query.randomCount) > 0) {
+      return res.status(200).json({ success: true, result: null })
+    }
     const context = await buildChapterMcqFilter(req.params.subject, req.params.chapterId, false, req.query.topicId || null)
     if (context.error) return res.status(400).json({ error: context.error })
     if (!context.course || !context.chapter) return res.status(404).json({ error: 'Chapter not found' })

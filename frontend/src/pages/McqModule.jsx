@@ -2139,6 +2139,19 @@ function McqList() {
                         <article
                           key={`test-part-${test.testPart}`}
                           className="workspace-card chapter-test-card"
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'space-between',
+                            padding: '24px',
+                            borderRadius: '18px',
+                            border: '2px solid rgba(139, 111, 255, 0.55)',
+                            background: 'linear-gradient(145deg, #19163a 0%, #111735 58%, #0d122b 100%)',
+                            boxShadow: '0 10px 28px rgba(0, 0, 0, 0.35)',
+                            gap: '16px',
+                            boxSizing: 'border-box',
+                            minHeight: '230px',
+                          }}
                         >
                           <div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
@@ -2184,6 +2197,19 @@ function McqList() {
                     <div className="chapter-tests-grid">
                       <article
                         className="workspace-card chapter-test-card"
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'space-between',
+                          padding: '24px',
+                          borderRadius: '18px',
+                          border: '2px solid rgba(139, 111, 255, 0.55)',
+                          background: 'linear-gradient(145deg, #19163a 0%, #111735 58%, #0d122b 100%)',
+                          boxShadow: '0 10px 28px rgba(0, 0, 0, 0.35)',
+                          gap: '16px',
+                          boxSizing: 'border-box',
+                          minHeight: '230px',
+                        }}
                       >
                         <div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
@@ -2345,7 +2371,7 @@ function QuizAttempt() {
           activeDraft = null
         }
 
-        if (location.state?.retake) {
+        if (location.state?.retake || isRandom) {
           clearStoredQuizResult(quizUserKey, subject, chapterAttemptId)
           localStorage.removeItem(quizStorageKey)
           activeDraft = null
@@ -2363,10 +2389,10 @@ function QuizAttempt() {
         // returning-student lookup instead of creating a two-request waterfall.
         const questionsRequest = API.get(`/mcqs/${subject}/${chapterId}${testPartQuery}`)
           .catch((error) => ({ loadError: error }))
-        if (!location.state?.retake && !activeDraft) {
+        if (!location.state?.retake && !isRandom && !activeDraft) {
           const previousAttempt = await API.get(`/mcqs/${subject}/${chapterId}/latest-attempt${testPartQuery}`)
           if (!alive) return
-          if (previousAttempt.data.result) {
+          if (previousAttempt.data?.result) {
             const resultPayload = JSON.stringify(previousAttempt.data.result)
             const resultKey = getQuizResultStorageKey(quizUserKey, subject, chapterAttemptId)
             localStorage.setItem(resultKey, resultPayload)
