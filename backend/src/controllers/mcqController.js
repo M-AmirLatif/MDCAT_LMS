@@ -32,7 +32,8 @@ const slugifyChapter = (name) =>
     .replace(/^-+|-+$/g, '')
 
 
-const STUDENT_CHAPTER_SPLIT_THRESHOLD = 70
+const STUDENT_CHAPTER_SPLIT_THRESHOLD = 50
+const MCQS_PER_TEST = 50
 
 const normalizeTestPart = (value) => {
   const part = Number(value)
@@ -43,10 +44,10 @@ const getBalancedChapterTestRange = (totalMcqs, testPart) => {
   const count = Number(totalMcqs || 0)
   const part = normalizeTestPart(testPart)
   if (!part || count <= STUDENT_CHAPTER_SPLIT_THRESHOLD) return null
-  if (part > 2) return { startIndex: count, endIndex: count, start: count + 1, end: count }
-  const firstCount = Math.ceil(count / 2)
-  const startIndex = part === 1 ? 0 : firstCount
-  const endIndex = part === 1 ? firstCount : count
+  const totalParts = Math.ceil(count / MCQS_PER_TEST)
+  if (part > totalParts) return { startIndex: count, endIndex: count, start: count + 1, end: count }
+  const startIndex = (part - 1) * MCQS_PER_TEST
+  const endIndex = Math.min(part * MCQS_PER_TEST, count)
   return {
     startIndex,
     endIndex,
@@ -64,7 +65,7 @@ const sliceMcqsForVirtualTest = (mcqs, testPart) => {
 const buildVirtualChapterTests = (chapter, totalMcqs, options = {}) => {
   const count = Number(totalMcqs || 0)
   if (count <= STUDENT_CHAPTER_SPLIT_THRESHOLD) return []
-  const parts = 2
+  const parts = Math.ceil(count / MCQS_PER_TEST)
   const topicName = options.topicName || ''
   const titleBase = topicName ? `${chapter.name} - ${topicName}` : chapter.name
   return Array.from({ length: parts }, (_, index) => {
@@ -218,12 +219,16 @@ const normalizeCsvQuestionNumber = ({
   csvRowIndex,
   rowNumber,
   headerCountedQuestionNumbers,
+  existingMcqCount = 0,
 }) => {
   const explicit = String(explicitQuestionNumber || '').trim()
   if (!explicit) return String(csvRowIndex)
 
   const numeric = numericQuestionNumber(explicit)
   if (numeric === null) return String(csvRowIndex)
+  if (existingMcqCount > 0 && numeric < csvRowIndex) {
+    return String(csvRowIndex)
+  }
   if (numeric !== null && numeric === rowNumber && csvRowIndex === rowNumber - 1) {
     return String(csvRowIndex)
   }
@@ -232,7 +237,7 @@ const normalizeCsvQuestionNumber = ({
     numeric !== null &&
     numeric >= 2
   ) {
-    return String(numeric - 1)
+    return String(numeric - 1 + existingMcqCount)
   }
 
   return explicit
@@ -2107,10 +2112,17 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
     const batchNumberQuestionKeys = new Set()
     const uploadedQuestionNumbers = new Set()
 
+    // Count existing MCQs to offset new question numbers
+    const existingMcqCount = await MCQ.countDocuments({
+      courseId: context.course._id,
+      chapterId: context.chapter.id,
+      ...(context.topic?.id ? { topicId: context.topic.id } : { $or: [{ topicId: null }, { topicId: { $exists: false } }] }),
+    })
+
     const normalizedRows = rows.map((rawRow, index) => ({
       rawRow,
       rowNumber: index + 2,
-      csvRowIndex: index + 1,
+      csvRowIndex: index + 1 + existingMcqCount,
       row: Object.fromEntries(
         Object.entries(rawRow || {}).map(([key, value]) => [
           String(key).trim().toLowerCase(),
@@ -2144,6 +2156,7 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
         csvRowIndex,
         rowNumber,
         headerCountedQuestionNumbers,
+        existingMcqCount,
       })
       const fallbackQuestionNumber = String(
         questionNumber ||
@@ -2263,7 +2276,7 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
     const uploadedNumbers = [...uploadedQuestionNumbers].filter(Boolean)
     const replaceAll = req.query.replaceAll === 'true'
 
-    if (uploadedNumbers.length || replaceAll) {
+    if (replaceAll) {
       const numberFilter = {
         $or: [
           { originalQuestionNumber: { $in: uploadedNumbers } },

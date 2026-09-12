@@ -2592,7 +2592,7 @@ function QuizAttempt() {
                       setShowQuestionPanel(false)
                     }}
                   >
-                    {getMcqDisplayNumber(mcq, index, mcqDisplayNumberOffset)}
+                    {index + 1}
                   </button>
                 )
               })}
@@ -2777,7 +2777,7 @@ function ReviewSection({ title, items, savedStatus, toggleFlashcard, subjectName
         >
           <div className="review-question-top">
             <span className="review-question-number">
-              Question {getMcqDisplayNumber(item, index)}
+              Question {index + 1}
             </span>
             <button
               type="button"
