@@ -1458,6 +1458,7 @@ function McqList() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { isTeacher } = useAuth()
   const meta = subjectById(subject)
+  const isPastPapers = subject === 'past-papers' || meta?.name === 'Past Papers'
   const [lockMessage, setLockMessage] = useState('')
   const [chapter, setChapter] = useState(null)
   const [topics, setTopics] = useState([])
@@ -1480,10 +1481,10 @@ function McqList() {
     const params = new URLSearchParams()
     const activeTopicId = selectedTopicId || topicIdParam
     if (activeTopicId) params.set('topicId', activeTopicId)
-    if (testPart) params.set('testPart', testPart)
+    if (!isPastPapers && testPart) params.set('testPart', testPart)
     const query = params.toString()
     return query ? `?${query}` : ''
-  }, [selectedTopicId, testPart, topicIdParam])
+  }, [isPastPapers, selectedTopicId, testPart, topicIdParam])
 
   const totalBankCount = totalChapterMcqs || mcqs.length || 0
 
@@ -1574,7 +1575,7 @@ function McqList() {
     try {
       const params = new URLSearchParams()
       if (selectedTopicId) params.set('topicId', selectedTopicId)
-      if (!isTeacher && testPart) params.set('testPart', testPart)
+      if (!isTeacher && !isPastPapers && testPart) params.set('testPart', testPart)
       const query = params.toString() ? `?${params.toString()}` : ''
       // Warm the returning-student check while the workspace itself loads. The
       // attempt page reuses this user-scoped cache instead of waiting 2-3 seconds.
@@ -1964,9 +1965,9 @@ function McqList() {
             {!isTeacher ? (
               <Link
                 className="btn btn-primary"
-                to={`/mcqs/${subject}/${chapterId}/attempt${!isTeacher ? studentMcqQuery : ''}`}
+                to={`/mcqs/${subject}/${chapterId}/attempt${!isTeacher && !isPastPapers ? studentMcqQuery : ''}`}
               >
-                Start Quiz
+                {isPastPapers ? 'Solve Past Paper' : 'Start Quiz'}
               </Link>
             ) : null}
           </div>
@@ -2182,15 +2183,83 @@ function McqList() {
               <div className="student-quiz-summary-card">
                 <span className="student-quiz-summary-icon" style={{ fontSize: '1.2rem' }}>🎯</span>
                 <div>
-                  <small>Standard Tests</small>
-                  <strong>{virtualTests.length > 0 ? `${virtualTests.length} Tests (50 MCQs)` : '1 Full Test'}</strong>
+                  <small>{isPastPapers ? 'Test Format' : 'Standard Tests'}</small>
+                  <strong>
+                    {isPastPapers
+                      ? `Complete Past Paper (${totalBankCount} MCQs)`
+                      : virtualTests.length > 0
+                        ? `${virtualTests.length} Tests (50 MCQs)`
+                        : '1 Full Test'}
+                  </strong>
                 </div>
               </div>
             </div>
 
             {totalBankCount > 0 ? (
-              <>
-                {/* FEATURE 1: Custom Random Practice */}
+              isPastPapers ? (
+                <section style={{ marginTop: '10px' }}>
+                  <div className="chapter-tests-grid">
+                    <article
+                      className="workspace-card chapter-test-card"
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        padding: '28px',
+                        borderRadius: '18px',
+                        border: '2px solid rgba(139, 111, 255, 0.55)',
+                        background: 'linear-gradient(145deg, #19163a 0%, #111735 58%, #0d122b 100%)',
+                        boxShadow: '0 10px 28px rgba(0, 0, 0, 0.35)',
+                        gap: '20px',
+                        boxSizing: 'border-box',
+                        minHeight: '220px',
+                      }}
+                    >
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
+                          <span className="label-xs" style={{ color: meta?.accent || '#8B6FFF', fontWeight: 800, letterSpacing: '0.1em' }}>
+                            PAST PAPERS
+                          </span>
+                          <span className="state-chip state-chip--neutral" style={{ padding: '6px 14px', fontSize: '0.88rem', fontWeight: 800, borderRadius: '20px' }}>
+                            {totalBankCount} MCQs
+                          </span>
+                        </div>
+                        <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', margin: '14px 0 8px' }}>
+                          {chapter?.name}
+                        </h3>
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', margin: 0, lineHeight: 1.5 }}>
+                          Solve the complete {chapter?.name} containing all {totalBankCount} MCQs in original sequential order.
+                        </p>
+                      </div>
+                      <div style={{ marginTop: 'auto', paddingTop: '10px' }}>
+                        <Link
+                          className="btn btn-primary"
+                          style={{
+                            width: '100%',
+                            padding: '14px 24px',
+                            fontWeight: 800,
+                            fontSize: '1rem',
+                            borderRadius: '12px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: 'linear-gradient(135deg, #7447ff 0%, #4a90e2 100%)',
+                            boxShadow: '0 4px 14px rgba(116, 71, 255, 0.3)',
+                            textAlign: 'center',
+                            color: '#ffffff',
+                            textDecoration: 'none',
+                          }}
+                          to={`/mcqs/${subject}/${chapterId}/attempt`}
+                        >
+                          Solve Past Paper ({totalBankCount} MCQs) →
+                        </Link>
+                      </div>
+                    </article>
+                  </div>
+                </section>
+              ) : (
+                <>
+                  {/* FEATURE 1: Custom Random Practice */}
                 <section
                   className="workspace-card"
                   style={{
@@ -2413,7 +2482,8 @@ function McqList() {
                   )}
                 </section>
               </>
-            ) : (
+            )
+          ) : (
               <div className="workspace-card">
                 <div className="workspace-card-body">
                   <EmptyState
@@ -2471,11 +2541,12 @@ function QuizAttempt() {
   const location = useLocation()
   const { user } = useAuth()
   const meta = subjectById(subject)
-  const testPart = searchParams.get('testPart')
+  const isPastPapers = subject === 'past-papers' || meta?.name === 'Past Papers'
+  const testPart = isPastPapers ? null : searchParams.get('testPart')
   const topicIdParam = searchParams.get('topicId')
-  const modeParam = searchParams.get('mode')
-  const countParam = searchParams.get('count')
-  const isRandom = Boolean(modeParam === 'random' || Number(countParam) > 0)
+  const modeParam = isPastPapers ? null : searchParams.get('mode')
+  const countParam = isPastPapers ? null : searchParams.get('count')
+  const isRandom = !isPastPapers && Boolean(modeParam === 'random' || Number(countParam) > 0)
   const chapterAttemptId = [
     chapterId,
     topicIdParam ? `topic-${topicIdParam}` : null,
@@ -2487,9 +2558,11 @@ function QuizAttempt() {
   const testPartQuery = (() => {
     const params = new URLSearchParams()
     if (topicIdParam) params.set('topicId', topicIdParam)
-    if (testPart) params.set('testPart', testPart)
-    if (modeParam) params.set('mode', modeParam)
-    if (countParam) params.set('count', countParam)
+    if (!isPastPapers) {
+      if (testPart) params.set('testPart', testPart)
+      if (modeParam) params.set('mode', modeParam)
+      if (countParam) params.set('count', countParam)
+    }
     const query = params.toString()
     return query ? `?${query}` : ''
   })()
@@ -2900,7 +2973,7 @@ function QuizAttempt() {
           <div>
             <button className="mcq-exit-attempt" type="button" onClick={pauseAndExitQuiz}>
               <span aria-hidden="true">&#8592;</span>
-              Back to chapter
+              {isPastPapers ? 'Back to past paper' : 'Back to chapter'}
             </button>
             <div className="label-xs" style={{ color: meta?.accent }}>
               {meta?.name}: {chapter?.name}

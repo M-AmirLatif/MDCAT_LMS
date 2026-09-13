@@ -71,6 +71,14 @@ const sliceMcqsForVirtualTest = (mcqs, testPart) => {
 }
 
 const buildVirtualChapterTests = (chapter, totalMcqs, options = {}) => {
+  if (
+    options.isPastPaper ||
+    chapter?.isPastPaper ||
+    options.subject === 'Past Papers' ||
+    options.subject === 'past-papers'
+  ) {
+    return []
+  }
   const count = Number(totalMcqs || 0)
   if (count <= STUDENT_CHAPTER_SPLIT_THRESHOLD) return []
   const parts = Math.ceil(count / MCQS_PER_TEST)
@@ -1769,10 +1777,6 @@ exports.getMcqsByChapter = async (req, res) => {
   try {
     const role = userRoleName(req.user)
     const isTeacher = teacherRoleNames.has(role)
-    const randomCount = Number(req.query.count || req.query.randomCount || 0)
-    const isRandomMode = !isTeacher && (req.query.mode === 'random' || randomCount > 0)
-    const selectedTestPart = isRandomMode ? null : (isTeacher ? null : normalizeTestPart(req.query.testPart))
-    const includeFull = isTeacher
     const context = await buildChapterMcqFilter(
       req.params.subject,
       req.params.chapterId,
@@ -1788,6 +1792,22 @@ exports.getMcqsByChapter = async (req, res) => {
         mcqs: [],
       })
     }
+
+    const isPastPaper =
+      context.subject === 'Past Papers' ||
+      context.subject === 'past-papers' ||
+      Boolean(context.course?.isPastPaper)
+    const randomCount = Number(req.query.count || req.query.randomCount || 0)
+    const isRandomMode =
+      !isPastPaper && !isTeacher && (req.query.mode === 'random' || randomCount > 0)
+    const selectedTestPart = isPastPaper
+      ? null
+      : isRandomMode
+        ? null
+        : isTeacher
+          ? null
+          : normalizeTestPart(req.query.testPart)
+    const includeFull = isTeacher
 
     const chapterIndex = getChapterIndex(context.course, context.chapter.id)
     if (!canAccessChapterTest(req.user, context.subject, chapterIndex, req.query.testPart)) {
@@ -1826,46 +1846,58 @@ exports.getMcqsByChapter = async (req, res) => {
     const responseTitleBase = context.topic
       ? `${context.chapter.name} - ${context.topic.name}`
       : context.chapter.name
-    const responseChapter = isRandomMode
+    const responseChapter = isPastPaper
       ? {
           ...responseChapterBase,
+          name: context.chapter.name,
           originalName: context.chapter.name,
-          topicId: context.topic?.id || null,
-          topicName: context.topic?.name || null,
-          name: `${responseTitleBase} - Random Practice (${mcqs.length} MCQs)`,
-          isVirtualTest: true,
-          isRandomTest: true,
+          isPastPaper: true,
           totalChapterMcqs: allMcqs.length,
         }
-      : selectedTestPart
+      : isRandomMode
         ? {
             ...responseChapterBase,
             originalName: context.chapter.name,
             topicId: context.topic?.id || null,
             topicName: context.topic?.name || null,
-            name: `${responseTitleBase} - Test ${selectedTestPart}`,
+            name: `${responseTitleBase} - Random Practice (${mcqs.length} MCQs)`,
             isVirtualTest: true,
-            testPart: selectedTestPart,
+            isRandomTest: true,
             totalChapterMcqs: allMcqs.length,
           }
-        : context.topic
+        : selectedTestPart
           ? {
               ...responseChapterBase,
               originalName: context.chapter.name,
-              topicId: context.topic.id,
-              topicName: context.topic.name,
-              name: responseTitleBase,
+              topicId: context.topic?.id || null,
+              topicName: context.topic?.name || null,
+              name: `${responseTitleBase} - Test ${selectedTestPart}`,
+              isVirtualTest: true,
+              testPart: selectedTestPart,
               totalChapterMcqs: allMcqs.length,
             }
-          : {
-              ...responseChapterBase,
-              totalChapterMcqs: allMcqs.length,
-            }
+          : context.topic
+            ? {
+                ...responseChapterBase,
+                originalName: context.chapter.name,
+                topicId: context.topic.id,
+                topicName: context.topic.name,
+                name: responseTitleBase,
+                totalChapterMcqs: allMcqs.length,
+              }
+            : {
+                ...responseChapterBase,
+                totalChapterMcqs: allMcqs.length,
+              }
 
-    const virtualTests = buildVirtualChapterTests(context.chapter, allMcqs.length, {
-      topicId: context.topic?.id,
-      topicName: context.topic?.name,
-    })
+    const virtualTests = isPastPaper
+      ? []
+      : buildVirtualChapterTests(context.chapter, allMcqs.length, {
+          topicId: context.topic?.id,
+          topicName: context.topic?.name,
+          isPastPaper,
+          subject: context.subject,
+        })
 
     res.status(200).json({
       success: true,
@@ -2756,8 +2788,16 @@ exports.getLatestChapterAttempt = async (req, res) => {
     const context = await buildChapterMcqFilter(req.params.subject, req.params.chapterId, false, req.query.topicId || null)
     if (context.error) return res.status(400).json({ error: context.error })
     if (!context.course || !context.chapter) return res.status(404).json({ error: 'Chapter not found' })
-    const selectedTestPart = normalizeTestPart(req.query.testPart)
-    const chapterName = selectedTestPart ? { $regex: ' - Test ' + selectedTestPart + '$' } : { $not: / - Test \d+$/ }
+    const isPastPaper =
+      context.subject === 'Past Papers' ||
+      context.subject === 'past-papers' ||
+      Boolean(context.course?.isPastPaper)
+    const selectedTestPart = isPastPaper ? null : normalizeTestPart(req.query.testPart)
+    const chapterName = isPastPaper
+      ? context.chapter.name
+      : selectedTestPart
+        ? { $regex: ' - Test ' + selectedTestPart + '$' }
+        : { $not: / - Test \d+$/ }
     const session = await TestSession.findOne({
       studentId: req.user.id, courseId: context.course._id, chapterId: context.chapter.id,
       topicId: context.topic?.id || null, chapterName,
@@ -2815,7 +2855,13 @@ exports.submitChapterAttempt = async (req, res) => {
     const answerIds = Array.isArray(req.body.mcqIds) && req.body.mcqIds.length
       ? req.body.mcqIds.map(String)
       : Object.keys(answers).filter(Boolean)
-    const isRandomAttempt = Boolean(req.query.mode === 'random' || req.body.mode === 'random' || req.body.isRandom)
+    const isPastPaper =
+      context.subject === 'Past Papers' ||
+      context.subject === 'past-papers' ||
+      Boolean(context.course?.isPastPaper)
+    const isRandomAttempt =
+      !isPastPaper &&
+      Boolean(req.query.mode === 'random' || req.body.mode === 'random' || req.body.isRandom)
 
     let mcqs = []
     let allMcqs = []
@@ -2836,8 +2882,8 @@ exports.submitChapterAttempt = async (req, res) => {
           .select('-createdBy -reviewReason -validationErrors -importBatchId')
           .lean(),
       )
-      const selectedTestPart = normalizeTestPart(req.query.testPart)
-      mcqs = sliceMcqsForVirtualTest(allMcqs, selectedTestPart)
+      const selectedTestPart = isPastPaper ? null : normalizeTestPart(req.query.testPart)
+      mcqs = selectedTestPart ? sliceMcqsForVirtualTest(allMcqs, selectedTestPart) : allMcqs
     }
 
     if (!mcqs.length)
@@ -2880,39 +2926,47 @@ exports.submitChapterAttempt = async (req, res) => {
     const responseTitleBase = context.topic
       ? `${context.chapter.name} - ${context.topic.name}`
       : context.chapter.name
-    const selectedTestPart = normalizeTestPart(req.query.testPart)
-    const responseChapter = isRandomAttempt
+    const selectedTestPart = isPastPaper ? null : normalizeTestPart(req.query.testPart)
+    const responseChapter = isPastPaper
       ? {
           ...context.chapter,
+          name: context.chapter.name,
           originalName: context.chapter.name,
-          topicId: context.topic?.id || null,
-          topicName: context.topic?.name || null,
-          name: `${responseTitleBase} - Random Practice (${mcqs.length} MCQs)`,
-          isVirtualTest: true,
-          isRandomTest: true,
-          totalChapterMcqs: mcqs.length,
+          isPastPaper: true,
+          totalChapterMcqs: allMcqs.length,
         }
-      : selectedTestPart
+      : isRandomAttempt
         ? {
             ...context.chapter,
             originalName: context.chapter.name,
             topicId: context.topic?.id || null,
             topicName: context.topic?.name || null,
-            name: `${responseTitleBase} - Test ${selectedTestPart}`,
+            name: `${responseTitleBase} - Random Practice (${mcqs.length} MCQs)`,
             isVirtualTest: true,
-            testPart: selectedTestPart,
-            totalChapterMcqs: allMcqs.length,
+            isRandomTest: true,
+            totalChapterMcqs: mcqs.length,
           }
-        : context.topic
+        : selectedTestPart
           ? {
               ...context.chapter,
               originalName: context.chapter.name,
-              topicId: context.topic.id,
-              topicName: context.topic.name,
-              name: responseTitleBase,
+              topicId: context.topic?.id || null,
+              topicName: context.topic?.name || null,
+              name: `${responseTitleBase} - Test ${selectedTestPart}`,
+              isVirtualTest: true,
+              testPart: selectedTestPart,
               totalChapterMcqs: allMcqs.length,
             }
-          : context.chapter
+          : context.topic
+            ? {
+                ...context.chapter,
+                originalName: context.chapter.name,
+                topicId: context.topic.id,
+                topicName: context.topic.name,
+                name: responseTitleBase,
+                totalChapterMcqs: allMcqs.length,
+              }
+            : context.chapter
     const attemptChapterName = responseChapter.name || context.chapter.name
 
     const PKT_OFFSET = 5 * 60 * 60 * 1000;
