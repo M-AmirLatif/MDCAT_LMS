@@ -2060,6 +2060,25 @@ exports.createChapterMcq = async (req, res) => {
   }
 }
 
+const normalizeTextForDuplicateCheck = (str) =>
+  String(str ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .replace(/^["'`]|["'`]$/g, '')
+
+const buildMcqContentSignatures = (question, optionA, optionB, optionC, optionD) => {
+  const q = normalizeTextForDuplicateCheck(question)
+  if (!q) return { exactSig: '', setSig: '' }
+  const a = normalizeTextForDuplicateCheck(optionA)
+  const b = normalizeTextForDuplicateCheck(optionB)
+  const c = normalizeTextForDuplicateCheck(optionC)
+  const d = normalizeTextForDuplicateCheck(optionD)
+  const exactSig = `${q}:::a=${a}:::b=${b}:::c=${c}:::d=${d}`
+  const setSig = `${q}:::${[a, b, c, d].sort().join('|||')}`
+  return { exactSig, setSig }
+}
+
 // ==================== CSV UPLOAD ====================
 exports.uploadChapterMcqsCsv = async (req, res) => {
   try {
@@ -2141,19 +2160,46 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
     const skipped = []
     const reviewItems = []
     const docs = []
-    const batchQuestions = new Set()
+    const batchMcqSignatures = new Set()
     const batchQuestionNumbers = new Set()
-    const batchNumberQuestionKeys = new Set()
     const uploadedQuestionNumbers = new Set()
 
     // Count existing MCQs to offset new question numbers
     const replaceAll = req.query.replaceAll === 'true'
-    const existingMcqCount = replaceAll
-      ? 0
-      : await MCQ.countDocuments({
-          courseId: context.course._id,
-          chapterId: context.chapter.id,
-        })
+    const existingMcqFilter = {
+      courseId: context.course._id,
+      chapterId: context.chapter.id,
+    }
+    if (context.topic?.id) {
+      existingMcqFilter.topicId = context.topic.id
+    }
+
+    const [existingMcqCount, existingMcqs] = await Promise.all([
+      replaceAll ? 0 : MCQ.countDocuments(existingMcqFilter),
+      replaceAll
+        ? []
+        : MCQ.find(existingMcqFilter, {
+            question: 1,
+            optionA: 1,
+            optionB: 1,
+            optionC: 1,
+            optionD: 1,
+            options: 1,
+          }).lean(),
+    ])
+
+    const existingMcqSignatures = new Set()
+    for (const m of existingMcqs) {
+      const optA = m.optionA || m.options?.[0]?.text || ''
+      const optB = m.optionB || m.options?.[1]?.text || ''
+      const optC = m.optionC || m.options?.[2]?.text || ''
+      const optD = m.optionD || m.options?.[3]?.text || ''
+      const { exactSig, setSig } = buildMcqContentSignatures(m.question, optA, optB, optC, optD)
+      if (exactSig) {
+        existingMcqSignatures.add(exactSig)
+        existingMcqSignatures.add(setSig)
+      }
+    }
 
     const normalizedRows = rows.map((rawRow, index) => ({
       rawRow,
@@ -2194,7 +2240,7 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
         headerCountedQuestionNumbers,
         existingMcqCount,
       })
-      const fallbackQuestionNumber = String(
+      let fallbackQuestionNumber = String(
         questionNumber ||
           csvRowIndex,
       ).trim()
@@ -2225,16 +2271,32 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
         explanation,
         explicitNeedsReview,
       })
-      const duplicateKey = `${fallbackQuestionNumber}::${String(question).trim().toLowerCase()}`
 
-      if (question && batchQuestions.has(question.toLowerCase())) {
-        reviewReasons.push('Duplicate question inside this CSV')
-      }
+      // If question number is already in batch, disambiguate to sequential csvRowIndex
+      // so valid questions with identical numbering aren't rejected
       if (fallbackQuestionNumber && batchQuestionNumbers.has(fallbackQuestionNumber)) {
-        reviewReasons.push('Duplicate question number inside this CSV')
+        fallbackQuestionNumber = String(csvRowIndex)
+        let disambiguateCounter = 1
+        while (batchQuestionNumbers.has(fallbackQuestionNumber)) {
+          fallbackQuestionNumber = `${csvRowIndex}_${disambiguateCounter}`
+          disambiguateCounter++
+        }
       }
-      if (question && fallbackQuestionNumber && batchNumberQuestionKeys.has(duplicateKey)) {
-        reviewReasons.push('Duplicate original question number and text inside this CSV')
+
+      // Check duplicates based on WHOLE MCQ: question statement AND all options.
+      // If questions share the same statement but have different options, they are NOT duplicates!
+      const { exactSig, setSig } = buildMcqContentSignatures(
+        question,
+        optionA,
+        optionB,
+        optionC,
+        optionD,
+      )
+
+      if (exactSig && (batchMcqSignatures.has(exactSig) || batchMcqSignatures.has(setSig))) {
+        reviewReasons.push('Duplicate MCQ (identical question and options) inside this CSV')
+      } else if (!replaceAll && exactSig && (existingMcqSignatures.has(exactSig) || existingMcqSignatures.has(setSig))) {
+        reviewReasons.push('Duplicate MCQ (identical question and options) already exists in this chapter')
       }
 
       uploadedQuestionNumbers.add(fallbackQuestionNumber)
@@ -2279,8 +2341,10 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
         return
       }
 
-      batchQuestions.add(question.toLowerCase())
-      batchNumberQuestionKeys.add(duplicateKey)
+      if (exactSig) {
+        batchMcqSignatures.add(exactSig)
+        batchMcqSignatures.add(setSig)
+      }
       docs.push(
         createMcqDocFromRow({
           context,
@@ -2347,7 +2411,7 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
         courseForReviewQueue,
         context.chapter.id,
       )
-      chapterForReviewQueue.reviewQueue = getChapterReviewQueue(
+      const filteredQueue = getChapterReviewQueue(
         chapterForReviewQueue,
       ).filter((item) => {
         if (replaceAll) {
@@ -2359,8 +2423,11 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
         if (context.topic?.id) return String(item.topicId || '') !== String(context.topic.id)
         return !!item.topicId
       })
-      chapterForReviewQueue.reviewQueue.push(...reviewItems)
-      await courseForReviewQueue.save()
+      const finalQueue = [...filteredQueue, ...reviewItems]
+      await Course.updateOne(
+        { _id: courseForReviewQueue._id, 'chapters.id': context.chapter.id },
+        { $set: { 'chapters.$.reviewQueue': finalQueue } },
+      )
     }
 
     const inserted = docs.length
