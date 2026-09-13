@@ -1,5 +1,6 @@
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { Fragment, useRef, useState } from 'react'
 import { BlockMath, InlineMath } from 'react-katex'
+import 'katex/dist/katex.min.css'
 import { cleanImageUrlValue, normalizeImageUrl } from '../utils/mediaUrls'
 
 
@@ -33,6 +34,147 @@ const GREEK_NAMES = new Set([
   'alpha', 'beta', 'gamma', 'delta', 'epsilon', 'theta', 'lambda', 'mu', 'nu',
   'pi', 'rho', 'sigma', 'tau', 'phi', 'chi', 'psi', 'omega',
 ])
+const ENGLISH_STOPWORDS = new Set([
+  'the', 'is', 'are', 'was', 'were', 'when', 'where', 'which', 'what', 'who', 'whom',
+  'that', 'this', 'these', 'those', 'then', 'than', 'there', 'here', 'and', 'or', 'not',
+  'if', 'so', 'because', 'as', 'at', 'by', 'for', 'from', 'in', 'into', 'of', 'off',
+  'on', 'onto', 'out', 'over', 'to', 'up', 'with', 'gives', 'given', 'shows', 'shown',
+  'equals', 'equal', 'formula', 'relationship', 'equation', 'law', 'calculate', 'find',
+  'determine', 'between', 'value', 'values', 'correct', 'following', 'option', 'statement',
+  'according', 'depends', 'reaction', 'system', 'process', 'electron', 'photon', 'energy',
+  'series', 'spectrum', 'transition', 'level', 'hydrogen', 'shortest', 'longest', 'highest',
+  'lowest', 'constant', 'pressure', 'volume', 'temperature', 'state', 'initial', 'final',
+  'where', 'represents', 'force', 'charges', 'two', 'spontaneous', 'all', 'temperatures',
+  'its', 'wavelength', 'speed', 'light', 'kinetic', 'acceleration', 'unit', 'units', 'both'
+])
+
+export function cleanAiCitations(text) {
+  return String(text || '')
+    .replace(/\[cite:\s*\d+(?:\s*,\s*[\w\d]+)*\]/gi, '')
+    .replace(/(?<=[a-zA-Z0-9\.\;\,])\s*\[\d+\](?=[\s\.\,\;\:\?\!]|$)/g, '')
+    .replace(/【[^】]*?】/g, '')
+    .replace(/\\\[([\s\S]*?)\\\]/g, '$$$$$1$$$$')
+    .replace(/\\\(([\s\S]*?)\\\)/g, '$$$1$$')
+    .replace(/\\(Delta|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)([a-zA-Z0-9])/g, '\\$1 $2')
+}
+
+export function unicodeToLatex(str) {
+  const map = {
+    'Δ': '\\Delta ',
+    'λ': '\\lambda ',
+    'θ': '\\theta ',
+    'α': '\\alpha ',
+    'β': '\\beta ',
+    'γ': '\\gamma ',
+    'μ': '\\mu ',
+    'π': '\\pi ',
+    'σ': '\\sigma ',
+    'ω': '\\omega ',
+    'ρ': '\\rho ',
+    'ε': '\\epsilon ',
+    'φ': '\\phi ',
+    'τ': '\\tau ',
+    'η': '\\eta ',
+    'ν': '\\nu ',
+    '∞': '\\infty ',
+    '±': '\\pm ',
+    '×': '\\times ',
+    '÷': '\\div ',
+    '≈': '\\approx ',
+    '≠': '\\neq ',
+    '≤': '\\leq ',
+    '≥': '\\geq ',
+    '°': '^\\circ ',
+  }
+  return str.replace(/[Δλθαβγμπσωρεφηνη∞±×÷≈≠≤≥°]/g, (ch) => map[ch] || ch)
+}
+
+export function sanitizeLatexForKaTeX(expr) {
+  let res = String(expr || '').trim()
+  res = unicodeToLatex(res)
+  res = res.replace(/\\(Delta|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)([a-zA-Z0-9])/g, '\\$1 $2')
+  res = res.replace(/([A-Za-z0-9\)])_([A-Za-z0-9]+)(?![_{])/g, '$1_{$2}')
+  res = res.replace(/\^\\(Delta|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)\s*([a-zA-Z0-9])/g, '^{\\$1 $2}')
+  res = res.replace(/\^\(([^)]+)\)/g, '^{$1}')
+  res = res.replace(/(^|[\s=+\-*])(\d+)\/(\d+)([\s*]|$)/g, '$1\\frac{$2}{$3}$4')
+  return res.trim()
+}
+
+function isEnglishWord(word) {
+  const clean = String(word || '').toLowerCase().replace(/[^a-z]/g, '')
+  return clean.length >= 2 && ENGLISH_STOPWORDS.has(clean)
+}
+
+function splitByMathDelimiters(text) {
+  const segments = []
+  const existingMathRegex = /(\$\$[\s\S]+?\$\$|\$[^$]+?\$)/g
+  let lastIndex = 0
+  let match
+
+  while ((match = existingMathRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      segments.push({ type: 'text', content: text.slice(lastIndex, match.index) })
+    }
+    segments.push({ type: 'math', content: match[0] })
+    lastIndex = match.index + match[0].length
+  }
+  if (lastIndex < text.length) {
+    segments.push({ type: 'text', content: text.slice(lastIndex) })
+  }
+  return segments
+}
+
+export function formatFormulasInText(text) {
+  if (!text) return ''
+  let cleaned = cleanAiCitations(text)
+  cleaned = unicodeToLatex(cleaned)
+
+  if (/^\$\$[\s\S]+?\$\$$/.test(cleaned.trim()) || /^\$[^$]+?\$$/.test(cleaned.trim())) {
+    return cleaned
+  }
+
+  // Pass 1: match full equations
+  let pass1 = splitByMathDelimiters(cleaned).map((seg) => {
+    if (seg.type === 'math') return seg.content
+    let str = seg.content
+
+    const eqPattern = /(?:^|(?<=[;:(,\s]))((?:\\(?:Delta|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)\s+)?[A-Za-z0-9_\\^(){}\[\]+\-*/]+)\s*(=|<|>|<=|>=|≈|\\approx|\\neq|\\propto)\s*([A-Za-z0-9_\\^(){}\[\]+\-*/]+(?:\s+[A-Za-z0-9_\\^(){}\[\]+\-*/]+)*)(?=[;:,.)\s]|$)/g
+
+    return str.replace(eqPattern, (fullMatch, lhs, op, rhs) => {
+      if (isEnglishWord(lhs)) return fullMatch
+
+      const rhsTokens = rhs.trim().split(/\s+/)
+      let validRhsTokens = []
+      for (const tok of rhsTokens) {
+        if (isEnglishWord(tok)) break
+        validRhsTokens.push(tok)
+      }
+      if (!validRhsTokens.length) return fullMatch
+
+      const cleanRhs = validRhsTokens.join(' ')
+      const formula = `${lhs} ${op} ${cleanRhs}`
+      const trailingExtra = rhs.slice(cleanRhs.length)
+
+      return `$${sanitizeLatexForKaTeX(formula)}$${trailingExtra}`
+    })
+  }).join('')
+
+  // Pass 2: match standalone variables, subscripts, powers, Greek letters in remaining text
+  let pass2 = splitByMathDelimiters(pass1).map((seg) => {
+    if (seg.type === 'math') return seg.content
+    let str = seg.content
+
+    const tokenPattern = /(?:^|(?<=[;:(,\s]))((?:\\(?:Delta|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)\b(?:\s+[a-zA-Z0-9]+)?|[A-Za-z0-9\)]+_[A-Za-z0-9\{]+(?:\^[A-Za-z0-9\{\-]+)?|(?:\([A-Za-z0-9_+\- ]+\)|[A-Za-z0-9_]+)\^(?:\{[^}]+\}|[A-Za-z0-9+\-]+)|\\(?:times|div|pm|approx|neq|leq|geq|infty)\b))(?=[;:,.)\s]|$)/g
+
+    return str.replace(tokenPattern, (fullMatch, token) => {
+      const trimmed = token.trim()
+      if (isEnglishWord(trimmed)) return fullMatch
+      return `$${sanitizeLatexForKaTeX(trimmed)}$`
+    })
+  }).join('')
+
+  return pass2
+}
 
 function tokenizeAsciiMath(value) {
   const tokens = []
@@ -448,15 +590,33 @@ export function parseLatexText(text) {
 }
 
 function renderTextWithMath(text, keyPrefix) {
-  return parseLatexText(text).map((part, index) => {
+  const preparedText = formatFormulasInText(text)
+  return parseLatexText(preparedText).map((part, index) => {
     const key = `${keyPrefix}-${index}`
     if (part.type === 'inline-math') {
-      return <InlineMath key={key} math={part.content} />
+      return (
+        <InlineMath
+          key={key}
+          math={part.content}
+          renderError={(error) => (
+            <span className="katex-fallback" title={error?.message || 'Math rendering error'}>
+              {part.content}
+            </span>
+          )}
+        />
+      )
     }
     if (part.type === 'block-math') {
       return (
         <div key={key} className="mcq-renderer-block-math">
-          <BlockMath math={part.content} />
+          <BlockMath
+            math={part.content}
+            renderError={(error) => (
+              <span className="katex-fallback" title={error?.message || 'Math rendering error'}>
+                {part.content}
+              </span>
+            )}
+          />
         </div>
       )
     }
@@ -475,10 +635,6 @@ export default function MCQRenderer({
   imageUrls = [],
   images = [],
 }) {
-  useEffect(() => {
-    import('katex/dist/katex.min.css')
-  }, [])
-
   const rawContent = text ?? content ?? ''
   const normalizedPropImages = [
     imageFromUnknown(imageUrl),

@@ -313,7 +313,14 @@ const normalizeMediaMarkup = (value) =>
     )
     .replace(IMAGE_URL_REGEX, (url) => encodeImageToken({ url }))
 
-const normalizeCsvCell = (value) => String(value ?? '')
+const cleanAiAndCitationArtifacts = (text) =>
+  String(text || '')
+    .replace(/\[cite:\s*\d+(?:\s*,\s*[\w\d]+)*\]/gi, '')
+    .replace(/(?<=[a-zA-Z0-9\.\;\,])\s*\[\d+\](?=[\s\.\,\;\:\?\!]|$)/g, '')
+    .replace(/【[^】]*?】/g, '')
+    .replace(/\\(Delta|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)([a-zA-Z0-9])/g, '\\$1 $2')
+
+const normalizeCsvCell = (value) => cleanAiAndCitationArtifacts(String(value ?? '').trim())
 
 const cleanImageUrl = (value) =>
   String(value || '')
@@ -522,7 +529,7 @@ const serializeMcqMedia = (mcq) => {
 const serializeMcqsMedia = (mcqs) => mcqs.map(serializeMcqMedia)
 
 const hasLatex = (text) =>
-  /(\$\$[\s\S]+?\$\$|\$[^$]+?\$)/.test(String(text || ''))
+  /(\$\$[\s\S]+?\$\$|\$[^$]+?\$|\\[A-Za-z]+|[A-Za-z0-9]_[A-Za-z0-9]|[A-Za-z0-9]\^[A-Za-z0-9]|[Δλθαβγμπσω∞±×÷≈≠≤≥°])/.test(String(text || ''))
 const hasDiagram = (text) => /\[DIAGRAM:\s*.*?\]/i.test(String(text || ''))
 const hasImageReference = (text) =>
   Boolean(extractImageUrlFromField(text)) ||
@@ -576,10 +583,6 @@ const determineReviewReasons = ({
   if (hasUnavailableDiagram(question))
     reasons.push('Diagram description unavailable')
 
-  const cells = [question, optionA, optionB, optionC, optionD, explanation]
-  if (cells.some((cell) => hasRawLatexLikeText(cell))) {
-    reasons.push('Contains raw LaTeX-like text outside math wrappers')
-  }
   if (explicitNeedsReview) {
     reasons.push('Flagged by CSV generator')
   }

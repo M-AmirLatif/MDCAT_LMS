@@ -6721,9 +6721,37 @@ html[data-theme='dark'] .recharts-tooltip-wrapper .chart-tooltip-clean__row stro
 }
 
 .mcq-renderer-block-math {
-  display: block;
-  margin: 10px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 14px auto;
+  padding: 12px 24px;
+  background: rgba(108, 71, 255, 0.04);
+  border: 1.5px solid rgba(108, 71, 255, 0.18);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
   overflow-x: auto;
+  max-width: fit-content;
+  min-width: min(100%, 220px);
+}
+
+[data-theme='dark'] .mcq-renderer-block-math,
+.dark .mcq-renderer-block-math {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.katex-fallback {
+  font-family: var(--font-family-mono, monospace);
+  color: inherit;
+  opacity: 0.9;
+}
+
+.katex .fbox {
+  border: 1.5px solid currentColor;
+  border-radius: 6px;
+  padding: 4px 10px;
 }
 
 .mcq-image-block {
