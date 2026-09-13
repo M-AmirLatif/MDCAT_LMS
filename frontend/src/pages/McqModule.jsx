@@ -173,31 +173,6 @@ const getMcqDisplayNumberOffset = (items = [], reviewItems = []) => {
   return isHeaderShiftedSequence ? -1 : 0
 }
 
-const compareMcqOrder = (a, b) => {
-  const aNumber = getNumericMcqNumber(a)
-  const bNumber = getNumericMcqNumber(b)
-  if (aNumber !== null && bNumber !== null && aNumber !== bNumber) {
-    return aNumber - bNumber
-  }
-  if (aNumber !== null && bNumber === null) return -1
-  if (aNumber === null && bNumber !== null) return 1
-
-  const aRow = Number(a?.csvRowIndex)
-  const bRow = Number(b?.csvRowIndex)
-  if (Number.isFinite(aRow) && Number.isFinite(bRow) && aRow !== bRow) {
-    return aRow - bRow
-  }
-  if (Number.isFinite(aRow) && !Number.isFinite(bRow)) return -1
-  if (!Number.isFinite(aRow) && Number.isFinite(bRow)) return 1
-
-  const timeDiff = new Date(a?.createdAt || 0) - new Date(b?.createdAt || 0)
-  if (timeDiff !== 0) return timeDiff
-
-  return String(a?._id || '').localeCompare(String(b?._id || ''))
-}
-
-const sortMcqsByOriginalOrder = (items = []) => [...items].sort(compareMcqOrder)
-
 const getMcqDisplayNumber = (mcq, fallbackIndex, offset = 0) => {
   const numeric = getNumericMcqNumber(mcq)
   if (numeric !== null) return String(Math.max(1, numeric + offset))
@@ -1185,7 +1160,7 @@ function TeacherInlineMcqCard({ mcq, index, displayNumberOffset = 0, chapterId, 
         subject: meta?.name,
         isPublished: true,
       })
-      toast.success(`Question ${index + 1} saved successfully`)
+      toast.success(`Question ${getMcqDisplayNumber(mcq, index, displayNumberOffset)} saved successfully`)
       onSaved()
     } catch (error) {
       toast.error(getUserFriendlyErrorMessage(error, 'We could not save the MCQ.'))
@@ -1201,7 +1176,7 @@ function TeacherInlineMcqCard({ mcq, index, displayNumberOffset = 0, chapterId, 
   return (
     <article className="workspace-card mcq-inline-card mcq-managed-parent-card animate-fade-up">
       <div className="mcq-inline-card-header">
-        <span className="mcq-inline-card-number">QUESTION {index + 1}</span>
+        <span className="mcq-inline-card-number">QUESTION {getMcqDisplayNumber(mcq, index, displayNumberOffset)}</span>
         {saving && <span className="mcq-inline-card-status">Saving...</span>}
       </div>
 
@@ -1504,7 +1479,7 @@ function McqList() {
       setLockMessage('')
       setChapter(res.data.chapter)
       setTopics(res.data.topics || [])
-      setMcqs(isTeacher ? sortMcqsByOriginalOrder(res.data.mcqs || []) : (res.data.mcqs || []))
+      setMcqs(res.data.mcqs || [])
       setVirtualTests(res.data.virtualTests || [])
       const totalCount = res.data.totalChapterMcqs || res.data.totalMcqs || (res.data.mcqs || []).length
       setTotalChapterMcqs(totalCount)
