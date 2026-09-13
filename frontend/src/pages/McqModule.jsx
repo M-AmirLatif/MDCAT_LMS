@@ -1800,16 +1800,7 @@ function McqList() {
                 type="button"
                 onClick={() => updateViewMode('mcqs')}
               >
-                MCQs Editor
-              </button>
-            ) : null}
-            {isTeacher ? (
-              <button
-                className={`btn ${activeHeaderAction === 'hub' ? 'btn-primary' : 'btn-secondary'}`}
-                type="button"
-                onClick={() => updateViewMode('hub')}
-              >
-                Student Test Hub
+                MCQs Test
               </button>
             ) : null}
             {isTeacher ? (
@@ -1936,7 +1927,7 @@ function McqList() {
       ) : null}
 
       {viewMode !== 'review' ? (
-        isTeacher && viewMode === 'mcqs' ? (
+        isTeacher ? (
           mcqs.length > 0 ? (
             <div className="mcq-inline-list">
               {mcqs.map((mcq, index) => (
