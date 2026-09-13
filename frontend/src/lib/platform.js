@@ -88,10 +88,18 @@ export function getNavigationForRole(role = 'student') {
 }
 
 export function getPageTitle(pathname, role = 'student') {
+  if (pathname === '/mcqs/past-papers' || pathname.startsWith('/mcqs/past-papers/')) {
+    return 'Past Papers'
+  }
+
   const sections = getNavigationForRole(role)
   for (const section of sections) {
     const match = section.items.find(
-      (item) => pathname === item.path || (item.path !== '/dashboard' && pathname.startsWith(item.path)),
+      (item) =>
+        pathname === item.path ||
+        (item.path !== '/dashboard' &&
+          pathname.startsWith(item.path) &&
+          !(item.path === '/mcqs' && pathname.startsWith('/mcqs/past-papers'))),
     )
     if (match) return match.label
   }
@@ -102,8 +110,10 @@ export function getPageTitle(pathname, role = 'student') {
   if (pathname.startsWith('/course/') && pathname.includes('/assignments')) return 'Assignments'
   if (pathname.startsWith('/mcqs/') && pathname.includes('/attempt')) return 'Quiz Attempt'
   if (pathname.startsWith('/mcqs/') && pathname.includes('/result')) return 'Quiz Result'
+  if (pathname.startsWith('/mcqs/past-papers')) return 'Past Papers'
   if (pathname.startsWith('/mcqs/')) return 'MCQ Bank'
-  if (pathname === '/mcqs' || pathname === '/student/mcqs' || pathname === '/teacher/mcqs') return 'Practice Subjects'
+  if (pathname === '/teacher/mcqs') return 'MCQ Management'
+  if (pathname === '/mcqs' || pathname === '/student/mcqs') return 'Practice Subjects'
   if (pathname.startsWith('/course/') && pathname.includes('/mcqs')) return 'Practice Test'
   if (pathname.startsWith('/course/')) return 'Subject Chapters'
   if (pathname.startsWith('/lecture/')) return 'Lecture Player'

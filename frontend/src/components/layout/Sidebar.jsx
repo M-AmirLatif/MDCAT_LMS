@@ -197,12 +197,27 @@ export default function Sidebar({
               <div className="sidebar-section-label">{section.label}</div>
               <div className="sidebar-section-items">
                 {section.items.map((item) => {
-                  const active =
-                    currentPath === item.path ||
-                    (item.path !== '/dashboard' && currentPath.startsWith(item.path)) ||
-                    (item.path === '/teacher/mcqs' && currentPath.startsWith('/mcqs')) ||
-                    (item.path === '/teacher/students' && currentPath.startsWith('/test-review')) ||
-                    (item.path === '/performance' && currentPath.startsWith('/test-review'))
+                  const isPastPapersPath =
+                    currentPath === '/mcqs/past-papers' ||
+                    currentPath.startsWith('/mcqs/past-papers/')
+
+                  let active = false
+                  if (item.key === 'past-papers' || item.path === '/mcqs/past-papers') {
+                    active = isPastPapersPath
+                  } else if (isPastPapersPath && (item.path === '/teacher/mcqs' || item.path === '/mcqs')) {
+                    active = false
+                  } else {
+                    active =
+                      currentPath === item.path ||
+                      (item.path !== '/dashboard' &&
+                        currentPath.startsWith(item.path) &&
+                        !(item.path === '/mcqs' && isPastPapersPath)) ||
+                      (item.path === '/teacher/mcqs' &&
+                        currentPath.startsWith('/mcqs') &&
+                        !isPastPapersPath) ||
+                      (item.path === '/teacher/students' && currentPath.startsWith('/test-review')) ||
+                      (item.path === '/performance' && currentPath.startsWith('/test-review'))
+                  }
 
                   return (
                     <button
