@@ -29,7 +29,7 @@ const CHEMICAL_ELEMENTS = new Set([
   'Ac', 'Th', 'Pa', 'U', 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr', 'Rf', 'Db',
   'Sg', 'Bh', 'Hs', 'Mt', 'Ds', 'Rg', 'Cn', 'Nh', 'Fl', 'Mc', 'Lv', 'Ts', 'Og',
 ])
-const CHEMICAL_FORMULA_REGEX = /(?<![A-Za-z])(?:\d+\s*)?(?:[A-Z][a-z]?\d*|\((?:[A-Z][a-z]?\d*)+\)\d*)+(?:\^?\d*[+-])?(?![A-Za-z])/g
+const CHEMICAL_FORMULA_REGEX = /(?<![A-Za-z])(?:\d+\s*)?(?:[A-Z][a-z]?\d*|\((?:[A-Z][a-z]?\d*)+\)\d*)+(?:\^?(?:\+{1,4}|-{1,4}|\d+[+-]|[+-]\d+))?(?![A-Za-z])/g
 const GREEK_NAMES = new Set([
   'alpha', 'beta', 'gamma', 'delta', 'epsilon', 'theta', 'lambda', 'mu', 'nu',
   'pi', 'rho', 'sigma', 'tau', 'phi', 'chi', 'psi', 'omega',
@@ -45,7 +45,9 @@ const ENGLISH_STOPWORDS = new Set([
   'series', 'spectrum', 'transition', 'level', 'hydrogen', 'shortest', 'longest', 'highest',
   'lowest', 'constant', 'pressure', 'volume', 'temperature', 'state', 'initial', 'final',
   'where', 'represents', 'force', 'charges', 'two', 'spontaneous', 'all', 'temperatures',
-  'its', 'wavelength', 'speed', 'light', 'kinetic', 'acceleration', 'unit', 'units', 'both'
+  'its', 'wavelength', 'speed', 'light', 'kinetic', 'acceleration', 'unit', 'units', 'both',
+  'bond', 'bonds', 'orbital', 'orbitals', 'atom', 'atoms', 'molecule', 'molecules',
+  'ion', 'ions', 'higher', 'less', 'more', 'human', 'body', 'one', 'two', 'three', 'four'
 ])
 
 const NUCLEIC_ACID_TERMS = [
@@ -114,17 +116,23 @@ export function unicodeToLatex(str) {
     '≠': '\\neq ',
     '≤': '\\leq ',
     '≥': '\\geq ',
+    'Σ': '\\Sigma ',
+    '∑': '\\sum ',
     '°': '^\\circ ',
   }
-  return str.replace(/[Δλθαβγμπσωρεφηνη∞±×÷≈≠≤≥°]/g, (ch) => map[ch] || ch)
+  return str.replace(/[Δλθαβγμπσωρεφηνη∞±×÷≈≠≤≥Σ∑°]/g, (ch) => map[ch] || ch)
 }
 
 export function sanitizeLatexForKaTeX(expr) {
   let res = String(expr || '').trim()
   res = unicodeToLatex(res)
-  res = res.replace(/\\(Delta|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)([a-zA-Z0-9])/g, '\\$1 $2')
+  res = res.replace(/!=|<>/g, ' \\neq ')
+  res = res.replace(/<=/g, ' \\leq ')
+  res = res.replace(/>=/g, ' \\geq ')
+  res = res.replace(/\\(Delta|Sigma|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)([a-zA-Z0-9])/g, '\\$1 $2')
+  res = res.replace(/([A-Za-z])(\d+)(?![_\d{])/g, '$1_{$2}')
   res = res.replace(/([A-Za-z0-9\)])_([A-Za-z0-9]+)(?![_{])/g, '$1_{$2}')
-  res = res.replace(/\^\\(Delta|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)\s*([a-zA-Z0-9])/g, '^{\\$1 $2}')
+  res = res.replace(/\^\\(Delta|Sigma|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)\s*([a-zA-Z0-9])/g, '^{\\$1 $2}')
   res = res.replace(/\^\(([^)]+)\)/g, '^{$1}')
   res = res.replace(/(^|[\s=+\-*])(\d+)\/(\d+)([\s*]|$)/g, '$1\\frac{$2}{$3}$4')
   return res.trim()
@@ -156,21 +164,44 @@ function splitByMathDelimiters(text) {
 
 export function formatFormulasInText(text) {
   if (!text) return ''
-  let cleaned = cleanAiCitations(text)
+
+  // 1. Convert temperature degrees Celcius / Fahrenheit / Kelvin: e.g. "2°C", "2 °C", "2^\circ C", "37°C"
+  let str = String(text)
+    .replace(/(?<![A-Za-z0-9])(-?\d+(?:\.\d+)?)\s*(?:°|(?:\^\\circ|\^o|\^0))\s*([CFK])\b/g, '$$$1^\\circ\\text{$2}$$')
+    .replace(/(?<![A-Za-z0-9])(-?\d+(?:\.\d+)?)\s*°(?![A-Za-z0-9])/g, '$$$1^\\circ$$')
+    .replace(/(?<![A-Za-z0-9])(-?\d+(?:\.\d+)?)\s*\^\\circ\b/g, '$$$1^\\circ$$')
+
+  // 2. Convert electron notation: e- or 2e- or e^-
+  str = str.replace(/(?<![A-Za-z0-9])(\d*)\s*e\s*[-⁻](?![A-Za-z0-9])/g, (m, count) => {
+    return `$$${count || ''}\\text{e}^-$$`
+  })
+
+  // 3. Convert scientific notation: 6.02×10^23, 6.02 x 10^-23, 6.02 × 10²³
+  str = str.replace(/(?<![A-Za-z0-9])(-?\d+(?:\.\d+)?)\s*(?:[×*]|\\times|x)\s*10\^({?-?\d+}?)(?![A-Za-z0-9])/g, (m, coeff, exp) => {
+    const cleanExp = exp.replace(/[{}]/g, '')
+    return `$$${coeff} \\times 10^{${cleanExp}}$$`
+  })
+  str = str.replace(/(?<![A-Za-z0-9])(-?\d+(?:\.\d+)?)\s*(?:[×*]|\\times)\s*10([⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+)(?![A-Za-z0-9])/g, (m, coeff, exp) => {
+    const supMap = { '⁰':'0', '¹':'1', '²':'2', '³':'3', '⁴':'4', '⁵':'5', '⁶':'6', '⁷':'7', '⁸':'8', '⁹':'9', '⁺':'+', '⁻':'-' }
+    const cleanExp = exp.split('').map((c) => supMap[c] || c).join('')
+    return `$$${coeff} \\times 10^{${cleanExp}}$$`
+  })
+
+  let cleaned = cleanAiCitations(str)
   cleaned = unicodeToLatex(cleaned)
 
   if (/^\$\$[\s\S]+?\$\$$/.test(cleaned.trim()) || /^\$[^$]+?\$$/.test(cleaned.trim())) {
     return cleaned
   }
 
-  // Pass 1: match full equations
+  // Pass 1: match full equations with =, !=, <>, <=, >=, etc.
+  const eqPattern = /(?:^|(?<=[;:(,\s]))((?:\\(?:Delta|Sigma|sum|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)\s*)*[A-Za-z0-9_\\^(){}\[\]+\-*/]+)\s*(=|!=|<>|\/=|<=|>=|<|>|≈|\\approx|\\neq|\\propto)\s*([A-Za-z0-9_\\^(){}\[\]+\-*/]+(?:\s+[A-Za-z0-9_\\^(){}\[\]+\-*/]+)*)(?=[;:,.)\s]|$)/g
+
   let pass1 = splitByMathDelimiters(cleaned).map((seg) => {
     if (seg.type === 'math') return seg.content
-    let str = seg.content
+    let current = seg.content
 
-    const eqPattern = /(?:^|(?<=[;:(,\s]))((?:\\(?:Delta|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)\s+)?[A-Za-z0-9_\\^(){}\[\]+\-*/]+)\s*(=|<|>|<=|>=|≈|\\approx|\\neq|\\propto)\s*([A-Za-z0-9_\\^(){}\[\]+\-*/]+(?:\s+[A-Za-z0-9_\\^(){}\[\]+\-*/]+)*)(?=[;:,.)\s]|$)/g
-
-    return str.replace(eqPattern, (fullMatch, lhs, op, rhs) => {
+    return current.replace(eqPattern, (fullMatch, lhs, op, rhs) => {
       if (isEnglishWord(lhs)) return fullMatch
 
       const rhsTokens = rhs.trim().split(/\s+/)
@@ -190,13 +221,18 @@ export function formatFormulasInText(text) {
   }).join('')
 
   // Pass 2: match standalone variables, subscripts, powers, Greek letters in remaining text
+  // Notice: Greek letters do NOT absorb following words unless single variable/digit (e.g. \Delta T, \lambda 1)
+  const greekRe = '\\\\(?:Delta|Sigma|sum|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)\\b'
+  const tokenPattern = new RegExp(
+    `(?:^|(?<=[;:(,\\s]))((?:${greekRe}(?:\\s+[A-Z0-9]\\b)?|[A-Za-z0-9\\)]+_[A-Za-z0-9\\{]+(?:\\^[A-Za-z0-9\\{\\-]+)?|(?:\\([A-Za-z0-9_+\\- ]+\\)|[A-Za-z0-9_]+)\\^(?:\\{[^}]+\\}|[A-Za-z0-9+\\-]+)|\\\\(?:times|div|pm|approx|neq|leq|geq|infty)\\b))(?=[;:,.)\\s]|$)`,
+    'g'
+  )
+
   let pass2 = splitByMathDelimiters(pass1).map((seg) => {
     if (seg.type === 'math') return seg.content
-    let str = seg.content
+    let current = seg.content
 
-    const tokenPattern = /(?:^|(?<=[;:(,\s]))((?:\\(?:Delta|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)\b(?:\s+[a-zA-Z0-9]+)?|[A-Za-z0-9\)]+_[A-Za-z0-9\{]+(?:\^[A-Za-z0-9\{\-]+)?|(?:\([A-Za-z0-9_+\- ]+\)|[A-Za-z0-9_]+)\^(?:\{[^}]+\}|[A-Za-z0-9+\-]+)|\\(?:times|div|pm|approx|neq|leq|geq|infty)\b))(?=[;:,.)\s]|$)/g
-
-    return str.replace(tokenPattern, (fullMatch, token) => {
+    return current.replace(tokenPattern, (fullMatch, token) => {
       const trimmed = token.trim()
       if (isEnglishWord(trimmed)) return fullMatch
       return `$${sanitizeLatexForKaTeX(trimmed)}$`
@@ -351,7 +387,7 @@ function parseChemicalFormula(value) {
   const coefficientMatch = raw.match(/^\d+(?=\s*[A-Z(])/)
   const coefficient = coefficientMatch?.[0] || ''
   const formula = raw.slice(coefficient.length).trimStart()
-  const chargeMatch = formula.match(/\^?\d*[+-]$/)
+  const chargeMatch = formula.match(/\^?(?:\+{1,4}|-{1,4}|\d+[+-]|[+-]\d+)$/)
   const charge = chargeMatch?.[0]?.replace('^', '') || ''
   const body = charge ? formula.slice(0, -chargeMatch[0].length) : formula
   const elementMatches = [...body.matchAll(/[A-Z][a-z]?/g)].map((match) => match[0])
