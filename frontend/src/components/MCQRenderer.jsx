@@ -48,14 +48,44 @@ const ENGLISH_STOPWORDS = new Set([
   'its', 'wavelength', 'speed', 'light', 'kinetic', 'acceleration', 'unit', 'units', 'both'
 ])
 
+const NUCLEIC_ACID_TERMS = [
+  [/\bcdna\b/gi, 'cDNA'],
+  [/\bmrna\b/gi, 'mRNA'],
+  [/\btrna\b/gi, 'tRNA'],
+  [/\brrna\b/gi, 'rRNA'],
+  [/\bmirna\b/gi, 'miRNA'],
+  [/\bsirna\b/gi, 'siRNA'],
+  [/\bsnrna\b/gi, 'snRNA'],
+  [/\bhnrna\b/gi, 'hnRNA'],
+  [/\blncrna\b/gi, 'lncRNA'],
+  [/\bmtdna\b/gi, 'mtDNA'],
+  [/\bcpdna\b/gi, 'cpDNA'],
+  [/\bssdna\b/gi, 'ssDNA'],
+  [/\bdsdna\b/gi, 'dsDNA'],
+  [/\bssrna\b/gi, 'ssRNA'],
+  [/\bdsrna\b/gi, 'dsRNA'],
+]
+
+export function normalizeBiologicalTerms(text) {
+  if (!text) return text
+  let res = String(text)
+  for (let i = 0; i < NUCLEIC_ACID_TERMS.length; i++) {
+    const [regex, replacement] = NUCLEIC_ACID_TERMS[i]
+    res = res.replace(regex, replacement)
+  }
+  return res
+}
+
 export function cleanAiCitations(text) {
-  return String(text || '')
-    .replace(/\[cite:\s*\d+(?:\s*,\s*[\w\d]+)*\]/gi, '')
-    .replace(/(?<=[a-zA-Z0-9\.\;\,])\s*\[\d+\](?=[\s\.\,\;\:\?\!]|$)/g, '')
-    .replace(/【[^】]*?】/g, '')
-    .replace(/\\\[([\s\S]*?)\\\]/g, '$$$$$1$$$$')
-    .replace(/\\\(([\s\S]*?)\\\)/g, '$$$1$$')
-    .replace(/\\(Delta|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)([a-zA-Z0-9])/g, '\\$1 $2')
+  return normalizeBiologicalTerms(
+    String(text || '')
+      .replace(/\[cite:\s*\d+(?:\s*,\s*[\w\d]+)*\]/gi, '')
+      .replace(/(?<=[a-zA-Z0-9\.\;\,])\s*\[\d+\](?=[\s\.\,\;\:\?\!]|$)/g, '')
+      .replace(/【[^】]*?】/g, '')
+      .replace(/\\\[([\s\S]*?)\\\]/g, '$$$$$1$$$$')
+      .replace(/\\\(([\s\S]*?)\\\)/g, '$$$1$$')
+      .replace(/\\(Delta|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)([a-zA-Z0-9])/g, '\\$1 $2')
+  )
 }
 
 export function unicodeToLatex(str) {

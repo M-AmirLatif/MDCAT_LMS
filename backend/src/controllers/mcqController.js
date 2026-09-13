@@ -321,12 +321,42 @@ const normalizeMediaMarkup = (value) =>
     )
     .replace(IMAGE_URL_REGEX, (url) => encodeImageToken({ url }))
 
+const NUCLEIC_ACID_TERMS = [
+  [/\bcdna\b/gi, 'cDNA'],
+  [/\bmrna\b/gi, 'mRNA'],
+  [/\btrna\b/gi, 'tRNA'],
+  [/\brrna\b/gi, 'rRNA'],
+  [/\bmirna\b/gi, 'miRNA'],
+  [/\bsirna\b/gi, 'siRNA'],
+  [/\bsnrna\b/gi, 'snRNA'],
+  [/\bhnrna\b/gi, 'hnRNA'],
+  [/\blncrna\b/gi, 'lncRNA'],
+  [/\bmtdna\b/gi, 'mtDNA'],
+  [/\bcpdna\b/gi, 'cpDNA'],
+  [/\bssdna\b/gi, 'ssDNA'],
+  [/\bdsdna\b/gi, 'dsDNA'],
+  [/\bssrna\b/gi, 'ssRNA'],
+  [/\bdsrna\b/gi, 'dsRNA'],
+]
+
+const normalizeScientificTerms = (text) => {
+  if (!text) return text
+  let res = String(text)
+  for (let i = 0; i < NUCLEIC_ACID_TERMS.length; i++) {
+    const [regex, replacement] = NUCLEIC_ACID_TERMS[i]
+    res = res.replace(regex, replacement)
+  }
+  return res
+}
+
 const cleanAiAndCitationArtifacts = (text) =>
-  String(text || '')
-    .replace(/\[cite:\s*\d+(?:\s*,\s*[\w\d]+)*\]/gi, '')
-    .replace(/(?<=[a-zA-Z0-9\.\;\,])\s*\[\d+\](?=[\s\.\,\;\:\?\!]|$)/g, '')
-    .replace(/【[^】]*?】/g, '')
-    .replace(/\\(Delta|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)([a-zA-Z0-9])/g, '\\$1 $2')
+  normalizeScientificTerms(
+    String(text || '')
+      .replace(/\[cite:\s*\d+(?:\s*,\s*[\w\d]+)*\]/gi, '')
+      .replace(/(?<=[a-zA-Z0-9\.\;\,])\s*\[\d+\](?=[\s\.\,\;\:\?\!]|$)/g, '')
+      .replace(/【[^】]*?】/g, '')
+      .replace(/\\(Delta|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)([a-zA-Z0-9])/g, '\\$1 $2')
+  )
 
 const normalizeCsvCell = (value) => cleanAiAndCitationArtifacts(String(value ?? '').trim())
 
