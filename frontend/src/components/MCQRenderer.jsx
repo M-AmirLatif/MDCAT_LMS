@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { BlockMath, InlineMath } from 'react-katex'
 import 'katex/dist/katex.min.css'
 import { cleanImageUrlValue, normalizeImageUrl } from '../utils/mediaUrls'
@@ -118,14 +118,14 @@ export function unicodeToLatex(str) {
     '≥': '\\geq ',
     'Σ': '\\Sigma ',
     '∑': '\\sum ',
-    '°': '^\\circ ',
   }
-  return str.replace(/[Δλθαβγμπσωρεφηνη∞±×÷≈≠≤≥Σ∑°]/g, (ch) => map[ch] || ch)
+  return str.replace(/[Δλθαβγμπσωρεφηνη∞±×÷≈≠≤≥Σ∑]/g, (ch) => map[ch] || ch)
 }
 
 export function sanitizeLatexForKaTeX(expr) {
   let res = String(expr || '').trim()
   res = unicodeToLatex(res)
+  res = res.replace(/°/g, '^\\circ ')
   res = res.replace(/!=|<>/g, ' \\neq ')
   res = res.replace(/<=/g, ' \\leq ')
   res = res.replace(/>=/g, ' \\geq ')
@@ -168,15 +168,19 @@ export function formatFormulasInText(text) {
   // 1. Convert temperature degrees Celcius / Fahrenheit / Kelvin: e.g. "2°C", "2 °C", "2^\circ C", "37°C"
   let str = String(text)
     .replace(/(?<![A-Za-z0-9])(-?\d+(?:\.\d+)?)\s*(?:°|(?:\^\\circ|\^o|\^0))\s*([CFK])\b/g, '$$$1^\\circ\\text{$2}$$')
-    .replace(/(?<![A-Za-z0-9])(-?\d+(?:\.\d+)?)\s*°(?![A-Za-z0-9])/g, '$$$1^\\circ$$')
-    .replace(/(?<![A-Za-z0-9])(-?\d+(?:\.\d+)?)\s*\^\\circ\b/g, '$$$1^\\circ$$')
 
-  // 2. Convert electron notation: e- or 2e- or e^-
+  // 2. Degrees / Angles: "180°", "180^\circ", "90°", "1°", etc.
+  str = splitByMathDelimiters(str).map((seg) => {
+    if (seg.type === 'math') return seg.content
+    return seg.content.replace(/(?<![A-Za-z0-9])(-?\d+(?:\.\d+)?)\s*(?:°|\^\\circ|\^o|\^0)(?![A-Za-z0-9])/g, '$$$1^\\circ$$')
+  }).join('')
+
+  // 3. Convert electron notation: e- or 2e- or e^-
   str = str.replace(/(?<![A-Za-z0-9])(\d*)\s*e\s*[-⁻](?![A-Za-z0-9])/g, (m, count) => {
     return `$$${count || ''}\\text{e}^-$$`
   })
 
-  // 3. Convert scientific notation: 6.02×10^23, 6.02 x 10^-23, 6.02 × 10²³
+  // 4. Convert scientific notation: 6.02×10^23, 6.02 x 10^-23, 6.02 × 10²³
   str = str.replace(/(?<![A-Za-z0-9])(-?\d+(?:\.\d+)?)\s*(?:[×*]|\\times|x)\s*10\^({?-?\d+}?)(?![A-Za-z0-9])/g, (m, coeff, exp) => {
     const cleanExp = exp.replace(/[{}]/g, '')
     return `$$${coeff} \\times 10^{${cleanExp}}$$`
@@ -186,6 +190,45 @@ export function formatFormulasInText(text) {
     const cleanExp = exp.split('').map((c) => supMap[c] || c).join('')
     return `$$${coeff} \\times 10^{${cleanExp}}$$`
   })
+
+  // 5. Greek math expressions: \lambda, \lambda/2, \lambda /4, 2\lambda, \pi/90, 2\pi, λ, λ/2, 2λ, etc.
+  const unicodeGreekMap = {
+    'Δ': '\\Delta',
+    'Σ': '\\Sigma',
+    'λ': '\\lambda',
+    'θ': '\\theta',
+    'α': '\\alpha',
+    'β': '\\beta',
+    'γ': '\\gamma',
+    'μ': '\\mu',
+    'π': '\\pi',
+    'σ': '\\sigma',
+    'ω': '\\omega',
+    'ρ': '\\rho',
+    'ε': '\\epsilon',
+    'φ': '\\phi',
+    'τ': '\\tau',
+    'η': '\\eta',
+    'ν': '\\nu',
+  }
+  str = splitByMathDelimiters(str).map((seg) => {
+    if (seg.type === 'math') return seg.content
+    let current = seg.content
+    for (const [uni, lat] of Object.entries(unicodeGreekMap)) {
+      current = current.replace(new RegExp(uni, 'g'), lat)
+    }
+    const greekExprRegex = /(?<![A-Za-z0-9])(\d*\s*\\(?:alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega|Delta|Sigma)\b(?:\s*\/\s*\d+)?)(?![A-Za-z0-9])/g
+    return current.replace(greekExprRegex, (match) => {
+      let expr = match.trim()
+      if (expr.includes('/')) {
+        const parts = expr.split('/')
+        const num = parts[0].trim()
+        const den = parts[1].trim()
+        return `$\\frac{${num}}{${den}}$`
+      }
+      return `$${expr}$`
+    })
+  }).join('')
 
   let cleaned = cleanAiCitations(str)
   cleaned = unicodeToLatex(cleaned)
