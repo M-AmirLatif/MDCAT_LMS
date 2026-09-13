@@ -6743,15 +6743,12 @@ html[data-theme='dark'] .recharts-tooltip-wrapper .chart-tooltip-clean__row stro
 }
 
 .katex-fallback {
-  font-family: var(--font-family-mono, monospace);
+  font-family: inherit;
   color: inherit;
-  opacity: 0.9;
 }
 
-.katex .fbox {
-  border: 1.5px solid currentColor;
-  border-radius: 6px;
-  padding: 4px 10px;
+.katex-mathml {
+  display: none !important;
 }
 
 .mcq-image-block {

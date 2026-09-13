@@ -1,5 +1,5 @@
-import { Fragment, useEffect, useRef, useState } from 'react'
-import { BlockMath, InlineMath } from 'react-katex'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import { cleanImageUrlValue, normalizeImageUrl } from '../utils/mediaUrls'
 
@@ -134,6 +134,8 @@ export function sanitizeLatexForKaTeX(expr) {
   res = res.replace(/([A-Za-z0-9\)])_([A-Za-z0-9]+)(?![_{])/g, '$1_{$2}')
   res = res.replace(/\^\\(Delta|Sigma|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)\s*([a-zA-Z0-9])/g, '^{\\$1 $2}')
   res = res.replace(/\^\(([^)]+)\)/g, '^{$1}')
+  res = res.replace(/\(([A-Za-z]{2,})\)/g, '(\\text{$1})')
+  res = res.replace(/([A-Za-z](?:_\{[^}]+\}|\d+)?)\/([A-Za-z](?:_\{[^}]+\}|\d+)?)/g, '\\frac{$1}{$2}')
   res = res.replace(/(^|[\s=+\-*])(\d+)\/(\d+)([\s*]|$)/g, '$1\\frac{$2}{$3}$4')
   return res.trim()
 }
@@ -165,80 +167,55 @@ function splitByMathDelimiters(text) {
 export function formatFormulasInText(text) {
   if (!text) return ''
 
-  // 1. Convert temperature degrees Celcius / Fahrenheit / Kelvin: e.g. "2°C", "2 °C", "2^\circ C", "37°C"
+  // 1. Convert temperature: e.g. "+273.16°C", "-273.16°C", "2°C", "0°C", "2^\circ C"
   let str = String(text)
-    .replace(/(?<![A-Za-z0-9])(-?\d+(?:\.\d+)?)\s*(?:°|(?:\^\\circ|\^o|\^0))\s*([CFK])\b/g, '$$$1^\\circ\\text{$2}$$')
+    .replace(/(?<![A-Za-z0-9])([+-]?\d+(?:\.\d+)?)\s*(?:°|(?:\^\\circ|\^o|\^0))\s*([CFK])\b/g, (m, val, unit) => {
+      return `$${val}^\\circ\\text{${unit}}$`
+    })
 
   // 2. Degrees / Angles: "180°", "180^\circ", "90°", "1°", etc.
   str = splitByMathDelimiters(str).map((seg) => {
     if (seg.type === 'math') return seg.content
-    return seg.content.replace(/(?<![A-Za-z0-9])(-?\d+(?:\.\d+)?)\s*(?:°|\^\\circ|\^o|\^0)(?![A-Za-z0-9])/g, '$$$1^\\circ$$')
-  }).join('')
-
-  // 3. Convert electron notation: e- or 2e- or e^-
-  str = str.replace(/(?<![A-Za-z0-9])(\d*)\s*e\s*[-⁻](?![A-Za-z0-9])/g, (m, count) => {
-    return `$$${count || ''}\\text{e}^-$$`
-  })
-
-  // 4. Convert scientific notation: 6.02×10^23, 6.02 x 10^-23, 6.02 × 10²³
-  str = str.replace(/(?<![A-Za-z0-9])(-?\d+(?:\.\d+)?)\s*(?:[×*]|\\times|x)\s*10\^({?-?\d+}?)(?![A-Za-z0-9])/g, (m, coeff, exp) => {
-    const cleanExp = exp.replace(/[{}]/g, '')
-    return `$$${coeff} \\times 10^{${cleanExp}}$$`
-  })
-  str = str.replace(/(?<![A-Za-z0-9])(-?\d+(?:\.\d+)?)\s*(?:[×*]|\\times)\s*10([⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+)(?![A-Za-z0-9])/g, (m, coeff, exp) => {
-    const supMap = { '⁰':'0', '¹':'1', '²':'2', '³':'3', '⁴':'4', '⁵':'5', '⁶':'6', '⁷':'7', '⁸':'8', '⁹':'9', '⁺':'+', '⁻':'-' }
-    const cleanExp = exp.split('').map((c) => supMap[c] || c).join('')
-    return `$$${coeff} \\times 10^{${cleanExp}}$$`
-  })
-
-  // 5. Greek math expressions: \lambda, \lambda/2, \lambda /4, 2\lambda, \pi/90, 2\pi, λ, λ/2, 2λ, etc.
-  const unicodeGreekMap = {
-    'Δ': '\\Delta',
-    'Σ': '\\Sigma',
-    'λ': '\\lambda',
-    'θ': '\\theta',
-    'α': '\\alpha',
-    'β': '\\beta',
-    'γ': '\\gamma',
-    'μ': '\\mu',
-    'π': '\\pi',
-    'σ': '\\sigma',
-    'ω': '\\omega',
-    'ρ': '\\rho',
-    'ε': '\\epsilon',
-    'φ': '\\phi',
-    'τ': '\\tau',
-    'η': '\\eta',
-    'ν': '\\nu',
-  }
-  str = splitByMathDelimiters(str).map((seg) => {
-    if (seg.type === 'math') return seg.content
-    let current = seg.content
-    for (const [uni, lat] of Object.entries(unicodeGreekMap)) {
-      current = current.replace(new RegExp(uni, 'g'), lat)
-    }
-    const greekExprRegex = /(?<![A-Za-z0-9])(\d*\s*\\(?:alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega|Delta|Sigma)\b(?:\s*\/\s*\d+)?)(?![A-Za-z0-9])/g
-    return current.replace(greekExprRegex, (match) => {
-      let expr = match.trim()
-      if (expr.includes('/')) {
-        const parts = expr.split('/')
-        const num = parts[0].trim()
-        const den = parts[1].trim()
-        return `$\\frac{${num}}{${den}}$`
-      }
-      return `$${expr}$`
+    return seg.content.replace(/(?<![A-Za-z0-9])([+-]?\d+(?:\.\d+)?)\s*(?:°|\^\\circ|\^o|\^0)(?![A-Za-z0-9])/g, (m, val) => {
+      return `$${val}^\\circ$`
     })
   }).join('')
 
+  // 3. Convert electron notation: e- or 2e- or e^-
+  str = splitByMathDelimiters(str).map((seg) => {
+    if (seg.type === 'math') return seg.content
+    return seg.content.replace(/(?<![A-Za-z0-9])(\d*)\s*e\s*[-⁻](?![A-Za-z0-9])/g, (m, count) => {
+      return `$${count || ''}\\text{e}^-$`
+    })
+  }).join('')
+
+  // 4. Convert scientific notation: 6.02×10^23, 6.02 x 10^-23, 6.02 × 10²³
+  str = splitByMathDelimiters(str).map((seg) => {
+    if (seg.type === 'math') return seg.content
+    let s = seg.content.replace(/(?<![A-Za-z0-9])([+-]?\d+(?:\.\d+)?)\s*(?:[×*]|\\times|x)\s*10\^({?-?\d+}?)(?![A-Za-z0-9])/g, (m, coeff, exp) => {
+      const cleanExp = exp.replace(/[{}]/g, '')
+      return `$${coeff} \\times 10^{${cleanExp}}$`
+    })
+    s = s.replace(/(?<![A-Za-z0-9])([+-]?\d+(?:\.\d+)?)\s*(?:[×*]|\\times)\s*10([⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+)(?![A-Za-z0-9])/g, (m, coeff, exp) => {
+      const supMap = { '⁰':'0', '¹':'1', '²':'2', '³':'3', '⁴':'4', '⁵':'5', '⁶':'6', '⁷':'7', '⁸':'8', '⁹':'9', '⁺':'+', '⁻':'-' }
+      const cleanExp = exp.split('').map((c) => supMap[c] || c).join('')
+      return `$${coeff} \\times 10^{${cleanExp}}$`
+    })
+    return s
+  }).join('')
+
   let cleaned = cleanAiCitations(str)
-  cleaned = unicodeToLatex(cleaned)
+  cleaned = splitByMathDelimiters(cleaned).map((seg) => {
+    if (seg.type === 'math') return seg.content
+    return unicodeToLatex(seg.content)
+  }).join('')
 
   if (/^\$\$[\s\S]+?\$\$$/.test(cleaned.trim()) || /^\$[^$]+?\$$/.test(cleaned.trim())) {
     return cleaned
   }
 
   // Pass 1: match full equations with =, !=, <>, <=, >=, etc.
-  const eqPattern = /(?:^|(?<=[;:(,\s]))((?:\\(?:Delta|Sigma|sum|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)\s*)*[A-Za-z0-9_\\^(){}\[\]+\-*/]+)\s*(=|!=|<>|\/=|<=|>=|<|>|≈|\\approx|\\neq|\\propto)\s*([A-Za-z0-9_\\^(){}\[\]+\-*/]+(?:\s+[A-Za-z0-9_\\^(){}\[\]+\-*/]+)*)(?=[;:,.)\s]|$)/g
+  const eqPattern = /(?:^|(?<=[;:(,\s]))((?:\\(?:Delta|Sigma|sum|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)\s*)*[A-Za-z0-9_\\^(){}\[\]+\-*/]+(?:\([A-Za-z0-9_+\- ]+\))?)\s*(=|!=|<>|\/=|<=|>=|<|>|≈|\\approx|\\neq|\\propto)\s*([+-]?[A-Za-z0-9_\\^(){}\[\]+\-*/]+(?:\s+[A-Za-z0-9_\\^(){}\[\]+\-*/]+)*)(?=[;:,.)\s]|$)/g
 
   let pass1 = splitByMathDelimiters(cleaned).map((seg) => {
     if (seg.type === 'math') return seg.content
@@ -263,15 +240,28 @@ export function formatFormulasInText(text) {
     })
   }).join('')
 
-  // Pass 2: match standalone variables, subscripts, powers, Greek letters in remaining text
-  // Notice: Greek letters do NOT absorb following words unless single variable/digit (e.g. \Delta T, \lambda 1)
-  const greekRe = '\\\\(?:Delta|Sigma|sum|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)\\b'
-  const tokenPattern = new RegExp(
-    `(?:^|(?<=[;:(,\\s]))((?:${greekRe}(?:\\s+[A-Z0-9]\\b)?|[A-Za-z0-9\\)]+_[A-Za-z0-9\\{]+(?:\\^[A-Za-z0-9\\{\\-]+)?|(?:\\([A-Za-z0-9_+\\- ]+\\)|[A-Za-z0-9_]+)\\^(?:\\{[^}]+\\}|[A-Za-z0-9+\\-]+)|\\\\(?:times|div|pm|approx|neq|leq|geq|infty)\\b))(?=[;:,.)\\s]|$)`,
-    'g'
-  )
+  // Pass 2: Greek math expressions with divisions/multipliers: \lambda /2, 2\lambda, \pi/180 radians, etc.
+  const greekExprRegex = /(?<![A-Za-z0-9])(\d*\s*\\(?:alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega|Delta|Sigma)\b(?:\s*\\(?:Delta|Sigma|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)\b)*(?:\s*[A-Z0-9]\b)?(?:\s*\/\s*\d+)?)(?![A-Za-z0-9])/g
 
   let pass2 = splitByMathDelimiters(pass1).map((seg) => {
+    if (seg.type === 'math') return seg.content
+    let current = seg.content
+    return current.replace(greekExprRegex, (match) => {
+      let expr = match.trim()
+      if (expr.includes('/')) {
+        const parts = expr.split('/')
+        const num = parts[0].trim()
+        const den = parts[1].trim()
+        return `$\\frac{${num}}{${den}}$`
+      }
+      return `$${expr}$`
+    })
+  }).join('')
+
+  // Pass 3: standalone tokens (subscripts, superscripts, math operators)
+  const tokenPattern = /(?:^|(?<=[;:(,\s]))([A-Za-z0-9\)]+_[A-Za-z0-9\{]+(?:\^[A-Za-z0-9\{\-]+)?|(?:\\([A-Za-z0-9_+\- ]+\\)|[A-Za-z0-9_]+)\^(?:\{[^}]+\}|[A-Za-z0-9+\-]+)|\\(?:times|div|pm|approx|neq|leq|geq|infty)\b)(?=[;:,.)\s]|$)/g
+
+  let pass3 = splitByMathDelimiters(pass2).map((seg) => {
     if (seg.type === 'math') return seg.content
     let current = seg.content
 
@@ -282,7 +272,7 @@ export function formatFormulasInText(text) {
     })
   }).join('')
 
-  return pass2
+  return pass3
 }
 
 function tokenizeAsciiMath(value) {
@@ -406,7 +396,7 @@ function parseAsciiEquation(value) {
 function renderAsciiEquationWhenPresent(text, keyPrefix) {
   const value = String(text || '')
   const directEquation = parseAsciiEquation(value)
-  if (directEquation) return <InlineMath math={directEquation} />
+  if (directEquation) return <KatexMath math={directEquation} displayMode={false} />
 
   const colonIndex = value.lastIndexOf(':')
   if (colonIndex >= 0) {
@@ -415,7 +405,7 @@ function renderAsciiEquationWhenPresent(text, keyPrefix) {
       return (
         <Fragment>
           {renderPlainTextWithChemistry(value.slice(0, colonIndex + 1), `${keyPrefix}-label`)}{' '}
-          <InlineMath math={equation} />
+          <KatexMath math={equation} displayMode={false} />
         </Fragment>
       )
     }
@@ -698,36 +688,40 @@ export function parseLatexText(text) {
   return parts
 }
 
+function KatexMath({ math, displayMode = false }) {
+  const html = useMemo(() => {
+    try {
+      return katex.renderToString(math, {
+        displayMode,
+        throwOnError: false,
+        output: 'html',
+      })
+    } catch {
+      return null
+    }
+  }, [math, displayMode])
+
+  if (!html) {
+    return <span>{math}</span>
+  }
+
+  return (
+    <span
+      className={displayMode ? 'mcq-renderer-block-math' : 'mcq-renderer-inline-math'}
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  )
+}
+
 function renderTextWithMath(text, keyPrefix) {
   const preparedText = formatFormulasInText(text)
   return parseLatexText(preparedText).map((part, index) => {
     const key = `${keyPrefix}-${index}`
     if (part.type === 'inline-math') {
-      return (
-        <InlineMath
-          key={key}
-          math={part.content}
-          renderError={(error) => (
-            <span className="katex-fallback" title={error?.message || 'Math rendering error'}>
-              {part.content}
-            </span>
-          )}
-        />
-      )
+      return <KatexMath key={key} math={part.content} displayMode={false} />
     }
     if (part.type === 'block-math') {
-      return (
-        <div key={key} className="mcq-renderer-block-math">
-          <BlockMath
-            math={part.content}
-            renderError={(error) => (
-              <span className="katex-fallback" title={error?.message || 'Math rendering error'}>
-                {part.content}
-              </span>
-            )}
-          />
-        </div>
-      )
+      return <KatexMath key={key} math={part.content} displayMode={true} />
     }
     return (
       <Fragment key={key}>

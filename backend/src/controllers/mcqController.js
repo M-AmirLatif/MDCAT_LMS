@@ -507,7 +507,7 @@ const serializeMcqMedia = (mcq) => {
   const plain = typeof mcq.toObject === 'function' ? mcq.toObject() : { ...mcq }
   const optionValues = ['A', 'B', 'C', 'D'].map((letter, index) => {
     const option = plain.options?.[index] || {}
-    const text = plain[`option${letter}`] || option.text || ''
+    const text = (option.text !== undefined && option.text !== null && option.text !== '') ? option.text : (plain[`option${letter}`] || '')
     const images = optionImagesForLetter(plain, letter, option)
     return {
       letter,

@@ -6,6 +6,7 @@ import ErrorBoundary from './components/ErrorBoundary'
 import { AuthProvider } from './context/AuthContext'
 import { SearchProvider } from './context/SearchContext'
 import './index.css'
+import 'katex/dist/katex.min.css'
 import App from './App.jsx'
 import { queryClient } from './services/queryClient'
 
