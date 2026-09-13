@@ -981,9 +981,12 @@ table tr:hover {
 [data-theme="dark"] .notification-card,
 [data-theme="dark"] .stat-card,
 [data-theme="dark"] .workspace-card,
-[data-theme="dark"] .summary-card {
+[data-theme="dark"] .summary-card,
+[data-theme="dark"] .student-quiz-summary-card,
+[data-theme="dark"] .chapter-practice-card,
+[data-theme="dark"] .chapter-test-card {
   background: #12102A;
-  border-color: rgba(255,255,255,0.08);
+  border: 2px solid rgba(167, 139, 250, 0.55);
 }
 
 [data-theme="dark"] .notification-item:hover,
