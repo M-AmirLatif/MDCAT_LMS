@@ -249,17 +249,18 @@ const compareMcqOrder = (a, b) => {
   if (aNumber !== null && bNumber !== null && aNumber !== bNumber) {
     return aNumber - bNumber
   }
+  if (aNumber !== null && bNumber === null) return -1
+  if (aNumber === null && bNumber !== null) return 1
 
   const aRow = Number(a?.csvRowIndex)
   const bRow = Number(b?.csvRowIndex)
   if (Number.isFinite(aRow) && Number.isFinite(bRow) && aRow !== bRow) {
     return aRow - bRow
   }
+  if (Number.isFinite(aRow) && !Number.isFinite(bRow)) return -1
+  if (!Number.isFinite(aRow) && Number.isFinite(bRow)) return 1
 
-  const timeDiff = new Date(a?.createdAt || 0) - new Date(b?.createdAt || 0)
-  if (timeDiff !== 0) return timeDiff
-
-  return String(a?._id || '').localeCompare(String(b?._id || ''))
+  return new Date(a?.createdAt || 0) - new Date(b?.createdAt || 0)
 }
 
 const sortMcqsByOriginalOrder = (items = []) => [...items].sort(compareMcqOrder)
