@@ -9,7 +9,7 @@ export const AUTH_REQUEST_TIMEOUT_MS = Number(import.meta.env.VITE_AUTH_TIMEOUT_
 
 const API = axios.create({
   baseURL: API_BASE_URL,
-  timeout: Number(import.meta.env.VITE_API_TIMEOUT_MS || 15000),
+  timeout: Number(import.meta.env.VITE_API_TIMEOUT_MS || 30000),
 })
 
 const networkGet = API.get.bind(API)
@@ -131,6 +131,10 @@ API.interceptors.request.use((config) => {
   const token = getAuthToken()
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
+  }
+  const method = String(config?.method || 'get').toUpperCase()
+  if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method) && !config.timeout) {
+    config.timeout = 45000
   }
   return config
 })

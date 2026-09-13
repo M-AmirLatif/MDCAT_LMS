@@ -559,15 +559,22 @@ function CourseSelection() {
 function ChapterForm({ initial, onSubmit }) {
   const [name, setName] = useState(initial?.name || '')
   const [description, setDescription] = useState(initial?.description || '')
+  const [saving, setSaving] = useState(false)
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    const trimmedName = name.trim()
+    if (!trimmedName || saving) return
+    setSaving(true)
+    try {
+      await onSubmit({ name: trimmedName, description: description.trim() })
+    } catch {
+      setSaving(false)
+    }
+  }
 
   return (
-    <form
-      className="form-shell"
-      onSubmit={(event) => {
-        event.preventDefault()
-        onSubmit({ name, description })
-      }}
-    >
+    <form className="form-shell" onSubmit={handleSubmit}>
       <div className="floating-field">
         <label htmlFor="chapter-name">Chapter Name</label>
         <input
@@ -575,6 +582,8 @@ function ChapterForm({ initial, onSubmit }) {
           value={name}
           onChange={(event) => setName(event.target.value)}
           placeholder="Topic 1 - Cell Structure & Membrane"
+          disabled={saving}
+          required
         />
       </div>
       <div className="floating-field">
@@ -585,10 +594,11 @@ function ChapterForm({ initial, onSubmit }) {
           value={description}
           onChange={(event) => setDescription(event.target.value)}
           placeholder="Short chapter description for students."
+          disabled={saving}
         />
       </div>
-      <button className="btn btn-primary" type="submit">
-        Save Chapter
+      <button className="btn btn-primary" type="submit" disabled={saving || !name.trim()}>
+        {saving ? 'Saving Chapter...' : initial?.id ? 'Update Chapter' : 'Save Chapter'}
       </button>
     </form>
   )
@@ -597,15 +607,22 @@ function ChapterForm({ initial, onSubmit }) {
 function TopicForm({ initial, onSubmit }) {
   const [name, setName] = useState(initial?.name || '')
   const [description, setDescription] = useState(initial?.description || '')
+  const [saving, setSaving] = useState(false)
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    const trimmedName = name.trim()
+    if (!trimmedName || saving) return
+    setSaving(true)
+    try {
+      await onSubmit({ name: trimmedName, description: description.trim() })
+    } catch {
+      setSaving(false)
+    }
+  }
 
   return (
-    <form
-      className="form-shell"
-      onSubmit={(event) => {
-        event.preventDefault()
-        onSubmit({ name, description })
-      }}
-    >
+    <form className="form-shell" onSubmit={handleSubmit}>
       <div className="floating-field">
         <label htmlFor="topic-name">Topic Name</label>
         <input
@@ -613,6 +630,8 @@ function TopicForm({ initial, onSubmit }) {
           value={name}
           onChange={(event) => setName(event.target.value)}
           placeholder="Membrane Transport"
+          disabled={saving}
+          required
         />
       </div>
       <div className="floating-field">
@@ -623,10 +642,11 @@ function TopicForm({ initial, onSubmit }) {
           value={description}
           onChange={(event) => setDescription(event.target.value)}
           placeholder="Optional topic description for teacher organization."
+          disabled={saving}
         />
       </div>
-      <button className="btn btn-primary" type="submit">
-        Save Topic
+      <button className="btn btn-primary" type="submit" disabled={saving || !name.trim()}>
+        {saving ? 'Saving Topic...' : initial?.id ? 'Update Topic' : 'Save Topic'}
       </button>
     </form>
   )
@@ -660,10 +680,12 @@ function ChapterList() {
     }
   }
 
-  const load = async () => {
+  const load = async (forceRefresh = false) => {
     setLoading(true)
     try {
-      const res = await API.get(`/mcqs/${subject}/chapters`)
+      const res = await API.get(`/mcqs/${subject}/chapters`, {
+        skipQueryCache: Boolean(forceRefresh),
+      })
       const loadedChapters = res.data.chapters || []
       setChapters(loadedChapters)
       const firstAvailable = loadedChapters.find(
@@ -706,9 +728,10 @@ function ChapterList() {
         toast.success('Chapter added')
       }
       setModal(null)
-      load()
+      await load(true)
     } catch (error) {
       toast.error(getUserFriendlyErrorMessage(error, 'We could not save the chapter right now.'))
+      throw error
     }
   }
 
@@ -727,7 +750,7 @@ function ChapterList() {
           ? `Chapter deleted with ${deletedMcqs} MCQ${deletedMcqs === 1 ? '' : 's'}`
           : 'Chapter deleted',
       )
-      load()
+      await load(true)
     } catch (error) {
       toast.error(getUserFriendlyErrorMessage(error, 'We could not delete the chapter right now.'))
     }
@@ -1519,7 +1542,7 @@ function McqList() {
     })
   }, [isTeacher, mcqs, searchQuery, mcqDisplayNumberOffset])
 
-  const load = async () => {
+  const load = async (forceRefresh = false) => {
     setLoading(true)
     try {
       const params = new URLSearchParams()
@@ -1531,7 +1554,9 @@ function McqList() {
       if (!isTeacher) {
         API.get(`/mcqs/${subject}/${chapterId}/latest-attempt${query}`).catch(() => null)
       }
-      const res = await API.get(`/mcqs/${subject}/${chapterId}${query}`)
+      const res = await API.get(`/mcqs/${subject}/${chapterId}${query}`, {
+        skipQueryCache: Boolean(forceRefresh),
+      })
       setLockMessage('')
       setChapter(res.data.chapter)
       setTopics(res.data.topics || [])
@@ -1587,9 +1612,10 @@ function McqList() {
         toast.success('Topic added')
       }
       setModal(null)
-      load()
+      await load(true)
     } catch (error) {
       toast.error(getUserFriendlyErrorMessage(error, 'We could not save the topic right now.'))
+      throw error
     }
   }
 
@@ -1606,7 +1632,7 @@ function McqList() {
       )
       if (selectedTopicId === topic.id) setSelectedTopicId('')
       toast.success('Topic deleted')
-      load()
+      await load(true)
     } catch (error) {
       toast.error(getUserFriendlyErrorMessage(error, 'We could not delete the topic right now.'))
     }
@@ -1652,7 +1678,7 @@ function McqList() {
         toast.success('MCQ added')
       }
       setModal(null)
-      load()
+      await load(true)
     } catch (error) {
       toast.error(getUserFriendlyErrorMessage(error, 'We could not save the MCQ right now.'))
     }
@@ -1666,7 +1692,7 @@ function McqList() {
       )
       toast.success('Review item updated')
       setModal(null)
-      load()
+      await load(true)
     } catch (error) {
       toast.error(getUserFriendlyErrorMessage(error, 'We could not update the review item right now.'))
     }
@@ -1677,7 +1703,7 @@ function McqList() {
     try {
       await API.delete(`/mcqs/${mcq._id}`)
       toast.success('MCQ deleted')
-      load()
+      await load(true)
     } catch (error) {
       toast.error(getUserFriendlyErrorMessage(error, 'We could not delete the MCQ right now.'))
     }
@@ -1716,7 +1742,7 @@ function McqList() {
           { duration: 8000 },
         )
       }
-      load()
+      await load(true)
     } catch (error) {
       toast.error(getUserFriendlyErrorMessage(error, 'We could not upload the CSV right now.'))
     } finally {
@@ -1732,7 +1758,7 @@ function McqList() {
         `/mcqs/${subject}/chapters/${chapterId}/review-queue/${item.id}`,
       )
       toast.success('Review item removed')
-      load()
+      await load(true)
     } catch (error) {
       toast.error(getUserFriendlyErrorMessage(error, 'We could not remove the review item right now.'))
     }
@@ -1760,7 +1786,7 @@ function McqList() {
       )
       toast.success('Review item pushed to main MCQs')
       updateViewMode('review')
-      load()
+      await load(true)
     } catch (error) {
       toast.error(getUserFriendlyErrorMessage(error, 'We could not push the review item right now.'))
     }

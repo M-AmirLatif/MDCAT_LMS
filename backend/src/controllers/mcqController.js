@@ -1426,8 +1426,18 @@ exports.createChapter = async (req, res) => {
       counter += 1
     }
 
-    course.chapters.push({ id: chapterId, name, description })
-    await course.save()
+    const newChapter = {
+      id: chapterId,
+      name,
+      description,
+      topics: [],
+      reviewQueue: [],
+    }
+
+    await Course.updateOne(
+      { _id: course._id },
+      { $push: { chapters: newChapter } },
+    )
 
     res.status(201).json({
       success: true,
@@ -1462,13 +1472,21 @@ exports.updateChapter = async (req, res) => {
     if (!name)
       return res.status(400).json({ error: 'Chapter name is required' })
 
-    chapter.name = name
-    chapter.description = String(req.body.description || '').trim()
-    await course.save()
+    const description = String(req.body.description || '').trim()
+
+    await Course.updateOne(
+      { _id: course._id, 'chapters.id': chapter.id },
+      {
+        $set: {
+          'chapters.$.name': name,
+          'chapters.$.description': description,
+        },
+      },
+    )
 
     await MCQ.updateMany(
       { courseId: course._id, chapterId: chapter.id },
-      { chapterName: chapter.name },
+      { chapterName: name },
     )
 
     await MCQ.updateMany(
@@ -1477,7 +1495,7 @@ exports.updateChapter = async (req, res) => {
         chapterId: chapter.id,
         $or: [{ topicId: null }, { topicId: { $exists: false } }],
       },
-      { topic: chapter.name },
+      { topic: name },
     )
 
     res.status(200).json({
@@ -1485,8 +1503,8 @@ exports.updateChapter = async (req, res) => {
       message: 'Chapter updated successfully',
       chapter: {
         id: chapter.id,
-        name: chapter.name,
-        description: chapter.description || '',
+        name,
+        description,
         topics: getChapterTopics(chapter),
       },
     })
@@ -1516,9 +1534,11 @@ exports.deleteChapter = async (req, res) => {
     const mcqFilter = { courseId: course._id, chapterId: chapter.id }
     const mcqCount = await MCQ.countDocuments(mcqFilter)
 
-    course.chapters = course.chapters.filter((item) => item.id !== chapter.id)
     await Promise.all([
-      course.save(),
+      Course.updateOne(
+        { _id: course._id },
+        { $pull: { chapters: { id: chapter.id } } },
+      ),
       MCQ.deleteMany(mcqFilter),
       TestSession.deleteMany(mcqFilter),
     ])
@@ -1566,9 +1586,11 @@ exports.createTopic = async (req, res) => {
       counter += 1
     }
 
-    chapter.topics = getChapterTopics(chapter)
-    chapter.topics.push({ id: topicId, name, description })
-    await course.save()
+    const newTopic = { id: topicId, name, description }
+    await Course.updateOne(
+      { _id: course._id, 'chapters.id': chapter.id },
+      { $push: { 'chapters.$.topics': newTopic } },
+    )
 
     res.status(201).json({
       success: true,
@@ -1605,13 +1627,22 @@ exports.updateTopic = async (req, res) => {
     const description = String(req.body.description || '').trim()
     if (!name) return res.status(400).json({ error: 'Topic name is required' })
 
-    topic.name = name
-    topic.description = description
-    await course.save()
+    await Course.updateOne(
+      { _id: course._id },
+      {
+        $set: {
+          'chapters.$[ch].topics.$[tp].name': name,
+          'chapters.$[ch].topics.$[tp].description': description,
+        },
+      },
+      {
+        arrayFilters: [{ 'ch.id': chapter.id }, { 'tp.id': topic.id }],
+      },
+    )
 
     await MCQ.updateMany(
       { courseId: course._id, chapterId: chapter.id, topicId: topic.id },
-      { topic: topic.name },
+      { topic: name },
     )
 
     res.status(200).json({
@@ -1619,8 +1650,8 @@ exports.updateTopic = async (req, res) => {
       message: 'Topic updated successfully',
       topic: {
         id: topic.id,
-        name: topic.name,
-        description: topic.description || '',
+        name,
+        description: description || '',
       },
     })
   } catch (error) {
@@ -1660,10 +1691,10 @@ exports.deleteTopic = async (req, res) => {
         .json({ error: 'Cannot delete topic while MCQs exist inside it' })
     }
 
-    chapter.topics = getChapterTopics(chapter).filter(
-      (item) => item.id !== topic.id,
+    await Course.updateOne(
+      { _id: course._id, 'chapters.id': chapter.id },
+      { $pull: { 'chapters.$.topics': { id: topic.id } } },
     )
-    await course.save()
 
     res
       .status(200)
