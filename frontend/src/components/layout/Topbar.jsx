@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { useSearch } from '../../context/SearchContext'
 import { getPageTitle } from '../../lib/platform'
 import ThemeToggle from '../ThemeToggle'
 import { getUserProfilePicture } from '../../utils/assetUrl'
@@ -36,6 +37,7 @@ export default function Topbar({ onMenuClick }) {
   const location = useLocation()
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { searchQuery, setSearchQuery, searchPlaceholder } = useSearch()
 
   const title = useMemo(
     () => getPageTitle(location.pathname, user?.role),
@@ -67,7 +69,24 @@ export default function Topbar({ onMenuClick }) {
           <span className="topbar-search-icon">
             <SearchIcon />
           </span>
-          <input type="text" placeholder="Search courses, students, classes..." aria-label="Search" />
+          <input
+            type="text"
+            placeholder={searchPlaceholder || 'Search courses, students, classes...'}
+            aria-label="Search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          {searchQuery ? (
+            <button
+              type="button"
+              className="topbar-search-clear"
+              onClick={() => setSearchQuery('')}
+              aria-label="Clear search"
+              title="Clear search"
+            >
+              ✕
+            </button>
+          ) : null}
         </div>
       </div>
 

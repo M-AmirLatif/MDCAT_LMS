@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast'
 import { QueryClientProvider } from '@tanstack/react-query'
 import ErrorBoundary from './components/ErrorBoundary'
 import { AuthProvider } from './context/AuthContext'
+import { SearchProvider } from './context/SearchContext'
 import './index.css'
 import App from './App.jsx'
 import { queryClient } from './services/queryClient'
@@ -37,10 +38,12 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>
       <AuthProvider>
-        <QueryClientProvider client={queryClient}>
-          <App />
-          <ToasterWithTheme />
-        </QueryClientProvider>
+        <SearchProvider>
+          <QueryClientProvider client={queryClient}>
+            <App />
+            <ToasterWithTheme />
+          </QueryClientProvider>
+        </SearchProvider>
       </AuthProvider>
     </ErrorBoundary>
   </StrictMode>,

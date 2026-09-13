@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'reac
 import toast from 'react-hot-toast'
 import API, { getUserFriendlyErrorMessage } from '../services/api'
 import { useAuth } from '../context/AuthContext'
+import { useSearch } from '../context/SearchContext'
 import { Helmet } from 'react-helmet-async'
 import MCQRenderer from '../components/MCQRenderer'
 import { normalizeImageUrl } from '../utils/mediaUrls'
@@ -1463,6 +1464,61 @@ function McqList() {
     [mcqs, reviewQueue],
   )
 
+  const { searchQuery, setSearchQuery, setSearchPlaceholder } = useSearch()
+
+  useEffect(() => {
+    if (!isTeacher) return
+    setSearchPlaceholder('Search MCQs by question # or wording...')
+    return () => {
+      setSearchPlaceholder('Search courses, students, classes...')
+      setSearchQuery('')
+    }
+  }, [isTeacher, setSearchPlaceholder, setSearchQuery])
+
+  const filteredMcqs = useMemo(() => {
+    const indexed = mcqs.map((mcq, idx) => ({ ...mcq, _originalIndex: idx }))
+    if (!isTeacher || !searchQuery.trim()) {
+      return indexed
+    }
+    const rawQuery = searchQuery.trim().toLowerCase()
+    const cleanedQuery = rawQuery.replace(/^(?:q(?:uestion)?|\#)\s*/i, '').trim()
+    const isNumber = /^\d+$/.test(cleanedQuery)
+    const queryNum = isNumber ? parseInt(cleanedQuery, 10) : null
+
+    return indexed.filter((mcq) => {
+      const displayNumber = getMcqDisplayNumber(mcq, mcq._originalIndex, mcqDisplayNumberOffset)
+      const numOnly = parseInt(displayNumber, 10)
+
+      // Exact number match (e.g. "50", "Q50", "Question 50", "#50")
+      if (isNumber && numOnly === queryNum) return true
+
+      // Statement wording match
+      const statement = String(mcq.question || mcq.questionText || '').toLowerCase()
+      if (statement.includes(rawQuery)) return true
+
+      // Options wording match
+      if (Array.isArray(mcq.options)) {
+        if (mcq.options.some((opt) => String(opt?.text || '').toLowerCase().includes(rawQuery))) {
+          return true
+        }
+      }
+      for (const l of ['A', 'B', 'C', 'D']) {
+        if (String(mcq[`option${l}`] || '').toLowerCase().includes(rawQuery)) {
+          return true
+        }
+      }
+
+      // Explanation wording match
+      const explanation = String(mcq.explanation || mcq.explanationText || '').toLowerCase()
+      if (explanation.includes(rawQuery)) return true
+
+      // Partial match for number (e.g. typing "10" matches "10", "101", "102")
+      if (isNumber && String(displayNumber).includes(cleanedQuery)) return true
+
+      return false
+    })
+  }, [isTeacher, mcqs, searchQuery, mcqDisplayNumberOffset])
+
   const load = async () => {
     setLoading(true)
     try {
@@ -1928,21 +1984,88 @@ function McqList() {
 
       {viewMode !== 'review' ? (
         isTeacher ? (
-          mcqs.length > 0 ? (
-            <div className="mcq-inline-list">
-              {mcqs.map((mcq, index) => (
-                <TeacherInlineMcqCard
-                  key={mcq._id}
-                  mcq={mcq}
-                  index={index}
-                  displayNumberOffset={mcqDisplayNumberOffset}
-                  chapterId={chapterId}
-                  meta={meta}
-                  onSaved={load}
-                  onDelete={deleteMcq}
-                />
-              ))}
-            </div>
+          mcqs.length > 0 || searchQuery.trim() ? (
+            <>
+              <div className="mcq-search-panel">
+                <div className="mcq-search-input-wrapper">
+                  <span className="mcq-search-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+                      <circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="2" />
+                      <path d="m16 16 4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  </span>
+                  <input
+                    type="text"
+                    className="mcq-search-input"
+                    placeholder="Search MCQs by question number (e.g. 50) or wording (e.g. sucrose)..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    aria-label="Search MCQs"
+                  />
+                  {searchQuery ? (
+                    <button
+                      type="button"
+                      className="mcq-search-clear-button"
+                      onClick={() => setSearchQuery('')}
+                      aria-label="Clear search"
+                      title="Clear search"
+                    >
+                      ✕
+                    </button>
+                  ) : null}
+                </div>
+                {searchQuery.trim() ? (
+                  <div className="mcq-search-results-info">
+                    <span>
+                      Found <strong>{filteredMcqs.length}</strong> of <strong>{mcqs.length}</strong> MCQs for <em>"{searchQuery}"</em>
+                    </span>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => setSearchQuery('')}
+                      style={{ padding: '4px 12px', fontSize: '0.8rem', borderRadius: '8px' }}
+                    >
+                      Show All ({mcqs.length})
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+
+              {filteredMcqs.length > 0 ? (
+                <div className="mcq-inline-list">
+                  {filteredMcqs.map((mcq) => (
+                    <TeacherInlineMcqCard
+                      key={mcq._id}
+                      mcq={mcq}
+                      index={mcq._originalIndex}
+                      displayNumberOffset={mcqDisplayNumberOffset}
+                      chapterId={chapterId}
+                      meta={meta}
+                      onSaved={load}
+                      onDelete={deleteMcq}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="workspace-card">
+                  <div className="workspace-card-body">
+                    <EmptyState
+                      title={`No MCQs matching "${searchQuery}"`}
+                      text="Try searching for another question number or keyword, or clear your search to view all questions."
+                      action={
+                        <button
+                          className="btn btn-secondary"
+                          type="button"
+                          onClick={() => setSearchQuery('')}
+                        >
+                          Clear Search (Show All {mcqs.length} MCQs)
+                        </button>
+                      }
+                    />
+                  </div>
+                </div>
+              )}
+            </>
           ) : (
             <div className="workspace-card">
               <div className="workspace-card-body">
