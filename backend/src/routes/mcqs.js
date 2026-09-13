@@ -25,8 +25,9 @@ const {
   getLatestChapterAttempt,
   submitChapterAttempt,
   getTeacherAnalytics,
+  getPublicPaperKey,
 } = require('../controllers/mcqController')
-const { protect, authorize } = require('../middlewares/auth')
+const { protect, optionalProtect, authorize } = require('../middlewares/auth')
 
 const router = express.Router()
 const upload = multer({ storage: multer.memoryStorage() })
@@ -34,10 +35,11 @@ const upload = multer({ storage: multer.memoryStorage() })
 // Public routes
 router.get('/course/:courseId', getMcqsByCourse)
 router.get('/course/:courseId/topics', getTopicsByCourse)
+router.get('/public/paper-key/:chapterId', getPublicPaperKey)
 
 // MDCAT subject hierarchy routes
-router.get('/subjects/summary', protect, getSubjectSummary)
-router.get('/:subject/chapters', protect, getChaptersBySubject)
+router.get('/subjects/summary', optionalProtect, getSubjectSummary)
+router.get('/:subject/chapters', optionalProtect, getChaptersBySubject)
 router.post('/:subject/chapters', protect, authorize('teacher', 'admin'), createChapter)
 router.put('/:subject/chapters/:chapterId', protect, authorize('teacher', 'admin'), updateChapter)
 router.delete('/:subject/chapters/:chapterId', protect, authorize('teacher', 'admin'), deleteChapter)
@@ -48,11 +50,11 @@ router.get('/:subject/chapters/:chapterId/review-queue', protect, authorize('tea
 router.delete('/:subject/chapters/:chapterId/review-queue/:itemId', protect, authorize('teacher', 'admin'), deleteCsvReviewItem)
 router.put('/:subject/chapters/:chapterId/review-queue/:itemId', protect, authorize('teacher', 'admin'), updateCsvReviewItem)
 router.post('/:subject/chapters/:chapterId/review-queue/:itemId/approve', protect, authorize('teacher', 'admin'), approveCsvReviewItem)
-router.get('/:subject/:chapterId', protect, getMcqsByChapter)
+router.get('/:subject/:chapterId', optionalProtect, getMcqsByChapter)
 router.post('/:subject/:chapterId', protect, authorize('teacher', 'admin'), createChapterMcq)
 router.post('/:subject/:chapterId/upload-csv', protect, authorize('teacher', 'admin'), upload.single('file'), uploadChapterMcqsCsv)
-router.get('/:subject/:chapterId/latest-attempt', protect, getLatestChapterAttempt)
-router.post('/:subject/:chapterId/submit', protect, submitChapterAttempt)
+router.get('/:subject/:chapterId/latest-attempt', optionalProtect, getLatestChapterAttempt)
+router.post('/:subject/:chapterId/submit', optionalProtect, submitChapterAttempt)
 
 // Teacher/Admin routes (full answers)
 router.get(

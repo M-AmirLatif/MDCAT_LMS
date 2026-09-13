@@ -103,18 +103,29 @@ export default function Topbar({ onMenuClick }) {
 
         <ThemeToggle className="theme-toggle--topbar" />
 
-        <button className="topbar-user" onClick={() => navigate('/profile/edit')} type="button">
-          {profilePicture ? (
-            <img className="topbar-avatar topbar-avatar--image" src={profilePicture} alt={user?.firstName || 'Profile'} />
-          ) : (
-            <div className="topbar-avatar">{initials}</div>
-          )}
-          <div className="topbar-user-info">
-            <span className="topbar-user-name">
-              {user?.firstName ? `${user.firstName} ${user?.lastName || ''}`.trim() : 'Guest User'}
-            </span>
+        {user ? (
+          <button className="topbar-user" onClick={() => navigate('/profile/edit')} type="button">
+            {profilePicture ? (
+              <img className="topbar-avatar topbar-avatar--image" src={profilePicture} alt={user?.firstName || 'Profile'} />
+            ) : (
+              <div className="topbar-avatar">{initials}</div>
+            )}
+            <div className="topbar-user-info">
+              <span className="topbar-user-name">
+                {user?.firstName ? `${user.firstName} ${user?.lastName || ''}`.trim() : 'Student'}
+              </span>
+            </div>
+          </button>
+        ) : (
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <button className="btn btn-outline btn-sm" onClick={() => navigate('/login')} type="button">
+              Log In
+            </button>
+            <button className="btn btn-primary btn-sm" onClick={() => navigate('/register')} type="button">
+              Sign Up
+            </button>
           </div>
-        </button>
+        )}
       </div>
     </header>
   )

@@ -1,8 +1,9 @@
 import { HelmetProvider } from 'react-helmet-async'
 import GoogleAnalytics from './components/GoogleAnalytics'
 import { lazy, Suspense, useEffect } from 'react'
-import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { BrowserRouter as Router, Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
+import NumsPaperKey2026 from './pages/NumsPaperKey2026'
 import './App.css'
 
 import './theme.css'
@@ -98,6 +99,16 @@ function ScrollToTop() {
 import { CourseSelection as LazyMcqCourseSelection, ChapterList as LazyMcqChapterList, McqList as LazyMcqMcqList, QuizAttempt as LazyMcqQuizAttempt, QuizResult as LazyMcqQuizResult } from './pages/McqModule'
 import { AdminCoursesPage as LazyAdminCoursesPage, AdminStudentsPage as LazyAdminStudentsPage, AdminTeachersPage as LazyAdminTeachersPage, AdminAnnouncementsPage as LazyAdminAnnouncementsPage, AdminReportsPage as LazyAdminReportsPage, AdminSettingsPage as LazyAdminSettingsPage, TeacherStudentsPage as LazyTeacherStudentsPage, TeacherAnalyticsPage as LazyTeacherAnalyticsPage } from './pages/PlatformRolePages'
 
+function PastPaperAttemptRedirect() {
+  const { chapterId } = useParams()
+  return <Navigate to={`/mcqs/past-papers/${chapterId}/attempt`} replace />
+}
+
+function PastPaperResultRedirect() {
+  const { chapterId } = useParams()
+  return <Navigate to={`/mcqs/past-papers/${chapterId}/result`} replace />
+}
+
 function App() {
   return (
     <HelmetProvider>
@@ -132,6 +143,20 @@ function App() {
             }
           />
 
+          {/* Dedicated SEO Answer Key & Solved Paper Landing Pages */}
+          <Route path="/past-papers/nums-2026-answer-key" element={<NumsPaperKey2026 />} />
+          <Route path="/past-papers/:chapterId" element={<NumsPaperKey2026 />} />
+          <Route path="/past-papers/:chapterId/attempt" element={<PastPaperAttemptRedirect />} />
+          <Route path="/past-papers/:chapterId/result" element={<PastPaperResultRedirect />} />
+
+          {/* Public & Student MCQ routes (Guests can browse chapters, practice & attempt tests without login) */}
+          <Route element={<AppLayout />}>
+            <Route path="/mcqs/:subject" element={<LazyMcqChapterList />} />
+            <Route path="/mcqs/:subject/:chapterId" element={<LazyMcqMcqList />} />
+            <Route path="/mcqs/:subject/:chapterId/attempt" element={<LazyMcqQuizAttempt />} />
+            <Route path="/mcqs/:subject/:chapterId/result" element={<LazyMcqQuizResult />} />
+          </Route>
+
           <Route
             element={
               <ProtectedRoute>
@@ -144,10 +169,6 @@ function App() {
             <Route path="/mcqs" element={<LazyMcqCourseSelection />} />
             <Route path="/student/mcqs" element={<LazyMcqCourseSelection />} />
             <Route path="/teacher/mcqs" element={<LazyMcqCourseSelection />} />
-            <Route path="/mcqs/:subject" element={<LazyMcqChapterList />} />
-            <Route path="/mcqs/:subject/:chapterId" element={<LazyMcqMcqList />} />
-            <Route path="/mcqs/:subject/:chapterId/attempt" element={<LazyMcqQuizAttempt />} />
-            <Route path="/mcqs/:subject/:chapterId/result" element={<LazyMcqQuizResult />} />
             <Route path="/performance" element={<PlatformPerformance />} />
             <Route path="/flashcards" element={<PlatformFlashcards />} />
             <Route path="/leaderboard" element={<PlatformLeaderboard />} />

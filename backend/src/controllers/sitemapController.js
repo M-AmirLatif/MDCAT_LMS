@@ -1,4 +1,5 @@
 const Blog = require('../models/Blog')
+const Course = require('../models/Course')
 
 exports.generateSitemap = async (req, res) => {
   try {
@@ -7,6 +8,8 @@ exports.generateSitemap = async (req, res) => {
     // Static routes merged from old sitemap.xml
     const staticRoutes = [
       { path: '/', priority: '1.0', freq: 'daily' },
+      { path: '/past-papers/nums-2026-answer-key', priority: '1.0', freq: 'hourly' },
+      { path: '/past-papers/nums-mdcat-2026-paper', priority: '1.0', freq: 'hourly' },
       { path: '/start-free-mdcat-2026', priority: '0.9', freq: 'weekly' },
       { path: '/free-mdcat-preparation', priority: '0.9', freq: 'weekly' },
       { path: '/mdcat-tips', priority: '0.9', freq: 'daily' },
@@ -22,8 +25,17 @@ exports.generateSitemap = async (req, res) => {
       { path: '/register', priority: '0.3', freq: 'monthly' },
     ]
 
-    // Fetch dynamic blog posts
-    const blogs = await Blog.find({ isPublished: true }).select('slug updatedAt publishedAt')
+    // Fetch dynamic blog posts and past paper courses in parallel
+    const [blogs, pastPaperCourses] = await Promise.all([
+      Blog.find({ isPublished: true }).select('slug updatedAt publishedAt').lean(),
+      Course.find({
+        $or: [
+          { category: 'Past Papers' },
+          { isPastPaper: true },
+          { name: /past paper/i },
+        ],
+      }).select('chapters updatedAt').lean(),
+    ])
 
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
     xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
@@ -46,6 +58,22 @@ exports.generateSitemap = async (req, res) => {
       xml += '    <changefreq>weekly</changefreq>\n'
       xml += '    <priority>0.9</priority>\n'
       xml += '  </url>\n'
+    })
+
+    // Add dynamic past paper chapter routes
+    const seenPaperPaths = new Set(['/past-papers/nums-2026-answer-key', '/past-papers/nums-mdcat-2026-paper'])
+    pastPaperCourses.forEach(course => {
+      (course.chapters || []).forEach(chapter => {
+        const path = `/past-papers/${chapter.id}`
+        if (!seenPaperPaths.has(path)) {
+          seenPaperPaths.add(path)
+          xml += '  <url>\n'
+          xml += `    <loc>${baseUrl}${path}</loc>\n`
+          xml += '    <changefreq>daily</changefreq>\n'
+          xml += '    <priority>0.9</priority>\n'
+          xml += '  </url>\n'
+        }
+      })
     })
 
     xml += '</urlset>'

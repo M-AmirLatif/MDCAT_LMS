@@ -2851,13 +2851,15 @@ function QuizAttempt() {
             : undefined,
       })
       
-      try {
-        const profileRes = await API.get('/auth/profile');
-        if (profileRes.data && profileRes.data.user) {
-          updateUser(profileRes.data.user);
+      if (user) {
+        try {
+          const profileRes = await API.get('/auth/profile');
+          if (profileRes.data && profileRes.data.user) {
+            updateUser(profileRes.data.user);
+          }
+        } catch (err) {
+          console.error('Could not refresh user profile for streak:', err);
         }
-      } catch (err) {
-        console.error('Could not refresh user profile for streak:', err);
       }
       localStorage.removeItem(quizStorageKey)
       const resultPayload = JSON.stringify(res.data)
@@ -3175,15 +3177,19 @@ function QuizResult() {
   const [savedStatus, setSavedStatus] = useState({})
 
   useEffect(() => {
-    if (!result?.detailed) return
+    if (!user || !result?.detailed) return
     const ids = result.detailed.map(d => d.mcqId || d.id).filter(Boolean)
     if (!ids.length) return
     API.post('/flashcards/status', { mcqIds: ids }, { skipQueryCache: true })
       .then(res => setSavedStatus(res.data.savedStatus || {}))
       .catch(() => {})
-  }, [result])
+  }, [result, user])
 
   const toggleFlashcard = (mcqId, subjectName, chapId) => {
+    if (!user) {
+      toast.info('Create a free account to save questions to your flashcards!')
+      return
+    }
     API.post('/flashcards/toggle', { mcqId, subject: subjectName, chapterId: chapId }, { skipQueryCache: true })
       .then(res => {
         setSavedStatus(prev => ({ ...prev, [mcqId]: res.data.saved }))
@@ -3223,6 +3229,32 @@ function QuizResult() {
   return (
     <div className="mcq-review-page animate-fade-up">
       <section className="mcq-review-shell">
+        {!user && (
+          <div
+            style={{
+              background: 'linear-gradient(135deg, rgba(2, 132, 199, 0.15), rgba(37, 99, 235, 0.15))',
+              border: '1px solid rgba(56, 189, 248, 0.3)',
+              borderRadius: '12px',
+              padding: '1rem 1.25rem',
+              marginBottom: '1.25rem',
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '1rem',
+            }}
+          >
+            <div>
+              <strong style={{ color: '#38bdf8', fontSize: '1rem' }}>🎉 Test Completed as Guest!</strong>
+              <p style={{ margin: '0.25rem 0 0', color: '#cbd5e1', fontSize: '0.88rem' }}>
+                Create a free account to save your scores, track your streak, and access 10,000+ MDCAT MCQs.
+              </p>
+            </div>
+            <Link to="/register" className="btn btn-primary btn-sm">
+              Save My Score (Free Sign Up)
+            </Link>
+          </div>
+        )}
         <div className="mcq-review-top">
           <div>
             <div className="label-xs">

@@ -62,6 +62,36 @@ exports.protect = async (req, res, next) => {
   }
 }
 
+// ==================== OPTIONAL PROTECT (Guest or Logged In) ====================
+// Decodes JWT if provided; if absent, invalid or expired, sets req.user = null
+// and continues without throwing 401 error.
+exports.optionalProtect = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1]
+    if (!token) {
+      req.user = null
+      return next()
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    const user = await User.findById(decoded.id)
+      .select('+activeSessionId')
+      .populate('role', 'name')
+
+    if (!user || user.isActive === false) {
+      req.user = null
+      return next()
+    }
+
+    req.user = user
+    next()
+  } catch (error) {
+    req.user = null
+    next()
+  }
+}
+
+
 // ==================== PROTECT WITH PERMISSIONS (Full Hydration) ====================
 // Deep version: populates role → permissions. Only use on routes that check
 // granular permission names (not just role-based authorize).

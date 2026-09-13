@@ -124,10 +124,20 @@ const canManageSubject = (subject, user) => {
   return canTeacherAccessSubject(user, subject)
 }
 
+const isPastPaperCategory = (subject) => {
+  const s = String(subject || '').toLowerCase().trim()
+  return s === 'past-papers' || s === 'past papers' || s === 'past paper'
+}
+
 const canAccessSubjectContent = (user, subject, contentIndex = 0) => {
   const roleName = userRoleName(user)
   if (roleName === 'admin') return true
   if (roleName === 'teacher') return canManageSubject(subject, user)
+  if (isPastPaperCategory(subject)) return true
+  if (!user) {
+    if (!REQUIRE_SUBSCRIPTION_FOR_MCQ_TESTS) return true
+    return false
+  }
   if (roleName !== 'student') return false
   if (!REQUIRE_SUBSCRIPTION_FOR_MCQ_TESTS) return true
   if (contentIndex === 0) return true
@@ -138,6 +148,11 @@ const canAccessChapterTest = (user, subject, contentIndex = 0, testPart = null) 
   const roleName = userRoleName(user)
   if (roleName === 'admin') return true
   if (roleName === 'teacher') return canManageSubject(subject, user)
+  if (isPastPaperCategory(subject)) return true
+  if (!user) {
+    if (!REQUIRE_SUBSCRIPTION_FOR_MCQ_TESTS) return true
+    return false
+  }
   if (roleName !== 'student') return false
   if (!REQUIRE_SUBSCRIPTION_FOR_MCQ_TESTS) return true
   const part = normalizeTestPart(testPart)
@@ -2812,7 +2827,7 @@ exports.approveCsvReviewItem = async (req, res) => {
 // ==================== GET LATEST CHAPTER ATTEMPT ====================
 exports.getLatestChapterAttempt = async (req, res) => {
   try {
-    if (req.query.mode === 'random' || Number(req.query.count || req.query.randomCount) > 0) {
+    if (!req.user || req.query.mode === 'random' || Number(req.query.count || req.query.randomCount) > 0) {
       return res.status(200).json({ success: true, result: null })
     }
     const context = await buildChapterMcqFilter(req.params.subject, req.params.chapterId, false, req.query.topicId || null)
@@ -2999,68 +3014,75 @@ exports.submitChapterAttempt = async (req, res) => {
             : context.chapter
     const attemptChapterName = responseChapter.name || context.chapter.name
 
-    const PKT_OFFSET = 5 * 60 * 60 * 1000;
+    let newStreak = 0
+    let newBadges = []
+    let testSessionId = 'guest-session'
+
+    if (req.user) {
+      const PKT_OFFSET = 5 * 60 * 60 * 1000;
       const today = new Date(Date.now() + PKT_OFFSET);
       today.setUTCHours(0, 0, 0, 0);
       const lastPractice = req.user.lastPracticeDate ? new Date(req.user.lastPracticeDate.getTime() + PKT_OFFSET) : null;
       if (lastPractice) lastPractice.setUTCHours(0, 0, 0, 0);
     
-    const ONE_DAY = 24 * 60 * 60 * 1000;
-    let newStreak = req.user.currentStreak || 0;
+      const ONE_DAY = 24 * 60 * 60 * 1000;
+      newStreak = req.user.currentStreak || 0;
     
-    if (!lastPractice) {
-      newStreak = 1;
-    } else {
-      const diffDays = Math.round((today - lastPractice) / ONE_DAY);
-      if (diffDays === 1) {
-        newStreak += 1;
-      } else if (diffDays > 1) {
+      if (!lastPractice) {
         newStreak = 1;
+      } else {
+        const diffDays = Math.round((today - lastPractice) / ONE_DAY);
+        if (diffDays === 1) {
+          newStreak += 1;
+        } else if (diffDays > 1) {
+          newStreak = 1;
+        }
       }
-    }
     
-    const newBadges = [...(req.user.badges || [])];
-    if (newStreak >= 7 && !newBadges.includes('7-Day Streak')) newBadges.push('7-Day Streak');
-    if (newStreak >= 30 && !newBadges.includes('30-Day Streak')) newBadges.push('30-Day Streak');
-    if (percentage === 100 && !newBadges.includes('Perfect Score')) newBadges.push('Perfect Score');
+      newBadges = [...(req.user.badges || [])];
+      if (newStreak >= 7 && !newBadges.includes('7-Day Streak')) newBadges.push('7-Day Streak');
+      if (newStreak >= 30 && !newBadges.includes('30-Day Streak')) newBadges.push('30-Day Streak');
+      if (percentage === 100 && !newBadges.includes('Perfect Score')) newBadges.push('Perfect Score');
     
-    await req.user.updateOne({
-      currentStreak: newStreak,
-      lastPracticeDate: new Date(),
-      badges: newBadges
-    });
+      await req.user.updateOne({
+        currentStreak: newStreak,
+        lastPracticeDate: new Date(),
+        badges: newBadges
+      });
     
-    req.user.currentStreak = newStreak;
-    req.user.badges = newBadges;
+      req.user.currentStreak = newStreak;
+      req.user.badges = newBadges;
 
-    const testSession = await TestSession.create({
-      studentId: req.user.id,
-      courseId: context.course._id,
-      topic: context.topic?.name || attemptChapterName,
-      topicId: context.topic?.id || null,
-      subject: context.subject,
-      chapterId: context.chapter.id,
-      chapterName: attemptChapterName,
-      totalQuestions: detailed.length,
-      score: correct,
-      finalScore: correct,
-      percentage,
-      timeLimitSeconds: req.body.timeLimitSeconds || detailed.length * 50,
-      timeSpentSeconds: req.body.timeSpentSeconds || null,
-      startedAt: Number.isNaN(startedAt.getTime()) ? new Date() : startedAt,
-      submittedAt: new Date(),
-      answers: detailed
-        .map((item) => ({
-          mcqId: item.mcqId,
-          selectedIndex: item.selectedIndex,
-          correctIndex: item.correctIndex,
-          isCorrect: item.isCorrect,
-        })),
-    })
+      const testSession = await TestSession.create({
+        studentId: req.user.id,
+        courseId: context.course._id,
+        topic: context.topic?.name || attemptChapterName,
+        topicId: context.topic?.id || null,
+        subject: context.subject,
+        chapterId: context.chapter.id,
+        chapterName: attemptChapterName,
+        totalQuestions: detailed.length,
+        score: correct,
+        finalScore: correct,
+        percentage,
+        timeLimitSeconds: req.body.timeLimitSeconds || detailed.length * 50,
+        timeSpentSeconds: req.body.timeSpentSeconds || null,
+        startedAt: Number.isNaN(startedAt.getTime()) ? new Date() : startedAt,
+        submittedAt: new Date(),
+        answers: detailed
+          .map((item) => ({
+            mcqId: item.mcqId,
+            selectedIndex: item.selectedIndex,
+            correctIndex: item.correctIndex,
+            isCorrect: item.isCorrect,
+          })),
+      })
+      testSessionId = testSession._id
+    }
 
     res.status(200).json({
       success: true,
-      testSessionId: testSession._id,
+      testSessionId,
       subject: context.subject,
       chapter: responseChapter,
       selectedTopic: context.topic,
@@ -3145,4 +3167,90 @@ exports.getTeacherAnalytics = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 }
+
+// ==================== GET PUBLIC PAPER KEY & SOLVED MCQS ====================
+exports.getPublicPaperKey = async (req, res) => {
+  try {
+    const chapterId = req.params.chapterId
+    if (!chapterId) {
+      return res.status(400).json({ error: 'Chapter ID is required' })
+    }
+
+    const course = await Course.findOne({
+      $or: [
+        { category: 'Past Papers' },
+        { isPastPaper: true },
+        { name: /past paper/i },
+      ],
+    }).lean()
+
+    if (!course) {
+      return res.status(404).json({ error: 'Past papers course not found' })
+    }
+
+    const targetSlug = String(chapterId).toLowerCase().trim()
+    const chapter = (course.chapters || []).find(
+      (c) =>
+        String(c.id).toLowerCase().trim() === targetSlug ||
+        slugifyChapter(c.name) === targetSlug
+    )
+
+    if (!chapter) {
+      return res.status(404).json({ error: 'Past paper chapter not found' })
+    }
+
+    const rawMcqs = await MCQ.find({
+      courseId: course._id,
+      chapterId: chapter.id,
+    })
+      .select('-createdBy -reviewReason -validationErrors -importBatchId')
+      .sort({ originalQuestionNumber: 1, createdAt: 1, _id: 1 })
+      .lean()
+
+    const sortedMcqs = sortMcqsByOriginalOrder(rawMcqs)
+    const serialized = serializeMcqsMedia(sortedMcqs)
+
+    const mcqsWithKey = serialized.map((mcq, idx) => {
+      let correctLetter = mcq.correctAnswer || ''
+      if (!correctLetter && Array.isArray(mcq.options)) {
+        const correctIdx = mcq.options.findIndex((opt) => opt.isCorrect)
+        if (correctIdx >= 0) {
+          correctLetter = ['A', 'B', 'C', 'D'][correctIdx]
+        }
+      }
+      return {
+        _id: mcq._id,
+        questionNumber: mcq.questionNumber || idx + 1,
+        originalQuestionNumber: mcq.originalQuestionNumber || idx + 1,
+        question: mcq.question || mcq.questionText || '',
+        questionText: mcq.questionText || mcq.question || '',
+        questionImages: mcq.questionImages || [],
+        options: mcq.options || [],
+        correctAnswer: correctLetter,
+        explanation: mcq.explanation || mcq.explanationText || '',
+        explanationText: mcq.explanationText || mcq.explanation || '',
+        explanationImages: mcq.explanationImages || [],
+        difficulty: mcq.difficulty || 'medium',
+        subject: mcq.subject || 'Past Papers',
+      }
+    })
+
+    return res.status(200).json({
+      success: true,
+      paper: {
+        id: chapter.id,
+        name: chapter.name,
+        description: chapter.description || '',
+        totalQuestions: mcqsWithKey.length,
+        subject: 'Past Papers',
+        courseId: course._id,
+      },
+      mcqs: mcqsWithKey,
+    })
+  } catch (error) {
+    console.error('getPublicPaperKey error:', error)
+    return res.status(500).json({ error: error.message })
+  }
+}
+
 
