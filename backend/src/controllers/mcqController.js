@@ -260,7 +260,10 @@ const compareMcqOrder = (a, b) => {
   if (Number.isFinite(aRow) && !Number.isFinite(bRow)) return -1
   if (!Number.isFinite(aRow) && Number.isFinite(bRow)) return 1
 
-  return new Date(a?.createdAt || 0) - new Date(b?.createdAt || 0)
+  const timeDiff = new Date(a?.createdAt || 0) - new Date(b?.createdAt || 0)
+  if (timeDiff !== 0) return timeDiff
+
+  return String(a?._id || '').localeCompare(String(b?._id || ''))
 }
 
 const sortMcqsByOriginalOrder = (items = []) => [...items].sort(compareMcqOrder)
@@ -1716,9 +1719,9 @@ exports.getMcqsByChapter = async (req, res) => {
     const role = userRoleName(req.user)
     const isTeacher = teacherRoleNames.has(role)
     const randomCount = Number(req.query.count || req.query.randomCount || 0)
-    const isRandomMode = req.query.mode === 'random' || randomCount > 0
-    const selectedTestPart = isRandomMode ? null : (isTeacher ? (req.query.testPart ? normalizeTestPart(req.query.testPart) : null) : normalizeTestPart(req.query.testPart))
-    const includeFull = isTeacher && !isRandomMode && !selectedTestPart
+    const isRandomMode = !isTeacher && (req.query.mode === 'random' || randomCount > 0)
+    const selectedTestPart = isRandomMode ? null : (isTeacher ? null : normalizeTestPart(req.query.testPart))
+    const includeFull = isTeacher
     const context = await buildChapterMcqFilter(
       req.params.subject,
       req.params.chapterId,
