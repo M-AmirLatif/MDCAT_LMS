@@ -2119,12 +2119,30 @@ function McqList() {
                             cursor: 'pointer',
                           }}
                           onClick={() => {
+                            const count = Number(customCount) || 20
+                            const available = Array.isArray(mcqs) && mcqs.length > 0 ? mcqs : []
+                            const shuffled = [...available].sort(() => 0.5 - Math.random())
+                            const selectedMcqs = shuffled.slice(0, Math.min(count, shuffled.length))
+
                             const query = new URLSearchParams()
                             if (selectedTopicId) query.set('topicId', selectedTopicId)
                             query.set('mode', 'random')
-                            query.set('count', String(customCount))
+                            query.set('count', String(count))
+
                             navigate(`/mcqs/${subject}/${chapterId}/attempt?${query.toString()}`, {
-                              state: { retake: true, mode: 'random', count: customCount },
+                              state: {
+                                retake: true,
+                                mode: 'random',
+                                count,
+                                preloadedMcqs: selectedMcqs,
+                                chapter: chapter
+                                  ? {
+                                      ...chapter,
+                                      name: `${chapter.name} - Random Practice (${selectedMcqs.length} MCQs)`,
+                                      isRandomTest: true,
+                                    }
+                                  : null,
+                              },
                             })
                           }}
                         >
@@ -2401,9 +2419,26 @@ function QuizAttempt() {
             return
           }
         }
+
+        // Fast path: If preloaded random MCQs were passed from Chapter Hub, initialize instantly!
+        if (isRandom && Array.isArray(location.state?.preloadedMcqs) && location.state.preloadedMcqs.length > 0) {
+          const preloaded = location.state.preloadedMcqs
+          const defaultRemaining = preloaded.length * 50
+          const now = Date.now()
+          setChapter(location.state.chapter || { id: chapterId, name: 'Random Practice' })
+          setMcqs(preloaded)
+          setCurrentIndex(0)
+          setAnswers({})
+          setSkipped({})
+          setQuizTiming({ startedAt: now, expiresAt: now + defaultRemaining * 1000 })
+          setRemaining(defaultRemaining)
+          setLoading(false)
+          return
+        }
+
         // On a direct/uncached attempt URL, load questions in parallel with the
         // returning-student lookup instead of creating a two-request waterfall.
-        const questionsRequest = API.get(`/mcqs/${subject}/${chapterId}${testPartQuery}`)
+        const questionsRequest = API.get(`/mcqs/${subject}/${chapterId}${testPartQuery}`, { skipQueryCache: isRandom })
           .catch((error) => ({ loadError: error }))
         if (!location.state?.retake && !isRandom && !activeDraft) {
           const previousAttempt = await API.get(`/mcqs/${subject}/${chapterId}/latest-attempt${testPartQuery}`)
@@ -2424,7 +2459,10 @@ function QuizAttempt() {
         if (response?.loadError) throw response.loadError
 
         if (!alive || !response) return
-        const loadedMcqs = response.data.mcqs || []
+        let loadedMcqs = response.data.mcqs || []
+        if (isRandom && countParam && Number(countParam) > 0 && loadedMcqs.length > Number(countParam)) {
+          loadedMcqs = [...loadedMcqs].sort(() => 0.5 - Math.random()).slice(0, Number(countParam))
+        }
         const defaultRemaining = loadedMcqs.length * 50
         // Never search another account's drafts. The exact user-scoped key is the only resumable source.
         let savedDraft = activeDraft
