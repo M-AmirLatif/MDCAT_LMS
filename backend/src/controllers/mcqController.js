@@ -249,8 +249,16 @@ const compareMcqOrder = (a, b) => {
   if (aNumber !== null && bNumber !== null && aNumber !== bNumber) {
     return aNumber - bNumber
   }
-  if (aNumber !== null && bNumber === null) return -1
-  if (aNumber === null && bNumber !== null) return 1
+  if (aNumber !== null && bNumber === null) {
+    const timeDiff = new Date(a?.createdAt || 0) - new Date(b?.createdAt || 0)
+    if (timeDiff > 60000) return 1
+    return -1
+  }
+  if (aNumber === null && bNumber !== null) {
+    const timeDiff = new Date(a?.createdAt || 0) - new Date(b?.createdAt || 0)
+    if (timeDiff < -60000) return -1
+    return 1
+  }
 
   const aRow = Number(a?.csvRowIndex)
   const bRow = Number(b?.csvRowIndex)
@@ -1744,7 +1752,7 @@ exports.getMcqsByChapter = async (req, res) => {
       })
     }
 
-    const mcqQuery = MCQ.find(context.filter)
+    const mcqQuery = MCQ.find(context.filter).sort({ createdAt: 1, _id: 1 })
     if (!includeFull) {
       mcqQuery.select(
         '-correctAnswer -explanation -explanationText -explanationImages -options.isCorrect -createdBy -reviewReason -validationErrors -importBatchId',
