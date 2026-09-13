@@ -2236,22 +2236,28 @@ function McqList() {
                           className="btn btn-primary"
                           style={{
                             width: '100%',
-                            padding: '14px 24px',
+                            height: '50px',
+                            minHeight: '50px',
+                            padding: '0 20px',
                             fontWeight: 800,
-                            fontSize: '1rem',
+                            fontSize: '0.95rem',
+                            lineHeight: 1,
                             borderRadius: '12px',
-                            display: 'inline-flex',
+                            display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
+                            gap: '8px',
                             background: 'linear-gradient(135deg, #7447ff 0%, #4a90e2 100%)',
                             boxShadow: '0 4px 14px rgba(116, 71, 255, 0.3)',
                             textAlign: 'center',
                             color: '#ffffff',
                             textDecoration: 'none',
+                            boxSizing: 'border-box',
                           }}
                           to={`/mcqs/${subject}/${chapterId}/attempt`}
                         >
-                          Solve Past Paper ({totalBankCount} MCQs) →
+                          <span>Solve Past Paper ({totalBankCount} MCQs)</span>
+                          <span aria-hidden="true">→</span>
                         </Link>
                       </div>
                     </article>
@@ -2403,20 +2409,28 @@ function McqList() {
                               className="btn btn-primary"
                               style={{
                                 width: '100%',
-                                padding: '12px 20px',
+                                height: '48px',
+                                minHeight: '48px',
+                                padding: '0 18px',
                                 fontWeight: 800,
                                 fontSize: '0.92rem',
+                                lineHeight: 1,
                                 borderRadius: '10px',
-                                display: 'inline-flex',
+                                display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
+                                gap: '6px',
                                 background: 'linear-gradient(135deg, #7447ff 0%, #4a90e2 100%)',
                                 boxShadow: '0 4px 14px rgba(116, 71, 255, 0.3)',
                                 textAlign: 'center',
+                                color: '#ffffff',
+                                textDecoration: 'none',
+                                boxSizing: 'border-box',
                               }}
                               to={`/mcqs/${subject}/${chapterId}/attempt?testPart=${test.testPart}${selectedTopicId ? `&topicId=${selectedTopicId}` : ''}`}
                             >
-                              Start Test {test.testPart} →
+                              <span>Start Test {test.testPart}</span>
+                              <span aria-hidden="true">→</span>
                             </Link>
                           </div>
                         </article>
@@ -2461,20 +2475,28 @@ function McqList() {
                             className="btn btn-primary"
                             style={{
                               width: '100%',
-                              padding: '12px 20px',
+                              height: '48px',
+                              minHeight: '48px',
+                              padding: '0 18px',
                               fontWeight: 800,
                               fontSize: '0.92rem',
+                              lineHeight: 1,
                               borderRadius: '10px',
-                              display: 'inline-flex',
+                              display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
+                              gap: '6px',
                               background: 'linear-gradient(135deg, #7447ff 0%, #4a90e2 100%)',
                               boxShadow: '0 4px 14px rgba(116, 71, 255, 0.3)',
                               textAlign: 'center',
+                              color: '#ffffff',
+                              textDecoration: 'none',
+                              boxSizing: 'border-box',
                             }}
                             to={`/mcqs/${subject}/${chapterId}/attempt${selectedTopicId ? `?topicId=${selectedTopicId}` : ''}`}
                           >
-                            Start Full Test →
+                            <span>Start Full Test</span>
+                            <span aria-hidden="true">→</span>
                           </Link>
                         </div>
                       </article>

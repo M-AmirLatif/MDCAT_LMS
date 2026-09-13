@@ -1098,6 +1098,21 @@ html[data-theme="dark"] body .chapter-test-card:hover,
   box-shadow: 0 10px 24px rgba(30, 41, 75, 0.08) !important;
 }
 
+.chapter-test-card .btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  text-align: center !important;
+  box-sizing: border-box !important;
+}
+
+.chapter-test-card .btn span {
+  display: inline-block !important;
+  vertical-align: middle !important;
+  line-height: 1 !important;
+}
+
 /* Quick Count Option Pills & Select */
 .quick-count-pill {
   border-radius: 20px !important;
