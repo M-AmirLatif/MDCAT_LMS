@@ -256,6 +256,7 @@ export default function Home() {
         </Link>
         <nav className={`lp-links ${menuOpen ? 'lp-links--open' : ''}`} aria-label="Public navigation">
           <a href="#home" onClick={() => setMenuOpen(false)}>Home</a>
+          <Link to="/past-papers/nums-2026-answer-key" onClick={() => setMenuOpen(false)} style={{ color: '#38bdf8', fontWeight: 700 }}>NUMS 2026 Key 🔥</Link>
           <a href="#courses" onClick={() => setMenuOpen(false)}>Courses</a>
           <a href="#reviews" onClick={() => setMenuOpen(false)}>About</a>
           <div className="lp-mobile-actions">
@@ -309,7 +310,22 @@ export default function Home() {
           <strong>Join the batch first</strong>
         </div>
 
-                <div className="lp-hero-content reveal">
+        <div className="lp-hero-content reveal">
+          <Link
+            to="/past-papers/nums-2026-answer-key"
+            className="lp-batch-pill"
+            style={{
+              textDecoration: 'none',
+              background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(2, 132, 199, 0.15))',
+              borderColor: 'rgba(56, 189, 248, 0.4)',
+              color: '#38bdf8',
+              marginBottom: '1rem',
+              display: 'inline-flex',
+              fontWeight: 700,
+            }}
+          >
+            <span style={{ marginRight: '6px' }}>🔥</span> NUMS MDCAT 2026 Official Answer Key & Solved Paper is OUT! Check Score →
+          </Link>
           <div className="lp-batch-pill"><i /> MDCAT 2026 Batch Now Open</div>
           <h1>
             <span>{seo.heading}</span>
