@@ -2051,23 +2051,7 @@ function McqList() {
                               key={countVal}
                               type="button"
                               onClick={() => setCustomCount(countVal)}
-                              className={`btn btn-sm ${isSelected ? 'btn-primary' : 'btn-secondary'}`}
-                              style={{
-                                borderRadius: '20px',
-                                padding: '6px 16px',
-                                fontWeight: 800,
-                                fontSize: '0.84rem',
-                                border: isSelected
-                                  ? '2px solid #8B6FFF'
-                                  : '2px solid rgba(139, 111, 255, 0.45)',
-                                background: isSelected
-                                  ? 'linear-gradient(135deg, #8B6FFF, #6C47FF)'
-                                  : 'rgba(20, 23, 56, 0.75)',
-                                color: '#ffffff',
-                                cursor: 'pointer',
-                                transition: 'all 0.18s ease',
-                                boxShadow: isSelected ? '0 4px 14px rgba(108, 71, 255, 0.35)' : 'none',
-                              }}
+                              className={`quick-count-pill ${isSelected ? 'is-selected' : ''}`}
                             >
                               {countVal === totalBankCount ? `All (${countVal})` : `${countVal} MCQs`}
                             </button>
@@ -2082,19 +2066,9 @@ function McqList() {
                         </label>
                         <select
                           id="custom-mcq-dropdown"
+                          className="custom-count-select"
                           value={customCount}
                           onChange={(e) => setCustomCount(Number(e.target.value))}
-                          style={{
-                            padding: '9px 16px',
-                            borderRadius: '10px',
-                            border: '1.5px solid rgba(139, 111, 255, 0.4)',
-                            background: 'var(--bg-surface, #1A1640)',
-                            color: 'var(--text-primary)',
-                            fontWeight: 700,
-                            fontSize: '0.9rem',
-                            cursor: 'pointer',
-                            minWidth: '220px',
-                          }}
                         >
                           {allCountOptions.map((opt) => (
                             <option key={opt} value={opt}>

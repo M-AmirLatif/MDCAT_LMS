@@ -1098,5 +1098,70 @@ html[data-theme="dark"] body .chapter-test-card:hover,
   box-shadow: 0 10px 24px rgba(30, 41, 75, 0.08) !important;
 }
 
+/* Quick Count Option Pills & Select */
+.quick-count-pill {
+  border-radius: 20px !important;
+  padding: 6px 16px !important;
+  font-weight: 800 !important;
+  font-size: 0.84rem !important;
+  cursor: pointer !important;
+  transition: all 0.18s ease !important;
+  border: 1.5px solid rgba(108, 71, 255, 0.35) !important;
+  background: rgba(108, 71, 255, 0.08) !important;
+  color: #5533ea !important;
+  box-shadow: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+.quick-count-pill:hover {
+  background: rgba(108, 71, 255, 0.16) !important;
+  border-color: #6c47ff !important;
+  color: #3b1fc4 !important;
+}
+
+.quick-count-pill.is-selected {
+  background: linear-gradient(135deg, #8B6FFF, #6C47FF) !important;
+  border-color: #7B57FF !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(108, 71, 255, 0.35) !important;
+}
+
+html[data-theme="dark"] .quick-count-pill {
+  border: 1.5px solid rgba(167, 139, 250, 0.45) !important;
+  background: rgba(26, 22, 64, 0.9) !important;
+  color: #e2e8f0 !important;
+}
+
+html[data-theme="dark"] .quick-count-pill:hover {
+  background: rgba(139, 111, 255, 0.25) !important;
+  border-color: #a78bfa !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="dark"] .quick-count-pill.is-selected {
+  background: linear-gradient(135deg, #8B6FFF, #6C47FF) !important;
+  border-color: #a78bfa !important;
+  color: #ffffff !important;
+}
+
+.custom-count-select {
+  padding: 9px 16px !important;
+  border-radius: 10px !important;
+  border: 1.5px solid rgba(108, 71, 255, 0.35) !important;
+  background: #ffffff !important;
+  color: #1e1b4b !important;
+  font-weight: 700 !important;
+  font-size: 0.9rem !important;
+  cursor: pointer !important;
+  min-width: 220px !important;
+}
+
+html[data-theme="dark"] .custom-count-select {
+  border: 1.5px solid rgba(167, 139, 250, 0.45) !important;
+  background: #151238 !important;
+  color: #f1f5f9 !important;
+}
+
 
 
