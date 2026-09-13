@@ -7,6 +7,7 @@ const SUBJECTS = [
   { id: 'chemistry', name: 'Chemistry' },
   { id: 'physics', name: 'Physics' },
   { id: 'english', name: 'English' },
+  { id: 'past-papers', name: 'Past Papers' },
 ]
 
 const SUBJECT_NAME_BY_KEY = new Map(

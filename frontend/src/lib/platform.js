@@ -23,6 +23,7 @@ export const PLATFORM_NAV = {
       items: [
         { key: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
         { key: 'courses', label: 'Practice Subjects', path: '/mcqs', icon: 'courses' },
+        { key: 'past-papers', label: 'Past Papers', path: '/mcqs/past-papers', icon: 'courses' },
         { key: 'performance', label: 'Performance', path: '/performance', icon: 'performance' },
         { key: 'flashcards', label: 'Flashcards', path: '/flashcards', icon: 'flashcards' },
         { key: 'leaderboard', label: 'Leaderboard', path: '/leaderboard', icon: 'analytics' },
@@ -43,6 +44,7 @@ export const PLATFORM_NAV = {
       items: [
         { key: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
         { key: 'my-courses', label: 'MCQ Management', path: '/teacher/mcqs', icon: 'courses' },
+        { key: 'past-papers', label: 'Past Papers', path: '/mcqs/past-papers', icon: 'courses' },
         { key: 'students', label: 'Student Attempts', path: '/teacher/students', icon: 'students' },
         { key: 'flashcards', label: 'Flashcards', path: '/flashcards', icon: 'flashcards' },
         { key: 'analytics', label: 'Performance Analytics', path: '/teacher/analytics', icon: 'analytics' },
@@ -61,6 +63,7 @@ export const PLATFORM_NAV = {
       label: 'Operations',
       items: [
         { key: 'dashboard', label: 'Admin Overview', path: '/dashboard', icon: 'dashboard' },
+        { key: 'past-papers', label: 'Past Papers', path: '/mcqs/past-papers', icon: 'courses' },
         { key: 'students', label: 'Students & Access', path: '/admin/students', icon: 'students' },
         { key: 'payments', label: 'Subscriptions & Payments', path: '/admin/payments', icon: 'payments' },
         { key: 'teachers', label: 'Teachers', path: '/admin/teachers', icon: 'teachers' },

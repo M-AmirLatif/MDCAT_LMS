@@ -7,7 +7,7 @@ const Role = require('../models/Role')
 
 const router = express.Router()
 
-const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English']
+const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers']
 
 // Keep a fresh value for five minutes and retain the last good value for a day.
 // The Vercel edge cache uses the same policy, so cold/new visitors do not wait

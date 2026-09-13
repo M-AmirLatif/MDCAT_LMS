@@ -1,8 +1,8 @@
-const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English']
+const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers']
 
 const normalizeSubject = (value) => {
-  const raw = String(value || '').trim()
-  return SUBJECTS.find((subject) => subject.toLowerCase() === raw.toLowerCase()) || ''
+  const raw = String(value || '').trim().toLowerCase().replace(/-/g, ' ')
+  return SUBJECTS.find((subject) => subject.toLowerCase() === raw) || ''
 }
 
 const normalizeSubjects = (...values) => {
@@ -20,8 +20,12 @@ const getTeacherSubjects = (user) => {
   return normalizeSubjects(user?.assignedSubject)
 }
 
-const canTeacherAccessSubject = (user, subject) =>
-  getTeacherSubjects(user).includes(normalizeSubject(subject))
+const canTeacherAccessSubject = (user, subject) => {
+  const normalized = normalizeSubject(subject)
+  if (!normalized) return false
+  if (normalized === 'Past Papers') return true
+  return getTeacherSubjects(user).includes(normalized)
+}
 
 module.exports = {
   SUBJECTS,

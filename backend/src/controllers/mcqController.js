@@ -10,12 +10,20 @@ const {
   canTeacherAccessSubject,
 } = require('../utils/teacherSubjects')
 
-const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English']
+const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers']
 const SUBJECT_SLUGS = {
   biology: 'Biology',
   chemistry: 'Chemistry',
   physics: 'Physics',
   english: 'English',
+  'past-papers': 'Past Papers',
+  'past papers': 'Past Papers',
+  pastpapers: 'Past Papers',
+}
+
+const extractYearFromName = (str) => {
+  const match = String(str || '').match(/\b(19\d\d|20\d\d)\b/)
+  return match ? Number(match[1]) : null
 }
 
 const normalizeSubject = (value) =>
@@ -655,6 +663,8 @@ const createMcqDocFromRow = ({
   validationErrors = [],
   createdBy,
   reviewReason = null,
+  isPastPaper = false,
+  year = null,
 }) => {
   const questionMedia = extractImagesAndCleanText(question, questionImages)
   const explanationMedia = extractImagesAndCleanText(explanation, explanationImages)
@@ -701,6 +711,8 @@ const createMcqDocFromRow = ({
     hasDiagram: fields.some(hasDiagram) || imageGroups.some((images) => images?.length),
     hasLatex: fields.some(hasLatex),
     reviewReason,
+    isPastPaper: context.subject === 'Past Papers' || Boolean(isPastPaper),
+    year: Number(year) || extractYearFromName(context.chapter?.name) || extractYearFromName(context.topic?.name) || null,
     questionNumber: String(questionNumber || originalQuestionNumber || csvRowIndex || '').trim() || null,
     originalQuestionNumber: String(originalQuestionNumber || questionNumber || csvRowIndex || '').trim() || null,
     originalQuestionNumberSort: numericQuestionNumber(originalQuestionNumber || questionNumber || csvRowIndex),
@@ -1283,7 +1295,7 @@ exports.getSubjectSummary = async (req, res) => {
   try {
     const allowedSubjects =
       userRoleName(req.user) === 'teacher'
-        ? SUBJECTS.filter((subject) => getTeacherSubjects(req.user).includes(subject))
+        ? SUBJECTS.filter((subject) => canTeacherAccessSubject(req.user, subject))
         : SUBJECTS
     const courses = await Course.find({ category: { $in: allowedSubjects } })
       .select('_id category chapters')
@@ -1309,7 +1321,7 @@ exports.getSubjectSummary = async (req, res) => {
     const subjects = allowedSubjects.map((subject) => {
       const course = courseBySubject.get(subject)
       return {
-        id: subject.toLowerCase(),
+        id: subject.toLowerCase().replace(/\s+/g, '-'),
         subject,
         courseId: course?._id || null,
         totalChapters: course?.chapters?.length || 0,
@@ -2050,6 +2062,8 @@ exports.createChapterMcq = async (req, res) => {
         sanitizedExplanation,
       ].some(hasLatex),
       reviewReason: null,
+      isPastPaper: context.subject === 'Past Papers' || Boolean(req.body.isPastPaper),
+      year: Number(req.body.year) || extractYearFromName(context.chapter?.name) || extractYearFromName(context.topic?.name) || null,
     })
 
     res
@@ -2257,6 +2271,8 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
       const optionCImages = csvImageArray(row, 'optionCImages', 'option_c_images', 'optionCImage', 'option_c_image')
       const optionDImages = csvImageArray(row, 'optionDImages', 'option_d_images', 'optionDImage', 'option_d_image')
       const explanationImages = csvImageArray(row, 'explanationImages', 'explanation_images', 'explanationImage', 'explanation_image')
+      const rowYear = getCsvValue(row, 'year', 'exam_year', 'paper_year')
+      const rowIsPastPaper = getCsvValue(row, 'isPastPaper', 'is_past_paper', 'ispastpaper')
       const explicitNeedsReview =
         String(row.needs_review || '')
           .trim()
@@ -2369,6 +2385,8 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
           validationErrors: [],
           createdBy: req.user.id,
           reviewReason: null,
+          isPastPaper: context.subject === 'Past Papers' || rowIsPastPaper === 'true',
+          year: rowYear || null,
         }),
       )
     })

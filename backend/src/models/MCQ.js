@@ -32,7 +32,7 @@ const mcqSchema = new mongoose.Schema(
     },
     subject: {
       type: String,
-      enum: ['Biology', 'Chemistry', 'Physics', 'English'],
+      enum: ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers'],
       default: null,
     },
     chapterId: {

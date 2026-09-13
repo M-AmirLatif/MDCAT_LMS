@@ -88,12 +88,12 @@ const userSchema = new mongoose.Schema(
     },
     assignedSubject: {
       type: String,
-      enum: ['Biology', 'Chemistry', 'Physics', 'English', null],
+      enum: ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers', null],
       default: null,
     },
     assignedSubjects: {
       type: [String],
-      enum: ['Biology', 'Chemistry', 'Physics', 'English'],
+      enum: ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers'],
       default: [],
     },
     approvedBy: {
@@ -135,7 +135,7 @@ const userSchema = new mongoose.Schema(
       {
         subjectId: {
           type: String,
-          enum: ['Biology', 'Chemistry', 'Physics', 'English'],
+          enum: ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers'],
           required: true,
         },
         startDate: {

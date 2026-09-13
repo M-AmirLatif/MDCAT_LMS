@@ -36,6 +36,12 @@ const SUBJECTS = [
     accent: '#F59E0B',
     progress: 'linear-gradient(135deg,#F59E0B,#FBB040)',
   },
+  {
+    id: 'past-papers',
+    name: 'Past Papers',
+    accent: '#EC4899',
+    progress: 'linear-gradient(135deg,#8B5CF6,#EC4899)',
+  },
 ]
 
 const getAssignedSubjectNames = (user) => {
@@ -350,6 +356,8 @@ function SubjectIcon({ subject }) {
       'M12 3v4M12 17v4M4 12H0m24 0h-4M5.6 5.6 2.8 2.8m18.4 18.4-2.8-2.8M18.4 5.6l2.8-2.8M5.6 18.4l-2.8 2.8M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z',
     English:
       'M5 5.5A2.5 2.5 0 0 1 7.5 3H19v16H7.5A2.5 2.5 0 0 0 5 21.5v-16ZM9 7h6M9 11h6M9 15h4',
+    'Past Papers':
+      'M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2Z',
   }
   return (
     <svg
@@ -479,7 +487,7 @@ function CourseSelection() {
   const teacherSubjects = getAssignedSubjectNames(user)
   const visibleBaseSubjects =
     user?.role === 'teacher' && teacherSubjects.length
-      ? SUBJECTS.filter((subject) => teacherSubjects.includes(subject.name))
+      ? SUBJECTS.filter((subject) => teacherSubjects.includes(subject.name) || subject.id === 'past-papers')
       : SUBJECTS
 
   const merged = visibleBaseSubjects.map((subject) => ({
@@ -540,7 +548,7 @@ function CourseSelection() {
             </div>
             <div className="subject-stats-grid">
               <div>
-                <span>Total Chapters</span>
+                <span>{subject.id === 'past-papers' ? 'Total Papers' : 'Total Chapters'}</span>
                 <strong>{subject.totalChapters || 0}</strong>
               </div>
               <div>
@@ -548,7 +556,7 @@ function CourseSelection() {
                 <strong>{subject.totalMcqs || 0}</strong>
               </div>
             </div>
-            <span className="btn btn-primary btn-sm">Open Chapters</span>
+            <span className="btn btn-primary btn-sm">{subject.id === 'past-papers' ? 'Open Papers' : 'Open Chapters'}</span>
           </Link>
         ))}
       </div>
@@ -556,7 +564,7 @@ function CourseSelection() {
   )
 }
 
-function ChapterForm({ initial, onSubmit }) {
+function ChapterForm({ initial, onSubmit, isPastPapers = false }) {
   const [name, setName] = useState(initial?.name || '')
   const [description, setDescription] = useState(initial?.description || '')
   const [saving, setSaving] = useState(false)
@@ -576,12 +584,12 @@ function ChapterForm({ initial, onSubmit }) {
   return (
     <form className="form-shell" onSubmit={handleSubmit}>
       <div className="floating-field">
-        <label htmlFor="chapter-name">Chapter Name</label>
+        <label htmlFor="chapter-name">{isPastPapers ? 'Past Paper Name' : 'Chapter Name'}</label>
         <input
           id="chapter-name"
           value={name}
           onChange={(event) => setName(event.target.value)}
-          placeholder="Topic 1 - Cell Structure & Membrane"
+          placeholder={isPastPapers ? 'e.g. MDCAT 2023, UHS 2022' : 'Topic 1 - Cell Structure & Membrane'}
           disabled={saving}
           required
         />
@@ -593,12 +601,16 @@ function ChapterForm({ initial, onSubmit }) {
           rows="4"
           value={description}
           onChange={(event) => setDescription(event.target.value)}
-          placeholder="Short chapter description for students."
+          placeholder={isPastPapers ? 'Official MDCAT past paper with explanations.' : 'Short chapter description for students.'}
           disabled={saving}
         />
       </div>
       <button className="btn btn-primary" type="submit" disabled={saving || !name.trim()}>
-        {saving ? 'Saving Chapter...' : initial?.id ? 'Update Chapter' : 'Save Chapter'}
+        {saving
+          ? (isPastPapers ? 'Saving Past Paper...' : 'Saving Chapter...')
+          : initial?.id
+            ? (isPastPapers ? 'Update Past Paper' : 'Update Chapter')
+            : (isPastPapers ? 'Save Past Paper' : 'Save Chapter')}
       </button>
     </form>
   )
@@ -656,6 +668,7 @@ function ChapterList() {
   const { subject } = useParams()
   const { isTeacher } = useAuth()
   const meta = subjectById(subject)
+  const isPastPapers = subject === 'past-papers'
   const [chapters, setChapters] = useState([])
   const [loading, setLoading] = useState(true)
   const [modal, setModal] = useState(null)
@@ -695,7 +708,7 @@ function ChapterList() {
         window.setTimeout(() => prefetchChapter(firstAvailable), 100)
       }
     } catch (error) {
-      toast.error(getUserFriendlyErrorMessage(error, 'We could not load the chapters right now.'))
+      toast.error(getUserFriendlyErrorMessage(error, isPastPapers ? 'We could not load the past papers right now.' : 'We could not load the chapters right now.'))
     } finally {
       setLoading(false)
     }
@@ -709,7 +722,7 @@ function ChapterList() {
     return (
       <EmptyState
         title="Subject not found"
-        text="Choose Biology, Chemistry, Physics, or English."
+        text="Choose Biology, Chemistry, Physics, English, or Past Papers."
         action={
           <Link className="btn btn-primary" to="/mcqs">
             Back to Subjects
@@ -722,15 +735,15 @@ function ChapterList() {
     try {
       if (modal?.chapter) {
         await API.put(`/mcqs/${subject}/chapters/${modal.chapter.id}`, payload)
-        toast.success('Chapter updated')
+        toast.success(isPastPapers ? 'Past paper updated' : 'Chapter updated')
       } else {
         await API.post(`/mcqs/${subject}/chapters`, payload)
-        toast.success('Chapter added')
+        toast.success(isPastPapers ? 'Past paper added' : 'Chapter added')
       }
       setModal(null)
       await load(true)
     } catch (error) {
-      toast.error(getUserFriendlyErrorMessage(error, 'We could not save the chapter right now.'))
+      toast.error(getUserFriendlyErrorMessage(error, isPastPapers ? 'We could not save the past paper right now.' : 'We could not save the chapter right now.'))
       throw error
     }
   }
@@ -738,7 +751,7 @@ function ChapterList() {
   const deleteChapter = async (chapter) => {
     if (
       !window.confirm(
-        `Delete "${chapter.name}"?\n\nThis will permanently delete the whole chapter, all topics inside it, all MCQs inside it, and related test records. This action cannot be undone.`,
+        `Delete "${chapter.name}"?\n\nThis will permanently delete the whole ${isPastPapers ? 'past paper' : 'chapter'}, all topics inside it, all MCQs inside it, and related test records. This action cannot be undone.`,
       )
     )
       return
@@ -747,12 +760,12 @@ function ChapterList() {
       const deletedMcqs = Number(res?.data?.deletedMcqs || 0)
       toast.success(
         deletedMcqs > 0
-          ? `Chapter deleted with ${deletedMcqs} MCQ${deletedMcqs === 1 ? '' : 's'}`
-          : 'Chapter deleted',
+          ? `${isPastPapers ? 'Past paper' : 'Chapter'} deleted with ${deletedMcqs} MCQ${deletedMcqs === 1 ? '' : 's'}`
+          : `${isPastPapers ? 'Past paper' : 'Chapter'} deleted`,
       )
       await load(true)
     } catch (error) {
-      toast.error(getUserFriendlyErrorMessage(error, 'We could not delete the chapter right now.'))
+      toast.error(getUserFriendlyErrorMessage(error, isPastPapers ? 'We could not delete the past paper right now.' : 'We could not delete the chapter right now.'))
     }
   }
 
@@ -784,12 +797,13 @@ function ChapterList() {
         <div className="workspace-card-head">
           <div>
             <div className="label-xs" style={{ color: meta.accent }}>
-              Subject &gt; Chapters
+              {isPastPapers ? 'MDCAT > Past Papers' : 'Subject > Chapters'}
             </div>
-            <h2 className="workspace-card-title">{meta.name} Chapters</h2>
+            <h2 className="workspace-card-title">{isPastPapers ? 'MDCAT Past Papers' : `${meta.name} Chapters`}</h2>
             <p>
-              Open a chapter to view MCQs. Teachers can add, rename, or delete
-              chapters with confirmation before removal.
+              {isPastPapers
+                ? 'Open a past paper to practice or manage MCQs. Teachers can upload past paper tests via CSV or add questions manually.'
+                : 'Open a chapter to view MCQs. Teachers can add, rename, or delete chapters with confirmation before removal.'}
             </p>
           </div>
           <div className="inline-actions">
@@ -802,14 +816,14 @@ function ChapterList() {
                 type="button"
                 onClick={() => setModal({ type: 'chapter' })}
               >
-                Add Chapter
+                {isPastPapers ? 'Add Past Paper' : 'Add Chapter'}
               </button>
             ) : null}
           </div>
         </div>
       </section>
 
-      {loading ? <LoadingCard label="Loading chapters..." /> : null}
+      {loading ? <LoadingCard label={isPastPapers ? 'Loading past papers...' : 'Loading chapters...'} /> : null}
       <div className="chapter-browser-grid">
         {chapters.map((chapter) => (
           <article
@@ -826,7 +840,7 @@ function ChapterList() {
                 </div>
                 <h3 className="workspace-card-title">{chapter.name}</h3>
                 <p>
-                  {chapter.description || 'Chapter based MCQ practice bank.'}
+                  {chapter.description || (isPastPapers ? 'Official MDCAT past paper MCQ practice bank.' : 'Chapter based MCQ practice bank.')}
                 </p>
               </div>
               <span className="state-chip state-chip--neutral">
@@ -872,8 +886,12 @@ function ChapterList() {
       </div>
       {!loading && chapters.length === 0 ? (
         <EmptyState
-          title="No chapters added yet"
-          text={`Teachers will add real ${meta.name} chapters before students can practice.`}
+          title={isPastPapers ? 'No past papers added yet' : 'No chapters added yet'}
+          text={
+            isPastPapers
+              ? 'Teachers will upload or add MDCAT past papers before students can practice.'
+              : `Teachers will add real ${meta.name} chapters before students can practice.`
+          }
           action={
             isTeacher ? (
               <button
@@ -881,7 +899,7 @@ function ChapterList() {
                 type="button"
                 onClick={() => setModal({ type: 'chapter' })}
               >
-                Add First Chapter
+                {isPastPapers ? 'Add First Past Paper' : 'Add First Chapter'}
               </button>
             ) : (
               <Link className="btn btn-secondary" to="/mcqs">
@@ -893,10 +911,19 @@ function ChapterList() {
       ) : null}
       {modal ? (
         <Modal
-          title={modal.chapter ? 'Edit Chapter' : 'Add Chapter'}
+          title={
+            modal.chapter
+              ? (isPastPapers ? 'Edit Past Paper' : 'Edit Chapter')
+              : (isPastPapers ? 'Add Past Paper' : 'Add Chapter')
+          }
           onClose={() => setModal(null)}
         >
-          <ChapterForm key={modal.chapter?.id || 'new'} initial={modal.chapter} onSubmit={saveChapter} />
+          <ChapterForm
+            isPastPapers={isPastPapers}
+            key={modal.chapter?.id || 'new'}
+            initial={modal.chapter}
+            onSubmit={saveChapter}
+          />
         </Modal>
       ) : null}
     </div>
@@ -1796,7 +1823,7 @@ function McqList() {
     return (
       <EmptyState
         title="Subject not found"
-        text="Choose Biology, Chemistry, Physics, or English."
+        text="Choose Biology, Chemistry, Physics, English, or Past Papers."
         action={
           <Link className="btn btn-primary" to="/mcqs">
             Back to Subjects
@@ -1874,7 +1901,7 @@ function McqList() {
           </div>
           <div className="inline-actions">
             <Link className="btn btn-secondary" to={`/mcqs/${subject}`}>
-              Back to Chapters
+              {subject === 'past-papers' ? 'Back to Past Papers' : 'Back to Chapters'}
             </Link>
             {isTeacher ? (
               <button
