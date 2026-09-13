@@ -2044,22 +2044,35 @@ function McqList() {
                         <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>
                           Quick Options:
                         </span>
-                        {presetOptions.map((countVal) => (
-                          <button
-                            key={countVal}
-                            type="button"
-                            onClick={() => setCustomCount(countVal)}
-                            className={`btn btn-sm ${customCount === countVal ? 'btn-primary' : 'btn-secondary'}`}
-                            style={{
-                              borderRadius: '20px',
-                              padding: '5px 14px',
-                              fontWeight: 700,
-                              fontSize: '0.82rem',
-                            }}
-                          >
-                            {countVal === totalBankCount ? `All (${countVal})` : `${countVal} MCQs`}
-                          </button>
-                        ))}
+                        {presetOptions.map((countVal) => {
+                          const isSelected = customCount === countVal
+                          return (
+                            <button
+                              key={countVal}
+                              type="button"
+                              onClick={() => setCustomCount(countVal)}
+                              className={`btn btn-sm ${isSelected ? 'btn-primary' : 'btn-secondary'}`}
+                              style={{
+                                borderRadius: '20px',
+                                padding: '6px 16px',
+                                fontWeight: 800,
+                                fontSize: '0.84rem',
+                                border: isSelected
+                                  ? '2px solid #8B6FFF'
+                                  : '2px solid rgba(139, 111, 255, 0.45)',
+                                background: isSelected
+                                  ? 'linear-gradient(135deg, #8B6FFF, #6C47FF)'
+                                  : 'rgba(20, 23, 56, 0.75)',
+                                color: '#ffffff',
+                                cursor: 'pointer',
+                                transition: 'all 0.18s ease',
+                                boxShadow: isSelected ? '0 4px 14px rgba(108, 71, 255, 0.35)' : 'none',
+                              }}
+                            >
+                              {countVal === totalBankCount ? `All (${countVal})` : `${countVal} MCQs`}
+                            </button>
+                          )
+                        })}
                       </div>
 
                       {/* Dropdown Selector + Launch Button */}
@@ -2103,13 +2116,16 @@ function McqList() {
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '8px',
+                            cursor: 'pointer',
                           }}
                           onClick={() => {
                             const query = new URLSearchParams()
                             if (selectedTopicId) query.set('topicId', selectedTopicId)
                             query.set('mode', 'random')
                             query.set('count', String(customCount))
-                            navigate(`/mcqs/${subject}/${chapterId}/attempt?${query.toString()}`)
+                            navigate(`/mcqs/${subject}/${chapterId}/attempt?${query.toString()}`, {
+                              state: { retake: true, mode: 'random', count: customCount },
+                            })
                           }}
                         >
                           <span>⚡ Start Random Test ({customCount} MCQs)</span>

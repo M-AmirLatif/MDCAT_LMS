@@ -1706,12 +1706,16 @@ const buildChapterMcqFilter = async (
 // ==================== MCQS BY CHAPTER ====================
 exports.getMcqsByChapter = async (req, res) => {
   try {
-    const role = req.user?.role?.name
-    const includeFull = teacherRoleNames.has(role)
+    const role = userRoleName(req.user)
+    const isTeacher = teacherRoleNames.has(role)
+    const randomCount = Number(req.query.count || req.query.randomCount || 0)
+    const isRandomMode = req.query.mode === 'random' || randomCount > 0
+    const selectedTestPart = isRandomMode ? null : (isTeacher ? (req.query.testPart ? normalizeTestPart(req.query.testPart) : null) : normalizeTestPart(req.query.testPart))
+    const includeFull = isTeacher && !isRandomMode && !selectedTestPart
     const context = await buildChapterMcqFilter(
       req.params.subject,
       req.params.chapterId,
-      includeFull,
+      isTeacher,
       req.query.topicId || null,
     )
     if (context.error) return res.status(400).json({ error: context.error })
@@ -1740,9 +1744,6 @@ exports.getMcqsByChapter = async (req, res) => {
       )
     }
     const allMcqs = sortMcqsByOriginalOrder(await mcqQuery.lean())
-    const selectedTestPart = teacherRoleNames.has(role) ? null : normalizeTestPart(req.query.testPart)
-    const randomCount = Number(req.query.count || req.query.randomCount || 0)
-    const isRandomMode = !teacherRoleNames.has(role) && (req.query.mode === 'random' || randomCount > 0)
     
     let mcqs = allMcqs
     if (isRandomMode) {
