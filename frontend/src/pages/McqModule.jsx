@@ -2103,9 +2103,8 @@ function McqList() {
                           ))}
                         </select>
 
-                        <button
+                        <Link
                           className="btn btn-primary"
-                          type="button"
                           style={{
                             padding: '10px 24px',
                             fontSize: '0.95rem',
@@ -2117,38 +2116,15 @@ function McqList() {
                             alignItems: 'center',
                             gap: '8px',
                             cursor: 'pointer',
+                            textDecoration: 'none',
+                            color: '#ffffff',
                           }}
-                          onClick={() => {
-                            const count = Number(customCount) || 20
-                            const available = Array.isArray(mcqs) && mcqs.length > 0 ? mcqs : []
-                            const shuffled = [...available].sort(() => 0.5 - Math.random())
-                            const selectedMcqs = shuffled.slice(0, Math.min(count, shuffled.length))
-
-                            const query = new URLSearchParams()
-                            if (selectedTopicId) query.set('topicId', selectedTopicId)
-                            query.set('mode', 'random')
-                            query.set('count', String(count))
-
-                            navigate(`/mcqs/${subject}/${chapterId}/attempt?${query.toString()}`, {
-                              state: {
-                                retake: true,
-                                mode: 'random',
-                                count,
-                                preloadedMcqs: selectedMcqs,
-                                chapter: chapter
-                                  ? {
-                                      ...chapter,
-                                      name: `${chapter.name} - Random Practice (${selectedMcqs.length} MCQs)`,
-                                      isRandomTest: true,
-                                    }
-                                  : null,
-                              },
-                            })
-                          }}
+                          to={`/mcqs/${subject}/${chapterId}/attempt?mode=random&count=${customCount}${selectedTopicId ? `&topicId=${selectedTopicId}` : ''}`}
+                          state={{ retake: true, mode: 'random', count: customCount }}
                         >
                           <span>⚡ Start Random Test ({customCount} MCQs)</span>
                           <span aria-hidden="true">→</span>
-                        </button>
+                        </Link>
                       </div>
                     </div>
                   </div>

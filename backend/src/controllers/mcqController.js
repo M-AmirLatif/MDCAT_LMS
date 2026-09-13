@@ -1699,7 +1699,14 @@ const buildChapterMcqFilter = async (
     chapterId: chapter.id,
     ...topicContext.topicFilter,
   }
-  if (!includeUnpublished) filter.isPublished = true
+  if (!includeUnpublished) {
+    filter.$or = [
+      { isPublished: true },
+      { isPublished: { $exists: false } },
+      { isPublished: null },
+    ]
+    filter.needsReview = { $ne: true }
+  }
   return { subject, course, chapter, topic: topicContext.topic, filter }
 }
 
