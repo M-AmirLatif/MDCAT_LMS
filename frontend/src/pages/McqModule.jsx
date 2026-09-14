@@ -974,14 +974,16 @@ function mcqToForm(mcq) {
 function McqForm({ initial, onSubmit }) {
   const [form, setForm] = useState(initial ? mcqToForm(initial) : emptyMcqForm)
   const [showPreview, setShowPreview] = useState(false)
-  const [explOpen, setExplOpen] = useState(Boolean(initial?.explanation || initial?.explanationText))
+  const [imgOpen, setImgOpen] = useState(false)
+  const [explOpen, setExplOpen] = useState(false)
 
   const setField = (field, value) =>
     setForm((current) => ({ ...current, [field]: value }))
 
   useEffect(() => {
     setForm(initial ? mcqToForm(initial) : emptyMcqForm)
-    setExplOpen(Boolean(initial?.explanation || initial?.explanationText))
+    setImgOpen(false)
+    setExplOpen(false)
   }, [initial])
 
   return (
@@ -1044,12 +1046,28 @@ function McqForm({ initial, onSubmit }) {
             placeholder="Type the MDCAT question statement..."
           />
         )}
-        <McqImageManager
-          id="question-image"
-          label="Question image"
-          images={form.questionImages || []}
-          onChange={(images) => setField('questionImages', images)}
-        />
+
+        <div className="teacher-compact-toggle-row">
+          <button
+            type="button"
+            className={`teacher-compact-toggle-btn ${imgOpen ? 'teacher-compact-toggle-btn--active' : ''}`}
+            onClick={() => setImgOpen(!imgOpen)}
+          >
+            <span>📷 Question Image {form.questionImages?.length ? `(${form.questionImages.length})` : ''}</span>
+            <span className="teacher-compact-toggle-arrow">{imgOpen ? '▲ Hide' : '▼ Upload Image'}</span>
+          </button>
+        </div>
+
+        {imgOpen && (
+          <div className="teacher-compact-img-box">
+            <McqImageManager
+              id="question-image"
+              label="Question image"
+              images={form.questionImages || []}
+              onChange={(images) => setField('questionImages', images)}
+            />
+          </div>
+        )}
       </div>
 
       <div className="teacher-compact-options-section">
@@ -1291,11 +1309,13 @@ function TeacherInlineMcqCard({ mcq, index, displayNumberOffset = 0, chapterId, 
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
-  const [explOpen, setExplOpen] = useState(Boolean(mcq.explanation || mcq.explanationText))
+  const [imgOpen, setImgOpen] = useState(false)
+  const [explOpen, setExplOpen] = useState(false)
 
   useEffect(() => {
     setForm(mcqToForm(mcq))
-    setExplOpen(Boolean(mcq.explanation || mcq.explanationText))
+    setImgOpen(false)
+    setExplOpen(false)
   }, [mcq])
 
   const setField = (field, value) =>
@@ -1305,6 +1325,8 @@ function TeacherInlineMcqCard({ mcq, index, displayNumberOffset = 0, chapterId, 
     if (window.confirm("Reset this question's changes to the last saved state?")) {
       setForm(mcqToForm(mcq))
       setShowPreview(false)
+      setImgOpen(false)
+      setExplOpen(false)
     }
   }
 
@@ -1404,12 +1426,27 @@ function TeacherInlineMcqCard({ mcq, index, displayNumberOffset = 0, chapterId, 
             />
           )}
 
-          <McqImageManager
-            id={`question-image-${mcq._id}`}
-            label="Question image"
-            images={form.questionImages || []}
-            onChange={(images) => setField('questionImages', images)}
-          />
+          <div className="teacher-compact-toggle-row">
+            <button
+              type="button"
+              className={`teacher-compact-toggle-btn ${imgOpen ? 'teacher-compact-toggle-btn--active' : ''}`}
+              onClick={() => setImgOpen(!imgOpen)}
+            >
+              <span>📷 Question Image {form.questionImages?.length ? `(${form.questionImages.length})` : ''}</span>
+              <span className="teacher-compact-toggle-arrow">{imgOpen ? '▲ Hide' : '▼ Upload Image'}</span>
+            </button>
+          </div>
+
+          {imgOpen && (
+            <div className="teacher-compact-img-box">
+              <McqImageManager
+                id={`question-image-${mcq._id}`}
+                label="Question image"
+                images={form.questionImages || []}
+                onChange={(images) => setField('questionImages', images)}
+              />
+            </div>
+          )}
         </div>
 
         <div className="teacher-compact-options-section">

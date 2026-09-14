@@ -1707,8 +1707,15 @@ html[data-theme="dark"] .custom-count-select {
   color: #f1f5f9 !important;
   font-size: 0.95rem !important;
   line-height: 1.55 !important;
-  resize: vertical !important;
+  resize: none !important;
+  overflow: hidden !important;
   transition: border-color 0.15s, box-shadow 0.15s !important;
+}
+
+.teacher-compact-textarea::-webkit-resizer {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 .teacher-compact-textarea:focus {
@@ -1890,6 +1897,64 @@ html body .teacher-compact-card .teacher-compact-pill input:-webkit-autofill:foc
   flex-shrink: 0 !important;
 }
 
+/* Toggles (Image & Explanation) */
+.teacher-compact-toggle-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  margin-top: 0.5rem !important;
+  flex-wrap: wrap !important;
+}
+
+.teacher-compact-toggle-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  padding: 0.35rem 0.75rem !important;
+  border-radius: 8px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #cbd5e1 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  font-weight: 600 !important;
+  font-size: 0.8rem !important;
+  cursor: pointer !important;
+  transition: border-color 0.12s ease !important;
+}
+
+.teacher-compact-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+.teacher-compact-toggle-btn--active {
+  background: rgba(56, 189, 248, 0.12) !important;
+  border-color: rgba(56, 189, 248, 0.35) !important;
+  color: #38bdf8 !important;
+}
+
+.teacher-compact-toggle-btn--expl {
+  background: rgba(2, 132, 199, 0.08) !important;
+  color: #38bdf8 !important;
+  border-color: rgba(2, 132, 199, 0.22) !important;
+}
+
+.teacher-compact-toggle-btn--expl:hover {
+  background: rgba(2, 132, 199, 0.16) !important;
+}
+
+.teacher-compact-toggle-arrow {
+  font-size: 0.72rem !important;
+  opacity: 0.85 !important;
+}
+
+.teacher-compact-img-box {
+  margin-top: 0.65rem !important;
+  padding: 0.75rem 0.9rem !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px dashed rgba(255, 255, 255, 0.12) !important;
+  border-radius: 10px !important;
+}
+
 /* Explanation Box */
 .teacher-compact-expl-wrapper {
   margin-bottom: 1.1rem !important;
@@ -1907,7 +1972,7 @@ html body .teacher-compact-card .teacher-compact-pill input:-webkit-autofill:foc
   font-weight: 600 !important;
   font-size: 0.82rem !important;
   cursor: pointer !important;
-  transition: all 0.2s ease !important;
+  transition: border-color 0.12s ease !important;
 }
 
 .teacher-compact-toggle-expl-btn:hover {
@@ -1926,6 +1991,14 @@ html body .teacher-compact-card .teacher-compact-pill input:-webkit-autofill:foc
   background: rgba(15, 23, 42, 0.6) !important;
   border-color: rgba(2, 132, 199, 0.3) !important;
   font-size: 0.9rem !important;
+  resize: none !important;
+  overflow: hidden !important;
+}
+
+.teacher-compact-expl-textarea::-webkit-resizer {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 /* Actions Row */
