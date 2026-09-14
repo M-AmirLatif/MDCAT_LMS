@@ -973,114 +973,169 @@ function mcqToForm(mcq) {
 
 function McqForm({ initial, onSubmit }) {
   const [form, setForm] = useState(initial ? mcqToForm(initial) : emptyMcqForm)
+  const [showPreview, setShowPreview] = useState(false)
+  const [explOpen, setExplOpen] = useState(Boolean(initial?.explanation || initial?.explanationText))
+
   const setField = (field, value) =>
     setForm((current) => ({ ...current, [field]: value }))
 
   useEffect(() => {
     setForm(initial ? mcqToForm(initial) : emptyMcqForm)
+    setExplOpen(Boolean(initial?.explanation || initial?.explanationText))
   }, [initial])
 
   return (
     <form
-      className="form-shell"
+      className="teacher-compact-card teacher-compact-card--form"
       onSubmit={(event) => {
         event.preventDefault()
         onSubmit(form)
       }}
     >
-        <div className="floating-field">
-          <label htmlFor="question">Question statement</label>
+      <div className="teacher-compact-header">
+        <div className="teacher-compact-left">
+          <span className="teacher-compact-qnum">
+            {initial ? 'Edit MCQ' : 'New MCQ'}
+          </span>
+        </div>
+        <div className="teacher-compact-right">
+          <span className="teacher-compact-key-label">Official Key:</span>
+          <div className="teacher-compact-key-selector">
+            {letters.map((letter) => (
+              <button
+                key={letter}
+                type="button"
+                className={`teacher-compact-key-btn ${form.correctAnswer === letter ? 'teacher-compact-key-btn--active' : ''}`}
+                onClick={() => setField('correctAnswer', letter)}
+                title={`Mark Option ${letter} as correct key`}
+              >
+                {letter}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="teacher-compact-statement-box">
+        <div className="teacher-compact-field-head">
+          <label className="teacher-compact-label" htmlFor="question">
+            QUESTION STATEMENT
+          </label>
+          <button
+            type="button"
+            className="teacher-compact-preview-toggle"
+            onClick={() => setShowPreview(!showPreview)}
+          >
+            {showPreview ? '✏️ Edit Text' : '👁️ Preview Math/Formula'}
+          </button>
+        </div>
+
+        {showPreview ? (
+          <div className="teacher-compact-preview-box">
+            <MCQRenderer text={form.question} images={form.questionImages || []} />
+          </div>
+        ) : (
           <AutoSizeTextarea
             id="question"
-            minRows={4}
+            className="teacher-compact-textarea"
+            minRows={3}
             value={form.question}
             onChange={(event) => setField('question', event.target.value)}
-            placeholder="Type the MDCAT question..."
+            placeholder="Type the MDCAT question statement..."
           />
-        </div>
+        )}
         <McqImageManager
           id="question-image"
           label="Question image"
           images={form.questionImages || []}
           onChange={(images) => setField('questionImages', images)}
         />
-      <div className="floating-grid">
-        <div className="floating-field">
-          <label htmlFor="option-a">Option A</label>
-          <input
-            id="option-a"
-            value={form.optionA}
-            onChange={(event) => setField('optionA', event.target.value)}
-          />
+      </div>
+
+      <div className="teacher-compact-options-section">
+        <div className="teacher-compact-field-head">
+          <span className="teacher-compact-label">
+            OPTIONS <span className="teacher-compact-hint">(Click circle or letter to set key)</span>
+          </span>
         </div>
-        <div className="floating-field">
-          <label htmlFor="option-b">Option B</label>
-          <input
-            id="option-b"
-            value={form.optionB}
-            onChange={(event) => setField('optionB', event.target.value)}
-          />
-        </div>
-        <div className="floating-field">
-          <label htmlFor="option-c">Option C</label>
-          <input
-            id="option-c"
-            value={form.optionC}
-            onChange={(event) => setField('optionC', event.target.value)}
-          />
-        </div>
-        <div className="floating-field">
-          <label htmlFor="option-d">Option D</label>
-          <input
-            id="option-d"
-            value={form.optionD}
-            onChange={(event) => setField('optionD', event.target.value)}
-          />
+        <div className="teacher-compact-options-grid">
+          {letters.map((letter) => {
+            const isCorrect = form.correctAnswer === letter
+            return (
+              <div
+                key={letter}
+                className={`teacher-compact-pill ${
+                  isCorrect ? 'teacher-compact-pill--correct' : ''
+                }`}
+                onClick={() => {
+                  if (form.correctAnswer !== letter) setField('correctAnswer', letter)
+                }}
+              >
+                <button
+                  type="button"
+                  className="teacher-compact-letter-btn"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setField('correctAnswer', letter)
+                  }}
+                  title={isCorrect ? 'Correct Key' : `Set ${letter} as correct key`}
+                >
+                  {letter}
+                </button>
+                <input
+                  id={`option-${letter.toLowerCase()}`}
+                  className="teacher-compact-option-input"
+                  value={form[`option${letter}`] || ''}
+                  onChange={(event) => setField(`option${letter}`, event.target.value)}
+                  placeholder={`Option ${letter}...`}
+                  onClick={(e) => e.stopPropagation()}
+                />
+                {isCorrect && (
+                  <span className="teacher-compact-correct-tag">
+                    ✓ Correct Key
+                  </span>
+                )}
+              </div>
+            )
+          })}
         </div>
       </div>
-      <div className="floating-grid">
-        {letters.map((letter) => (
-          <McqImageManager
-            key={`option-image-${letter}`}
-            id={`option-${letter.toLowerCase()}-image`}
-            label={`Option ${letter} image`}
-            images={form[`option${letter}Images`] || []}
-            onChange={(images) => setField(`option${letter}Images`, images)}
-          />
-        ))}
-      </div>
-      <div className="floating-field">
-        <label htmlFor="correct-answer">Correct Answer</label>
-        <select
-          id="correct-answer"
-          value={form.correctAnswer}
-          onChange={(event) => setField('correctAnswer', event.target.value)}
+
+      <div className="teacher-compact-expl-wrapper">
+        <button
+          type="button"
+          className="teacher-compact-toggle-expl-btn"
+          onClick={() => setExplOpen(!explOpen)}
         >
-          <option value="A">Option A</option>
-          <option value="B">Option B</option>
-          <option value="C">Option C</option>
-          <option value="D">Option D</option>
-        </select>
+          <span>💡 Step-by-Step Explanation</span>
+          <span>{explOpen ? '▲ Hide' : '▼ Edit / Add'}</span>
+        </button>
+
+        {explOpen && (
+          <div className="teacher-compact-expl-box">
+            <AutoSizeTextarea
+              id="explanation"
+              className="teacher-compact-textarea teacher-compact-expl-textarea"
+              minRows={2}
+              value={form.explanation}
+              onChange={(event) => setField('explanation', event.target.value)}
+              placeholder="Explanation students see after submission..."
+            />
+            <McqImageManager
+              id="explanation-image"
+              label="Explanation image"
+              images={form.explanationImages || []}
+              onChange={(images) => setField('explanationImages', images)}
+            />
+          </div>
+        )}
       </div>
-      <div className="floating-field">
-        <label htmlFor="explanation">Explanation / Description</label>
-        <textarea
-          id="explanation"
-          rows="5"
-          value={form.explanation}
-          onChange={(event) => setField('explanation', event.target.value)}
-          placeholder="Explanation students see after submission."
-        />
+
+      <div className="teacher-compact-actions">
+        <button className="btn teacher-compact-save-btn" type="submit">
+          💾 Save MCQ
+        </button>
       </div>
-      <McqImageManager
-        id="explanation-image"
-        label="Explanation image"
-        images={form.explanationImages || []}
-        onChange={(images) => setField('explanationImages', images)}
-      />
-      <button className="btn btn-primary" type="submit">
-        Save MCQ
-      </button>
     </form>
   )
 }
@@ -1088,82 +1143,145 @@ function McqForm({ initial, onSubmit }) {
 function ReviewQueueForm({ initial, onSubmit }) {
   const [form, setForm] = useState(initial ? mcqToForm(initial) : emptyMcqForm)
   const [reason, setReason] = useState(initial?.reason || '')
+  const [explOpen, setExplOpen] = useState(Boolean(initial?.explanation || initial?.explanationText))
   const setField = (field, value) =>
     setForm((current) => ({ ...current, [field]: value }))
 
   useEffect(() => {
     setForm(initial ? mcqToForm(initial) : emptyMcqForm)
     setReason(initial?.reason || '')
+    setExplOpen(Boolean(initial?.explanation || initial?.explanationText))
   }, [initial])
 
   return (
     <form
-      className="form-shell"
+      className="teacher-compact-card teacher-compact-card--form"
       onSubmit={(event) => {
         event.preventDefault()
         onSubmit({ ...form, reason })
       }}
     >
-        <div className="floating-field">
-          <label htmlFor="review-reason">Review Note</label>
-          <AutoSizeTextarea
-            id="review-reason"
-            minRows={3}
-            value={reason}
-            onChange={(event) => setReason(event.target.value)}
-            placeholder="Why this CSV row needs review."
-          />
+      <div className="teacher-compact-header">
+        <div className="teacher-compact-left">
+          <span className="teacher-compact-qnum">Review Rejected Row</span>
         </div>
-        <div className="floating-field">
-          <label htmlFor="review-question">Question statement</label>
-          <AutoSizeTextarea
-            id="review-question"
-            minRows={4}
-            value={form.question}
-            onChange={(event) => setField('question', event.target.value)}
-          />
+        <div className="teacher-compact-right">
+          <span className="teacher-compact-key-label">Official Key:</span>
+          <div className="teacher-compact-key-selector">
+            {letters.map((letter) => (
+              <button
+                key={letter}
+                type="button"
+                className={`teacher-compact-key-btn ${form.correctAnswer === letter ? 'teacher-compact-key-btn--active' : ''}`}
+                onClick={() => setField('correctAnswer', letter)}
+                title={`Mark Option ${letter} as correct key`}
+              >
+                {letter}
+              </button>
+            ))}
+          </div>
         </div>
-      <div className="floating-grid">
-        {['A', 'B', 'C', 'D'].map((letter) => (
-          <div className="floating-field" key={letter}>
-            <label htmlFor={`review-option-${letter.toLowerCase()}`}>
-              {`Option ${letter}`}
-            </label>
-            <input
-              id={`review-option-${letter.toLowerCase()}`}
-              value={form[`option${letter}`]}
-              onChange={(event) =>
-                setField(`option${letter}`, event.target.value)
-              }
+      </div>
+
+      <div className="teacher-compact-statement-box">
+        <label className="teacher-compact-label" htmlFor="review-reason">Review Note / Issue</label>
+        <AutoSizeTextarea
+          id="review-reason"
+          className="teacher-compact-textarea"
+          style={{ borderColor: 'rgba(239, 68, 68, 0.4)', marginBottom: '0.75rem' }}
+          minRows={2}
+          value={reason}
+          onChange={(event) => setReason(event.target.value)}
+          placeholder="Why this CSV row needs review..."
+        />
+
+        <label className="teacher-compact-label" htmlFor="review-question">Question statement</label>
+        <AutoSizeTextarea
+          id="review-question"
+          className="teacher-compact-textarea"
+          minRows={3}
+          value={form.question}
+          onChange={(event) => setField('question', event.target.value)}
+          placeholder="Type question statement..."
+        />
+      </div>
+
+      <div className="teacher-compact-options-section">
+        <div className="teacher-compact-field-head">
+          <span className="teacher-compact-label">
+            OPTIONS <span className="teacher-compact-hint">(Click letter to set key)</span>
+          </span>
+        </div>
+        <div className="teacher-compact-options-grid">
+          {letters.map((letter) => {
+            const isCorrect = form.correctAnswer === letter
+            return (
+              <div
+                key={letter}
+                className={`teacher-compact-pill ${isCorrect ? 'teacher-compact-pill--correct' : ''}`}
+                onClick={() => {
+                  if (form.correctAnswer !== letter) setField('correctAnswer', letter)
+                }}
+              >
+                <button
+                  type="button"
+                  className="teacher-compact-letter-btn"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setField('correctAnswer', letter)
+                  }}
+                  title={isCorrect ? 'Correct Key' : `Set ${letter} as correct key`}
+                >
+                  {letter}
+                </button>
+                <input
+                  id={`review-option-${letter.toLowerCase()}`}
+                  className="teacher-compact-option-input"
+                  value={form[`option${letter}`] || ''}
+                  onChange={(event) => setField(`option${letter}`, event.target.value)}
+                  placeholder={`Option ${letter}...`}
+                  onClick={(e) => e.stopPropagation()}
+                />
+                {isCorrect && (
+                  <span className="teacher-compact-correct-tag">
+                    ✓ Correct Key
+                  </span>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="teacher-compact-expl-wrapper">
+        <button
+          type="button"
+          className="teacher-compact-toggle-expl-btn"
+          onClick={() => setExplOpen(!explOpen)}
+        >
+          <span>💡 Step-by-Step Explanation</span>
+          <span>{explOpen ? '▲ Hide' : '▼ Edit / Add'}</span>
+        </button>
+
+        {explOpen && (
+          <div className="teacher-compact-expl-box">
+            <AutoSizeTextarea
+              id="review-explanation"
+              className="teacher-compact-textarea teacher-compact-expl-textarea"
+              minRows={2}
+              value={form.explanation}
+              onChange={(event) => setField('explanation', event.target.value)}
+              placeholder="Explanation..."
             />
           </div>
-        ))}
+        )}
       </div>
-      <div className="floating-field">
-        <label htmlFor="review-correct-answer">Correct Answer</label>
-        <select
-          id="review-correct-answer"
-          value={form.correctAnswer}
-          onChange={(event) => setField('correctAnswer', event.target.value)}
-        >
-          <option value="A">Option A</option>
-          <option value="B">Option B</option>
-          <option value="C">Option C</option>
-          <option value="D">Option D</option>
-        </select>
+
+      <div className="teacher-compact-actions">
+        <button className="btn teacher-compact-save-btn" type="submit">
+          💾 Save Review Item
+        </button>
       </div>
-        <div className="floating-field">
-          <label htmlFor="review-explanation">Explanation / Description</label>
-          <AutoSizeTextarea
-            id="review-explanation"
-            minRows={5}
-            value={form.explanation}
-            onChange={(event) => setField('explanation', event.target.value)}
-          />
-        </div>
-      <button className="btn btn-primary" type="submit">
-        Save Review Item
-      </button>
     </form>
   )
 }
@@ -1172,9 +1290,12 @@ function TeacherInlineMcqCard({ mcq, index, displayNumberOffset = 0, chapterId, 
   const [form, setForm] = useState(() => mcqToForm(mcq))
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
+  const [explOpen, setExplOpen] = useState(Boolean(mcq.explanation || mcq.explanationText))
 
   useEffect(() => {
     setForm(mcqToForm(mcq))
+    setExplOpen(Boolean(mcq.explanation || mcq.explanationText))
   }, [mcq])
 
   const setField = (field, value) =>
@@ -1183,11 +1304,12 @@ function TeacherInlineMcqCard({ mcq, index, displayNumberOffset = 0, chapterId, 
   const handleReset = () => {
     if (window.confirm("Reset this question's changes to the last saved state?")) {
       setForm(mcqToForm(mcq))
+      setShowPreview(false)
     }
   }
 
   const handleSave = async (event) => {
-    event.preventDefault()
+    if (event?.preventDefault) event.preventDefault()
     setSaving(true)
     try {
       const options = letters.map((letter) => ({
@@ -1225,25 +1347,63 @@ function TeacherInlineMcqCard({ mcq, index, displayNumberOffset = 0, chapterId, 
   }
 
   return (
-    <article className="workspace-card mcq-inline-card mcq-managed-parent-card animate-fade-up">
-      <div className="mcq-inline-card-header">
-        <span className="mcq-inline-card-number">QUESTION {getMcqDisplayNumber(mcq, index, displayNumberOffset)}</span>
-        {saving && <span className="mcq-inline-card-status">Saving...</span>}
+    <article className="teacher-compact-card animate-fade-up">
+      <div className="teacher-compact-header">
+        <div className="teacher-compact-left">
+          <span className="teacher-compact-qnum">
+            QUESTION {getMcqDisplayNumber(mcq, index, displayNumberOffset)}
+          </span>
+          {saving && <span className="teacher-compact-badge teacher-compact-badge--saving">Saving...</span>}
+        </div>
+
+        <div className="teacher-compact-right">
+          <span className="teacher-compact-key-label">Official Key:</span>
+          <div className="teacher-compact-key-selector">
+            {letters.map((letter) => (
+              <button
+                key={letter}
+                type="button"
+                className={`teacher-compact-key-btn ${form.correctAnswer === letter ? 'teacher-compact-key-btn--active' : ''}`}
+                onClick={() => setField('correctAnswer', letter)}
+                title={`Mark Option ${letter} as correct key`}
+              >
+                {letter}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
-      <form onSubmit={handleSave} className="mcq-inline-card-form">
-        <div className="mcq-section-container">
-          <label className="mcq-section-label" htmlFor={`question-${mcq._id}`}>
-            QUESTION STATEMENT
-          </label>
-          <AutoSizeTextarea
-            id={`question-${mcq._id}`}
-            className="mcq-inline-statement-textarea"
-            minRows={3}
-            value={form.question}
-            onChange={(event) => setField('question', event.target.value)}
-            placeholder="Type question statement here..."
-          />
+      <form onSubmit={handleSave}>
+        <div className="teacher-compact-statement-box">
+          <div className="teacher-compact-field-head">
+            <label className="teacher-compact-label" htmlFor={`question-${mcq._id}`}>
+              QUESTION STATEMENT
+            </label>
+            <button
+              type="button"
+              className="teacher-compact-preview-toggle"
+              onClick={() => setShowPreview(!showPreview)}
+            >
+              {showPreview ? '✏️ Edit Text' : '👁️ Preview Math/Formula'}
+            </button>
+          </div>
+
+          {showPreview ? (
+            <div className="teacher-compact-preview-box">
+              <MCQRenderer text={form.question} images={form.questionImages || []} />
+            </div>
+          ) : (
+            <AutoSizeTextarea
+              id={`question-${mcq._id}`}
+              className="teacher-compact-textarea"
+              minRows={2}
+              value={form.question}
+              onChange={(event) => setField('question', event.target.value)}
+              placeholder="Type question statement here..."
+            />
+          )}
+
           <McqImageManager
             id={`question-image-${mcq._id}`}
             label="Question image"
@@ -1252,97 +1412,110 @@ function TeacherInlineMcqCard({ mcq, index, displayNumberOffset = 0, chapterId, 
           />
         </div>
 
-        <div className="mcq-options-section">
-          <span className="mcq-section-label">OPTIONS</span>
-          <div className="mcq-inline-options-list">
-            {['A', 'B', 'C', 'D'].map((letter) => {
+        <div className="teacher-compact-options-section">
+          <div className="teacher-compact-field-head">
+            <span className="teacher-compact-label">
+              OPTIONS <span className="teacher-compact-hint">(Click circle or letter to set key)</span>
+            </span>
+          </div>
+
+          <div className="teacher-compact-options-grid">
+            {letters.map((letter) => {
               const isCorrect = form.correctAnswer === letter
               return (
                 <div
-                  className={`mcq-inline-option-row ${
-                    isCorrect ? 'mcq-inline-option-row--correct' : ''
-                  }`}
                   key={letter}
+                  className={`teacher-compact-pill ${
+                    isCorrect ? 'teacher-compact-pill--correct' : ''
+                  }`}
+                  onClick={() => {
+                    if (form.correctAnswer !== letter) setField('correctAnswer', letter)
+                  }}
                 >
-                  <span className="mcq-option-badge">{letter}</span>
+                  <button
+                    type="button"
+                    className="teacher-compact-letter-btn"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setField('correctAnswer', letter)
+                    }}
+                    title={isCorrect ? 'Correct Key' : `Set ${letter} as correct key`}
+                  >
+                    {letter}
+                  </button>
                   <input
                     id={`option-${letter.toLowerCase()}-${mcq._id}`}
-                    className="mcq-inline-option-input"
-                    value={form[`option${letter}`]}
+                    className="teacher-compact-option-input"
+                    value={form[`option${letter}`] || ''}
                     onChange={(event) => setField(`option${letter}`, event.target.value)}
-                    placeholder={`Type Option ${letter}...`}
+                    placeholder={`Option ${letter}...`}
                     aria-label={`Option ${letter}`}
+                    onClick={(e) => e.stopPropagation()}
                   />
+                  {isCorrect && (
+                    <span className="teacher-compact-correct-tag">
+                      ✓ Correct Key
+                    </span>
+                  )}
                 </div>
               )
             })}
           </div>
         </div>
 
-        <div className="mcq-inline-meta-grid">
-          <div className="mcq-meta-box mcq-correct-box">
-            <label className="mcq-section-label" htmlFor={`correct-answer-${mcq._id}`}>
-              CORRECT OPTION
-            </label>
-            <div className="mcq-correct-select-wrapper">
-              <select
-                id={`correct-answer-${mcq._id}`}
-                className="mcq-inline-select"
-                value={form.correctAnswer}
-                onChange={(event) => setField('correctAnswer', event.target.value)}
-              >
-                <option value="A">Option A</option>
-                <option value="B">Option B</option>
-                <option value="C">Option C</option>
-                <option value="D">Option D</option>
-              </select>
-            </div>
-          </div>
+        <div className="teacher-compact-expl-wrapper">
+          <button
+            type="button"
+            className="teacher-compact-toggle-expl-btn"
+            onClick={() => setExplOpen(!explOpen)}
+          >
+            <span>💡 Step-by-Step Explanation</span>
+            <span>{explOpen ? '▲ Hide' : '▼ Edit / Add'}</span>
+          </button>
 
-          <div className="mcq-meta-box mcq-explanation-box">
-            <label className="mcq-section-label" htmlFor={`explanation-${mcq._id}`}>
-              EXPLANATION
-            </label>
-            <AutoSizeTextarea
-              id={`explanation-${mcq._id}`}
-              className="mcq-inline-explanation-textarea"
-              minRows={2}
-              value={form.explanation}
-              onChange={(event) => setField('explanation', event.target.value)}
-              placeholder="Provide correct explanation..."
-            />
-            <McqImageManager
-              id={`explanation-image-${mcq._id}`}
-              label="Explanation image"
-              images={form.explanationImages || []}
-              onChange={(images) => setField('explanationImages', images)}
-            />
-          </div>
+          {explOpen && (
+            <div className="teacher-compact-expl-box">
+              <AutoSizeTextarea
+                id={`explanation-${mcq._id}`}
+                className="teacher-compact-textarea teacher-compact-expl-textarea"
+                minRows={2}
+                value={form.explanation}
+                onChange={(event) => setField('explanation', event.target.value)}
+                placeholder="Provide step-by-step explanation for students..."
+              />
+              <McqImageManager
+                id={`explanation-image-${mcq._id}`}
+                label="Explanation image"
+                images={form.explanationImages || []}
+                onChange={(images) => setField('explanationImages', images)}
+              />
+            </div>
+          )}
         </div>
 
-        <div className="mcq-inline-card-actions">
+        <div className="teacher-compact-actions">
           <button
             type="submit"
-            className="btn btn-mcq-save"
+            className="btn teacher-compact-save-btn"
             disabled={saving}
           >
-            {saving ? 'Saving...' : 'Save'}
+            {saving ? 'Saving...' : '💾 Save Changes'}
           </button>
           <button
             type="button"
-            className="btn btn-mcq-reset"
+            className="btn teacher-compact-reset-btn"
             onClick={handleReset}
             disabled={saving}
           >
-            Reset
+            ↺ Reset
           </button>
           <button
             type="button"
-            className="btn btn-mcq-delete"
+            className="btn teacher-compact-delete-btn"
             onClick={handleDeleteLocal}
             disabled={deleting || saving}
           >
-            {deleting ? 'Deleting...' : 'Delete'}
+            {deleting ? 'Deleting...' : '🗑️ Delete'}
           </button>
         </div>
       </form>
@@ -1358,17 +1531,28 @@ function ReviewQueueReadonlyCard({ item, index, onEdit, onApprove, onDelete }) {
       .match(/[A-D]/)?.[0] || ''
 
   return (
-    <article className="teacher-mcq-row teacher-mcq-row--editor mcq-review-parent-card">
-      <div className="teacher-mcq-editor-head">
-        <span className="state-chip state-chip--neutral">
-          MCQ {item.originalQuestionNumber || item.questionNumber || item.row || index + 1}
-        </span>
-        <span className="state-chip state-chip--neutral">
-          CSV row {item.csvRowIndex || item.row || index + 1}
-        </span>
+    <article className="teacher-compact-card animate-fade-up">
+      <div className="teacher-compact-header">
+        <div className="teacher-compact-left">
+          <span className="teacher-compact-qnum">
+            MCQ {item.originalQuestionNumber || item.questionNumber || item.row || index + 1}
+          </span>
+          <span className="review-compact-status review-compact-status--skipped">
+            CSV row {item.csvRowIndex || item.row || index + 1}
+          </span>
+        </div>
+
+        {correctAnswerLetter && (
+          <div className="teacher-compact-right">
+            <span className="review-compact-key">
+              Official Key: <strong>{correctAnswerLetter}</strong>
+            </span>
+          </div>
+        )}
       </div>
+
       {item.validationErrors?.length ? (
-        <div className="review-validation-list">
+        <div className="review-validation-list" style={{ marginBottom: '0.75rem' }}>
           {item.validationErrors.map((error) => (
             <span className="state-chip state-chip--warning" key={error}>
               {error}
@@ -1376,77 +1560,70 @@ function ReviewQueueReadonlyCard({ item, index, onEdit, onApprove, onDelete }) {
           ))}
         </div>
       ) : null}
-      <div className="floating-field teacher-mcq-question-field">
-        <label>Issue</label>
-        <AutoSizeTextarea
-          minRows={2}
-          value={item.reason || 'Rejected CSV row'}
-          readOnly
-          onChange={() => {}}
-        />
-      </div>
-      <div className="teacher-review-render-block">
-        <div className="teacher-review-render-card">
-          <div className="teacher-review-render-label">Question</div>
-          <div className="teacher-review-render-content">
-            <MCQRenderer text={item.questionText || item.question || ''} images={mcqQuestionImages(item)} />
-          </div>
+
+      {item.reason && (
+        <div style={{ marginBottom: '0.75rem', fontSize: '0.85rem', color: '#f87171' }}>
+          <strong>Issue:</strong> {item.reason}
         </div>
+      )}
+
+      <div className="review-compact-statement" style={{ marginBottom: '0.75rem' }}>
+        <MCQRenderer text={item.questionText || item.question || ''} images={mcqQuestionImages(item)} />
       </div>
-      <div className="teacher-mcq-option-grid">
-        {letters.map((letter, index) => {
+
+      <div className="review-compact-options-grid">
+        {letters.map((letter, idx) => {
           const isCorrect = correctAnswerLetter === letter
+          const optText = item[`option${letter}`] || item.options?.[idx]?.text || ''
           return (
             <div
-              className={`teacher-mcq-option-field ${isCorrect ? 'teacher-mcq-option-field--correct' : ''}`}
               key={letter}
+              className={`review-compact-pill ${isCorrect ? 'review-compact-pill--correct' : ''}`}
             >
-              <label>{`Option ${letter}`}</label>
-              <div className="teacher-review-render-content">
-                <MCQRenderer text={item[`option${letter}`] || item.options?.[index]?.text || ''} images={mcqOptionImages(item, item.options?.[index], letter)} />
-              </div>
+              <span className="review-compact-letter">{letter}</span>
+              <span className="review-compact-text">
+                <MCQRenderer text={optText} images={mcqOptionImages(item, item.options?.[idx], letter)} />
+              </span>
+              {isCorrect && (
+                <span className="review-compact-tag review-compact-tag--correct">
+                  ✓ Official Key
+                </span>
+              )}
             </div>
           )
         })}
       </div>
-      <div className="teacher-mcq-editor-bottom">
-        <div className="floating-field">
-          <label>Correct Answer</label>
-          <AutoSizeTextarea
-            minRows={2}
-            value={item.correctAnswer || ''}
-            readOnly
-            onChange={() => {}}
-          />
-        </div>
-        <div className="floating-field">
-          <label>Explanation</label>
-          <div className="teacher-review-render-content">
-            <MCQRenderer text={item.explanationText || item.explanation || ''} images={mcqExplanationImages(item)} />
+
+      {(item.explanationText || item.explanation) && (
+        <div className="review-compact-expl-box" style={{ marginTop: '0.75rem' }}>
+          <div className="review-compact-expl-title">
+            <span>💡</span> Explanation
           </div>
+          <MCQRenderer text={item.explanationText || item.explanation || ''} images={mcqExplanationImages(item)} />
         </div>
-      </div>
-      <div className="teacher-mcq-action-row review-queue-action-row">
+      )}
+
+      <div className="teacher-compact-actions" style={{ marginTop: '1rem' }}>
         <button
-          className="btn btn-primary btn-sm btn-mcq-edit"
+          className="btn btn-primary btn-sm teacher-compact-save-btn"
           type="button"
           onClick={onEdit}
         >
-          Edit
+          ✏️ Edit
         </button>
         <button
-          className="btn btn-primary btn-sm"
+          className="btn btn-secondary btn-sm teacher-compact-reset-btn"
           type="button"
           onClick={onApprove}
         >
-          Push To Main MCQs
+          ✓ Push To Main MCQs
         </button>
         <button
-          className="btn btn-danger btn-sm btn-mcq-delete"
+          className="btn btn-danger btn-sm teacher-compact-delete-btn"
           type="button"
           onClick={onDelete}
         >
-          Delete
+          🗑️ Delete
         </button>
       </div>
     </article>
