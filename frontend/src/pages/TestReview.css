@@ -1178,5 +1178,303 @@ html[data-theme="dark"] .custom-count-select {
   color: #f1f5f9 !important;
 }
 
+/* ==================== COMPACT NUMS-STYLE REVIEW CARDS ==================== */
+.review-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 0.85rem 1.15rem;
+  background: var(--card-bg, #131b2e);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  border-radius: 14px;
+}
+
+.review-filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.review-filter-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary, #94a3b8);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.review-filter-tab:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.review-filter-tab--active {
+  background: #0284c7 !important;
+  border-color: #0284c7 !important;
+  color: #fff !important;
+}
+
+.review-filter-tab--wrong.review-filter-tab--active {
+  background: #ef4444 !important;
+  border-color: #ef4444 !important;
+  color: #fff !important;
+}
+
+.review-filter-tab--correct.review-filter-tab--active {
+  background: #10b981 !important;
+  border-color: #10b981 !important;
+  color: #fff !important;
+}
+
+.review-filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Compact Review Card */
+.review-compact-card {
+  background: var(--card-bg, #131b2e);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+  transition: border-color 0.2s;
+}
+
+.review-compact-card--wrong {
+  border-left: 4px solid #ef4444 !important;
+}
+
+.review-compact-card--correct {
+  border-left: 4px solid #10b981 !important;
+}
+
+.review-compact-card--skipped {
+  border-left: 4px solid #f59e0b !important;
+}
+
+.review-compact-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.review-compact-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.review-compact-qnum {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #38bdf8;
+  background: rgba(2, 132, 199, 0.15);
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid rgba(2, 132, 199, 0.3);
+}
+
+.review-compact-status {
+  font-size: 0.82rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.review-compact-status--correct {
+  color: #10b981;
+}
+
+.review-compact-status--wrong {
+  color: #ef4444;
+}
+
+.review-compact-status--skipped {
+  color: #f59e0b;
+}
+
+.review-compact-statement {
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+  color: var(--text-primary, #ffffff);
+}
+
+/* 2-Column Options Grid */
+.review-compact-options-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.65rem;
+  margin-bottom: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .review-compact-options-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.review-compact-pill {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 10px !important;
+  font-size: 0.95rem;
+  color: #cbd5e1 !important;
+  transition: all 0.15s ease;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.review-compact-letter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.review-compact-text {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Correct Option Pill */
+.review-compact-pill--correct {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+.review-compact-pill--correct .review-compact-letter {
+  background: #10b981 !important;
+  color: #ffffff !important;
+}
+
+/* Wrong Selected Option Pill */
+.review-compact-pill--wrong {
+  background: rgba(239, 68, 68, 0.12) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+.review-compact-pill--wrong .review-compact-letter {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+}
+
+.review-compact-tag {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.review-compact-tag--correct {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+}
+
+.review-compact-tag--wrong {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+/* Toggle Explanation */
+.review-toggle-expl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.review-toggle-expl-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.review-compact-expl-box {
+  margin-top: 1rem;
+  padding: 1rem 1.25rem;
+  background: rgba(2, 132, 199, 0.08);
+  border-left: 4px solid #0284c7;
+  border-radius: 0 10px 10px 0;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.review-compact-expl-title {
+  font-weight: 700;
+  color: #38bdf8;
+  margin-bottom: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Light theme overrides */
+[data-theme="light"] .review-compact-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .review-compact-statement {
+  color: #0f172a;
+}
+
+[data-theme="light"] .review-compact-pill {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #334155 !important;
+}
+
+[data-theme="light"] .review-filter-bar {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .review-filter-tab {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+
 
 

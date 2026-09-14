@@ -3328,67 +3328,233 @@ function QuizResult() {
 }
 
 function ReviewSection({ title, items, savedStatus, toggleFlashcard, subjectName, chapterId }) {
+  const wrongCount = useMemo(() => items.filter((item) => item.skipped || !item.isCorrect).length, [items])
+  const correctCount = useMemo(() => items.filter((item) => item.isCorrect && !item.skipped).length, [items])
+  const skippedCount = useMemo(() => items.filter((item) => item.skipped).length, [items])
+
+  // Default to showing wrong answers only if student has mistakes!
+  const [activeFilter, setActiveFilter] = useState(() => (wrongCount > 0 ? 'wrong' : 'all'))
+  const [expandedExplanations, setExpandedExplanations] = useState({})
+  const [allExpanded, setAllExpanded] = useState(false)
+
+  const toggleExplanation = (mcqId) => {
+    setExpandedExplanations((prev) => ({
+      ...prev,
+      [mcqId]: !prev[mcqId],
+    }))
+  }
+
+  const toggleExpandAll = () => {
+    if (allExpanded) {
+      setExpandedExplanations({})
+      setAllExpanded(false)
+    } else {
+      const next = {}
+      items.forEach((item) => {
+        next[String(item.mcqId || item.id)] = true
+      })
+      setExpandedExplanations(next)
+      setAllExpanded(true)
+    }
+  }
+
+  const filteredItems = useMemo(() => {
+    if (activeFilter === 'wrong') {
+      return items.filter((item) => item.skipped || !item.isCorrect)
+    }
+    if (activeFilter === 'correct') {
+      return items.filter((item) => item.isCorrect && !item.skipped)
+    }
+    if (activeFilter === 'skipped') {
+      return items.filter((item) => item.skipped)
+    }
+    return items
+  }, [activeFilter, items])
+
   return (
     <div className="review-question-stack">
-      <h2>{title}</h2>
-      {items.length === 0 ? (
-        <p className="text-muted">No items in this section.</p>
-      ) : null}
-      {items.map((item, index) => (
-        <article
-          key={String(item.mcqId)}
-          className={`review-question-card ${item.skipped ? 'review-question-card--wrong' : item.isCorrect ? 'review-question-card--correct' : 'review-question-card--wrong'}`}
-        >
-          <div className="review-question-top">
-            <span className="review-question-number">
-              Question {index + 1}
-            </span>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
+        <h2 style={{ margin: 0 }}>{title}</h2>
+        <span style={{ color: 'var(--text-muted, #94a3b8)', fontSize: '0.9rem' }}>
+          Showing {filteredItems.length} of {items.length} questions
+        </span>
+      </div>
+
+      {/* Top Filter Bar */}
+      <div className="review-filter-bar">
+        <div className="review-filter-tabs">
+          <button
+            type="button"
+            className={`review-filter-tab review-filter-tab--wrong ${activeFilter === 'wrong' ? 'review-filter-tab--active' : ''}`}
+            onClick={() => setActiveFilter('wrong')}
+          >
+            <span>❌ Wrong Answers Only</span>
+            <strong>({wrongCount})</strong>
+          </button>
+          <button
+            type="button"
+            className={`review-filter-tab ${activeFilter === 'all' ? 'review-filter-tab--active' : ''}`}
+            onClick={() => setActiveFilter('all')}
+          >
+            <span>All Questions</span>
+            <strong>({items.length})</strong>
+          </button>
+          <button
+            type="button"
+            className={`review-filter-tab review-filter-tab--correct ${activeFilter === 'correct' ? 'review-filter-tab--active' : ''}`}
+            onClick={() => setActiveFilter('correct')}
+          >
+            <span>✓ Correct</span>
+            <strong>({correctCount})</strong>
+          </button>
+          {skippedCount > 0 && (
             <button
               type="button"
-              onClick={() => toggleFlashcard(String(item.mcqId), subjectName, chapterId)}
-              className="review-save-btn"
+              className={`review-filter-tab ${activeFilter === 'skipped' ? 'review-filter-tab--active' : ''}`}
+              onClick={() => setActiveFilter('skipped')}
             >
-              {savedStatus[String(item.mcqId)] ? '⭐ Saved' : '☆ Save'}
+              <span>⚪ Skipped</span>
+              <strong>({skippedCount})</strong>
             </button>
-          </div>
-          <div className="review-question-title">
-            <MCQRenderer text={item.questionText || item.question} images={mcqQuestionImages(item)} />
-          </div>
-          <div className="review-options-list">
-            {item.options.map((option, optionIndex) => {
-              const correct = item.correctIndex === optionIndex
-              const selected = item.selectedIndex === optionIndex
-              return (
-                <div
-                  key={`${item.mcqId}-${optionIndex}`}
-                  className={`review-option-row ${correct ? 'review-option-row--correct' : ''} ${selected && !correct ? 'review-option-row--wrong' : ''}`}
-                >
-                  <span className="review-option-letter">
-                    {String.fromCharCode(65 + optionIndex)}
-                  </span>
-                  <div className="review-option-text">
-                    <MCQRenderer text={option.text || option} images={mcqOptionImages(item, option, String.fromCharCode(65 + optionIndex))} />
-                  </div>
-                  {selected ? (
-                    <span className="review-option-tag">Your answer</span>
-                  ) : null}
-                  {correct ? (
-                    <span className="review-option-tag review-option-tag--correct">
-                      Correct answer
-                    </span>
-                  ) : null}
-                </div>
-              )
-            })}
-          </div>
-          <div className="review-explanation-box">
-            <strong>Explanation</strong>
-            <div className="review-explanation-text">
-              <MCQRenderer text={item.explanationText || item.explanation || 'No explanation added yet.'} images={mcqExplanationImages(item)} />
+          )}
+        </div>
+
+        <div className="review-filter-actions">
+          <button
+            type="button"
+            className="review-toggle-expl-btn"
+            onClick={toggleExpandAll}
+          >
+            {allExpanded ? '▲ Collapse All Explanations' : '▼ Expand All Explanations'}
+          </button>
+        </div>
+      </div>
+
+      {filteredItems.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '3rem 1rem', background: 'var(--card-bg, #131b2e)', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>
+          {activeFilter === 'wrong' ? (
+            <div>
+              <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🎉</div>
+              <h3 style={{ color: '#10b981', marginBottom: '0.5rem' }}>Perfect Score! No Wrong Answers</h3>
+              <p style={{ color: '#94a3b8', fontSize: '0.92rem', marginBottom: '1.25rem' }}>You answered every question correctly in this test!</p>
+              <button type="button" className="btn btn-primary btn-sm" onClick={() => setActiveFilter('all')}>
+                View All Questions ({items.length})
+              </button>
             </div>
-          </div>
-        </article>
-      ))}
+          ) : (
+            <p className="text-muted">No questions match this filter.</p>
+          )}
+        </div>
+      ) : null}
+
+      {filteredItems.map((item) => {
+        const itemId = String(item.mcqId || item.id)
+        const isExpanded = Boolean(expandedExplanations[itemId])
+        const qNum = item.originalQuestionNumber || item.questionNumber || (items.indexOf(item) + 1)
+        const correctLetter = String.fromCharCode(65 + item.correctIndex)
+        const selectedLetter = item.skipped || item.selectedIndex < 0 ? null : String.fromCharCode(65 + item.selectedIndex)
+
+        return (
+          <article
+            key={itemId}
+            className={`review-compact-card ${item.skipped ? 'review-compact-card--skipped' : item.isCorrect ? 'review-compact-card--correct' : 'review-compact-card--wrong'}`}
+          >
+            <div className="review-compact-header">
+              <div className="review-compact-left">
+                <span className="review-compact-qnum">Question #{qNum}</span>
+                <button
+                  type="button"
+                  onClick={() => toggleFlashcard(itemId, subjectName, chapterId)}
+                  className="review-save-btn"
+                  title="Save to Flashcards"
+                >
+                  {savedStatus[itemId] ? '⭐ Saved' : '☆ Save'}
+                </button>
+              </div>
+
+              <div className="review-compact-status">
+                {item.isCorrect && !item.skipped ? (
+                  <span className="review-compact-status--correct">
+                    Official Key: Option {correctLetter} • ✓ Correct
+                  </span>
+                ) : item.skipped ? (
+                  <span className="review-compact-status--skipped">
+                    Official Key: Option {correctLetter} • ⚪ Skipped
+                  </span>
+                ) : (
+                  <span className="review-compact-status--wrong">
+                    Official Key: Option {correctLetter} • ✗ Your Answer: Option {selectedLetter}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Question Statement */}
+            <div className="review-compact-statement">
+              <MCQRenderer text={item.questionText || item.question} images={mcqQuestionImages(item)} />
+            </div>
+
+            {/* 2-Column Options Grid */}
+            <div className="review-compact-options-grid">
+              {item.options.map((option, optionIndex) => {
+                const letter = String.fromCharCode(65 + optionIndex)
+                const isCorrectOption = item.correctIndex === optionIndex
+                const isSelectedOption = item.selectedIndex === optionIndex
+                const isWrongSelected = isSelectedOption && !isCorrectOption
+
+                let pillClass = 'review-compact-pill'
+                if (isCorrectOption) pillClass += ' review-compact-pill--correct'
+                else if (isWrongSelected) pillClass += ' review-compact-pill--wrong'
+
+                return (
+                  <div key={`${itemId}-${optionIndex}`} className={pillClass}>
+                    <span className="review-compact-letter">{letter}</span>
+                    <div className="review-compact-text">
+                      <MCQRenderer text={option.text || option} images={mcqOptionImages(item, option, letter)} />
+                    </div>
+                    {isCorrectOption && (
+                      <span className="review-compact-tag review-compact-tag--correct">
+                        {isSelectedOption ? '✓ Your Answer' : '✓ Correct'}
+                      </span>
+                    )}
+                    {isWrongSelected && (
+                      <span className="review-compact-tag review-compact-tag--wrong">
+                        ✗ Your Answer
+                      </span>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Bottom Row: Toggle Explanation */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <button
+                type="button"
+                className="review-toggle-expl-btn"
+                onClick={() => toggleExplanation(itemId)}
+              >
+                {isExpanded ? '▲ Hide Explanation' : '▼ Show Explanation'}
+              </button>
+
+              <span style={{ fontSize: '0.82rem', color: 'var(--text-muted, #94a3b8)' }}>
+                Official Key: <strong style={{ color: '#10b981' }}>Option {correctLetter}</strong>
+              </span>
+            </div>
+
+            {/* Collapsible Explanation Box */}
+            {isExpanded && (
+              <div className="review-compact-expl-box">
+                <div className="review-compact-expl-title">💡 Step-by-Step Solution:</div>
+                <MCQRenderer
+                  text={item.explanationText || item.explanation || 'No explanation added yet.'}
+                  images={mcqExplanationImages(item)}
+                />
+              </div>
+            )}
+          </article>
+        )
+      })}
     </div>
   )
 }
