@@ -1347,7 +1347,7 @@ function TeacherInlineMcqCard({ mcq, index, displayNumberOffset = 0, chapterId, 
   }
 
   return (
-    <article className="teacher-compact-card animate-fade-up">
+    <article className="teacher-compact-card">
       <div className="teacher-compact-header">
         <div className="teacher-compact-left">
           <span className="teacher-compact-qnum">
@@ -1531,7 +1531,7 @@ function ReviewQueueReadonlyCard({ item, index, onEdit, onApprove, onDelete }) {
       .match(/[A-D]/)?.[0] || ''
 
   return (
-    <article className="teacher-compact-card animate-fade-up">
+    <article className="teacher-compact-card">
       <div className="teacher-compact-header">
         <div className="teacher-compact-left">
           <span className="teacher-compact-qnum">

@@ -1759,6 +1759,20 @@ html[data-theme="dark"] .custom-count-select {
   cursor: pointer !important;
 }
 
+.teacher-compact-pill {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.65rem !important;
+  padding: 0.45rem 0.75rem !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 10px !important;
+  transition: border-color 0.12s ease !important;
+  box-sizing: border-box !important;
+  cursor: pointer !important;
+  outline: none !important;
+}
+
 .teacher-compact-pill:hover {
   border-color: rgba(255, 255, 255, 0.18) !important;
   background: rgba(255, 255, 255, 0.05) !important;
@@ -1784,7 +1798,7 @@ html[data-theme="dark"] .custom-count-select {
   justify-content: center !important;
   cursor: pointer !important;
   flex-shrink: 0 !important;
-  transition: all 0.15s ease !important;
+  transition: border-color 0.12s ease !important;
 }
 
 .teacher-compact-letter-btn:hover {
@@ -1798,19 +1812,71 @@ html[data-theme="dark"] .custom-count-select {
   box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35) !important;
 }
 
-.teacher-compact-option-input {
+/* Hyper-specific input rules: eradicate any inner box, border, background, focus ring, or transition */
+html body .teacher-compact-card .teacher-compact-pill input,
+html body .teacher-compact-card .teacher-compact-pill input.teacher-compact-option-input,
+html body .teacher-compact-card .teacher-compact-pill input:focus,
+html body .teacher-compact-card .teacher-compact-pill input:active,
+html body .teacher-compact-card .teacher-compact-pill input:hover,
+html[data-theme="dark"] body .teacher-compact-card .teacher-compact-pill input,
+html[data-theme="dark"] body .teacher-compact-card .teacher-compact-pill input.teacher-compact-option-input,
+html[data-theme="dark"] body .teacher-compact-card .teacher-compact-pill input:focus,
+html[data-theme="dark"] body .teacher-compact-card .teacher-compact-pill input:active,
+html[data-theme="dark"] body .teacher-compact-card .teacher-compact-pill input:hover,
+html[data-theme="light"] body .teacher-compact-card .teacher-compact-pill input,
+html[data-theme="light"] body .teacher-compact-card .teacher-compact-pill input.teacher-compact-option-input,
+html[data-theme="light"] body .teacher-compact-card .teacher-compact-pill input:focus,
+html[data-theme="light"] body .teacher-compact-card .teacher-compact-pill input:active,
+html[data-theme="light"] body .teacher-compact-card .teacher-compact-pill input:hover {
   flex: 1 !important;
   min-width: 0 !important;
+  width: 100% !important;
   background: transparent !important;
+  background-color: transparent !important;
   border: none !important;
-  color: #f1f5f9 !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 0.35rem 0.2rem !important;
+  margin: 0 !important;
   font-size: 0.92rem !important;
-  padding: 0.35rem 0 !important;
   font-weight: 500 !important;
+  line-height: 1.4 !important;
+  transition: none !important;
+  animation: none !important;
+  -webkit-tap-highlight-color: transparent !important;
 }
 
-.teacher-compact-option-input:focus {
-  outline: none !important;
+html body .teacher-compact-card .teacher-compact-pill input,
+html body .teacher-compact-card .teacher-compact-pill input.teacher-compact-option-input,
+html[data-theme="dark"] body .teacher-compact-card .teacher-compact-pill input,
+html[data-theme="dark"] body .teacher-compact-card .teacher-compact-pill input.teacher-compact-option-input {
+  color: #f1f5f9 !important;
+}
+
+html[data-theme="light"] body .teacher-compact-card .teacher-compact-pill input,
+html[data-theme="light"] body .teacher-compact-card .teacher-compact-pill input.teacher-compact-option-input {
+  color: #0f172a !important;
+}
+
+html body .teacher-compact-card .teacher-compact-pill input::placeholder,
+html[data-theme="dark"] body .teacher-compact-card .teacher-compact-pill input::placeholder {
+  color: #64748b !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="light"] body .teacher-compact-card .teacher-compact-pill input::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1 !important;
+}
+
+html body .teacher-compact-card .teacher-compact-pill input:-webkit-autofill,
+html body .teacher-compact-card .teacher-compact-pill input:-webkit-autofill:hover,
+html body .teacher-compact-card .teacher-compact-pill input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f1f5f9 !important;
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+  transition: background-color 5000s ease-in-out 0s !important;
 }
 
 .teacher-compact-correct-tag {
