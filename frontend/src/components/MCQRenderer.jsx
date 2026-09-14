@@ -620,6 +620,7 @@ function RichImage({ image }) {
   const imageRef = useRef(null)
   const [loaded, setLoaded] = useState(false)
   const [failed, setFailed] = useState(false)
+  const [zoomed, setZoomed] = useState(false)
 
   useEffect(() => {
     setLoaded(false)
@@ -637,32 +638,67 @@ function RichImage({ image }) {
     }
   }, [url])
 
+  useEffect(() => {
+    if (!zoomed) return
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setZoomed(false)
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [zoomed])
+
   if (!isSafeImageUrl(url)) return null
 
   return (
-    <figure className="mcq-image-block">
-      {!loaded && !failed ? <div className="mcq-image-skeleton" aria-hidden="true" /> : null}
-      {failed ? (
-        <div className="mcq-image-unavailable" role="status">Image unavailable</div>
-      ) : (
-        <img
-          ref={imageRef}
-          className={`mcq-image-block-media ${loaded ? 'mcq-image-block-media--loaded' : 'mcq-image-block-media--loading'}`}
-          src={url}
-          alt={alt || 'Question figure'}
-          loading="eager"
-          onLoad={() => {
-            setFailed(false)
-            setLoaded(true)
-          }}
-          onError={() => {
-            setLoaded(false)
-            setFailed(true)
-          }}
-        />
-      )}
-      {alt ? <figcaption className="mcq-image-block-caption">{alt}</figcaption> : null}
-    </figure>
+    <>
+      <figure className="mcq-image-block">
+        {!loaded && !failed ? <div className="mcq-image-skeleton" aria-hidden="true" /> : null}
+        {failed ? (
+          <div className="mcq-image-unavailable" role="status">Image unavailable</div>
+        ) : (
+          <div className="mcq-image-wrapper" onClick={() => setZoomed(true)} title="Click to view full size">
+            <img
+              ref={imageRef}
+              className={`mcq-image-block-media ${loaded ? 'mcq-image-block-media--loaded' : 'mcq-image-block-media--loading'}`}
+              src={url}
+              alt={alt || 'Question figure'}
+              loading="eager"
+              onLoad={() => {
+                setFailed(false)
+                setLoaded(true)
+              }}
+              onError={() => {
+                setLoaded(false)
+                setFailed(true)
+              }}
+            />
+            {loaded ? (
+              <span className="mcq-image-zoom-hint" aria-hidden="true">
+                🔍 Click to enlarge
+              </span>
+            ) : null}
+          </div>
+        )}
+        {alt ? <figcaption className="mcq-image-block-caption">{alt}</figcaption> : null}
+      </figure>
+
+      {zoomed ? (
+        <div className="mcq-image-lightbox" onClick={() => setZoomed(false)} role="dialog" aria-modal="true">
+          <div className="mcq-image-lightbox-content" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              className="mcq-image-lightbox-close"
+              onClick={() => setZoomed(false)}
+              aria-label="Close enlarged image"
+            >
+              ✕
+            </button>
+            <img src={url} alt={alt || 'Enlarged figure'} className="mcq-image-lightbox-img" />
+            {alt ? <figcaption className="mcq-image-lightbox-caption">{alt}</figcaption> : null}
+          </div>
+        </div>
+      ) : null}
+    </>
   )
 }
 

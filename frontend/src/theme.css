@@ -4681,26 +4681,63 @@ html .mcq-explanation-box textarea {
 }
 
 html .mcq-image-block {
-  width: 100% !important;
-  max-width: 740px !important;
-  margin: 18px auto !important;
-  padding: 12px !important;
-  border: 1.5px solid var(--mcq-ui-border) !important;
-  border-radius: 18px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  width: fit-content !important;
+  max-width: min(100%, 360px) !important;
+  margin: 10px auto !important;
+  padding: 6px 8px !important;
+  border: 1px solid var(--mcq-ui-border) !important;
+  border-radius: 12px !important;
   background: var(--mcq-ui-card) !important;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08) !important;
+  box-sizing: border-box !important;
+}
+
+html .mcq-image-wrapper {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  max-width: 100% !important;
+  cursor: zoom-in !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
 }
 
 html .mcq-image-block-media,
 html .mcq-image-block-media--loaded {
   display: block !important;
-  width: 100% !important;
-  max-width: 700px !important;
+  width: auto !important;
+  max-width: 100% !important;
+  max-height: 200px !important;
   height: auto !important;
   object-fit: contain !important;
   margin: 0 auto !important;
-  border-radius: 14px !important;
+  border-radius: 8px !important;
   opacity: 1 !important;
+  cursor: zoom-in !important;
+  transition: transform 0.15s ease !important;
+}
+
+html .mcq-image-wrapper:hover .mcq-image-block-media {
+  transform: scale(1.02) !important;
+}
+
+html .mcq-image-zoom-hint {
+  position: absolute !important;
+  bottom: 5px !important;
+  right: 5px !important;
+  background: rgba(15, 23, 42, 0.78) !important;
+  color: #f8fafc !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  pointer-events: none !important;
+  opacity: 0.85 !important;
+  backdrop-filter: blur(4px) !important;
 }
 
 html .mcq-image-block-media--loading {
@@ -4710,18 +4747,132 @@ html .mcq-image-block-media--loading {
 
 html .mcq-image-skeleton,
 html .mcq-image-unavailable {
-  min-height: 180px !important;
-  border-radius: 14px !important;
-  border: 1.5px dashed var(--mcq-ui-border) !important;
+  min-height: 120px !important;
+  width: 220px !important;
+  max-width: 100% !important;
+  border-radius: 10px !important;
+  border: 1px dashed var(--mcq-ui-border) !important;
   background: var(--mcq-ui-panel) !important;
   color: var(--mcq-ui-muted) !important;
 }
 
 html .mcq-image-block-caption {
-  margin-top: 10px !important;
+  margin-top: 6px !important;
   color: var(--mcq-ui-muted) !important;
   text-align: center !important;
+  font-size: 12px !important;
+}
+
+/* Explanation specific image sizing */
+html .review-compact-expl-box .mcq-image-block,
+html .mcq-review-explanation .mcq-image-block,
+html .mcq-explanation-box .mcq-image-block,
+html .mcq-solution-box .mcq-image-block {
+  max-width: min(100%, 300px) !important;
+  margin: 8px auto !important;
+  padding: 4px 6px !important;
+}
+
+html .review-compact-expl-box .mcq-image-block-media,
+html .mcq-review-explanation .mcq-image-block-media,
+html .mcq-explanation-box .mcq-image-block-media,
+html .mcq-solution-box .mcq-image-block-media {
+  max-height: 165px !important;
+}
+
+/* Option pills specific image sizing */
+html .review-compact-pill .mcq-image-block,
+html .review-option-row .mcq-image-block,
+html .mcq-option-pill .mcq-image-block,
+html .mcq-option .mcq-image-block,
+html .mcq-option-card .mcq-image-block {
+  max-width: min(100%, 180px) !important;
+  margin: 4px auto !important;
+  padding: 3px !important;
+}
+
+html .review-compact-pill .mcq-image-block-media,
+html .review-option-row .mcq-image-block-media,
+html .mcq-option-pill .mcq-image-block-media,
+html .mcq-option .mcq-image-block-media,
+html .mcq-option-card .mcq-image-block-media {
+  max-height: 85px !important;
+}
+
+/* Lightbox Modal */
+.mcq-image-lightbox {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 999999 !important;
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(4px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 20px !important;
+  cursor: zoom-out !important;
+  animation: mcq-lightbox-anim 0.18s ease-out !important;
+}
+
+@keyframes mcq-lightbox-anim {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.mcq-image-lightbox-content {
+  position: relative !important;
+  max-width: 90vw !important;
+  max-height: 90vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  background: #111827 !important;
+  padding: 14px !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6) !important;
+  cursor: default !important;
+}
+
+.mcq-image-lightbox-close {
+  position: absolute !important;
+  top: -12px !important;
+  right: -12px !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  border: 2px solid #ffffff !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+  transition: transform 0.15s ease !important;
+  z-index: 10 !important;
+}
+
+.mcq-image-lightbox-close:hover {
+  transform: scale(1.15) !important;
+}
+
+.mcq-image-lightbox-img {
+  max-width: 85vw !important;
+  max-height: 78vh !important;
+  object-fit: contain !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  padding: 6px !important;
+}
+
+.mcq-image-lightbox-caption {
+  margin-top: 10px !important;
+  color: #e2e8f0 !important;
   font-size: 13px !important;
+  text-align: center !important;
 }
 
 html .mcq-inline-card-actions,
