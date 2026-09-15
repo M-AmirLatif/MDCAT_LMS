@@ -261,6 +261,34 @@ export function physicsVarToLatex(v) {
   return v
 }
 
+function cleanGreekAndConstants(str) {
+  return str
+    .replace(/πε0/g, '\\pi\\epsilon_0 ')
+    .replace(/πεr/g, '\\pi\\epsilon_r ')
+    .replace(/πε/g, '\\pi\\epsilon ')
+    .replace(/ε0/g, '\\epsilon_0 ')
+    .replace(/εr/g, '\\epsilon_r ')
+    .replace(/μ0/g, '\\mu_0 ')
+    .replace(/π/g, '\\pi ')
+    .replace(/ε/g, '\\epsilon ')
+    .replace(/λ/g, '\\lambda ')
+    .replace(/θ/g, '\\theta ')
+    .replace(/μ/g, '\\mu ')
+    .replace(/Δ/g, '\\Delta ')
+    .replace(/σ/g, '\\sigma ')
+    .replace(/ω/g, '\\omega ')
+    .replace(/ρ/g, '\\rho ')
+    .replace(/α/g, '\\alpha ')
+    .replace(/β/g, '\\beta ')
+    .replace(/γ/g, '\\gamma ')
+}
+
+function cleanAlgebraicTerm(term) {
+  let res = cleanGreekAndConstants(term.trim())
+  res = res.replace(/\^([A-Za-z0-9+\-]+)/g, '^{$1}')
+  return res.trim()
+}
+
 export function formatFormulasInText(text) {
   if (!text) return ''
 
@@ -434,6 +462,24 @@ export function formatFormulasInText(text) {
       }
     }
   }
+
+  // 13. Algebraic fractions: e.g. "Q^2/(4πε0a^2)", "-Q^2/(4πε0a^2)", "1/(4πε0)", "mv^2/r"
+  const fracRegex = /(?<![A-Za-z0-9$])([+-]?)(?:\(([^)]+)\)|([A-Za-z0-9^_{}\\]+))\s*\/\s*(?:\(([^)]+)\)|([A-Za-z0-9^_{}\\]+))(?![A-Za-z0-9$])/g
+  str = mapNonMath(str, (s) =>
+    s.replace(fracRegex, (match, sign, numParen, numRaw, denParen, denRaw) => {
+      const num = numParen || numRaw
+      const den = denParen || denRaw
+
+      const isMath = /[\^πλεθμΔσωραβγ0-9_]/.test(match) && !/^[A-Za-z]\/[A-Za-z]$/.test(match)
+      if (!isMath) return match
+
+      const cleanNum = cleanAlgebraicTerm(num)
+      const cleanDen = cleanAlgebraicTerm(den)
+
+      const prefix = sign === '-' ? '-' : ''
+      return `$${prefix}\\frac{${cleanNum}}{${cleanDen}}$`
+    })
+  )
 
   let cleaned = cleanAiCitations(str)
   cleaned = splitByMathDelimiters(cleaned).map((seg) => {
