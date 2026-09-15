@@ -930,6 +930,39 @@ function ChapterList() {
   )
 }
 
+function normalizeForSearch(str) {
+  if (!str) return ''
+  return String(str)
+    .toLowerCase()
+    .replace(/[×*·]/g, 'x')
+    .replace(/[⁻−–—]/g, '-')
+    .replace(/⁰/g, '0')
+    .replace(/¹/g, '1')
+    .replace(/²/g, '2')
+    .replace(/³/g, '3')
+    .replace(/⁴/g, '4')
+    .replace(/⁵/g, '5')
+    .replace(/⁶/g, '6')
+    .replace(/⁷/g, '7')
+    .replace(/⁸/g, '8')
+    .replace(/⁹/g, '9')
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/\$\$?/g, '')
+    .replace(/\\text\{([^}]*)\}/g, '$1')
+    .replace(/\\(?:times|cdot)/g, 'x')
+    .replace(/\\(?:frac|dfrac)\{([^}]*)\}\{([^}]*)\}/g, '$1/$2')
+    .replace(/\\[a-zA-Z]+/g, '')
+    .replace(/[^a-z0-9\-\/\.\^]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function hasMathOrFormula(text) {
+  if (!text) return false
+  return /(\$\$?|[\\^_{}]|[×*·]|10\^|10[⁻−–]|°|[Δλθαβγμπσω]|\b[A-Za-z]+\/[A-Za-z]+[-−–]?\d*\b)/.test(String(text))
+}
+
 function mcqToForm(mcq) {
   if (!mcq) return { ...emptyMcqForm }
   if (Array.isArray(mcq.options) && mcq.options.length > 0) {
@@ -1079,6 +1112,8 @@ function McqForm({ initial, onSubmit }) {
         <div className="teacher-compact-options-grid">
           {letters.map((letter) => {
             const isCorrect = form.correctAnswer === letter
+            const optVal = form[`option${letter}`] || ''
+            const hasMath = hasMathOrFormula(optVal)
             return (
               <div
                 key={letter}
@@ -1100,14 +1135,21 @@ function McqForm({ initial, onSubmit }) {
                 >
                   {letter}
                 </button>
-                <input
-                  id={`option-${letter.toLowerCase()}`}
-                  className="teacher-compact-option-input"
-                  value={form[`option${letter}`] || ''}
-                  onChange={(event) => setField(`option${letter}`, event.target.value)}
-                  placeholder={`Option ${letter}...`}
-                  onClick={(e) => e.stopPropagation()}
-                />
+                <div className="teacher-compact-option-input-col">
+                  <input
+                    id={`option-${letter.toLowerCase()}`}
+                    className="teacher-compact-option-input"
+                    value={optVal}
+                    onChange={(event) => setField(`option${letter}`, event.target.value)}
+                    placeholder={`Option ${letter}...`}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                  {hasMath ? (
+                    <div className="teacher-compact-option-math-badge" title="Live Formula Preview">
+                      <MCQRenderer text={optVal} />
+                    </div>
+                  ) : null}
+                </div>
                 {isCorrect && (
                   <span className="teacher-compact-correct-tag">
                     ✓ Correct Key
@@ -1304,13 +1346,15 @@ function ReviewQueueForm({ initial, onSubmit }) {
   )
 }
 
-function TeacherInlineMcqCard({ mcq, index, displayNumberOffset = 0, chapterId, meta, onSaved, onDelete }) {
+function TeacherInlineMcqCard({ mcq, index, displayNumberOffset = 0, chapterId, meta, onSaved, onDelete, globalPreview = false }) {
   const [form, setForm] = useState(() => mcqToForm(mcq))
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const [imgOpen, setImgOpen] = useState(false)
   const [explOpen, setExplOpen] = useState(false)
+
+  const isPreview = globalPreview || showPreview
 
   useEffect(() => {
     setForm(mcqToForm(mcq))
@@ -1405,13 +1449,13 @@ function TeacherInlineMcqCard({ mcq, index, displayNumberOffset = 0, chapterId, 
             <button
               type="button"
               className="teacher-compact-preview-toggle"
-              onClick={() => setShowPreview(!showPreview)}
+              onClick={() => setShowPreview(!isPreview)}
             >
-              {showPreview ? '✏️ Edit Text' : '👁️ Preview Math/Formula'}
+              {isPreview ? '✏️ Edit Text' : '👁️ Preview Math/Formula'}
             </button>
           </div>
 
-          {showPreview ? (
+          {isPreview ? (
             <div className="teacher-compact-preview-box">
               <MCQRenderer text={form.question} images={form.questionImages || []} />
             </div>
@@ -1459,6 +1503,8 @@ function TeacherInlineMcqCard({ mcq, index, displayNumberOffset = 0, chapterId, 
           <div className="teacher-compact-options-grid">
             {letters.map((letter) => {
               const isCorrect = form.correctAnswer === letter
+              const optVal = form[`option${letter}`] || ''
+              const hasMath = hasMathOrFormula(optVal)
               return (
                 <div
                   key={letter}
@@ -1480,15 +1526,28 @@ function TeacherInlineMcqCard({ mcq, index, displayNumberOffset = 0, chapterId, 
                   >
                     {letter}
                   </button>
-                  <input
-                    id={`option-${letter.toLowerCase()}-${mcq._id}`}
-                    className="teacher-compact-option-input"
-                    value={form[`option${letter}`] || ''}
-                    onChange={(event) => setField(`option${letter}`, event.target.value)}
-                    placeholder={`Option ${letter}...`}
-                    aria-label={`Option ${letter}`}
-                    onClick={(e) => e.stopPropagation()}
-                  />
+                  {isPreview ? (
+                    <div className="teacher-compact-option-preview">
+                      <MCQRenderer text={optVal} />
+                    </div>
+                  ) : (
+                    <div className="teacher-compact-option-input-col">
+                      <input
+                        id={`option-${letter.toLowerCase()}-${mcq._id}`}
+                        className="teacher-compact-option-input"
+                        value={optVal}
+                        onChange={(event) => setField(`option${letter}`, event.target.value)}
+                        placeholder={`Option ${letter}...`}
+                        aria-label={`Option ${letter}`}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      {hasMath ? (
+                        <div className="teacher-compact-option-math-badge" title="Live Formula Preview">
+                          <MCQRenderer text={optVal} />
+                        </div>
+                      ) : null}
+                    </div>
+                  )}
                   {isCorrect && (
                     <span className="teacher-compact-correct-tag">
                       ✓ Correct Key
@@ -1512,6 +1571,11 @@ function TeacherInlineMcqCard({ mcq, index, displayNumberOffset = 0, chapterId, 
 
           {explOpen && (
             <div className="teacher-compact-expl-box">
+              {isPreview && form.explanation ? (
+                <div className="teacher-compact-preview-box" style={{ marginBottom: '0.75rem' }}>
+                  <MCQRenderer text={form.explanation} images={form.explanationImages || []} />
+                </div>
+              ) : null}
               <AutoSizeTextarea
                 id={`explanation-${mcq._id}`}
                 className="teacher-compact-textarea teacher-compact-expl-textarea"
@@ -1740,45 +1804,75 @@ function McqList() {
     }
   }, [isTeacher, setSearchPlaceholder, setSearchQuery])
 
+  const [allPreview, setAllPreview] = useState(false)
+
   const filteredMcqs = useMemo(() => {
     const indexed = mcqs.map((mcq, idx) => ({ ...mcq, _originalIndex: idx }))
     if (!isTeacher || !searchQuery.trim()) {
       return indexed
     }
-    const rawQuery = searchQuery.trim().toLowerCase()
-    const cleanedQuery = rawQuery.replace(/^(?:q(?:uestion)?|\#)\s*/i, '').trim()
-    const isNumber = /^\d+$/.test(cleanedQuery)
-    const queryNum = isNumber ? parseInt(cleanedQuery, 10) : null
+    const q = searchQuery.trim()
+
+    // 1. Check if pure number search: e.g. "50", "Q50", "Question 50", "#50"
+    const cleanedNum = q.replace(/^(?:q(?:uestion)?|\#)\s*/i, '').trim()
+    const isPureNumber = /^\d+$/.test(cleanedNum)
+    const targetNum = isPureNumber ? parseInt(cleanedNum, 10) : null
+
+    // 2. Check if prefix number + wording: e.g. "24. The minimum charge" or "Q24 minimum charge"
+    const numAndWordsMatch = q.match(/^(?:q(?:uestion)?|\#)?\s*(\d+)[\.\:\-\s]+(.+)$/i)
+    let wordingQuery = q
+    let prefixNum = null
+    if (numAndWordsMatch) {
+      prefixNum = parseInt(numAndWordsMatch[1], 10)
+      wordingQuery = numAndWordsMatch[2].trim()
+    }
+
+    const normQuery = normalizeForSearch(wordingQuery)
+    const queryTokens = normQuery ? normQuery.split(/\s+/).filter(Boolean) : []
+    const lowerRawQuery = q.toLowerCase()
 
     return indexed.filter((mcq) => {
       const displayNumber = getMcqDisplayNumber(mcq, mcq._originalIndex, mcqDisplayNumberOffset)
       const numOnly = parseInt(displayNumber, 10)
 
-      // Exact number match (e.g. "50", "Q50", "Question 50", "#50")
-      if (isNumber && numOnly === queryNum) return true
-
-      // Statement wording match
-      const statement = String(mcq.question || mcq.questionText || '').toLowerCase()
-      if (statement.includes(rawQuery)) return true
-
-      // Options wording match
-      if (Array.isArray(mcq.options)) {
-        if (mcq.options.some((opt) => String(opt?.text || '').toLowerCase().includes(rawQuery))) {
-          return true
-        }
-      }
-      for (const l of ['A', 'B', 'C', 'D']) {
-        if (String(mcq[`option${l}`] || '').toLowerCase().includes(rawQuery)) {
-          return true
-        }
+      // If pure number search
+      if (isPureNumber && (numOnly === targetNum || String(displayNumber).includes(cleanedNum))) {
+        return true
       }
 
-      // Explanation wording match
-      const explanation = String(mcq.explanation || mcq.explanationText || '').toLowerCase()
-      if (explanation.includes(rawQuery)) return true
+      // If user typed "24. Some wording" and this is question 24, and no more query tokens
+      if (prefixNum !== null && numOnly === prefixNum && (!normQuery || queryTokens.length === 0)) {
+        return true
+      }
 
-      // Partial match for number (e.g. typing "10" matches "10", "101", "102")
-      if (isNumber && String(displayNumber).includes(cleanedQuery)) return true
+      const statement = String(mcq.question || mcq.questionText || '')
+      const explanation = String(mcq.explanation || mcq.explanationText || '')
+      const optionsText = Array.isArray(mcq.options)
+        ? mcq.options.map((o) => o?.text || o || '').join(' ')
+        : ['A', 'B', 'C', 'D'].map((l) => mcq[`option${l}`] || '').join(' ')
+
+      // 1. Direct raw case-insensitive includes on statement, options, or explanation
+      if (statement.toLowerCase().includes(lowerRawQuery)) return true
+      if (optionsText.toLowerCase().includes(lowerRawQuery)) return true
+      if (explanation.toLowerCase().includes(lowerRawQuery)) return true
+
+      // 2. Normalized search matching (handles symbols, punctuation, LaTeX, unicode math)
+      if (normQuery) {
+        const fullSearchable = normalizeForSearch(`${statement} ${optionsText} ${explanation}`)
+        if (fullSearchable.includes(normQuery)) return true
+
+        // 3. Multi-token match: every word in search query matches in the question
+        if (queryTokens.length > 1 && queryTokens.every((token) => fullSearchable.includes(token))) {
+          return true
+        }
+
+        // 4. If prefix number matched and at least one query token matches
+        if (prefixNum !== null && numOnly === prefixNum) {
+          if (queryTokens.some((token) => fullSearchable.includes(token))) {
+            return true
+          }
+        }
+      }
 
       return false
     })
@@ -2282,21 +2376,38 @@ function McqList() {
                     </button>
                   ) : null}
                 </div>
-                {searchQuery.trim() ? (
-                  <div className="mcq-search-results-info">
-                    <span>
-                      Found <strong>{filteredMcqs.length}</strong> of <strong>{mcqs.length}</strong> MCQs for <em>"{searchQuery}"</em>
-                    </span>
+                <div className="mcq-search-results-info" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                  <div>
+                    {searchQuery.trim() ? (
+                      <span>
+                        Found <strong>{filteredMcqs.length}</strong> of <strong>{mcqs.length}</strong> MCQs for <em>"{searchQuery}"</em>
+                      </span>
+                    ) : (
+                      <span>Showing all <strong>{mcqs.length}</strong> MCQs</span>
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     <button
                       type="button"
-                      className="btn btn-secondary btn-sm"
-                      onClick={() => setSearchQuery('')}
+                      className={`btn btn-sm ${allPreview ? 'btn-primary' : 'btn-secondary'}`}
+                      onClick={() => setAllPreview(!allPreview)}
                       style={{ padding: '4px 12px', fontSize: '0.8rem', borderRadius: '8px' }}
+                      title={allPreview ? 'Switch all cards to edit mode' : 'Preview rendered LaTeX/formulas for all MCQs'}
                     >
-                      Show All ({mcqs.length})
+                      {allPreview ? '✏️ Edit All Mode' : '👁️ Preview All Formulas'}
                     </button>
+                    {searchQuery.trim() ? (
+                      <button
+                        type="button"
+                        className="btn btn-secondary btn-sm"
+                        onClick={() => setSearchQuery('')}
+                        style={{ padding: '4px 12px', fontSize: '0.8rem', borderRadius: '8px' }}
+                      >
+                        Show All ({mcqs.length})
+                      </button>
+                    ) : null}
                   </div>
-                ) : null}
+                </div>
               </div>
 
               {filteredMcqs.length > 0 ? (
@@ -2311,6 +2422,7 @@ function McqList() {
                       meta={meta}
                       onSaved={load}
                       onDelete={deleteMcq}
+                      globalPreview={allPreview}
                     />
                   ))}
                 </div>

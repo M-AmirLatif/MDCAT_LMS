@@ -2168,6 +2168,49 @@ html body .teacher-compact-card .teacher-compact-pill input:-webkit-autofill:foc
   color: #334155 !important;
 }
 
+.teacher-compact-option-input-col {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+.teacher-compact-option-preview {
+  display: flex !important;
+  align-items: center !important;
+  font-size: 0.95rem !important;
+  color: #f1f5f9 !important;
+  min-height: 26px !important;
+  padding: 2px 0 !important;
+  word-break: break-word !important;
+}
+
+[data-theme="light"] .teacher-compact-option-preview {
+  color: #0f172a !important;
+}
+
+.teacher-compact-option-math-badge {
+  font-size: 0.82rem !important;
+  color: #38bdf8 !important;
+  margin-top: 4px !important;
+  padding: 2px 8px !important;
+  background: rgba(56, 189, 248, 0.1) !important;
+  border: 1px solid rgba(56, 189, 248, 0.25) !important;
+  border-radius: 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  max-width: fit-content !important;
+  overflow-x: auto !important;
+  pointer-events: none !important;
+}
+
+[data-theme="light"] .teacher-compact-option-math-badge {
+  color: #0284c7 !important;
+  background: rgba(2, 132, 199, 0.08) !important;
+  border-color: rgba(2, 132, 199, 0.2) !important;
+}
+
+
 
 
 
