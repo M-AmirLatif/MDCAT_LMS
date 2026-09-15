@@ -164,45 +164,153 @@ function splitByMathDelimiters(text) {
   return segments
 }
 
+const SUPERSCRIPT_MAP = {
+  '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4',
+  '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9',
+  '⁺': '+', '⁻': '-', '−': '-', '–': '-', '—': '-'
+}
+
+function normalizeSuperscriptString(raw) {
+  let res = ''
+  for (const ch of String(raw || '')) {
+    res += SUPERSCRIPT_MAP[ch] !== undefined ? SUPERSCRIPT_MAP[ch] : ch
+  }
+  return res.replace(/[{}]/g, '').replace(/[−–—]/g, '-').trim()
+}
+
+function normalizeUnit(rawUnit) {
+  if (!rawUnit) return ''
+  const u = rawUnit.trim()
+
+  let cleanExp = ''
+  const m = u.match(/^([A-Za-z°Ωμ]+(?:\/[A-Za-z°Ωμ]+)?)(?:[\^]([+-]?\d+)|([²³⁻¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+)|([-−–]?\d+))?$/)
+  if (m) {
+    const base = m[1].trim()
+    const expPart = m[2] || m[3] || m[4]
+    if (expPart) {
+      for (const ch of expPart) {
+        cleanExp += SUPERSCRIPT_MAP[ch] !== undefined ? SUPERSCRIPT_MAP[ch] : ch
+      }
+      return `\\,\\text{${base}}^{${cleanExp}}`
+    }
+    return `\\,\\text{${base}}`
+  }
+
+  return `\\,\\text{${u.replace(/[⁻−–]/g, '-').replace(/²/g, '^2').replace(/³/g, '^3')}}`
+}
+
+function mapNonMath(text, transformFn) {
+  return splitByMathDelimiters(text).map((seg) => {
+    if (seg.type === 'math') return seg.content
+    return transformFn(seg.content)
+  }).join('')
+}
+
 export function formatFormulasInText(text) {
   if (!text) return ''
 
-  // 1. Convert temperature: e.g. "+273.16°C", "-273.16°C", "2°C", "0°C", "2^\circ C"
   let str = String(text)
-    .replace(/(?<![A-Za-z0-9])([+-]?\d+(?:\.\d+)?)\s*(?:°|(?:\^\\circ|\^o|\^0))\s*([CFK])\b/g, (m, val, unit) => {
-      return `$${val}^\\circ\\text{${unit}}$`
-    })
+
+  // 0. Clean double-escaped commands: \\times -> \times, \\Delta -> \Delta
+  str = str.replace(/\\\\([A-Za-z]+)/g, '\\$1')
+
+  // 1. Convert temperature: e.g. "+273.16°C", "-273.16°C", "2°C", "0°C", "2^\circ C"
+  str = str.replace(/(?<![A-Za-z0-9])([+-]?\d+(?:\.\d+)?)\s*(?:°|(?:\^\\circ|\^o|\^0))\s*([CFK])\b/g, (m, val, unit) => {
+    return `$${val}^\\circ\\text{${unit}}$`
+  })
 
   // 2. Degrees / Angles: "180°", "180^\circ", "90°", "1°", etc.
-  str = splitByMathDelimiters(str).map((seg) => {
-    if (seg.type === 'math') return seg.content
-    return seg.content.replace(/(?<![A-Za-z0-9])([+-]?\d+(?:\.\d+)?)\s*(?:°|\^\\circ|\^o|\^0)(?![A-Za-z0-9])/g, (m, val) => {
+  str = mapNonMath(str, (s) =>
+    s.replace(/(?<![A-Za-z0-9])([+-]?\d+(?:\.\d+)?)\s*(?:°|\^\\circ|\^o|\^0)(?![A-Za-z0-9])/g, (m, val) => {
       return `$${val}^\\circ$`
     })
-  }).join('')
+  )
 
   // 3. Convert electron notation: e- or 2e- or e^-
-  str = splitByMathDelimiters(str).map((seg) => {
-    if (seg.type === 'math') return seg.content
-    return seg.content.replace(/(?<![A-Za-z0-9])(\d*)\s*e\s*[-⁻](?![A-Za-z0-9])/g, (m, count) => {
+  str = mapNonMath(str, (s) =>
+    s.replace(/(?<![A-Za-z0-9])(\d*)\s*e\s*[-⁻−–](?![A-Za-z0-9])/g, (m, count) => {
       return `$${count || ''}\\text{e}^-$`
     })
-  }).join('')
+  )
 
-  // 4. Convert scientific notation: 6.02×10^23, 6.02 x 10^-23, 6.02 × 10²³
-  str = splitByMathDelimiters(str).map((seg) => {
-    if (seg.type === 'math') return seg.content
-    let s = seg.content.replace(/(?<![A-Za-z0-9])([+-]?\d+(?:\.\d+)?)\s*(?:[×*]|\\times|x)\s*10\^({?-?\d+}?)(?![A-Za-z0-9])/g, (m, coeff, exp) => {
-      const cleanExp = exp.replace(/[{}]/g, '')
-      return `$${coeff} \\times 10^{${cleanExp}}$`
+  // 4. Scientific notation with coefficient:
+  // e.g. "1.6×10⁻22 J", "1.6 \times 10^-19 J", "4×10⁻3 C", "26.4 × 10⁻12 C/m²", "1.6\times 10^-22"
+  const fullSciRegex = /(?<![A-Za-z0-9])([+-]?\d+(?:\.\d+)?)\s*(?:[×*·]|\\times|\\cdot|\bx\b)\s*10(?:\^|\s*\^)?\s*([⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻−–\d{}]+|[+-]?\d+)(?:\s*([A-Za-z°Ωμ][A-Za-z0-9_/\^⁺⁻−–²³·*\-]*))?/g
+  str = mapNonMath(str, (s) =>
+    s.replace(fullSciRegex, (match, coeff, expRaw, unitRaw) => {
+      const exp = normalizeSuperscriptString(expRaw)
+      const unit = normalizeUnit(unitRaw)
+      return `$${coeff} \\times 10^{${exp}}${unit}$`
     })
-    s = s.replace(/(?<![A-Za-z0-9])([+-]?\d+(?:\.\d+)?)\s*(?:[×*]|\\times)\s*10([⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+)(?![A-Za-z0-9])/g, (m, coeff, exp) => {
-      const supMap = { '⁰':'0', '¹':'1', '²':'2', '³':'3', '⁴':'4', '⁵':'5', '⁶':'6', '⁷':'7', '⁸':'8', '⁹':'9', '⁺':'+', '⁻':'-' }
-      const cleanExp = exp.split('').map((c) => supMap[c] || c).join('')
-      return `$${coeff} \\times 10^{${cleanExp}}$`
+  )
+
+  // 5. Standalone powers of 10 with caret or explicit exponent:
+  // e.g. "10^-8", "10^-3C", "10^6 N/C", "10^-12"
+  const standalonePow10Regex = /(?<![A-Za-z0-9])10(?:\^|\s*\^)\s*([+-]?[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻−–\d{}]+)(?:\s*([A-Za-z°Ωμ][A-Za-z0-9_/\^⁺⁻−–²³·*\-]*))?/g
+  str = mapNonMath(str, (s) =>
+    s.replace(standalonePow10Regex, (match, expRaw, unitRaw) => {
+      const exp = normalizeSuperscriptString(expRaw)
+      const unit = normalizeUnit(unitRaw)
+      return `$10^{${exp}}${unit}$`
     })
-    return s
-  }).join('')
+  )
+
+  // 6. Standalone powers of 10 with unicode exponent:
+  // e.g. "10⁻5 C", "10⁻8", "10²³", "10⁻¹² A", "10⁷"
+  const unicodePow10Regex = /(?<![A-Za-z0-9])10([⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻−–]+(?:\d+)?)(?:\s*([A-Za-z°Ωμ][A-Za-z0-9_/\^⁺⁻−–²³·*\-]*))?/g
+  str = mapNonMath(str, (s) =>
+    s.replace(unicodePow10Regex, (match, expRaw, unitRaw) => {
+      const exp = normalizeSuperscriptString(expRaw)
+      const unit = normalizeUnit(unitRaw)
+      return `$10^{${exp}}${unit}$`
+    })
+  )
+
+  // 7. Hyphenated power of 10 without caret:
+  // e.g. "(answer in units of 10-8C)" or "order of 10-5"
+  const hyphenPow10 = /(?<=(?:units of|order of|factor of|power of)\s*)10[-−–](\d{1,2})(?:\s*([A-Za-z°Ωμ]+))?/gi
+  str = mapNonMath(str, (s) =>
+    s.replace(hyphenPow10, (match, expVal, unitRaw) => {
+      const unit = normalizeUnit(unitRaw)
+      return `$10^{-${expVal}}${unit}$`
+    })
+  )
+
+  // 8. Standalone physics units in options or text:
+  // e.g. "C/m", "C/m2", "C/m-1", "C/m-2", "m/s2", "C² N^-1 m^-2", "N·m² C^-1", "N·m C^-2"
+  str = mapNonMath(str, (s) => {
+    let res = s
+    // Entire string is a unit expression (common in MCQ options like "C/m2" or "C/m-1")
+    if (/^\s*[A-Za-z°Ωμ](?:[²³]|\^[+-]?\d+)?(?:\s*[\/·\s]\s*[A-Za-z°Ωμ]+(?:[-−–]?\d+|\^[+-]?\d+|[²³⁻¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+)?)+\s*$/.test(res.trim())) {
+      const cleanUnit = res.trim()
+        .replace(/([A-Za-z°Ωμ]+)\/([A-Za-z°Ωμ]+)([-−–]?\d+)?/g, (m, num, den, exp) => {
+          if (!exp) return `\\text{${num}/${den}}`
+          const cleanExp = exp.replace(/[⁻−–]/g, '-')
+          return `\\text{${num}/${den}}^{${cleanExp}}`
+        })
+        .replace(/([A-Za-z°Ωμ]+)\^?([+-]?\d+)/g, '\\text{$1}^{$2}')
+        .replace(/([A-Za-z°Ωμ]+)([²³])/g, (m, u, p) => `\\text{${u}}^${p === '²' ? '2' : '3'}`)
+        .replace(/·/g, '\\cdot ')
+      return `$${cleanUnit}$`
+    }
+
+    // Single unit with slash and exponent like "C/m", "C/m2", "C/m-1", "C/m-2", "m/s2", "V/cm"
+    if (/^\s*([A-Za-z°Ωμ]+)\/([A-Za-z°Ωμ]+)([-−–]?\d+)?\s*$/.test(res.trim())) {
+      const m = res.trim().match(/^([A-Za-z°Ωμ]+)\/([A-Za-z°Ωμ]+)([-−–]?\d+)?$/)
+      if (m) {
+        const exp = m[3] ? `^{${m[3].replace(/[⁻−–]/g, '-')}}` : ''
+        return `$\\text{${m[1]}/${m[2]}}${exp}$`
+      }
+    }
+
+    // Inline units like "C/m2", "C/m-1", "C/m-2", "m/s2", "V/cm"
+    res = res.replace(/(?<![A-Za-z0-9])([A-Z][a-z]?)\/([a-z]+)([-−–]?\d+)(?![A-Za-z0-9])/g, (m, num, den, exp) => {
+      const cleanExp = exp.replace(/[⁻−–]/g, '-')
+      return `$\\text{${num}/${den}}^{${cleanExp}}$`
+    })
+
+    return res
+  })
 
   let cleaned = cleanAiCitations(str)
   cleaned = splitByMathDelimiters(cleaned).map((seg) => {
@@ -272,7 +380,15 @@ export function formatFormulasInText(text) {
     })
   }).join('')
 
-  return pass3
+  // Pass 4: Standalone LaTeX commands left in text without dollar signs (e.g. \times, \pm, \div, \mu, \Delta)
+  let pass4 = mapNonMath(pass3, (s) => {
+    let res = s
+    res = res.replace(/\\(?:times|pm|div|approx|neq|leq|geq|infty)\b/g, (m) => `$${m}$`)
+    res = res.replace(/\\(?:Delta|Sigma|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)\b/g, (m) => `$${m}$`)
+    return res
+  })
+
+  return pass4
 }
 
 function tokenizeAsciiMath(value) {
