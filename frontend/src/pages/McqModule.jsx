@@ -5,7 +5,7 @@ import API, { getUserFriendlyErrorMessage } from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import { useSearch } from '../context/SearchContext'
 import { Helmet } from 'react-helmet-async'
-import MCQRenderer from '../components/MCQRenderer'
+import MCQRenderer, { formatFormulasInText } from '../components/MCQRenderer'
 import { normalizeImageUrl } from '../utils/mediaUrls'
 import './PlatformPages.css'
 import './MCQTest.css'
@@ -960,7 +960,20 @@ function normalizeForSearch(str) {
 
 function hasMathOrFormula(text) {
   if (!text) return false
-  return /(\$\$?|[\\^_{}]|[×*·]|10\^|10[⁻−–]|°|[Δλθαβγμπσω]|\b[A-Za-z]+\/[A-Za-z]+[-−–]?\d*\b)/.test(String(text))
+  const str = String(text).trim()
+  if (!str) return false
+  if (/(\$\$?|[\\^_{}]|[×*·]|10\^|10[⁻−–]|°|[Δλθαβγμπσω]|\b[A-Za-z]+\/[A-Za-z]+[-−–]?\d*\b)/.test(str)) {
+    return true
+  }
+  if (/\b[VEIRPFQvq][ABCD\d]\b|\bF[egbncrt]\b|\bE[pkm]\b|\b[VvIip][ifo0ps]\b|\b(?:Ceq|Req|Leq|Irms|Vrms|Erms)\b|\b(?:lesser|less|greater|more|equal)\s+than\b/i.test(str)) {
+    return true
+  }
+  try {
+    const formatted = formatFormulasInText(str)
+    return formatted !== str && formatted.includes('$')
+  } catch {
+    return false
+  }
 }
 
 function mcqToForm(mcq) {

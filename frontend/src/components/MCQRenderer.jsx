@@ -84,8 +84,8 @@ export function cleanAiCitations(text) {
       .replace(/\[cite:\s*\d+(?:\s*,\s*[\w\d]+)*\]/gi, '')
       .replace(/(?<=[a-zA-Z0-9\.\;\,])\s*\[\d+\](?=[\s\.\,\;\:\?\!]|$)/g, '')
       .replace(/【[^】]*?】/g, '')
-      .replace(/\\\[([\s\S]*?)\\\]/g, '$$$$$1$$$$')
-      .replace(/\\\(([\s\S]*?)\\\)/g, '$$$1$$')
+      .replace(/\\+\[([\s\S]*?)\\+\]/g, '$$$$$1$$$$')
+      .replace(/\\+\(([\s\S]*?)\\+\)/g, '$$$1$$')
       .replace(/\\(Delta|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)([a-zA-Z0-9])/g, '\\$1 $2')
   )
 }
@@ -206,12 +206,70 @@ function mapNonMath(text, transformFn) {
   }).join('')
 }
 
+export const KNOWN_PHYSICS_VARS = new Set([
+  'VA', 'VB', 'VC', 'VD',
+  'EA', 'EB', 'EC', 'ED',
+  'IA', 'IB', 'IC', 'ID',
+  'RA', 'RB', 'RC', 'RD',
+  'PA', 'PB', 'PC', 'PD',
+  'TA', 'TB', 'TC', 'TD',
+  'QA', 'QB', 'QC', 'QD',
+  'FA', 'FB', 'FC', 'FD',
+  'vA', 'vB', 'vC', 'vD',
+  'qA', 'qB', 'qC', 'qD',
+  'Fe', 'Fg', 'Fb', 'Fn', 'Fc', 'Fr', 'Ft',
+  'Ep', 'Ek', 'Em',
+  'Vi', 'Vf', 'Vo', 'V0', 'Vp', 'Vs',
+  'vi', 'vf', 'vo', 'v0',
+  'Ii', 'If', 'Io', 'I0', 'Ip', 'Is',
+  'pi', 'pf', 'p0',
+  'ti', 'tf', 't0',
+  'xi', 'xf', 'x0',
+  'Req', 'Ceq', 'Leq',
+  'Irms', 'Vrms', 'Erms',
+  'V1', 'V2', 'E1', 'E2', 'I1', 'I2', 'R1', 'R2',
+  'C1', 'C2', 'q1', 'q2', 'F1', 'F2', 'm1', 'm2',
+  'r1', 'r2', 'v1', 'v2', 'a1', 'a2', 't1', 't2',
+  'p1', 'p2', 'N1', 'N2', 'T1', 'T2', 'K1', 'K2',
+])
+
+export function physicsVarToLatex(v) {
+  if (!v) return v
+  if (v.includes('_') || v.includes('\\') || v.includes('$')) return v
+
+  const m1 = v.match(/^([VEIRPTQFabpq])([ABCD])$/)
+  if (m1) return `${m1[1]}_{${m1[2]}}`
+
+  const m2 = v.match(/^([F])([egbncrt])$/)
+  if (m2) return `${m2[1]}_{${m2[2]}}`
+
+  const m3 = v.match(/^([E])([pkm])$/)
+  if (m3) return `${m3[1]}_{${m3[2]}}`
+
+  const m4 = v.match(/^([VvIiptx])([ifo0ps])$/)
+  if (m4) return `${m4[1]}_{${m4[2]}}`
+
+  const m5 = v.match(/^([RCL])(eq)$/i)
+  if (m5) return `${m5[1]}_{\\text{${m5[2].toLowerCase()}}}`
+
+  const m6 = v.match(/^([VIE])(rms)$/i)
+  if (m6) return `${m6[1]}_{\\text{${m6[2].toLowerCase()}}}`
+
+  const m7 = v.match(/^([VEIRQCqFmrvaltpNTK])(\d+)$/)
+  if (m7) return `${m7[1]}_{${m7[2]}}`
+
+  return v
+}
+
 export function formatFormulasInText(text) {
   if (!text) return ''
 
   let str = String(text)
 
-  // 0. Clean double-escaped commands: \\times -> \times, \\Delta -> \Delta
+  // 0a. Unescape escaped dollar signs: \$ -> $, \\$ -> $
+  str = str.replace(/\\+(\$)/g, '$1')
+
+  // 0b. Clean double-escaped commands: \\times -> \times, \\Delta -> \Delta
   str = str.replace(/\\\\([A-Za-z]+)/g, '\\$1')
 
   // 1. Convert temperature: e.g. "+273.16°C", "-273.16°C", "2°C", "0°C", "2^\circ C"
@@ -312,6 +370,71 @@ export function formatFormulasInText(text) {
     return res
   })
 
+  // 9. Physics comparison phrases: e.g. "EA lesser than EB", "Fe greater than Fg", "VA equal to VB", "EA less than EB"
+  const compRegex = /\b([A-Za-z0-9_]+)\s+(lesser than|less than|greater than|more than|equal to)\s+([A-Za-z0-9_]+)\b/gi
+  str = mapNonMath(str, (s) =>
+    s.replace(compRegex, (match, v1, op, v2) => {
+      const isV1Known = KNOWN_PHYSICS_VARS.has(v1) || /^[VEIRPFqv][ABCD\d]$/.test(v1)
+      const isV2Known = KNOWN_PHYSICS_VARS.has(v2) || /^[VEIRPFqv][ABCD\d]$/.test(v2)
+      if (!isV1Known && !isV2Known) return match
+
+      const l1 = physicsVarToLatex(v1)
+      const l2 = physicsVarToLatex(v2)
+      const cleanOp = op.toLowerCase()
+      return `$${l1}$ ${cleanOp} $${l2}$`
+    })
+  )
+
+  // 10. Direct physics variable equations/inequalities: e.g. "VA=VB", "EA = EB", "VA < VB", "FA > FB", "FA = FB"
+  const eqVarRegex = /(?<![A-Za-z0-9])([A-Za-z0-9_]+)\s*(=|!=|<=|>=|<|>)\s*([A-Za-z0-9_]+)(?![A-Za-z0-9])/g
+  str = mapNonMath(str, (s) =>
+    s.replace(eqVarRegex, (match, v1, op, v2) => {
+      const isV1Known = KNOWN_PHYSICS_VARS.has(v1) || /^[VEIRPFqv][ABCD\d]$/.test(v1)
+      const isV2Known = KNOWN_PHYSICS_VARS.has(v2) || /^[VEIRPFqv][ABCD\d]$/.test(v2)
+      if (!isV1Known && !isV2Known) return match
+
+      const l1 = physicsVarToLatex(v1)
+      const l2 = physicsVarToLatex(v2)
+      return `$${l1} ${op} ${l2}$`
+    })
+  )
+
+  // 11. Standalone physics variable in an option: e.g. "VA", "EB", "Fe", "Req"
+  if (/^\s*[A-Za-z0-9_]+\s*$/.test(str)) {
+    const trimmed = str.trim()
+    if (KNOWN_PHYSICS_VARS.has(trimmed)) {
+      str = `$${physicsVarToLatex(trimmed)}$`
+    }
+  }
+
+  // 12. Standalone option number with unit: e.g. "2 mF", "100μC", "100uC", "108MJ", "10/3 V", "5V", "5000V"
+  const singleOptionUnitRegex = /^\s*([+-]?(?:\d+(?:\.\d+)?|\d+\/\d+))\s*(?:[x×*·]?\s*10(?:\^|\s*\^)?\s*([+-]?\d+))?\s*([μu]?[A-Za-z°Ω]+(?:[-−–]?\d+|\^[+-]?\d+|[²³])?)\s*$/
+  const mOpt = str.match(singleOptionUnitRegex)
+  if (mOpt) {
+    const val = mOpt[1]
+    const exp = mOpt[2]
+    let unit = mOpt[3]
+    if (unit.startsWith('u') && !['units', 'unit'].includes(unit.toLowerCase())) {
+      unit = 'μ' + unit.slice(1)
+    }
+    if (unit.startsWith('μ')) {
+      const remainder = unit.slice(1)
+      const unitLatex = remainder ? `\\mu\\text{${remainder}}` : `\\mu`
+      if (exp !== undefined) {
+        str = `$${val} \\times 10^{${exp}}\\,${unitLatex}$`
+      } else {
+        str = `$${val}\\,${unitLatex}$`
+      }
+    } else {
+      const cleanUnit = unit.replace(/Ω/g, '\\Omega ')
+      if (exp !== undefined) {
+        str = `$${val} \\times 10^{${exp}}\\,\\text{${cleanUnit}}$`
+      } else {
+        str = `$${val}\\,\\text{${cleanUnit}}$`
+      }
+    }
+  }
+
   let cleaned = cleanAiCitations(str)
   cleaned = splitByMathDelimiters(cleaned).map((seg) => {
     if (seg.type === 'math') return seg.content
@@ -380,11 +503,12 @@ export function formatFormulasInText(text) {
     })
   }).join('')
 
-  // Pass 4: Standalone LaTeX commands left in text without dollar signs (e.g. \times, \pm, \div, \mu, \Delta)
+  // Pass 4: Standalone LaTeX commands left in text without dollar signs (e.g. \times, \pm, \div, \mu, \Delta, \text{...})
   let pass4 = mapNonMath(pass3, (s) => {
     let res = s
     res = res.replace(/\\(?:times|pm|div|approx|neq|leq|geq|infty)\b/g, (m) => `$${m}$`)
     res = res.replace(/\\(?:Delta|Sigma|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)\b/g, (m) => `$${m}$`)
+    res = res.replace(/(?<![A-Za-z0-9$])(\d+(?:\.\d+)?\s*)?\\text\{([^}]+)\}(?!\$)/g, (m) => `$${m}$`)
     return res
   })
 
@@ -408,6 +532,9 @@ function tokenizeAsciiMath(value) {
 function identifierToLatex(identifier) {
   const match = identifier.match(/^([A-Za-z]+)(?:_?(\d+))?$/)
   if (!match) return identifier
+  if (KNOWN_PHYSICS_VARS.has(identifier)) {
+    return physicsVarToLatex(identifier)
+  }
   const base = GREEK_NAMES.has(match[1].toLowerCase())
     ? `\\${match[1].toLowerCase()}`
     : match[1]
