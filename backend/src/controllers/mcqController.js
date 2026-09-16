@@ -10,24 +10,24 @@ const {
   canTeacherAccessSubject,
 } = require('../utils/teacherSubjects')
 
-const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers', 'FLPs', 'Logical Reasoning']
+const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English', 'Logical Reasoning', 'FLPs', 'Past Papers']
 const SUBJECT_SLUGS = {
   biology: 'Biology',
   chemistry: 'Chemistry',
   physics: 'Physics',
   english: 'English',
-  'past-papers': 'Past Papers',
-  'past papers': 'Past Papers',
-  pastpapers: 'Past Papers',
+  'logical-reasoning': 'Logical Reasoning',
+  'logical reasoning': 'Logical Reasoning',
+  logicalreasoning: 'Logical Reasoning',
   flp: 'FLPs',
   flps: 'FLPs',
   'flp\'s': 'FLPs',
   'full-length-papers': 'FLPs',
   'full length papers': 'FLPs',
   fulllengthpapers: 'FLPs',
-  'logical-reasoning': 'Logical Reasoning',
-  'logical reasoning': 'Logical Reasoning',
-  logicalreasoning: 'Logical Reasoning',
+  'past-papers': 'Past Papers',
+  'past papers': 'Past Papers',
+  pastpapers: 'Past Papers',
 }
 
 const isFlpCategory = (subject) => {
@@ -1390,12 +1390,28 @@ exports.getSubjectSummary = async (req, res) => {
       userRoleName(req.user) === 'teacher'
         ? SUBJECTS.filter((subject) => canTeacherAccessSubject(req.user, subject))
         : SUBJECTS
-    const courses = await Course.find({ category: { $in: allowedSubjects } })
-      .select('_id category chapters')
+    const courses = await Course.find({
+      $or: [
+        { category: { $in: allowedSubjects } },
+        { subject: { $in: allowedSubjects } },
+        { name: { $in: ['Full Length Papers', 'FLPs', 'Past Papers'] } },
+      ],
+    })
+      .select('_id category subject name chapters')
       .lean()
-    const courseBySubject = new Map(
-      courses.map((course) => [course.category, course]),
-    )
+
+    const courseBySubject = new Map()
+    courses.forEach((course) => {
+      if (course.category) courseBySubject.set(course.category, course)
+      if (course.subject) courseBySubject.set(course.subject, course)
+      if (isFlpCategory(course.category) || isFlpCategory(course.subject) || isFlpCategory(course.name)) {
+        courseBySubject.set('FLPs', course)
+        courseBySubject.set('Full Length Papers', course)
+      }
+      if (course.category === 'Past Papers' || course.subject === 'Past Papers' || /past paper/i.test(course.name)) {
+        courseBySubject.set('Past Papers', course)
+      }
+    })
     const courseIds = courses.map((course) => course._id)
 
     const mcqCounts = await MCQ.aggregate([
@@ -1416,6 +1432,7 @@ exports.getSubjectSummary = async (req, res) => {
       return {
         id: subject.toLowerCase().replace(/\s+/g, '-'),
         subject,
+        name: subject,
         courseId: course?._id || null,
         totalChapters: course?.chapters?.length || 0,
         totalMcqs: course ? (mcqCountByCourseId.get(String(course._id)) || 0) : 0,

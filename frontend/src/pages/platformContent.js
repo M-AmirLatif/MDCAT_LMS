@@ -5,6 +5,10 @@ export const SUBJECT_STYLES = {
   Chemistry: { className: 'card-chemistry', banner: 'linear-gradient(135deg, #6c47ff 0%, #1db884 100%)', progress: 'linear-gradient(135deg, #6C47FF 0%, #1DB884 100%)', accent: 'var(--purple)' },
   Physics: { className: 'card-physics', banner: 'linear-gradient(135deg, #4a90e2 0%, #73b1ff 100%)', progress: 'linear-gradient(135deg, #4A90E2 0%, #73B1FF 100%)', accent: 'var(--indigo)' },
   English: { className: 'card-english', banner: 'linear-gradient(135deg, #f59e0b 0%, #ffb648 100%)', progress: 'linear-gradient(135deg, #F59E0B 0%, #FFB648 100%)', accent: 'var(--amber-dark)' },
+  'Logical Reasoning': { className: 'card-logical-reasoning', banner: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)', progress: 'linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)', accent: '#06b6d4' },
+  'FLPs': { className: 'card-flps', banner: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)', progress: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)', accent: '#8b5cf6' },
+  'Full Length Papers': { className: 'card-flps', banner: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)', progress: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)', accent: '#8b5cf6' },
+  'Past Papers': { className: 'card-past-papers', banner: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 100%)', progress: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)', accent: '#ec4899' },
 }
 
 const DEFAULT_SUBJECT_STYLE = { className: '', banner: 'linear-gradient(135deg, #7c5cff, #38bdf8)', progress: 'linear-gradient(135deg, #7c5cff, #38bdf8)', accent: '#7c5cff' }

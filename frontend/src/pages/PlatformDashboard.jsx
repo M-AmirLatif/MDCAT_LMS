@@ -33,13 +33,38 @@ function SubjectGlyph({ subject }) {
     Chemistry: 'M10 3v6l-5.6 8.8A2 2 0 0 0 6.1 21h11.8a2 2 0 0 0 1.7-3.2L14 9V3M8.5 13h7',
     Physics: 'M12 3v4M12 17v4M4 12H0m24 0h-4M5.6 5.6 2.8 2.8m18.4 18.4-2.8-2.8M18.4 5.6l2.8-2.8M5.6 18.4l-2.8 2.8M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z',
     English: 'M5 5.5A2.5 2.5 0 0 1 7.5 3H19v16H7.5A2.5 2.5 0 0 0 5 21.5v-16ZM9 7h6M9 11h6M9 15h4',
+    'Logical Reasoning': 'M9 18h6m-4 3h2M12 2a7 7 0 0 0-4.5 12.3c.7.6 1.5 1.7 1.5 2.7h6c0-1 .8-2.1 1.5-2.7A7 7 0 0 0 12 2Z',
+    FLPs: 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9 2 2 4-4',
+    'Full Length Papers': 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9 2 2 4-4',
+    'Past Papers': 'M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2Z',
   }
 
   return (
     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true">
-      <path d={strokes[subject]} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d={strokes[subject] || strokes.FLPs} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
+}
+
+const isPaperSubject = (name = '', id = '') => {
+  const lowerName = String(name || '').toLowerCase()
+  const lowerId = String(id || '').toLowerCase()
+  return (
+    lowerName.includes('past paper') ||
+    lowerName.includes('flp') ||
+    lowerName.includes('full length') ||
+    lowerId.includes('past-paper') ||
+    lowerId.includes('flp')
+  )
+}
+
+const getUnitLabel = (count, subjectName, subjectId) => {
+  const n = Number(count) || 0
+  const isPaper = isPaperSubject(subjectName, subjectId)
+  if (isPaper) {
+    return `${n} ${n === 1 ? 'Paper' : 'Papers'}`
+  }
+  return `${n} ${n === 1 ? 'Chapter' : 'Chapters'}`
 }
 
 const getAssignedSubjectNames = (user) => {
@@ -57,6 +82,10 @@ const momentumColors = {
   Chemistry: '#7c5cff',
   Physics: '#4a90e2',
   English: '#f59e0b',
+  'Logical Reasoning': '#06b6d4',
+  FLPs: '#8b5cf6',
+  'Full Length Papers': '#8b5cf6',
+  'Past Papers': '#ec4899',
 }
 
 const chartTheme = {
@@ -203,7 +232,7 @@ function StudentDashboard({ firstName, user }) {
                 </span>
                 <div>
                   <div className="label-xs" style={{ color: getSubjectStyle(subject.name).accent }}>{subject.name}</div>
-                  <h3 className="workspace-card-title">{loading ? 'Loading...' : `${subject.totalChapters} Chapters`}</h3>
+                  <h3 className="workspace-card-title">{loading ? 'Loading...' : getUnitLabel(subject.totalChapters, subject.name, subject.id)}</h3>
                 </div>
               </div>
               <span className="state-chip state-chip--neutral subject-accuracy-chip">{loading ? '...' : `${subject.accuracy}% accuracy`}</span>
@@ -216,7 +245,7 @@ function StudentDashboard({ firstName, user }) {
               <div className="progress-bar-bg">
                 <div className="progress-bar-fill" style={{ '--fill': `${subject.accuracy}%`, width: `${subject.accuracy}%`, background: getSubjectStyle(subject.name).progress }} />
               </div>
-              <Link className="btn btn-primary btn-sm" to={`/mcqs/${subject.id}`}>Continue Practice</Link>
+              <Link className="btn btn-primary btn-sm" to={subject.id === 'flps' ? '/flps' : subject.id === 'past-papers' ? '/past-papers' : `/mcqs/${subject.id}`}>Continue Practice</Link>
             </div>
           </article>
         ))}
@@ -369,7 +398,7 @@ function TeacherDashboard() {
                     </span>
                     <div>
                       <div className="label-xs" style={{ color: style.accent }}>{subject.name}</div>
-                      <h4>{subject.totalChapters} Chapters</h4>
+                      <h4>{getUnitLabel(subject.totalChapters, subject.name, subject.id)}</h4>
                     </div>
                   </div>
                   <div className="metric-row">
@@ -392,7 +421,7 @@ function TeacherDashboard() {
               <div key={item.subject} className="course-manage-card" style={{ padding: '18px' }}>
                 <div className="workspace-card-title-row">
                   <strong>{item.subject}</strong>
-                  <span className="state-chip state-chip--neutral">{item.chapters} chapters</span>
+                  <span className="state-chip state-chip--neutral">{getUnitLabel(item.chapters, item.subject)}</span>
                 </div>
                 <div className="metric-row"><span>{item.uploadedBy}</span><strong>{item.mcqs} MCQs</strong></div>
               </div>

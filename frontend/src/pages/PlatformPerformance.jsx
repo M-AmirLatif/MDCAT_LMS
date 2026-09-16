@@ -284,16 +284,21 @@ export default function PlatformPerformance() {
             </div>
           </div>
           <div className="workspace-card-body list-stack">
-            {visibleSubjects.map((subject) => (
-              <div key={`${subject.id}-coverage`} className="timeline-item">
-                <div className="timeline-dot" style={{ background: subject.name === 'Biology' ? 'var(--teal)' : subject.name === 'Chemistry' ? 'var(--purple)' : subject.name === 'Physics' ? 'var(--indigo)' : 'var(--amber)' }} />
-                <div>
-                  <strong>{subject.name}</strong>
-                  <p>{subject.totalChapters || 0} chapters - {subject.totalMcqs || 0} MCQs uploaded</p>
-                  <small>{subject.totalMcqs > 0 ? 'Live bank data' : 'No uploads yet'}</small>
+            {visibleSubjects.map((subject) => {
+              const isPaper = subject.id === 'past-papers' || subject.id === 'flps' || String(subject.name).toLowerCase().includes('paper')
+              const unitCount = subject.totalChapters || 0
+              const unitText = isPaper ? (unitCount === 1 ? 'paper' : 'papers') : (unitCount === 1 ? 'chapter' : 'chapters')
+              return (
+                <div key={`${subject.id}-coverage`} className="timeline-item">
+                  <div className="timeline-dot" style={{ background: subject.name === 'Biology' ? 'var(--teal)' : subject.name === 'Chemistry' ? 'var(--purple)' : subject.name === 'Physics' ? 'var(--indigo)' : subject.name === 'Logical Reasoning' ? '#06b6d4' : subject.name === 'FLPs' ? '#8b5cf6' : 'var(--amber)' }} />
+                  <div>
+                    <strong>{subject.name}</strong>
+                    <p>{unitCount} {unitText} - {subject.totalMcqs || 0} MCQs uploaded</p>
+                    <small>{subject.totalMcqs > 0 ? 'Live bank data' : 'No uploads yet'}</small>
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
         )}

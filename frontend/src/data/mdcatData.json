@@ -27,6 +27,13 @@
       "theme": "orange",
       "icon": "book",
       "description": "Chapter based English MCQ practice will appear here after teachers add real MDCAT content."
+    },
+    {
+      "id": "logical-reasoning",
+      "name": "Logical Reasoning",
+      "theme": "cyan",
+      "icon": "lightbulb",
+      "description": "Chapter and section based Logical Reasoning MCQ practice for MDCAT."
     }
   ],
   "chapters": [],

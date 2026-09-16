@@ -7,6 +7,8 @@ const SUBJECTS = [
   { id: 'chemistry', name: 'Chemistry' },
   { id: 'physics', name: 'Physics' },
   { id: 'english', name: 'English' },
+  { id: 'logical-reasoning', name: 'Logical Reasoning' },
+  { id: 'flps', name: 'FLPs' },
   { id: 'past-papers', name: 'Past Papers' },
 ]
 
@@ -14,6 +16,10 @@ const SUBJECT_NAME_BY_KEY = new Map(
   SUBJECTS.flatMap((subject) => [
     [subject.id, subject.name],
     [subject.name.toLowerCase(), subject.name],
+    [subject.name.toLowerCase().replace(/\s+/g, '-'), subject.name],
+    ...(subject.id === 'flps' ? [['flp', 'FLPs'], ['flps', 'FLPs'], ["flp's", 'FLPs'], ['full length papers', 'FLPs'], ['full-length-papers', 'FLPs']] : []),
+    ...(subject.id === 'logical-reasoning' ? [['logical reasoning', 'Logical Reasoning'], ['logical-reasoning', 'Logical Reasoning'], ['logicalreasoning', 'Logical Reasoning']] : []),
+    ...(subject.id === 'past-papers' ? [['past papers', 'Past Papers'], ['past-papers', 'Past Papers'], ['pastpapers', 'Past Papers']] : []),
   ]),
 )
 
@@ -112,7 +118,15 @@ const buildPerformanceData = (subjectSummary = [], sessions = []) => {
     const summaryMatch = subjectSummary.find((item) => {
       const itemId = String(item.id || item._id || '').toLowerCase()
       const itemName = String(item.name || item.subject || '').toLowerCase()
-      return itemId === subject.id || itemName === subject.name.toLowerCase()
+      const subjectId = subject.id.toLowerCase()
+      const subjectName = subject.name.toLowerCase()
+      return (
+        itemId === subjectId ||
+        itemName === subjectName ||
+        (subject.id === 'flps' && (itemId === 'flps' || itemId === 'full-length-papers' || itemName === 'flps' || itemName === 'full length papers')) ||
+        (subject.id === 'logical-reasoning' && (itemId === 'logical-reasoning' || itemName === 'logical reasoning')) ||
+        (subject.id === 'past-papers' && (itemId === 'past-papers' || itemName === 'past papers'))
+      )
     })
     const stats = sessionStats.get(subject.name)
     const accuracy = stats?.weight ? Math.round((stats.weightedCorrect / stats.weight) * 100) : 0

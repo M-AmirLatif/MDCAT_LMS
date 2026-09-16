@@ -1,4 +1,4 @@
-const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers', 'FLPs', 'Logical Reasoning']
+const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English', 'Logical Reasoning', 'FLPs', 'Past Papers']
 
 const normalizeSubject = (value) => {
   const raw = String(value || '').trim().toLowerCase().replace(/-/g, ' ')

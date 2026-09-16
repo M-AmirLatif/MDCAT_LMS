@@ -37,6 +37,12 @@ const SUBJECTS = [
     progress: 'linear-gradient(135deg,#F59E0B,#FBB040)',
   },
   {
+    id: 'logical-reasoning',
+    name: 'Logical Reasoning',
+    accent: '#06B6D4',
+    progress: 'linear-gradient(135deg,#06B6D4,#3B82F6)',
+  },
+  {
     id: 'flps',
     name: 'Full Length Papers',
     shortName: 'FLPs',
