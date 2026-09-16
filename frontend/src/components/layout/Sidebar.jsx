@@ -199,22 +199,35 @@ export default function Sidebar({
                 {section.items.map((item) => {
                   const isPastPapersPath =
                     currentPath === '/mcqs/past-papers' ||
-                    currentPath.startsWith('/mcqs/past-papers/')
+                    currentPath.startsWith('/mcqs/past-papers/') ||
+                    currentPath === '/past-papers' ||
+                    currentPath.startsWith('/past-papers/')
+                  const isFlpsPath =
+                    currentPath === '/mcqs/flps' ||
+                    currentPath.startsWith('/mcqs/flps/') ||
+                    currentPath === '/flps' ||
+                    currentPath.startsWith('/flps/')
 
                   let active = false
                   if (item.key === 'past-papers' || item.path === '/mcqs/past-papers') {
                     active = isPastPapersPath
-                  } else if (isPastPapersPath && (item.path === '/teacher/mcqs' || item.path === '/mcqs')) {
+                  } else if (item.key === 'flps' || item.path === '/mcqs/flps') {
+                    active = isFlpsPath
+                  } else if (
+                    (isPastPapersPath || isFlpsPath) &&
+                    (item.path === '/teacher/mcqs' || item.path === '/mcqs')
+                  ) {
                     active = false
                   } else {
                     active =
                       currentPath === item.path ||
                       (item.path !== '/dashboard' &&
                         currentPath.startsWith(item.path) &&
-                        !(item.path === '/mcqs' && isPastPapersPath)) ||
+                        !(item.path === '/mcqs' && (isPastPapersPath || isFlpsPath))) ||
                       (item.path === '/teacher/mcqs' &&
                         currentPath.startsWith('/mcqs') &&
-                        !isPastPapersPath) ||
+                        !isPastPapersPath &&
+                        !isFlpsPath) ||
                       (item.path === '/teacher/students' && currentPath.startsWith('/test-review')) ||
                       (item.path === '/performance' && currentPath.startsWith('/test-review'))
                   }

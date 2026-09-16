@@ -99,6 +99,11 @@ function ScrollToTop() {
 import { CourseSelection as LazyMcqCourseSelection, ChapterList as LazyMcqChapterList, McqList as LazyMcqMcqList, QuizAttempt as LazyMcqQuizAttempt, QuizResult as LazyMcqQuizResult } from './pages/McqModule'
 import { AdminCoursesPage as LazyAdminCoursesPage, AdminStudentsPage as LazyAdminStudentsPage, AdminTeachersPage as LazyAdminTeachersPage, AdminAnnouncementsPage as LazyAdminAnnouncementsPage, AdminReportsPage as LazyAdminReportsPage, AdminSettingsPage as LazyAdminSettingsPage, TeacherStudentsPage as LazyTeacherStudentsPage, TeacherAnalyticsPage as LazyTeacherAnalyticsPage } from './pages/PlatformRolePages'
 
+function PastPaperRedirect() {
+  const { chapterId } = useParams()
+  return <Navigate to={`/mcqs/past-papers/${chapterId}`} replace />
+}
+
 function PastPaperAttemptRedirect() {
   const { chapterId } = useParams()
   return <Navigate to={`/mcqs/past-papers/${chapterId}/attempt`} replace />
@@ -107,6 +112,23 @@ function PastPaperAttemptRedirect() {
 function PastPaperResultRedirect() {
   const { chapterId } = useParams()
   return <Navigate to={`/mcqs/past-papers/${chapterId}/result`} replace />
+}
+
+function FlpRedirect() {
+  const { chapterId } = useParams()
+  return <Navigate to={`/mcqs/flps/${chapterId}`} replace />
+}
+
+function FlpAttemptRedirect() {
+  const { chapterId } = useParams()
+  const location = useLocation()
+  return <Navigate to={`/mcqs/flps/${chapterId}/attempt${location.search}`} replace />
+}
+
+function FlpResultRedirect() {
+  const { chapterId } = useParams()
+  const location = useLocation()
+  return <Navigate to={`/mcqs/flps/${chapterId}/result${location.search}`} replace />
 }
 
 function App() {
@@ -145,14 +167,18 @@ function App() {
 
           {/* Dedicated SEO Answer Key & Solved Paper Landing Pages */}
           <Route path="/past-papers/nums-2026-answer-key" element={<NumsPaperKey2026 />} />
-          <Route path="/past-papers/:chapterId" element={<NumsPaperKey2026 />} />
+          <Route path="/past-papers/nums-mdcat-2026-paper" element={<NumsPaperKey2026 />} />
+          <Route path="/past-papers" element={<Navigate to="/mcqs/past-papers" replace />} />
+          <Route path="/past-papers/:chapterId" element={<PastPaperRedirect />} />
           <Route path="/past-papers/:chapterId/attempt" element={<PastPaperAttemptRedirect />} />
           <Route path="/past-papers/:chapterId/result" element={<PastPaperResultRedirect />} />
 
           {/* FLPs Convenience Redirects */}
           <Route path="/flps" element={<Navigate to="/mcqs/flps" replace />} />
           <Route path="/flp" element={<Navigate to="/mcqs/flps" replace />} />
-          <Route path="/flps/:chapterId" element={<Navigate to="/mcqs/flps/:chapterId" replace />} />
+          <Route path="/flps/:chapterId" element={<FlpRedirect />} />
+          <Route path="/flps/:chapterId/attempt" element={<FlpAttemptRedirect />} />
+          <Route path="/flps/:chapterId/result" element={<FlpResultRedirect />} />
 
           {/* Public & Student MCQ routes (Guests can browse chapters, practice & attempt tests without login) */}
           <Route element={<AppLayout />}>
