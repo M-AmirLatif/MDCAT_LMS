@@ -3354,19 +3354,20 @@ function QuizAttempt() {
   const topicIdParam = searchParams.get('topicId')
   const modeParam = isPastPapers ? null : searchParams.get('mode')
   const countParam = isPastPapers ? null : searchParams.get('count')
-  const isRandom = !isPastPapers && Boolean(modeParam === 'random' || Number(countParam) > 0)
+  const isRandom = !isPastPapers && !isFlp && Boolean(modeParam === 'random' || Number(countParam) > 0)
   const chapterAttemptId = [
     chapterId,
     topicIdParam ? `topic-${topicIdParam}` : null,
     testPart ? `part-${testPart}` : null,
     isRandom ? `random-${countParam || 'custom'}` : null,
+    isFlp && subjectsParam ? `subjects-${subjectsParam.toLowerCase()}` : null,
   ]
     .filter(Boolean)
     .join('-')
   const testPartQuery = (() => {
     const params = new URLSearchParams()
     if (topicIdParam) params.set('topicId', topicIdParam)
-    if (!isPastPapers) {
+    if (!isPastPapers && !isFlp) {
       if (testPart) params.set('testPart', testPart)
       if (modeParam) params.set('mode', modeParam)
       if (countParam) params.set('count', countParam)
@@ -3446,7 +3447,7 @@ function QuizAttempt() {
 
         // On a direct/uncached attempt URL, load questions in parallel with the
         // returning-student lookup instead of creating a two-request waterfall.
-        const questionsRequest = API.get(`/mcqs/${subject}/${chapterId}${testPartQuery}`, { skipQueryCache: isRandom })
+        const questionsRequest = API.get(`/mcqs/${subject}/${chapterId}${testPartQuery}`, { skipQueryCache: isRandom || isFlp })
           .catch((error) => ({ loadError: error }))
         if (!location.state?.retake && !isRandom && !activeDraft) {
           const previousAttempt = await API.get(`/mcqs/${subject}/${chapterId}/latest-attempt${testPartQuery}`)
@@ -3468,6 +3469,12 @@ function QuizAttempt() {
 
         if (!alive || !response) return
         let loadedMcqs = response.data.mcqs || []
+        if (isFlp && flpSelectedSubjects && flpSelectedSubjects.length > 0) {
+          const allowedLower = new Set(flpSelectedSubjects.map((s) => s.trim().toLowerCase()))
+          loadedMcqs = loadedMcqs.filter((m) =>
+            allowedLower.has(String(m.subject || 'Biology').trim().toLowerCase())
+          )
+        }
         if (isRandom && countParam && Number(countParam) > 0 && loadedMcqs.length > Number(countParam)) {
           loadedMcqs = [...loadedMcqs].sort(() => 0.5 - Math.random()).slice(0, Number(countParam))
         }

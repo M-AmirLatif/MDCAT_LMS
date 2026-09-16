@@ -1965,11 +1965,11 @@ exports.getMcqsByChapter = async (req, res) => {
       mcqs = allMcqs.filter((m) => allowedList.includes(String(m.subject || '').trim().toLowerCase()))
     }
 
-    if (isRandomMode) {
+    if (!isFlp && isRandomMode) {
       const shuffled = [...mcqs].sort(() => 0.5 - Math.random())
       const limit = randomCount > 0 ? Math.min(randomCount, mcqs.length) : Math.min(20, mcqs.length)
       mcqs = shuffled.slice(0, limit)
-    } else if (selectedTestPart) {
+    } else if (!isFlp && selectedTestPart) {
       mcqs = sliceMcqsForVirtualTest(allMcqs, selectedTestPart)
     }
 
