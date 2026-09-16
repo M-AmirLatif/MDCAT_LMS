@@ -229,7 +229,7 @@ export default function TestReview() {
                   <div className="review-compact-left">
                     <span className="review-compact-qnum">Question #{qNum}</span>
                     {item.subject && (
-                      <span className="flp-mcq-subject-badge" style={{ marginBottom: 0, marginLeft: '6px' }}>
+                      <span className={`flp-mcq-subject-badge flp-mcq-subject-badge--${String(item.subject).toLowerCase().replace(/[^a-z]/g, '')}`} style={{ marginBottom: 0, marginLeft: '6px' }}>
                         {item.subject}
                       </span>
                     )}

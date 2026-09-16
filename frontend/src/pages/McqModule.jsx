@@ -3842,7 +3842,7 @@ function QuizAttempt() {
         <div className="mcq-attempt-layout">
           <div className="mcq-question-card">
             {current.subject && (
-              <div className="flp-mcq-subject-badge">
+              <div className={`flp-mcq-subject-badge flp-mcq-subject-badge--${String(current.subject).toLowerCase().replace(/[^a-z]/g, '')}`}>
                 {current.subject}
               </div>
             )}
@@ -4318,7 +4318,7 @@ function ReviewSection({ title, items, savedStatus, toggleFlashcard, subjectName
               <div className="review-compact-left">
                 <span className="review-compact-qnum">Question #{qNum}</span>
                 {item.subject && (
-                  <span className="flp-mcq-subject-badge" style={{ marginBottom: 0, marginLeft: '6px' }}>
+                  <span className={`flp-mcq-subject-badge flp-mcq-subject-badge--${String(item.subject).toLowerCase().replace(/[^a-z]/g, '')}`} style={{ marginBottom: 0, marginLeft: '6px' }}>
                     {item.subject}
                   </span>
                 )}
