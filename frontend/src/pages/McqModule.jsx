@@ -3420,13 +3420,17 @@ function QuizAttempt() {
           activeDraft = null
         }
 
-        if (location.state?.retake || isRandom) {
-          clearStoredQuizResult(quizUserKey, subject, chapterAttemptId)
-          localStorage.removeItem(quizStorageKey)
-          activeDraft = null
-        } else if (!activeDraft) {
+        // Consume retake flag from history so future refreshes (F5) don't reset the ongoing test
+        if (location.state?.retake) {
+          try {
+            window.history.replaceState({ ...window.history.state, usr: { ...(location.state || {}), retake: false } }, '')
+          } catch {}
+        }
+
+        // If there is NO active draft, check if previous result exists to redirect to result
+        if (!activeDraft) {
           const storedResult = readStoredQuizResult(quizUserKey, subject, chapterAttemptId)
-          if (storedResult) {
+          if (storedResult && !location.state?.retake) {
             navigate(`/mcqs/${subject}/${chapterId}/result${testPartQuery}`, {
               replace: true,
               state: { result: storedResult },
@@ -3435,8 +3439,8 @@ function QuizAttempt() {
           }
         }
 
-        // Fast path: If preloaded random MCQs were passed from Chapter Hub, initialize instantly!
-        if (isRandom && Array.isArray(location.state?.preloadedMcqs) && location.state.preloadedMcqs.length > 0) {
+        // Fast path: If preloaded random MCQs were passed from Chapter Hub, initialize or restore instantly!
+        if (isRandom && Array.isArray(location.state?.preloadedMcqs) && location.state.preloadedMcqs.length > 0 && !activeDraft) {
           const preloaded = location.state.preloadedMcqs
           const defaultRemaining = preloaded.length * 50
           const now = Date.now()
@@ -3481,7 +3485,7 @@ function QuizAttempt() {
             allowedLower.has(String(m.subject || 'Biology').trim().toLowerCase())
           )
         }
-        if (isRandom && countParam && Number(countParam) > 0 && loadedMcqs.length > Number(countParam)) {
+        if (isRandom && countParam && Number(countParam) > 0 && loadedMcqs.length > Number(countParam) && !activeDraft) {
           loadedMcqs = [...loadedMcqs].sort(() => 0.5 - Math.random()).slice(0, Number(countParam))
         }
         const defaultRemaining = loadedMcqs.length * 50
@@ -3505,36 +3509,50 @@ function QuizAttempt() {
             loadedIdSet.has(String(mcqId)),
           ),
         )
-        const canRestore =
+
+        // If savedDraft has mcqIds, preserve the EXACT order of questions from the draft!
+        if (savedDraft && savedIds.length > 0) {
+          const mcqMap = new Map(loadedMcqs.map((m) => [String(m._id), m]))
+          const reordered = savedIds.map((id) => mcqMap.get(String(id))).filter(Boolean)
+          if (reordered.length === loadedMcqs.length) {
+            loadedMcqs = reordered
+          }
+        }
+
+        const canRestore = Boolean(
           savedDraft &&
           loadedIds.length > 0 &&
-          (Object.keys(savedAnswers).length > 0 ||
+          (
+            Number(savedDraft.currentIndex) >= 0 ||
+            Object.keys(savedAnswers).length > 0 ||
             Object.values(savedSkipped).some(Boolean) ||
-            (savedIds.length > 0 &&
-              savedIds.every((id) => loadedIdSet.has(id))))
+            Number(savedDraft.remaining) > 0 ||
+            savedIds.length > 0
+          )
+        )
         const now = Date.now()
-        const savedRemaining = Number(savedDraft?.remaining)
-        const remainingFromDraft = canRestore && Number.isFinite(savedRemaining)
-          ? Math.max(0, Math.min(defaultRemaining, Math.ceil(savedRemaining)))
-          : defaultRemaining
-        const startedAt = now
-        const expiresAt = now + remainingFromDraft * 1000
-        const remainingFromClock = remainingFromDraft
+        let remainingTime = defaultRemaining
+        if (canRestore && Number.isFinite(Number(savedDraft?.remaining))) {
+          if (savedDraft?.expiresAt && Number(savedDraft.expiresAt) > now) {
+            remainingTime = Math.max(0, Math.ceil((Number(savedDraft.expiresAt) - now) / 1000))
+          } else {
+            remainingTime = Math.max(0, Math.min(defaultRemaining, Math.ceil(Number(savedDraft.remaining))))
+          }
+        }
+        const startedAt = canRestore && savedDraft?.startedAt ? Number(savedDraft.startedAt) : now
+        const expiresAt = now + remainingTime * 1000
 
         setChapter(response.data.chapter)
         setMcqs(loadedMcqs)
-        setCurrentIndex(
-          canRestore
-            ? Math.min(
-                Number(savedDraft.currentIndex) || 0,
-                loadedMcqs.length - 1,
-              )
-            : 0,
-        )
+        const restoredIndex = canRestore && savedDraft?.currentIndex !== undefined
+          ? Math.max(0, Math.min(Number(savedDraft.currentIndex) || 0, loadedMcqs.length - 1))
+          : 0
+        currentIndexRef.current = restoredIndex
+        setCurrentIndex(restoredIndex)
         setAnswers(canRestore ? savedAnswers : {})
         setSkipped(canRestore ? savedSkipped : {})
         setQuizTiming({ startedAt, expiresAt })
-        setRemaining(remainingFromClock)
+        setRemaining(remainingTime)
       } catch (error) {
         if (alive)
           toast.error(getUserFriendlyErrorMessage(error, 'We could not load the quiz right now.'))

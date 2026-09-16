@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import MCQRenderer from '../components/MCQRenderer'
 import './MCQTest.css'
 
@@ -45,6 +46,7 @@ function getCorrectIndex(mcq) {
 }
 
 export default function MCQTest() {
+  const { user } = useAuth()
   const { courseId } = useParams()
   const [searchParams] = useSearchParams()
   const chapterId = searchParams.get('chapter')
@@ -52,9 +54,46 @@ export default function MCQTest() {
   const subject = getSubjectById(courseId)
   const chapter = getChapterById(courseId, chapterId)
   const mcqs = useMemo(() => getMcqsByChapter(courseId, chapterId), [chapterId, courseId])
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [answers, setAnswers] = useState({})
-  const [submitted, setSubmitted] = useState(false)
+
+  const quizUserKey = useMemo(() => user?.email || user?._id || user?.id || 'guest', [user])
+  const quizStorageKey = useMemo(() => `mcq-course-test-${quizUserKey}-${courseId}-${chapterId}`, [quizUserKey, courseId, chapterId])
+
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(quizStorageKey) || 'null')
+      return Number(saved?.currentIndex) || 0
+    } catch {
+      return 0
+    }
+  })
+  const [answers, setAnswers] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(quizStorageKey) || 'null')
+      return saved?.answers || {}
+    } catch {
+      return {}
+    }
+  })
+  const [submitted, setSubmitted] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(quizStorageKey) || 'null')
+      return Boolean(saved?.submitted)
+    } catch {
+      return false
+    }
+  })
+
+  useEffect(() => {
+    if (!mcqs.length) return
+    const draft = {
+      ownerKey: quizUserKey,
+      currentIndex,
+      answers,
+      submitted,
+      updatedAt: new Date().toISOString(),
+    }
+    localStorage.setItem(quizStorageKey, JSON.stringify(draft))
+  }, [answers, currentIndex, mcqs.length, quizStorageKey, quizUserKey, submitted])
 
   const currentMcq = mcqs[currentIndex]
   const answeredCount = Object.keys(answers).length
@@ -107,6 +146,13 @@ export default function MCQTest() {
 
   const submit = () => {
     setSubmitted(true)
+  }
+
+  const handleRetake = () => {
+    localStorage.removeItem(quizStorageKey)
+    setCurrentIndex(0)
+    setAnswers({})
+    setSubmitted(false)
   }
 
   const openReview = () => {
@@ -188,9 +234,10 @@ export default function MCQTest() {
               <div className="stat-tile stat-tile--coral"><span>Wrong</span><strong>{result.wrong}</strong></div>
               <div className="stat-tile stat-tile--purple"><span>Total</span><strong>{mcqs.length}</strong></div>
             </div>
-            <div className="inline-actions" style={{ marginTop: '20px', justifyContent: 'center' }}>
+            <div className="inline-actions" style={{ marginTop: '20px', justifyContent: 'center', gap: '10px' }}>
               <button className="btn btn-primary" type="button" onClick={openReview}>Open Detailed Review</button>
-              <Link className="btn btn-secondary" to={`/course/${subject.id}`}>Practice Another Chapter</Link>
+              <button className="btn btn-secondary" type="button" onClick={handleRetake}>Retake Test</button>
+              <Link className="btn btn-ghost" to={`/course/${subject.id}`} onClick={() => localStorage.removeItem(quizStorageKey)}>Practice Another Chapter</Link>
             </div>
           </div>
         )}
