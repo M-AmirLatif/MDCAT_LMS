@@ -1708,12 +1708,25 @@ html:not([data-theme="dark"]) .flp-modal-header {
   border-bottom: 1px solid #e2e8f0;
 }
 
+html[data-theme="dark"] .flp-modal-header > div,
+html[data-theme="dark"] .flp-modal-title,
+html[data-theme="dark"] .flp-modal-subtitle,
+html[data-theme="dark"] .flp-modal-actions,
+html[data-theme="dark"] .flp-modal-header .label-xs,
+html:not([data-theme="dark"]) .flp-modal-header > div,
+html:not([data-theme="dark"]) .flp-modal-title,
+html:not([data-theme="dark"]) .flp-modal-subtitle,
+html:not([data-theme="dark"]) .flp-modal-actions,
+html:not([data-theme="dark"]) .flp-modal-header .label-xs,
 .flp-modal-header > div,
 .flp-modal-title,
-.flp-modal-subtitle {
+.flp-modal-subtitle,
+.flp-modal-actions,
+.flp-modal-header .label-xs {
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
+  background: transparent !important;
 }
 
 .flp-modal-title {

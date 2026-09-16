@@ -672,11 +672,11 @@ html[data-theme="dark"] .toggle-track:not(.active) {
 }
 
 html[data-theme="dark"] .modal,
+html[data-theme="dark"] .modal-content,
+html[data-theme="dark"] .modal-card,
 html[data-theme="dark"] .dialog,
 html[data-theme="dark"] .drawer,
-html[data-theme="dark"] [role="dialog"],
-html[data-theme="dark"] [class*="modal"],
-html[data-theme="dark"] [class*="drawer"] {
+html[data-theme="dark"] [role="dialog"] {
   background: #12102A !important;
   border: 1px solid rgba(255,255,255,0.08) !important;
 }
