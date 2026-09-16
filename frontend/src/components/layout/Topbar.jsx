@@ -61,7 +61,6 @@ export default function Topbar({ onMenuClick }) {
         </button>
 
         <div className="topbar-heading">
-          <div className="label-xs">MDCAT LMS</div>
           <h2 className="topbar-page-title">{title}</h2>
         </div>
       </div>

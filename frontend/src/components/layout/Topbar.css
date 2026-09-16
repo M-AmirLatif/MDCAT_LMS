@@ -30,12 +30,6 @@
   min-width: 0;
 }
 
-.topbar-heading .label-xs {
-  color: var(--purple);
-  font-weight: 500;
-  letter-spacing: 0.12em;
-}
-
 .topbar-toggle {
   display: none;
   width: 44px;
@@ -384,11 +378,6 @@
     min-width: 0;
   }
 
-  .topbar-heading .label-xs {
-    font-size: 10px;
-    line-height: 1.1;
-  }
-
   .topbar-page-title {
     font-size: 18px;
     line-height: 1.1;
@@ -423,10 +412,6 @@
 /* ═══ Dark Mode ═══ */
 [data-theme="dark"] .topbar-search-icon {
   color: rgba(255, 255, 255, 0.30);
-}
-
-[data-theme="dark"] .topbar-heading .label-xs {
-  color: #A590FF;
 }
 
 /* ═══ Accessibility: Focus Rings ═══ */
