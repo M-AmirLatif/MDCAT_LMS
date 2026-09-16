@@ -188,12 +188,9 @@ export function sanitizeLatexForKaTeX(expr) {
   res = res.replace(/\\sqrt\s*\(([^)]+)\)/g, (m, inner) => {
     if (inner.includes('/')) {
       const parts = inner.split('/')
-      return `\\sqrt{\\frac{${parts[0].trim()}}{${parts[1].trim()}}}`
+      return `\\sqrt{\\frac{${cleanAlgebraicTerm(parts[0])}}{${cleanAlgebraicTerm(parts[1])}}}`
     }
-    return `\\sqrt{${inner}}`
-  })
-  res = res.replace(/\\sqrt\{([^}]+)\/([^}]+)\}/g, (m, num, den) => {
-    return `\\sqrt{\\frac{${num.trim()}}{${den.trim()}}}`
+    return `\\sqrt{${cleanAlgebraicTerm(inner)}}`
   })
   return res.trim()
 }
@@ -337,9 +334,8 @@ function cleanGreekAndConstants(str) {
 }
 
 function cleanAlgebraicTerm(term) {
-  let res = cleanGreekAndConstants(term.trim())
-  res = res.replace(/(?:√|\\sqrt)\s*(?:\(([^)]+)\)|\{([^}]+)\})/g, (m, p, b) => `\\sqrt{${cleanAlgebraicTerm(p || b)}}`)
-  res = res.replace(/√\s*([A-Za-z0-9]+)/g, '\\sqrt{$1}')
+  let res = cleanGreekAndConstants(String(term || '').trim())
+  res = res.replace(/√\s*([A-Za-z0-9]+)/g, (m, tok) => `\\sqrt{${tok}}`)
   res = res.replace(/[²]/g, '^2').replace(/[³]/g, '^3').replace(/[¹]/g, '^1')
   res = res.replace(/\^([A-Za-z0-9+\-]+)/g, '^{$1}')
   return res.trim()
@@ -348,13 +344,26 @@ function cleanAlgebraicTerm(term) {
 export function formatFormulasInText(text) {
   if (!text) return ''
 
-  let str = String(text)
+  let str = String(text).trim()
 
-  // 0a. Unescape escaped dollar signs: \$ -> $, \\$ -> $
+  // 0a. Clean AI citations and standard LaTeX wrappers \(...\) -> $...$ and \[...\] -> $$...$$
+  str = cleanAiCitations(str)
+
+  // 0b. Unescape escaped dollar signs: \$ -> $, \\$ -> $
   str = str.replace(/\\+(\$)/g, '$1')
 
-  // 0b. Clean double-escaped commands: \\times -> \times, \\Delta -> \Delta
-  str = str.replace(/\\\\([A-Za-z]+)/g, '\\$1')
+  // 0c. Clean double-escaped commands: \\times -> \times, \\Delta -> \Delta
+  str = str.replace(/\\\\([A-Za-z]+)/g, (m, name) => `\\${name}`)
+
+  // 0d. Normalize unicode √ to \sqrt
+  str = str.replace(/√/g, '\\sqrt ')
+
+  // 0e. Strip redundant outer parens like "(\sqrt{W/k})" or "(\sqrt{\frac{W}{k}})" or "(\frac{W}{k})"
+  str = mapNonMath(str, (s) => {
+    let res = s
+    res = res.replace(/^\s*\(\s*(\\sqrt\{[^}]+\}|\\sqrt\([^)]+\)|\\frac\{[^}]+\}\{[^}]+\})\s*\)\s*$/, '$1')
+    return res
+  })
 
   // 1. Convert temperature: e.g. "+273.16°C", "-273.16°C", "2°C", "0°C", "2^\circ C"
   str = str.replace(/(?<![A-Za-z0-9])([+-]?\d+(?:\.\d+)?)\s*(?:°|(?:\^\\circ|\^o|\^0))\s*([CFK])\b/g, (m, val, unit) => {
@@ -519,36 +528,75 @@ export function formatFormulasInText(text) {
     }
   }
 
-  // 13. Grouped square roots in non-math text:
-  // e.g. "√(W/k)", "√(W / k)", "√{W/k}", "\sqrt(W/k)", "\sqrt{W/k}", "√(2gh)"
+  // 13. Grouped square roots & textual root variations in non-math text:
+  // e.g. "√(W/k)", "√(W / k)", "√{W/k}", "\sqrt(W/k)", "\sqrt{W/k}", "underoot(W/k)", "under root (W/k)", "sqrt(W/k)", "underoot 2gh", "\sqrt{\frac{W}{k}}"
   str = mapNonMath(str, (s) => {
     let res = s
-    res = res.replace(/(?:√|\\sqrt)\s*(?:\(([^)]+)\)|\{([^}]+)\})/g, (m, paren, brace) => {
-      const inner = (paren || brace).trim()
+    res = res.replace(/(?:\\|√)?(?:under\s*root|under-root|underoot|sqrt|root)\s*(?:\{\s*\\frac\s*\{([^}]+)\}\s*\{([^}]+)\}\s*\}|\\frac\s*\{([^}]+)\}\s*\{([^}]+)\}|\{([^}]+)\}|\(([^)]+)\))/gi, (m, nf1, df1, nf2, df2, brace, paren) => {
+      const num = nf1 || nf2
+      const den = df1 || df2
+      if (num && den) {
+        return `$\\sqrt{\\frac{${cleanAlgebraicTerm(num)}}{${cleanAlgebraicTerm(den)}}}$`
+      }
+      const inner = (brace || paren || '').trim()
       if (inner.includes('/')) {
         const parts = inner.split('/')
         if (parts.length === 2) {
-          const cleanNum = cleanAlgebraicTerm(parts[0].trim())
-          const cleanDen = cleanAlgebraicTerm(parts[1].trim())
-          return `$\\sqrt{\\frac{${cleanNum}}{${cleanDen}}}$`
+          return `$\\sqrt{\\frac{${cleanAlgebraicTerm(parts[0])}}{${cleanAlgebraicTerm(parts[1])}}}$`
         }
       }
       return `$\\sqrt{${cleanAlgebraicTerm(inner)}}$`
     })
+
+    res = res.replace(/\b(?:under\s*root|under-root|underoot)\s+([A-Za-z0-9/]+)/gi, (m, inner) => {
+      const trimmed = inner.trim()
+      if (trimmed.includes('/')) {
+        const parts = trimmed.split('/')
+        return `$\\sqrt{\\frac{${cleanAlgebraicTerm(parts[0])}}{${cleanAlgebraicTerm(parts[1])}}}$`
+      }
+      return `$\\sqrt{${cleanAlgebraicTerm(trimmed)}}$`
+    })
+
     return res
   })
 
-  // 14. Algebraic & Numerical fractions: e.g. "0.693/T", "T/0.693", "1/T^2", "1/T²", "Q^2/(4πε0a^2)", "-Q^2/(4πε0a^2)", "1/(4πε0)", "mv^2/r", "1/√2"
-  const fracRegex = /(?<![A-Za-z0-9$.])([+-]?)(?:\(([^)]+)\)|([A-Za-z0-9^_{}\\.πελθμΔσωραβγ²³√]+(?:\([^)]+\))?))\s*\/\s*(?:\(([^)]+)\)|([A-Za-z0-9^_{}\\.πελθμΔσωραβγ²³√]+(?:\([^)]+\))?))(?![A-Za-z0-9$.])/g
+  // 14. Handle power of half / square root notation:
+  // e.g. "(W/k)^(1/2)", "(W/k)^1/2", "(W/k)^{1/2}", "(W/k)^0.5", "(W/k)^½"
+  str = mapNonMath(str, (s) => {
+    let res = s
+    res = res.replace(/\(([^)]+)\)\s*\^\s*(?:\(?\s*1\s*\/\s*2\s*\)?|\{\s*1\s*\/\s*2\s*\}|0\.5|½)/g, (m, inner) => {
+      const clean = inner.trim()
+      if (clean.includes('/')) {
+        const parts = clean.split('/')
+        return `$\\sqrt{\\frac{${cleanAlgebraicTerm(parts[0])}}{${cleanAlgebraicTerm(parts[1])}}}$`
+      }
+      return `$\\sqrt{${cleanAlgebraicTerm(clean)}}$`
+    })
+    // Single variable power of half: e.g. "T^(1/2)", "T^{1/2}", "T^1/2", "T^½"
+    res = res.replace(/(?<![A-Za-z0-9])([A-Za-z0-9_]+)\s*\^\s*(?:\(?\s*1\s*\/\s*2\s*\)?|\{\s*1\s*\/\s*2\s*\}|0\.5|½)(?![A-Za-z0-9])/g, (m, v) => {
+      return `$\\sqrt{${v}}$`
+    })
+    // Single variable power of fraction: e.g. "T^(1/3)", "T^{2/3}"
+    res = res.replace(/(?<![A-Za-z0-9])([A-Za-z0-9_]+)\s*\^\s*(?:\(\s*(\d+)\s*\/\s*(\d+)\s*\)|\{\s*(\d+)\s*\/\s*(\d+)\s*\})/g, (m, v, n1, d1, n2, d2) => {
+      const num = n1 || n2
+      const den = d1 || d2
+      return `$${v}^{\\frac{${num}}{${den}}}$`
+    })
+    return res
+  })
+
+  // 15. Algebraic & Numerical fractions: e.g. "0.693/T", "T/0.693", "1/T^2", "1/T²", "Q^2/(4πε0a^2)", "-Q^2/(4πε0a^2)", "1/(4πε0)", "mv^2/r", "1/√2"
+  const fracRegex = /(?<![A-Za-z0-9$.])([+-]?)(?:\(([^)]+)\)|([A-Za-z0-9^_.πελθμΔσωραβγ²³]+))\s*\/\s*(?:\(([^)]+)\)|([A-Za-z0-9^_.πελθμΔσωραβγ²³]+))(?![A-Za-z0-9$.])/g
   str = mapNonMath(str, (s) =>
     s.replace(fracRegex, (match, sign, numParen, numRaw, denParen, denRaw) => {
       const num = numParen || numRaw
       const den = denParen || denRaw
 
+      if (!num || !den) return match
       if (/^(?:and|or|yes|no|true|false|either|neither)$/i.test(num) || /^(?:and|or|yes|no|true|false|either|neither)$/i.test(den)) return match
       if (/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(match)) return match
 
-      const isMath = /[0-9^πελθμΔσωραβγ_²³\\√]/.test(match) || /^[A-Za-z]\/[A-Za-z]$/.test(match) || /^[A-Za-z0-9.]+\/[A-Za-z0-9.]+$/.test(match)
+      const isMath = /[0-9^πελθμΔσωραβγ_²³]/.test(match) || /^[A-Za-z]\/[A-Za-z]$/.test(match) || /^[A-Za-z0-9.]+\/[A-Za-z0-9.]+$/.test(match)
       if (!isMath) return match
 
       const cleanNum = cleanAlgebraicTerm(num)
@@ -559,16 +607,14 @@ export function formatFormulasInText(text) {
     })
   )
 
-  // 15. Standalone single-token square roots: e.g. "√2", "√3", "√x", "√g"
+  // 16. Standalone single-token square roots: e.g. "\sqrt 2", "\sqrt 3", "\sqrt x", "\sqrt g"
   str = mapNonMath(str, (s) => {
     let res = s
-    res = res.replace(/√\s*([A-Za-z0-9]+)/g, (m, token) => {
-      return `$\\sqrt{${token}}$`
-    })
+    res = res.replace(/\\sqrt\s+([A-Za-z0-9]+)/g, (m, token) => `$\\sqrt{${token}}$`)
     return res
   })
 
-  // 16. Fractions where numerator or denominator is already math (e.g. 1/$\sqrt{\frac{W}{k}}$):
+  // 17. Fractions where numerator or denominator is already math (e.g. 1/$\sqrt{2}$):
   str = str.replace(/(?<![A-Za-z0-9$])([0-9A-Za-z]+)\s*\/\s*\$([^$]+)\$/g, (m, num, mathDen) => {
     return `$\\frac{${num}}{${mathDen}}$`
   })
@@ -576,9 +622,21 @@ export function formatFormulasInText(text) {
     return `$\\frac{${mathNum}}{${den}}$`
   })
 
-  let cleaned = cleanAiCitations(str)
+  // 18. Direct \frac in text that lacks dollar delimiters:
+  str = mapNonMath(str, (s) => {
+    let res = s
+    res = res.replace(/\\frac\s*\{([^}]+)\}\s*\{([^}]+)\}/g, (m, num, den) => `$\\frac{${num.trim()}}{${den.trim()}}$`)
+    return res
+  })
+
+  let cleaned = str
   cleaned = splitByMathDelimiters(cleaned).map((seg) => {
-    if (seg.type === 'math') return seg.content
+    if (seg.type === 'math') {
+      const isDisplay = seg.content.startsWith('$$')
+      const inner = seg.content.slice(isDisplay ? 2 : 1, isDisplay ? -2 : -1)
+      const sanitized = sanitizeLatexForKaTeX(inner)
+      return `${isDisplay ? '$$' : '$'}${sanitized}${isDisplay ? '$$' : '$'}`
+    }
     return unicodeToLatex(seg.content)
   }).join('')
 
@@ -606,6 +664,9 @@ export function formatFormulasInText(text) {
     }
     return `$${inner}$`
   })
+
+  // Strip outer parens if entire string is wrapped around a single math item: e.g. "($\sqrt{...}$)" -> "$\sqrt{...}$"
+  cleaned = cleaned.replace(/^\s*\(\s*(\$[^$]+\$|\$\$[^$]+\$\$)\s*\)\s*$/, '$1')
 
   if (/^\$\$[\s\S]+?\$\$$/.test(cleaned.trim()) || /^\$[^$]+?\$$/.test(cleaned.trim())) {
     return cleaned

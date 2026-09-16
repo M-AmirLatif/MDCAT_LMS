@@ -195,7 +195,7 @@
 
 .mcq-option-text .mcq-renderer > span,
 .mcq-option-text .mcq-renderer p,
-.mcq-option-card > span:last-child * {
+.mcq-option-card > span:last-child *:not(.katex):not(.katex *) {
   border: 0 !important;
   outline: 0 !important;
   box-shadow: none !important;
@@ -855,7 +855,7 @@ html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-car
 
   html body .mcq-attempt-layout .mcq-option-text,
   html body .mcq-attempt-layout .mcq-option-text .mcq-renderer,
-  html body .mcq-attempt-layout .mcq-option-text .mcq-renderer * {
+  html body .mcq-attempt-layout .mcq-option-text .mcq-renderer *:not(.katex):not(.katex *) {
     font-size: clamp(16px, 4.8vw, 19px) !important;
     line-height: 1.22 !important;
   }
@@ -997,7 +997,7 @@ html body .mcq-attempt-layout .mcq-question-card .mcq-option-card.mcq-option-car
 
   html body .mcq-attempt-layout .mcq-option-text,
   html body .mcq-attempt-layout .mcq-option-text .mcq-renderer,
-  html body .mcq-attempt-layout .mcq-option-text .mcq-renderer * {
+  html body .mcq-attempt-layout .mcq-option-text .mcq-renderer *:not(.katex):not(.katex *) {
     font-size: clamp(13px, 3.8vw, 15px) !important;
     line-height: 1.14 !important;
   }

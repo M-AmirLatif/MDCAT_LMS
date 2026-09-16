@@ -7093,4 +7093,134 @@ html:not([data-theme="dark"]) [class*="badge--logic"],
   box-shadow: 0 2px 8px rgba(225, 29, 72, 0.18) !important;
 }
 
+/* ==========================================================================
+   KATEX MASTER RENDERING & INTEGRITY SHIELD
+   Ensures fraction lines, square roots, subscripts, superscripts, and
+   math fonts render with mathematical accuracy and no text overlaps.
+   ========================================================================== */
+.katex,
+.katex * {
+  box-sizing: content-box !important;
+}
+
+.katex {
+  font-size: 1.15em !important;
+  line-height: 1.2 !important;
+  text-rendering: auto !important;
+  white-space: nowrap !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  border: none !important;
+}
+
+.katex .katex-html {
+  display: inline-block !important;
+  line-height: 1.2 !important;
+  position: relative !important;
+}
+
+.katex .base {
+  display: inline-block !important;
+  line-height: 1.2 !important;
+}
+
+.katex .vlist-t {
+  display: inline-table !important;
+  table-layout: fixed !important;
+  border-collapse: collapse !important;
+}
+
+.katex .vlist-r {
+  display: table-row !important;
+}
+
+.katex .vlist {
+  display: table-cell !important;
+  vertical-align: bottom !important;
+  position: relative !important;
+  line-height: 0 !important;
+}
+
+.katex .vlist > span {
+  display: block !important;
+  height: 0 !important;
+  position: relative !important;
+  line-height: 0 !important;
+}
+
+.katex .vlist > span > span {
+  display: inline-block !important;
+  line-height: normal !important;
+}
+
+.katex .vlist > span > .pstrut {
+  overflow: hidden !important;
+  width: 0 !important;
+  height: 3em !important;
+  display: inline-block !important;
+}
+
+.katex .mfrac {
+  display: inline-block !important;
+  vertical-align: middle !important;
+}
+
+.katex .mfrac .frac-line {
+  display: inline-block !important;
+  width: 100% !important;
+  border-bottom-style: solid !important;
+  border-bottom-width: 0.08em !important;
+  border-top: 0 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  box-sizing: content-box !important;
+  margin: 0 !important;
+  height: 0 !important;
+}
+
+.katex .sqrt {
+  display: inline-block !important;
+  vertical-align: middle !important;
+}
+
+.katex .sqrt > .root {
+  margin-left: 0.27777778em !important;
+  margin-right: -0.55555556em !important;
+}
+
+.katex .sqrt .sqrt-sign {
+  position: relative !important;
+}
+
+.katex .sqrt .sqrt-line {
+  display: inline-block !important;
+  width: 100% !important;
+  border-top-style: solid !important;
+  border-top-width: 0.08em !important;
+  border-bottom: 0 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  box-sizing: content-box !important;
+}
+
+.katex .sqrt svg {
+  display: block !important;
+  position: static !important;
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+.katex .sizing.reset-size6.size3 {
+  font-size: 0.7em !important;
+}
+
+.katex .sizing.reset-size3.size1 {
+  font-size: 0.7em !important;
+}
+
+.katex .sizing.reset-size6.size4 {
+  font-size: 0.8em !important;
+}
+
+
 
