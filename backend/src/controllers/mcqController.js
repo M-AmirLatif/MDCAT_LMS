@@ -1402,13 +1402,13 @@ exports.getSubjectSummary = async (req, res) => {
       { $match: { courseId: { $in: courseIds } } },
       {
         $group: {
-          _id: '$subject',
+          _id: '$courseId',
           totalMcqs: { $sum: 1 },
         },
       },
     ])
-    const mcqCountBySubject = new Map(
-      mcqCounts.map((item) => [item._id, item.totalMcqs]),
+    const mcqCountByCourseId = new Map(
+      mcqCounts.map((item) => [String(item._id), item.totalMcqs]),
     )
 
     const subjects = allowedSubjects.map((subject) => {
@@ -1418,7 +1418,7 @@ exports.getSubjectSummary = async (req, res) => {
         subject,
         courseId: course?._id || null,
         totalChapters: course?.chapters?.length || 0,
-        totalMcqs: mcqCountBySubject.get(subject) || 0,
+        totalMcqs: course ? (mcqCountByCourseId.get(String(course._id)) || 0) : 0,
       }
     })
 

@@ -374,7 +374,14 @@ function SubjectIcon({ subject }) {
       'M5 5.5A2.5 2.5 0 0 1 7.5 3H19v16H7.5A2.5 2.5 0 0 0 5 21.5v-16ZM9 7h6M9 11h6M9 15h4',
     'Past Papers':
       'M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2Z',
+    'Full Length Papers':
+      'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9 2 2 4-4',
+    FLPs:
+      'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9 2 2 4-4',
+    'Logical Reasoning':
+      'M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14h-2v-2h2zm0-4h-2V7h2z',
   }
+  const defaultPath = 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9 2 2 4-4'
   return (
     <svg
       viewBox="0 0 24 24"
@@ -384,7 +391,7 @@ function SubjectIcon({ subject }) {
       aria-hidden="true"
     >
       <path
-        d={paths[subject]}
+        d={paths[subject] || defaultPath}
         stroke="currentColor"
         strokeWidth="1.8"
         strokeLinecap="round"
@@ -503,13 +510,18 @@ function CourseSelection() {
   const teacherSubjects = getAssignedSubjectNames(user)
   const visibleBaseSubjects =
     user?.role === 'teacher' && teacherSubjects.length
-      ? SUBJECTS.filter((subject) => teacherSubjects.includes(subject.name) || subject.id === 'past-papers')
+      ? SUBJECTS.filter((subject) => teacherSubjects.includes(subject.name) || subject.id === 'past-papers' || subject.id === 'flps')
       : SUBJECTS
 
-  const merged = visibleBaseSubjects.map((subject) => ({
-    ...subject,
-    ...(subjects.find((item) => item.id === subject.id) || {}),
-  }))
+  const merged = visibleBaseSubjects.map((subject) => {
+    const fromApi = subjects.find(
+      (item) => item.id === subject.id || (subject.id === 'flps' && (item.id === 'flps' || item.subject === 'FLPs' || item.subject === 'Full Length Papers'))
+    ) || {}
+    return {
+      ...subject,
+      ...fromApi,
+    }
+  })
 
   return (
     <div className="workspace-page animate-fade-up">
@@ -555,16 +567,29 @@ function CourseSelection() {
               <span className="mcq-subject-icon">
                 <SubjectIcon subject={subject.name} />
               </span>
-              <div>
+              <div style={{ minWidth: 0, flex: 1 }}>
                 <div className="label-xs" style={{ color: subject.accent }}>
-                  {subject.name}
+                  {subject.shortName ? `${subject.shortName} • Full Test` : subject.name}
                 </div>
-                <h3 className="workspace-card-title">{subject.name}</h3>
+                <h3
+                  className="workspace-card-title"
+                  style={{
+                    whiteSpace: 'normal',
+                    overflow: 'visible',
+                    textOverflow: 'clip',
+                    lineHeight: 1.25,
+                    fontSize: subject.name.length > 15 ? '1.05rem' : '1.25rem',
+                    margin: '4px 0 0',
+                    wordBreak: 'break-word',
+                  }}
+                >
+                  {subject.name}
+                </h3>
               </div>
             </div>
             <div className="subject-stats-grid">
               <div>
-                <span>{subject.id === 'past-papers' ? 'Total Papers' : 'Total Chapters'}</span>
+                <span>{subject.id === 'past-papers' || subject.id === 'flps' ? 'Total Papers' : 'Total Chapters'}</span>
                 <strong>{subject.totalChapters || 0}</strong>
               </div>
               <div>
@@ -572,7 +597,9 @@ function CourseSelection() {
                 <strong>{subject.totalMcqs || 0}</strong>
               </div>
             </div>
-            <span className="btn btn-primary btn-sm">{subject.id === 'past-papers' ? 'Open Papers' : 'Open Chapters'}</span>
+            <span className="btn btn-primary btn-sm">
+              {subject.id === 'past-papers' ? 'Open Papers' : subject.id === 'flps' ? 'Open FLPs' : 'Open Chapters'}
+            </span>
           </Link>
         ))}
       </div>
