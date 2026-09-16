@@ -1035,11 +1035,11 @@ function ChapterList() {
               </span>
             </div>
             {isFlp && chapter.subjectCounts && (
-              <div className="flp-subject-chips" style={{ padding: '0 1.25rem 0.5rem', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+              <div className="flp-subject-chips">
                 {FLP_SUBJECTS.map((subj) => {
                   const count = chapter.subjectCounts[subj] || 0
                   return (
-                    <span key={subj} className="flp-subject-chip" style={{ fontSize: '0.75rem', padding: '2px 8px', borderRadius: '12px', background: 'rgba(168, 85, 247, 0.1)', color: '#c084fc', border: '1px solid rgba(168, 85, 247, 0.2)' }}>
+                    <span key={subj} className="flp-subject-chip">
                       {subj}: <strong>{count}</strong>
                     </span>
                   )
