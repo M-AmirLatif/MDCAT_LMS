@@ -47,8 +47,21 @@ const ENGLISH_STOPWORDS = new Set([
   'where', 'represents', 'force', 'charges', 'two', 'spontaneous', 'all', 'temperatures',
   'its', 'wavelength', 'speed', 'light', 'kinetic', 'acceleration', 'unit', 'units', 'both',
   'bond', 'bonds', 'orbital', 'orbitals', 'atom', 'atoms', 'molecule', 'molecules',
-  'ion', 'ions', 'higher', 'less', 'more', 'human', 'body', 'one', 'two', 'three', 'four'
+  'ion', 'ions', 'higher', 'less', 'more', 'human', 'body', 'one', 'two', 'three', 'four',
+  'waveform', 'wave', 'form', 'leads', 'another', 'stable', 'intermediate', 'collected', 'after',
+  'reaches', 'same', 'phase', 'point', 'first', 'second', 'catalyst', 'increases', 'decreases',
+  'remains', 'constant', 'zero', 'infinite', 'directly', 'inversely', 'proportional', 'described',
+  'complex', 'activated', 'best', 'none', 'above', 'below', 'neither', 'either', 'both',
+  'always', 'never', 'only', 'also', 'about', 'per', 'ratio', 'product', 'reactant', 'rate',
+  'time', 'mass', 'charge', 'field', 'potential', 'current', 'voltage', 'power', 'work',
+  'heat', 'entropy', 'enthalpy', 'equilibrium', 'forward', 'reverse', 'direction', 'effect'
 ])
+
+export function isEnglishWord(word) {
+  const clean = String(word || '').toLowerCase().replace(/[^a-z]/g, '')
+  if (clean.length >= 4) return true
+  return clean.length >= 2 && ENGLISH_STOPWORDS.has(clean)
+}
 
 const NUCLEIC_ACID_TERMS = [
   [/\bcdna\b/gi, 'cDNA'],
@@ -84,8 +97,31 @@ export function cleanAiCitations(text) {
       .replace(/\[cite:\s*\d+(?:\s*,\s*[\w\d]+)*\]/gi, '')
       .replace(/(?<=[a-zA-Z0-9\.\;\,])\s*\[\d+\](?=[\s\.\,\;\:\?\!]|$)/g, '')
       .replace(/【[^】]*?】/g, '')
-      .replace(/\\+\[([\s\S]*?)\\+\]/g, '$$$$$1$$$$')
-      .replace(/\\+\(([\s\S]*?)\\+\)/g, '$$$1$$')
+      .replace(/\\+\[([\s\S]*?)\\+\]/g, (m, inner) => {
+        const trimmed = inner.trim()
+        if (!/[\\^_{}=<>+*\/±×÷≈≠≤≥~]/.test(trimmed)) {
+          const words = trimmed.split(/\s+/)
+          if (words.length >= 2 && words.filter(isEnglishWord).length >= 1) return trimmed
+        }
+        return `$$${inner}$$`
+      })
+      .replace(/\\+\(([\s\S]*?)\\+\)/g, (m, inner) => {
+        const trimmed = inner.trim()
+        if (!/[\\^_{}=<>+*\/±×÷≈≠≤≥~]/.test(trimmed)) {
+          const words = trimmed.split(/\s+/)
+          if (words.length >= 2 || (words.length === 1 && isEnglishWord(words[0]))) return trimmed
+        }
+        const mixedMatch = trimmed.match(/^([A-Za-z\s,;:'"-]{3,}\s+)([\S\s]*)$/)
+        if (mixedMatch && !mixedMatch[1].includes('\\')) {
+          const prose = mixedMatch[1]
+          const math = mixedMatch[2]
+          const words = prose.trim().split(/\s+/)
+          if (words.length >= 2 || (words.length >= 1 && isEnglishWord(words[0]))) {
+            return prose + '$' + math + '$'
+          }
+        }
+        return `$${inner}$`
+      })
       .replace(/\\(Delta|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)([a-zA-Z0-9])/g, '\\$1 $2')
   )
 }
@@ -135,14 +171,7 @@ export function sanitizeLatexForKaTeX(expr) {
   res = res.replace(/\^\\(Delta|Sigma|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)\s*([a-zA-Z0-9])/g, '^{\\$1 $2}')
   res = res.replace(/\^\(([^)]+)\)/g, '^{$1}')
   res = res.replace(/\(([A-Za-z]{2,})\)/g, '(\\text{$1})')
-  res = res.replace(/([A-Za-z](?:_\{[^}]+\}|\d+)?)\/([A-Za-z](?:_\{[^}]+\}|\d+)?)/g, '\\frac{$1}{$2}')
-  res = res.replace(/(^|[\s=+\-*])(\d+)\/(\d+)([\s*]|$)/g, '$1\\frac{$2}{$3}$4')
   return res.trim()
-}
-
-function isEnglishWord(word) {
-  const clean = String(word || '').toLowerCase().replace(/[^a-z]/g, '')
-  return clean.length >= 2 && ENGLISH_STOPWORDS.has(clean)
 }
 
 function splitByMathDelimiters(text) {
@@ -285,6 +314,7 @@ function cleanGreekAndConstants(str) {
 
 function cleanAlgebraicTerm(term) {
   let res = cleanGreekAndConstants(term.trim())
+  res = res.replace(/[²]/g, '^2').replace(/[³]/g, '^3').replace(/[¹]/g, '^1')
   res = res.replace(/\^([A-Za-z0-9+\-]+)/g, '^{$1}')
   return res.trim()
 }
@@ -463,14 +493,17 @@ export function formatFormulasInText(text) {
     }
   }
 
-  // 13. Algebraic fractions: e.g. "Q^2/(4πε0a^2)", "-Q^2/(4πε0a^2)", "1/(4πε0)", "mv^2/r"
-  const fracRegex = /(?<![A-Za-z0-9$])([+-]?)(?:\(([^)]+)\)|([A-Za-z0-9^_{}\\]+))\s*\/\s*(?:\(([^)]+)\)|([A-Za-z0-9^_{}\\]+))(?![A-Za-z0-9$])/g
+  // 13. Algebraic & Numerical fractions: e.g. "0.693/T", "T/0.693", "1/T^2", "1/T²", "Q^2/(4πε0a^2)", "-Q^2/(4πε0a^2)", "1/(4πε0)", "mv^2/r"
+  const fracRegex = /(?<![A-Za-z0-9$.])([+-]?)(?:\(([^)]+)\)|([A-Za-z0-9^_{}\\.πελθμΔσωραβγ²³]+))\s*\/\s*(?:\(([^)]+)\)|([A-Za-z0-9^_{}\\.πελθμΔσωραβγ²³]+))(?![A-Za-z0-9$.])/g
   str = mapNonMath(str, (s) =>
     s.replace(fracRegex, (match, sign, numParen, numRaw, denParen, denRaw) => {
       const num = numParen || numRaw
       const den = denParen || denRaw
 
-      const isMath = /[\^πλεθμΔσωραβγ0-9_]/.test(match) && !/^[A-Za-z]\/[A-Za-z]$/.test(match)
+      if (/^(?:and|or|yes|no|true|false|either|neither)$/i.test(num) || /^(?:and|or|yes|no|true|false|either|neither)$/i.test(den)) return match
+      if (/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(match)) return match
+
+      const isMath = /[0-9^πελθμΔσωραβγ_²³\\]/.test(match) || /^[A-Za-z]\/[A-Za-z]$/.test(match) || /^[A-Za-z0-9.]+\/[A-Za-z0-9.]+$/.test(match)
       if (!isMath) return match
 
       const cleanNum = cleanAlgebraicTerm(num)
@@ -486,6 +519,27 @@ export function formatFormulasInText(text) {
     if (seg.type === 'math') return seg.content
     return unicodeToLatex(seg.content)
   }).join('')
+
+  // Clean any accidental English prose inside $ ... $
+  cleaned = cleaned.replace(/(?<!\$)\$([^$\n]+?)\$(?!\$)/g, (m, inner) => {
+    const trimmed = inner.trim()
+    if (!/[\\^_{}=<>+*\/±×÷≈≠≤≥~]/.test(trimmed)) {
+      const words = trimmed.split(/\s+/)
+      if (words.length >= 2 && words.filter(isEnglishWord).length >= 1) {
+        return trimmed
+      }
+    }
+    const mixedMatch = trimmed.match(/^([A-Za-z\s,;:'"-]{3,}\s+)([\S\s]*)$/)
+    if (mixedMatch && !mixedMatch[1].includes('\\')) {
+      const prose = mixedMatch[1]
+      const math = mixedMatch[2]
+      const words = prose.trim().split(/\s+/)
+      if (words.length >= 2 || (words.length >= 1 && isProseWord(words[0]))) {
+        return prose + '$' + math + '$'
+      }
+    }
+    return `$${inner}$`
+  })
 
   if (/^\$\$[\s\S]+?\$\$$/.test(cleaned.trim()) || /^\$[^$]+?\$$/.test(cleaned.trim())) {
     return cleaned
@@ -1002,9 +1056,21 @@ export function parseLatexText(text) {
       parts.push({ type: 'text', content: text.slice(last, match.index) })
     const raw = match[0]
     const isDisplay = raw.startsWith('$$')
+    const inner = raw.slice(isDisplay ? 2 : 1, isDisplay ? -2 : -1).trim()
+
+    // Safety check: If inner is purely prose (e.g. "a stable intermediate collected after reaction"), render as plain text!
+    if (!/[\\^_{}=<>+*\/±×÷≈≠≤≥~]/.test(inner)) {
+      const words = inner.split(/\s+/)
+      if (words.length >= 2 && words.filter(isEnglishWord).length >= 1) {
+        parts.push({ type: 'text', content: inner })
+        last = match.index + raw.length
+        continue
+      }
+    }
+
     parts.push({
       type: isDisplay ? 'block-math' : 'inline-math',
-      content: raw.slice(isDisplay ? 2 : 1, isDisplay ? -2 : -1),
+      content: inner,
     })
     last = match.index + raw.length
   }
