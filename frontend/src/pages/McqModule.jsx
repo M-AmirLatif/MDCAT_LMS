@@ -37,11 +37,26 @@ const SUBJECTS = [
     progress: 'linear-gradient(135deg,#F59E0B,#FBB040)',
   },
   {
+    id: 'flps',
+    name: 'Full Length Papers',
+    shortName: 'FLPs',
+    accent: '#8B5CF6',
+    progress: 'linear-gradient(135deg,#6366F1,#8B5CF6)',
+  },
+  {
     id: 'past-papers',
     name: 'Past Papers',
     accent: '#EC4899',
     progress: 'linear-gradient(135deg,#8B5CF6,#EC4899)',
   },
+]
+
+export const FLP_SUBJECTS = [
+  'Biology',
+  'Chemistry',
+  'Physics',
+  'English',
+  'Logical Reasoning',
 ]
 
 const getAssignedSubjectNames = (user) => {
@@ -68,6 +83,7 @@ const emptyMcqForm = {
   correctAnswer: 'A',
   explanation: '',
   explanationImages: [],
+  subject: 'Biology',
 }
 
 const letters = ['A', 'B', 'C', 'D']
@@ -564,7 +580,7 @@ function CourseSelection() {
   )
 }
 
-function ChapterForm({ initial, onSubmit, isPastPapers = false }) {
+function ChapterForm({ initial, onSubmit, isPastPapers = false, isFlp = false }) {
   const [name, setName] = useState(initial?.name || '')
   const [description, setDescription] = useState(initial?.description || '')
   const [saving, setSaving] = useState(false)
@@ -581,15 +597,32 @@ function ChapterForm({ initial, onSubmit, isPastPapers = false }) {
     }
   }
 
+  const fieldLabel = isFlp ? 'Full Length Paper Name' : isPastPapers ? 'Past Paper Name' : 'Chapter Name'
+  const fieldPlaceholder = isFlp
+    ? 'e.g. MDCAT FLP 1 - PMDC Pattern 2026'
+    : isPastPapers
+      ? 'e.g. MDCAT 2023, UHS 2022'
+      : 'Topic 1 - Cell Structure & Membrane'
+  const descPlaceholder = isFlp
+    ? 'Official 180 MCQs full-length MDCAT paper covering all 5 subjects.'
+    : isPastPapers
+      ? 'Official MDCAT past paper with explanations.'
+      : 'Short chapter description for students.'
+  const buttonLabel = saving
+    ? isFlp ? 'Saving FLP Paper...' : isPastPapers ? 'Saving Past Paper...' : 'Saving Chapter...'
+    : initial?.id
+      ? isFlp ? 'Update FLP Paper' : isPastPapers ? 'Update Past Paper' : 'Update Chapter'
+      : isFlp ? 'Save FLP Paper' : isPastPapers ? 'Save Past Paper' : 'Save Chapter'
+
   return (
     <form className="form-shell" onSubmit={handleSubmit}>
       <div className="floating-field">
-        <label htmlFor="chapter-name">{isPastPapers ? 'Past Paper Name' : 'Chapter Name'}</label>
+        <label htmlFor="chapter-name">{fieldLabel}</label>
         <input
           id="chapter-name"
           value={name}
           onChange={(event) => setName(event.target.value)}
-          placeholder={isPastPapers ? 'e.g. MDCAT 2023, UHS 2022' : 'Topic 1 - Cell Structure & Membrane'}
+          placeholder={fieldPlaceholder}
           disabled={saving}
           required
         />
@@ -601,16 +634,12 @@ function ChapterForm({ initial, onSubmit, isPastPapers = false }) {
           rows="4"
           value={description}
           onChange={(event) => setDescription(event.target.value)}
-          placeholder={isPastPapers ? 'Official MDCAT past paper with explanations.' : 'Short chapter description for students.'}
+          placeholder={descPlaceholder}
           disabled={saving}
         />
       </div>
       <button className="btn btn-primary" type="submit" disabled={saving || !name.trim()}>
-        {saving
-          ? (isPastPapers ? 'Saving Past Paper...' : 'Saving Chapter...')
-          : initial?.id
-            ? (isPastPapers ? 'Update Past Paper' : 'Update Chapter')
-            : (isPastPapers ? 'Save Past Paper' : 'Save Chapter')}
+        {buttonLabel}
       </button>
     </form>
   )
@@ -664,14 +693,145 @@ function TopicForm({ initial, onSubmit }) {
   )
 }
 
+function FlpSubjectSelectModal({ chapter, onClose, onStartTest }) {
+  const allAvailableSubjects = useMemo(() => {
+    if (chapter?.subjectCounts && Object.keys(chapter.subjectCounts).length > 0) {
+      const active = FLP_SUBJECTS.filter((s) => (chapter.subjectCounts[s] || 0) > 0 || Object.keys(chapter.subjectCounts).includes(s))
+      return active.length > 0 ? active : FLP_SUBJECTS
+    }
+    return FLP_SUBJECTS
+  }, [chapter])
+
+  const [selectedSubjects, setSelectedSubjects] = useState(() => allAvailableSubjects)
+
+  const isAllSelected = selectedSubjects.length === allAvailableSubjects.length
+
+  const handleToggleAll = () => {
+    if (isAllSelected) {
+      setSelectedSubjects([])
+    } else {
+      setSelectedSubjects([...allAvailableSubjects])
+    }
+  }
+
+  const handleToggleSubject = (subject) => {
+    if (selectedSubjects.includes(subject)) {
+      setSelectedSubjects(selectedSubjects.filter((s) => s !== subject))
+    } else {
+      setSelectedSubjects([...selectedSubjects, subject])
+    }
+  }
+
+  const totalSelectedMcqs = useMemo(() => {
+    if (!chapter?.subjectCounts) {
+      return Math.round((chapter?.mcqCount || 180) * (selectedSubjects.length / (allAvailableSubjects.length || 5)))
+    }
+    return selectedSubjects.reduce((sum, subj) => sum + (chapter.subjectCounts[subj] || 0), 0)
+  }, [chapter, selectedSubjects, allAvailableSubjects])
+
+  const estimatedMinutes = Math.round(totalSelectedMcqs * 1.15) || 30
+
+  const handleStart = () => {
+    if (selectedSubjects.length === 0) {
+      toast.error('Please select at least one subject to solve.')
+      return
+    }
+    onStartTest(selectedSubjects, isAllSelected)
+  }
+
+  return (
+    <div className="flp-modal-overlay" onClick={onClose}>
+      <div className="flp-modal-card" onClick={(e) => e.stopPropagation()}>
+        <div className="flp-modal-header">
+          <div>
+            <div className="label-xs" style={{ color: '#a855f7' }}>FULL LENGTH PAPER (FLP)</div>
+            <h2 className="flp-modal-title">{chapter?.name || 'MDCAT FLP'}</h2>
+            <p className="flp-modal-subtitle">
+              Choose which subjects you want to solve, or attempt the whole test.
+            </p>
+          </div>
+          <button className="flp-modal-close" type="button" onClick={onClose} aria-label="Close">
+            &times;
+          </button>
+        </div>
+
+        <button
+          type="button"
+          className={`flp-whole-test-btn ${isAllSelected ? 'active' : ''}`}
+          onClick={handleToggleAll}
+        >
+          <span>🌟 Solve Whole Test (All 5 Subjects)</span>
+          <span style={{ fontSize: '0.88rem', opacity: 0.9 }}>
+            {chapter?.mcqCount || 180} MCQs
+          </span>
+        </button>
+
+        <div className="flp-subjects-grid">
+          {allAvailableSubjects.map((subj) => {
+            const isSelected = selectedSubjects.includes(subj)
+            const count = chapter?.subjectCounts?.[subj] ?? '-'
+            return (
+              <div
+                key={subj}
+                className={`flp-subject-row ${isSelected ? 'selected' : ''}`}
+                onClick={() => handleToggleSubject(subj)}
+              >
+                <div className="flp-subject-row-left">
+                  <input
+                    type="checkbox"
+                    className="flp-subject-checkbox"
+                    checked={isSelected}
+                    onChange={() => handleToggleSubject(subj)}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                  <span className="flp-subject-name">{subj}</span>
+                </div>
+                <span className="flp-subject-count-badge">
+                  {count} {typeof count === 'number' ? 'MCQs' : ''}
+                </span>
+              </div>
+            )
+          })}
+        </div>
+
+        <div className="flp-modal-summary">
+          <div>
+            Selected: <strong>{selectedSubjects.length} subjects</strong> ({totalSelectedMcqs} MCQs)
+          </div>
+          <div>
+            Estimated Duration: <strong>~{estimatedMinutes} mins</strong>
+          </div>
+        </div>
+
+        <div className="flp-modal-actions">
+          <button className="btn btn-secondary" type="button" onClick={onClose}>
+            Cancel
+          </button>
+          <button
+            className="btn btn-primary"
+            type="button"
+            disabled={selectedSubjects.length === 0}
+            onClick={handleStart}
+          >
+            Start Test ({totalSelectedMcqs} MCQs) &rarr;
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function ChapterList() {
   const { subject } = useParams()
+  const navigate = useNavigate()
   const { isTeacher } = useAuth()
   const meta = subjectById(subject)
   const isPastPapers = subject === 'past-papers'
+  const isFlp = subject === 'flps' || subject === 'flp'
   const [chapters, setChapters] = useState([])
   const [loading, setLoading] = useState(true)
   const [modal, setModal] = useState(null)
+  const [flpModalChapter, setFlpModalChapter] = useState(null)
 
   const buildChapterMcqPath = (chapter) => {
     const params = new URLSearchParams()
@@ -847,18 +1007,38 @@ function ChapterList() {
                 {chapter.mcqCount || 0} MCQs
               </span>
             </div>
+            {isFlp && chapter.subjectCounts && (
+              <div className="flp-subject-chips" style={{ padding: '0 1.25rem 0.5rem', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                {FLP_SUBJECTS.map((subj) => {
+                  const count = chapter.subjectCounts[subj] || 0
+                  return (
+                    <span key={subj} className="flp-subject-chip" style={{ fontSize: '0.75rem', padding: '2px 8px', borderRadius: '12px', background: 'rgba(168, 85, 247, 0.1)', color: '#c084fc', border: '1px solid rgba(168, 85, 247, 0.2)' }}>
+                      {subj}: <strong>{count}</strong>
+                    </span>
+                  )
+                })}
+              </div>
+            )}
             <div className="workspace-card-body">
               <div className="inline-actions">
                 {chapter.isLocked && !isTeacher ? (
                   <Link className="btn btn-primary btn-sm" to="/payments">
                     Please subscribe to access this test/past paper.
                   </Link>
+                ) : isFlp && !isTeacher ? (
+                  <button
+                    className="btn btn-primary btn-sm"
+                    type="button"
+                    onClick={() => setFlpModalChapter(chapter)}
+                  >
+                    ⚡ Solve Test
+                  </button>
                 ) : (
                   <Link
                     className="btn btn-primary btn-sm"
                     to={buildChapterMcqPath(chapter)}
                   >
-                    Open MCQs
+                    {isTeacher ? 'Manage MCQs' : 'Open MCQs'}
                   </Link>
                 )}
                 {isTeacher ? (
@@ -886,11 +1066,13 @@ function ChapterList() {
       </div>
       {!loading && chapters.length === 0 ? (
         <EmptyState
-          title={isPastPapers ? 'No past papers added yet' : 'No chapters added yet'}
+          title={isFlp ? 'No FLP papers added yet' : isPastPapers ? 'No past papers added yet' : 'No chapters added yet'}
           text={
-            isPastPapers
-              ? 'Teachers will upload or add MDCAT past papers before students can practice.'
-              : `Teachers will add real ${meta.name} chapters before students can practice.`
+            isFlp
+              ? 'Teachers will add FLP papers and upload subject-wise MCQs before students can practice.'
+              : isPastPapers
+                ? 'Teachers will upload or add MDCAT past papers before students can practice.'
+                : `Teachers will add real ${meta.name} chapters before students can practice.`
           }
           action={
             isTeacher ? (
@@ -899,7 +1081,7 @@ function ChapterList() {
                 type="button"
                 onClick={() => setModal({ type: 'chapter' })}
               >
-                {isPastPapers ? 'Add First Past Paper' : 'Add First Chapter'}
+                {isFlp ? 'Add First FLP Paper' : isPastPapers ? 'Add First Past Paper' : 'Add First Chapter'}
               </button>
             ) : (
               <Link className="btn btn-secondary" to="/mcqs">
@@ -913,19 +1095,37 @@ function ChapterList() {
         <Modal
           title={
             modal.chapter
-              ? (isPastPapers ? 'Edit Past Paper' : 'Edit Chapter')
-              : (isPastPapers ? 'Add Past Paper' : 'Add Chapter')
+              ? (isFlp ? 'Edit FLP Paper' : isPastPapers ? 'Edit Past Paper' : 'Edit Chapter')
+              : (isFlp ? 'Add FLP Paper' : isPastPapers ? 'Add Past Paper' : 'Add Chapter')
           }
           onClose={() => setModal(null)}
         >
           <ChapterForm
             isPastPapers={isPastPapers}
+            isFlp={isFlp}
             key={modal.chapter?.id || 'new'}
             initial={modal.chapter}
             onSubmit={saveChapter}
           />
         </Modal>
       ) : null}
+      {flpModalChapter && (
+        <FlpSubjectSelectModal
+          chapter={flpModalChapter}
+          onClose={() => setFlpModalChapter(null)}
+          onStartTest={(selectedSubjects, isWholeTest) => {
+            const params = new URLSearchParams()
+            if (!isWholeTest && selectedSubjects.length > 0) {
+              params.set('subjects', selectedSubjects.join(','))
+            }
+            const q = params.toString() ? `?${params.toString()}` : ''
+            navigate(`/mcqs/${subject}/${flpModalChapter.id}/attempt${q}`, {
+              state: { retake: true },
+            })
+            setFlpModalChapter(null)
+          }}
+        />
+      )}
     </div>
   )
 }
@@ -997,6 +1197,7 @@ function mcqToForm(mcq) {
       correctAnswer: mcq.correctAnswer || 'A',
       explanation: mcq.explanation || '',
       explanationImages: mcqExplanationImages(mcq),
+      subject: mcq.subject || 'Biology',
     }
   }
 
@@ -1014,10 +1215,11 @@ function mcqToForm(mcq) {
     correctAnswer: mcq.correctAnswer || 'A',
     explanation: mcq.explanation || '',
     explanationImages: mcqExplanationImages(mcq),
+    subject: mcq.subject || 'Biology',
   }
 }
 
-function McqForm({ initial, onSubmit }) {
+function McqForm({ initial, onSubmit, isFlp = false }) {
   const [form, setForm] = useState(initial ? mcqToForm(initial) : emptyMcqForm)
   const [showPreview, setShowPreview] = useState(false)
   const [imgOpen, setImgOpen] = useState(false)
@@ -1041,10 +1243,24 @@ function McqForm({ initial, onSubmit }) {
       }}
     >
       <div className="teacher-compact-header">
-        <div className="teacher-compact-left">
+        <div className="teacher-compact-left" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
           <span className="teacher-compact-qnum">
             {initial ? 'Edit MCQ' : 'New MCQ'}
           </span>
+          {isFlp && (
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <label style={{ fontSize: '0.78rem', color: '#c4b5fd', fontWeight: 700 }}>SUBJECT:</label>
+              <select
+                className="teacher-subject-select"
+                value={form.subject || 'Biology'}
+                onChange={(e) => setField('subject', e.target.value)}
+              >
+                {FLP_SUBJECTS.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
         <div className="teacher-compact-right">
           <span className="teacher-compact-key-label">Official Key:</span>
@@ -1409,7 +1625,7 @@ function TeacherInlineMcqCard({ mcq, index, displayNumberOffset = 0, chapterId, 
         chapterName: mcq.chapterName,
         chapterId,
         topicId: mcq.topicId || null,
-        subject: meta?.name,
+        subject: meta?.id === 'flps' ? (form.subject || mcq.subject || 'Biology') : meta?.name,
         isPublished: true,
       })
       toast.success(`Question ${getMcqDisplayNumber(mcq, index, displayNumberOffset)} saved successfully`)
@@ -1428,10 +1644,22 @@ function TeacherInlineMcqCard({ mcq, index, displayNumberOffset = 0, chapterId, 
   return (
     <article className="teacher-compact-card">
       <div className="teacher-compact-header">
-        <div className="teacher-compact-left">
+        <div className="teacher-compact-left" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
           <span className="teacher-compact-qnum">
             QUESTION {getMcqDisplayNumber(mcq, index, displayNumberOffset)}
           </span>
+          {meta?.id === 'flps' && (
+            <select
+              className="teacher-subject-select"
+              value={form.subject || mcq.subject || 'Biology'}
+              onChange={(e) => setField('subject', e.target.value)}
+              title="Assign MCQ Subject"
+            >
+              {FLP_SUBJECTS.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          )}
           {saving && <span className="teacher-compact-badge teacher-compact-badge--saving">Saving...</span>}
         </div>
 
@@ -1750,6 +1978,12 @@ function McqList() {
   const { isTeacher } = useAuth()
   const meta = subjectById(subject)
   const isPastPapers = subject === 'past-papers' || meta?.name === 'Past Papers'
+  const isFlp = subject === 'flps' || subject === 'flp' || meta?.id === 'flps'
+  const [teacherSubjectFilter, setTeacherSubjectFilter] = useState('all')
+  const [selectedFlpSubjects, setSelectedFlpSubjects] = useState(() => [...FLP_SUBJECTS])
+  const [csvUploadModal, setCsvUploadModal] = useState(false)
+  const [csvTargetSubject, setCsvTargetSubject] = useState('Biology')
+  const [csvUploadMode, setCsvUploadMode] = useState('append')
   const [lockMessage, setLockMessage] = useState('')
   const [chapter, setChapter] = useState(null)
   const [topics, setTopics] = useState([])
@@ -1778,6 +2012,18 @@ function McqList() {
   }, [isPastPapers, selectedTopicId, testPart, topicIdParam])
 
   const totalBankCount = totalChapterMcqs || mcqs.length || 0
+
+  const flpSubjectCounts = useMemo(() => {
+    const counts = { all: mcqs.length }
+    FLP_SUBJECTS.forEach((s) => {
+      counts[s] = (chapter?.subjectCounts?.[s]) ?? mcqs.filter((m) => (m.subject || 'Biology').toLowerCase() === s.toLowerCase()).length
+    })
+    return counts
+  }, [chapter?.subjectCounts, mcqs])
+
+  const flpSelectedMcqCount = useMemo(() => {
+    return selectedFlpSubjects.reduce((sum, subj) => sum + (flpSubjectCounts[subj] || 0), 0)
+  }, [selectedFlpSubjects, flpSubjectCounts])
 
   const presetOptions = useMemo(() => {
     const defaultSteps = [10, 20, 30, 40, 50]
@@ -1820,7 +2066,10 @@ function McqList() {
   const [allPreview, setAllPreview] = useState(false)
 
   const filteredMcqs = useMemo(() => {
-    const indexed = mcqs.map((mcq, idx) => ({ ...mcq, _originalIndex: idx }))
+    let indexed = mcqs.map((mcq, idx) => ({ ...mcq, _originalIndex: idx }))
+    if (isTeacher && isFlp && teacherSubjectFilter !== 'all') {
+      indexed = indexed.filter((mcq) => (mcq.subject || 'Biology').toLowerCase() === teacherSubjectFilter.toLowerCase())
+    }
     if (!isTeacher || !searchQuery.trim()) {
       return indexed
     }
@@ -1889,7 +2138,7 @@ function McqList() {
 
       return false
     })
-  }, [isTeacher, mcqs, searchQuery, mcqDisplayNumberOffset])
+  }, [isTeacher, isFlp, teacherSubjectFilter, mcqs, searchQuery, mcqDisplayNumberOffset])
 
   const load = async (forceRefresh = false) => {
     setLoading(true)
@@ -2008,7 +2257,7 @@ function McqList() {
           chapterName: chapter?.name,
           chapterId,
           topicId: modal.mcq.topicId || null,
-          subject: meta?.name,
+          subject: isFlp ? (payload.subject || modal.mcq.subject || 'Biology') : meta?.name,
           isPublished: true,
         })
         toast.success('MCQ updated')
@@ -2018,6 +2267,7 @@ function McqList() {
           questionText: payload.question,
           explanationText: payload.explanation,
           topicId: selectedTopicId || null,
+          subject: isFlp ? (payload.subject || (teacherSubjectFilter !== 'all' ? teacherSubjectFilter : 'Biology')) : undefined,
         })
         if (modal?.reviewItem?.id) {
           await API.delete(
@@ -2063,10 +2313,13 @@ function McqList() {
     if (!file) return
     try {
       const csvText = await file.text()
-      const res = await API.post(`/mcqs/${subject}/${chapterId}/upload-csv?replaceAll=${replaceCsvRef.current}`, {
+      const replaceAllVal = isFlp ? (csvUploadMode !== 'append') : replaceCsvRef.current
+      const targetSubjParam = isFlp && csvTargetSubject ? `&targetSubject=${encodeURIComponent(csvTargetSubject)}` : ''
+      const res = await API.post(`/mcqs/${subject}/${chapterId}/upload-csv?replaceAll=${replaceAllVal}${targetSubjParam}`, {
         csvText,
         fileName: file.name,
         topicId: selectedTopicId || null,
+        targetSubject: isFlp ? csvTargetSubject : undefined,
       })
       toast.success(
         `Total rows: ${res.data.totalRows ?? 'N/A'} | Imported: ${res.data.importedRows ?? res.data.imported} | Needs review: ${res.data.reviewRows ?? res.data.queuedForReview}`,
@@ -2256,32 +2509,45 @@ function McqList() {
               </button>
             ) : null}
             {isTeacher ? (
-              <button
-                className={`btn ${activeHeaderAction === 'upload' ? 'btn-primary' : 'btn-secondary'}`}
-                type="button"
-                onClick={() => {
-                  setActiveHeaderAction('upload')
-                  replaceCsvRef.current = false
-                  fileRef.current?.click()
-                }}
-              >
-                Upload CSV
-              </button>
-            ) : null}
-            {isTeacher ? (
-              <button
-                className="btn btn-secondary"
-                type="button"
-                onClick={() => {
-                  if (window.confirm('Warning: This will DELETE all existing MCQs for this chapter/topic and replace them with the new CSV. This cannot be undone. Do you want to proceed?')) {
+              isFlp ? (
+                <button
+                  className={`btn ${activeHeaderAction === 'upload' ? 'btn-primary' : 'btn-secondary'}`}
+                  type="button"
+                  onClick={() => {
                     setActiveHeaderAction('upload')
-                    replaceCsvRef.current = true
-                    fileRef.current?.click()
-                  }
-                }}
-              >
-                Replace MCQs
-              </button>
+                    setCsvUploadModal(true)
+                  }}
+                >
+                  📤 Upload Subject CSV
+                </button>
+              ) : (
+                <>
+                  <button
+                    className={`btn ${activeHeaderAction === 'upload' ? 'btn-primary' : 'btn-secondary'}`}
+                    type="button"
+                    onClick={() => {
+                      setActiveHeaderAction('upload')
+                      replaceCsvRef.current = false
+                      fileRef.current?.click()
+                    }}
+                  >
+                    Upload CSV
+                  </button>
+                  <button
+                    className="btn btn-secondary"
+                    type="button"
+                    onClick={() => {
+                      if (window.confirm('Warning: This will DELETE all existing MCQs for this chapter/topic and replace them with the new CSV. This cannot be undone. Do you want to proceed?')) {
+                        setActiveHeaderAction('upload')
+                        replaceCsvRef.current = true
+                        fileRef.current?.click()
+                      }
+                    }}
+                  >
+                    Replace MCQs
+                  </button>
+                </>
+              )
             ) : null}
             {!isTeacher ? (
               <Link
@@ -2361,6 +2627,29 @@ function McqList() {
         isTeacher ? (
           mcqs.length > 0 || searchQuery.trim() ? (
             <>
+              {isFlp && (
+                <div className="flp-teacher-filter-bar" style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '12px', padding: '8px 12px', background: 'rgba(168, 85, 247, 0.06)', borderRadius: '12px', border: '1px solid rgba(168, 85, 247, 0.15)' }}>
+                  <button
+                    type="button"
+                    className={`btn btn-sm ${teacherSubjectFilter === 'all' ? 'btn-primary' : 'btn-secondary'}`}
+                    onClick={() => setTeacherSubjectFilter('all')}
+                    style={{ fontSize: '0.78rem', padding: '4px 12px', borderRadius: '8px' }}
+                  >
+                    All ({flpSubjectCounts.all})
+                  </button>
+                  {FLP_SUBJECTS.map((subj) => (
+                    <button
+                      key={subj}
+                      type="button"
+                      className={`btn btn-sm ${teacherSubjectFilter === subj ? 'btn-primary' : 'btn-secondary'}`}
+                      onClick={() => setTeacherSubjectFilter(subj)}
+                      style={{ fontSize: '0.78rem', padding: '4px 12px', borderRadius: '8px' }}
+                    >
+                      {subj} ({flpSubjectCounts[subj] || 0})
+                    </button>
+                  ))}
+                </div>
+              )}
               <div className="mcq-search-panel">
                 <div className="mcq-search-input-wrapper">
                   <span className="mcq-search-icon" aria-hidden="true">
@@ -2887,10 +3176,79 @@ function McqList() {
               key={modal.mcq?._id || modal.reviewItem?.id || 'new'}
               initial={modal.mcq || modal.reviewItem}
               onSubmit={saveMcq}
+              isFlp={isFlp}
             />
           )}
         </Modal>
       ) : null}
+      {csvUploadModal && (
+        <Modal
+          title="📤 Upload Subject CSV for FLP"
+          onClose={() => setCsvUploadModal(false)}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div className="floating-field">
+              <label htmlFor="csv-target-subject">Target Subject</label>
+              <select
+                id="csv-target-subject"
+                value={csvTargetSubject}
+                onChange={(e) => setCsvTargetSubject(e.target.value)}
+                style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', background: 'var(--bg-card, #1a1a2e)', color: 'var(--text-primary, #e0e0e0)', border: '1px solid rgba(168, 85, 247, 0.3)', fontSize: '0.95rem' }}
+              >
+                {FLP_SUBJECTS.map((s) => (
+                  <option key={s} value={s}>{s} ({flpSubjectCounts[s] || 0} existing)</option>
+                ))}
+              </select>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                All MCQs in this CSV will be assigned to <strong>{csvTargetSubject}</strong>.
+              </p>
+            </div>
+            <div className="floating-field">
+              <label>Upload Mode</label>
+              <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                <button
+                  type="button"
+                  className={`btn btn-sm ${csvUploadMode === 'append' ? 'btn-primary' : 'btn-secondary'}`}
+                  onClick={() => setCsvUploadMode('append')}
+                >
+                  ➕ Append (Add to existing)
+                </button>
+                <button
+                  type="button"
+                  className={`btn btn-sm ${csvUploadMode === 'replace' ? 'btn-primary' : 'btn-secondary'}`}
+                  onClick={() => setCsvUploadMode('replace')}
+                  style={csvUploadMode === 'replace' ? { background: '#ef4444' } : {}}
+                >
+                  🔄 Replace {csvTargetSubject} MCQs
+                </button>
+              </div>
+              <p style={{ fontSize: '0.8rem', color: csvUploadMode === 'replace' ? '#f87171' : 'var(--text-muted)', marginTop: '4px' }}>
+                {csvUploadMode === 'append'
+                  ? `New MCQs will be added after existing ${csvTargetSubject} questions. Existing MCQs are preserved.`
+                  : `⚠️ All existing ${csvTargetSubject} MCQs in this paper will be DELETED and replaced with the new CSV.`}
+              </p>
+            </div>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <button className="btn btn-secondary" type="button" onClick={() => setCsvUploadModal(false)}>
+                Cancel
+              </button>
+              <button
+                className="btn btn-primary"
+                type="button"
+                onClick={() => {
+                  if (csvUploadMode === 'replace') {
+                    if (!window.confirm(`This will DELETE all existing ${csvTargetSubject} MCQs and replace them. Continue?`)) return
+                  }
+                  setCsvUploadModal(false)
+                  fileRef.current?.click()
+                }}
+              >
+                Choose CSV File
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   )
 }
@@ -2903,6 +3261,12 @@ function QuizAttempt() {
   const { user } = useAuth()
   const meta = subjectById(subject)
   const isPastPapers = subject === 'past-papers' || meta?.name === 'Past Papers'
+  const isFlp = subject === 'flps' || subject === 'flp' || meta?.id === 'flps'
+  const subjectsParam = searchParams.get('subjects')
+  const flpSelectedSubjects = useMemo(() => {
+    if (!isFlp || !subjectsParam) return null
+    return subjectsParam.split(',').filter(Boolean)
+  }, [isFlp, subjectsParam])
   const testPart = isPastPapers ? null : searchParams.get('testPart')
   const topicIdParam = searchParams.get('topicId')
   const modeParam = isPastPapers ? null : searchParams.get('mode')
@@ -2924,6 +3288,7 @@ function QuizAttempt() {
       if (modeParam) params.set('mode', modeParam)
       if (countParam) params.set('count', countParam)
     }
+    if (subjectsParam) params.set('subjects', subjectsParam)
     const query = params.toString()
     return query ? `?${query}` : ''
   })()
@@ -3188,6 +3553,7 @@ function QuizAttempt() {
           Number.isFinite(startedAt) && startedAt > 0
             ? new Date(startedAt).toISOString()
             : undefined,
+        subjects: flpSelectedSubjects || undefined,
       })
       
       if (user) {
@@ -3336,10 +3702,10 @@ function QuizAttempt() {
           <div>
             <button className="mcq-exit-attempt" type="button" onClick={pauseAndExitQuiz}>
               <span aria-hidden="true">&#8592;</span>
-              {isPastPapers ? 'Back to past paper' : 'Back to chapter'}
+              {isFlp ? 'Back to FLP' : isPastPapers ? 'Back to past paper' : 'Back to chapter'}
             </button>
             <div className="label-xs" style={{ color: meta?.accent }}>
-              {meta?.name}: {chapter?.name}
+              {isFlp ? 'FLP' : meta?.name}: {chapter?.name}
             </div>
             <p>
               Question {currentIndex + 1} of {mcqs.length}
@@ -3361,6 +3727,11 @@ function QuizAttempt() {
 
         <div className="mcq-attempt-layout">
           <div className="mcq-question-card">
+            {isFlp && current.subject && (
+              <div className="flp-mcq-subject-badge" style={{ display: 'inline-block', padding: '3px 10px', borderRadius: '8px', background: 'rgba(168, 85, 247, 0.15)', color: '#c084fc', fontSize: '0.78rem', fontWeight: 700, marginBottom: '8px', letterSpacing: '0.03em' }}>
+                {current.subject}
+              </div>
+            )}
             <div className="mcq-question-title">
               <MCQRenderer text={current.questionText || current.question} images={mcqQuestionImages(current)} />
             </div>
@@ -3477,6 +3848,8 @@ function QuizResult() {
   const location = useLocation()
   const navigate = useNavigate()
   const { user } = useAuth()
+  const meta = location.state?.meta || location.state?.result?.meta
+  const isFlp = subject === 'flps' || subject === 'flp' || meta?.id === 'flps'
   const testPart = searchParams.get('testPart')
   const topicIdParam = searchParams.get('topicId')
   const modeParam = searchParams.get('mode')
@@ -3660,6 +4033,35 @@ function QuizResult() {
             <strong>{result.percentage}%</strong>
           </div>
         </div>
+        {isFlp && result.subjectBreakdown && (
+          <div className="flp-result-breakdown-card" style={{ marginTop: '1.5rem', padding: '1.25rem', borderRadius: '16px', background: 'rgba(168, 85, 247, 0.06)', border: '1px solid rgba(168, 85, 247, 0.2)' }}>
+            <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', fontWeight: 800, color: '#c084fc' }}>📊 Subject-Wise Performance</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '12px' }}>
+              {FLP_SUBJECTS.map((subj) => {
+                const data = result.subjectBreakdown[subj]
+                if (!data || data.total === 0) return null
+                const pct = data.percentage ?? Math.round((data.correct / data.total) * 100)
+                return (
+                  <div key={subj} style={{ padding: '14px', borderRadius: '12px', background: 'var(--bg-card, #1a1a2e)', border: '1px solid rgba(139, 111, 255, 0.2)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--text-primary)' }}>{subj}</span>
+                      <span style={{ fontWeight: 800, fontSize: '1rem', color: pct >= 70 ? '#22c55e' : pct >= 50 ? '#eab308' : '#ef4444' }}>{pct}%</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '12px', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+                      <span>✅ {data.correct}</span>
+                      <span>❌ {data.wrong}</span>
+                      <span>⏭️ {data.skipped}</span>
+                      <span style={{ marginLeft: 'auto', fontWeight: 700 }}>{data.correct}/{data.total}</span>
+                    </div>
+                    <div style={{ marginTop: '8px', height: '6px', borderRadius: '3px', background: 'rgba(139, 111, 255, 0.15)', overflow: 'hidden' }}>
+                      <div style={{ height: '100%', width: `${pct}%`, borderRadius: '3px', background: pct >= 70 ? '#22c55e' : pct >= 50 ? '#eab308' : '#ef4444', transition: 'width 0.5s ease' }} />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
         <ReviewSection title="Answer Key & Explanations" items={answerKeyItems} savedStatus={savedStatus} toggleFlashcard={toggleFlashcard} subjectName={subject} chapterId={chapterId} />
       </section>
     </div>

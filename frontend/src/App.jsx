@@ -149,6 +149,11 @@ function App() {
           <Route path="/past-papers/:chapterId/attempt" element={<PastPaperAttemptRedirect />} />
           <Route path="/past-papers/:chapterId/result" element={<PastPaperResultRedirect />} />
 
+          {/* FLPs Convenience Redirects */}
+          <Route path="/flps" element={<Navigate to="/mcqs/flps" replace />} />
+          <Route path="/flp" element={<Navigate to="/mcqs/flps" replace />} />
+          <Route path="/flps/:chapterId" element={<Navigate to="/mcqs/flps/:chapterId" replace />} />
+
           {/* Public & Student MCQ routes (Guests can browse chapters, practice & attempt tests without login) */}
           <Route element={<AppLayout />}>
             <Route path="/mcqs/:subject" element={<LazyMcqChapterList />} />

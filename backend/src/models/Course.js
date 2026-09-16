@@ -18,12 +18,12 @@ const courseSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers'],
+      enum: ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers', 'FLPs', 'Full Length Papers'],
       required: true,
     },
     subject: {
       type: String,
-      enum: ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers'],
+      enum: ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers', 'FLPs', 'Full Length Papers'],
       default: function subjectDefault() {
         return this.category
       },

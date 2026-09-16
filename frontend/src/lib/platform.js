@@ -23,6 +23,7 @@ export const PLATFORM_NAV = {
       items: [
         { key: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
         { key: 'courses', label: 'Practice Subjects', path: '/mcqs', icon: 'courses' },
+        { key: 'flps', label: 'Full Length Papers (FLPs)', path: '/mcqs/flps', icon: 'assignments' },
         { key: 'past-papers', label: 'Past Papers', path: '/mcqs/past-papers', icon: 'courses' },
         { key: 'performance', label: 'Performance', path: '/performance', icon: 'performance' },
         { key: 'flashcards', label: 'Flashcards', path: '/flashcards', icon: 'flashcards' },
@@ -44,6 +45,7 @@ export const PLATFORM_NAV = {
       items: [
         { key: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
         { key: 'my-courses', label: 'MCQ Management', path: '/teacher/mcqs', icon: 'courses' },
+        { key: 'flps', label: 'Full Length Papers (FLPs)', path: '/mcqs/flps', icon: 'assignments' },
         { key: 'past-papers', label: 'Past Papers', path: '/mcqs/past-papers', icon: 'courses' },
         { key: 'students', label: 'Student Attempts', path: '/teacher/students', icon: 'students' },
         { key: 'flashcards', label: 'Flashcards', path: '/flashcards', icon: 'flashcards' },
@@ -63,6 +65,7 @@ export const PLATFORM_NAV = {
       label: 'Operations',
       items: [
         { key: 'dashboard', label: 'Admin Overview', path: '/dashboard', icon: 'dashboard' },
+        { key: 'flps', label: 'Full Length Papers (FLPs)', path: '/mcqs/flps', icon: 'assignments' },
         { key: 'past-papers', label: 'Past Papers', path: '/mcqs/past-papers', icon: 'courses' },
         { key: 'students', label: 'Students & Access', path: '/admin/students', icon: 'students' },
         { key: 'payments', label: 'Subscriptions & Payments', path: '/admin/payments', icon: 'payments' },
@@ -88,6 +91,9 @@ export function getNavigationForRole(role = 'student') {
 }
 
 export function getPageTitle(pathname, role = 'student') {
+  if (pathname === '/mcqs/flps' || pathname.startsWith('/mcqs/flps/')) {
+    return 'Full Length Papers (FLPs)'
+  }
   if (pathname === '/mcqs/past-papers' || pathname.startsWith('/mcqs/past-papers/')) {
     return 'Past Papers'
   }
@@ -99,7 +105,7 @@ export function getPageTitle(pathname, role = 'student') {
         pathname === item.path ||
         (item.path !== '/dashboard' &&
           pathname.startsWith(item.path) &&
-          !(item.path === '/mcqs' && pathname.startsWith('/mcqs/past-papers'))),
+          !(item.path === '/mcqs' && (pathname.startsWith('/mcqs/past-papers') || pathname.startsWith('/mcqs/flps')))),
     )
     if (match) return match.label
   }

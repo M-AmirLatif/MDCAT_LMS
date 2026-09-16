@@ -9,7 +9,7 @@ const importBatchSchema = new mongoose.Schema(
     },
     subject: {
       type: String,
-      enum: ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers'],
+      enum: ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers', 'FLPs', 'Logical Reasoning'],
       default: null,
     },
     courseId: {

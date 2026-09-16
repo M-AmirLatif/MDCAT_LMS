@@ -88,12 +88,12 @@ const userSchema = new mongoose.Schema(
     },
     assignedSubject: {
       type: String,
-      enum: ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers', null],
+      enum: ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers', 'FLPs', 'Logical Reasoning', null],
       default: null,
     },
     assignedSubjects: {
       type: [String],
-      enum: ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers'],
+      enum: ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers', 'FLPs', 'Logical Reasoning'],
       default: [],
     },
     approvedBy: {

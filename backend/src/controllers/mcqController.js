@@ -10,7 +10,7 @@ const {
   canTeacherAccessSubject,
 } = require('../utils/teacherSubjects')
 
-const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers']
+const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers', 'FLPs', 'Logical Reasoning']
 const SUBJECT_SLUGS = {
   biology: 'Biology',
   chemistry: 'Chemistry',
@@ -19,6 +19,20 @@ const SUBJECT_SLUGS = {
   'past-papers': 'Past Papers',
   'past papers': 'Past Papers',
   pastpapers: 'Past Papers',
+  flp: 'FLPs',
+  flps: 'FLPs',
+  'flp\'s': 'FLPs',
+  'full-length-papers': 'FLPs',
+  'full length papers': 'FLPs',
+  fulllengthpapers: 'FLPs',
+  'logical-reasoning': 'Logical Reasoning',
+  'logical reasoning': 'Logical Reasoning',
+  logicalreasoning: 'Logical Reasoning',
+}
+
+const isFlpCategory = (subject) => {
+  const s = String(subject || '').toLowerCase().trim()
+  return s === 'flps' || s === 'flp' || s === "flp's" || s === 'full length papers' || s === 'full-length-papers'
 }
 
 const extractYearFromName = (str) => {
@@ -74,8 +88,14 @@ const buildVirtualChapterTests = (chapter, totalMcqs, options = {}) => {
   if (
     options.isPastPaper ||
     chapter?.isPastPaper ||
+    options.isFlp ||
+    chapter?.isFlp ||
     options.subject === 'Past Papers' ||
-    options.subject === 'past-papers'
+    options.subject === 'past-papers' ||
+    options.subject === 'FLPs' ||
+    options.subject === 'flps' ||
+    isFlpCategory(options.subject) ||
+    isFlpCategory(chapter?.subject)
   ) {
     return []
   }
@@ -133,7 +153,7 @@ const canAccessSubjectContent = (user, subject, contentIndex = 0) => {
   const roleName = userRoleName(user)
   if (roleName === 'admin') return true
   if (roleName === 'teacher') return canManageSubject(subject, user)
-  if (isPastPaperCategory(subject)) return true
+  if (isPastPaperCategory(subject) || isFlpCategory(subject)) return true
   if (!user) {
     if (!REQUIRE_SUBSCRIPTION_FOR_MCQ_TESTS) return true
     return false
@@ -148,7 +168,7 @@ const canAccessChapterTest = (user, subject, contentIndex = 0, testPart = null) 
   const roleName = userRoleName(user)
   if (roleName === 'admin') return true
   if (roleName === 'teacher') return canManageSubject(subject, user)
-  if (isPastPaperCategory(subject)) return true
+  if (isPastPaperCategory(subject) || isFlpCategory(subject)) return true
   if (!user) {
     if (!REQUIRE_SUBSCRIPTION_FOR_MCQ_TESTS) return true
     return false
@@ -167,7 +187,11 @@ const getSubjectCourse = async (subject, includeReviewQueue = false) => {
   const projection = includeReviewQueue
     ? '_id category chapters name'
     : '_id category name chapters.id chapters.name chapters.description chapters.topics'
-  return Course.findOne({ category: subject })
+  const isFlp = isFlpCategory(subject)
+  const query = isFlp
+    ? { $or: [{ category: 'FLPs' }, { subject: 'FLPs' }, { category: 'Full Length Papers' }] }
+    : { category: subject }
+  return Course.findOne(query)
     .select(projection)
     .sort({ createdAt: 1 })
     .lean()
@@ -175,21 +199,32 @@ const getSubjectCourse = async (subject, includeReviewQueue = false) => {
 
 // Full Mongoose document â€” required for chapter CRUD that calls .save()
 const getSubjectCourseFull = async (subject) => {
-  return Course.findOne({ category: subject }).sort({ createdAt: 1 })
+  const isFlp = isFlpCategory(subject)
+  const query = isFlp
+    ? { $or: [{ category: 'FLPs' }, { subject: 'FLPs' }, { category: 'Full Length Papers' }] }
+    : { category: subject }
+  return Course.findOne(query).sort({ createdAt: 1 })
 }
 
 const ensureSubjectCourse = async (subject, user) => {
   let course = await getSubjectCourseFull(subject)
   if (course) return course
 
+  const isFlp = isFlpCategory(subject)
+  const courseName = isFlp ? 'Full Length Papers' : subject
+  const courseCategory = isFlp ? 'FLPs' : subject
+  const courseDesc = isFlp
+    ? 'Full Length MDCAT Practice Papers covering Biology, Chemistry, Physics, English, and Logical Reasoning'
+    : `${subject} MDCAT MCQ practice bank`
+
   course = await Course.create({
-    name: subject,
-    description: `${subject} MDCAT MCQ practice bank`,
-    category: subject,
-    subject,
+    name: courseName,
+    description: courseDesc,
+    category: courseCategory,
+    subject: courseCategory,
     chapters: [],
     topics: [],
-    createdBy: user.id,
+    createdBy: user?.id || user?._id,
     isPublished: true,
   })
 
@@ -721,6 +756,7 @@ const createMcqDocFromRow = ({
   reviewReason = null,
   isPastPaper = false,
   year = null,
+  subject: rowSubject = null,
 }) => {
   const questionMedia = extractImagesAndCleanText(question, questionImages)
   const explanationMedia = extractImagesAndCleanText(explanation, explanationImages)
@@ -740,7 +776,7 @@ const createMcqDocFromRow = ({
   return {
     courseId: context.course._id,
     topic: context.topic?.name || context.chapter.name,
-    subject: context.subject,
+    subject: rowSubject || context.subject,
     chapterId: context.chapter.id,
     chapterName: context.chapter.name,
     topicId: context.topic?.id || null,
@@ -1217,9 +1253,10 @@ exports.updateMcq = async (req, res) => {
         .json({ error: 'At least one option must be correct' })
     }
 
-    const nextSubject = userRoleName(req.user) === 'teacher'
-      ? mcq.subject
-      : subject
+    const isFlpCourse = isFlpCategory(mcq.courseId?.category) || isFlpCategory(mcq.courseId?.subject)
+    const nextSubject = (isFlpCourse && subject)
+      ? (normalizeSubject(subject) || mcq.subject)
+      : (userRoleName(req.user) === 'teacher' ? mcq.subject : (normalizeSubject(subject) || mcq.subject))
 
     mcq = await MCQ.findByIdAndUpdate(
       req.params.mcqId,
@@ -1407,13 +1444,19 @@ exports.getChaptersBySubject = async (req, res) => {
         .json({ success: true, subject, courseId: null, chapters: [] })
     }
 
-    const [counts, topicCounts] = await Promise.all([
+    const isFlp = isFlpCategory(subject)
+    const matchFilter = isFlp ? { courseId: course._id } : { courseId: course._id, subject }
+    const topicMatchFilter = isFlp
+      ? { courseId: course._id, topicId: { $ne: null } }
+      : { courseId: course._id, subject, topicId: { $ne: null } }
+
+    const [counts, topicCounts, flpSubjectGroupCounts] = await Promise.all([
       MCQ.aggregate([
-        { $match: { courseId: course._id, subject } },
+        { $match: matchFilter },
         { $group: { _id: '$chapterId', totalMcqs: { $sum: 1 } } },
       ]),
       MCQ.aggregate([
-        { $match: { courseId: course._id, subject, topicId: { $ne: null } } },
+        { $match: topicMatchFilter },
         {
           $group: {
             _id: { chapterId: '$chapterId', topicId: '$topicId' },
@@ -1421,6 +1464,17 @@ exports.getChaptersBySubject = async (req, res) => {
           },
         },
       ]),
+      isFlp
+        ? MCQ.aggregate([
+            { $match: { courseId: course._id } },
+            {
+              $group: {
+                _id: { chapterId: '$chapterId', subject: '$subject' },
+                count: { $sum: 1 },
+              },
+            },
+          ])
+        : Promise.resolve([]),
     ])
     const countByChapter = new Map(
       counts.map((item) => [item._id, item.totalMcqs]),
@@ -1432,6 +1486,20 @@ exports.getChaptersBySubject = async (req, res) => {
         item.totalMcqs,
       ]),
     )
+
+    const subjectCountsByChapter = new Map()
+    if (isFlp && Array.isArray(flpSubjectGroupCounts)) {
+      flpSubjectGroupCounts.forEach((item) => {
+        const chapId = item._id?.chapterId
+        const subj = item._id?.subject || 'Biology'
+        if (chapId) {
+          if (!subjectCountsByChapter.has(chapId)) {
+            subjectCountsByChapter.set(chapId, {})
+          }
+          subjectCountsByChapter.get(chapId)[subj] = item.count
+        }
+      })
+    }
 
     const chapters = (course.chapters || []).flatMap((chapter, index) => {
       const baseLocked = !canAccessChapterTest(req.user, subject, index)
@@ -1452,6 +1520,8 @@ exports.getChaptersBySubject = async (req, res) => {
           ? 'Please subscribe to access this test/past paper.'
           : null,
         topics,
+        isFlp,
+        subjectCounts: isFlp ? (subjectCountsByChapter.get(chapter.id) || {}) : undefined,
       }
 
       return [baseChapter]
@@ -1800,11 +1870,14 @@ const buildChapterMcqFilter = async (
   const topicContext = resolveChapterTopicContext(chapter, topicId)
   if (topicContext.error) return { error: topicContext.error }
 
+  const isFlp = isFlpCategory(subject)
   const filter = {
     courseId: course._id,
-    subject,
     chapterId: chapter.id,
     ...topicContext.topicFilter,
+  }
+  if (!isFlp) {
+    filter.subject = subject
   }
   if (!includeUnpublished) {
     filter.$or = [
@@ -1814,7 +1887,7 @@ const buildChapterMcqFilter = async (
     ]
     filter.needsReview = { $ne: true }
   }
-  return { subject, course, chapter, topic: topicContext.topic, filter }
+  return { subject, course, chapter, topic: topicContext.topic, filter, isFlp }
 }
 
 // ==================== MCQS BY CHAPTER ====================
@@ -1838,14 +1911,17 @@ exports.getMcqsByChapter = async (req, res) => {
       })
     }
 
+    const isFlp = Boolean(context.isFlp || isFlpCategory(context.subject) || context.course?.isFlp)
     const isPastPaper =
-      context.subject === 'Past Papers' ||
-      context.subject === 'past-papers' ||
-      Boolean(context.course?.isPastPaper)
+      !isFlp && (
+        context.subject === 'Past Papers' ||
+        context.subject === 'past-papers' ||
+        Boolean(context.course?.isPastPaper)
+      )
     const randomCount = Number(req.query.count || req.query.randomCount || 0)
     const isRandomMode =
-      !isPastPaper && !isTeacher && (req.query.mode === 'random' || randomCount > 0)
-    const selectedTestPart = isPastPaper
+      !isPastPaper && !isFlp && !isTeacher && (req.query.mode === 'random' || randomCount > 0)
+    const selectedTestPart = isPastPaper || isFlp
       ? null
       : isRandomMode
         ? null
@@ -1871,10 +1947,27 @@ exports.getMcqsByChapter = async (req, res) => {
     }
     const allMcqs = sortMcqsByOriginalOrder(await mcqQuery.lean())
     
+    // Compute available subjects and counts inside this chapter
+    const subjectCounts = {}
+    allMcqs.forEach((m) => {
+      const s = m.subject || 'Biology'
+      subjectCounts[s] = (subjectCounts[s] || 0) + 1
+    })
+    const availableSubjects = Object.keys(subjectCounts).map((s) => ({
+      subject: s,
+      count: subjectCounts[s],
+    }))
+
     let mcqs = allMcqs
+    const subjectsQuery = req.query.subjects || req.query.subject
+    if (subjectsQuery && subjectsQuery !== 'all') {
+      const allowedList = subjectsQuery.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean)
+      mcqs = allMcqs.filter((m) => allowedList.includes(String(m.subject || '').trim().toLowerCase()))
+    }
+
     if (isRandomMode) {
-      const shuffled = [...allMcqs].sort(() => 0.5 - Math.random())
-      const limit = randomCount > 0 ? Math.min(randomCount, allMcqs.length) : Math.min(20, allMcqs.length)
+      const shuffled = [...mcqs].sort(() => 0.5 - Math.random())
+      const limit = randomCount > 0 ? Math.min(randomCount, mcqs.length) : Math.min(20, mcqs.length)
       mcqs = shuffled.slice(0, limit)
     } else if (selectedTestPart) {
       mcqs = sliceMcqsForVirtualTest(allMcqs, selectedTestPart)
@@ -1891,13 +1984,15 @@ exports.getMcqsByChapter = async (req, res) => {
     const responseTitleBase = context.topic
       ? `${context.chapter.name} - ${context.topic.name}`
       : context.chapter.name
-    const responseChapter = isPastPaper
+    const responseChapter = (isPastPaper || isFlp)
       ? {
           ...responseChapterBase,
           name: context.chapter.name,
           originalName: context.chapter.name,
-          isPastPaper: true,
+          isPastPaper,
+          isFlp,
           totalChapterMcqs: allMcqs.length,
+          availableSubjects,
         }
       : isRandomMode
         ? {
@@ -1935,12 +2030,13 @@ exports.getMcqsByChapter = async (req, res) => {
                 totalChapterMcqs: allMcqs.length,
               }
 
-    const virtualTests = isPastPaper
+    const virtualTests = (isPastPaper || isFlp)
       ? []
       : buildVirtualChapterTests(context.chapter, allMcqs.length, {
           topicId: context.topic?.id,
           topicName: context.topic?.name,
           isPastPaper,
+          isFlp,
           subject: context.subject,
         })
 
@@ -1954,6 +2050,8 @@ exports.getMcqsByChapter = async (req, res) => {
       virtualTests,
       totalMcqs: allMcqs.length,
       totalChapterMcqs: allMcqs.length,
+      availableSubjects,
+      isFlp,
       reviewQueue: includeFull
         ? getChapterReviewQueue(context.chapter)
           .filter((item) => {
@@ -2097,10 +2195,15 @@ exports.createChapterMcq = async (req, res) => {
       optionDImages: optionDMedia.images,
       correctAnswer: normalizedAnswer,
     })
+    const isFlp = isFlpCategory(context.subject)
+    const mcqSubject = isFlp
+      ? (normalizeSubject(req.body.subject) || 'Biology')
+      : context.subject
+
     const mcq = await MCQ.create({
       courseId: context.course._id,
       topic: context.topic?.name || context.chapter.name,
-      subject: context.subject,
+      subject: mcqSubject,
       chapterId: context.chapter.id,
       chapterName: context.chapter.name,
       topicId: context.topic?.id || null,
@@ -2258,14 +2361,22 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
     const batchQuestionNumbers = new Set()
     const uploadedQuestionNumbers = new Set()
 
+    // Support subject-specific upload / append in FLPs
+    const targetSubjectParam = req.body?.targetSubject || req.query?.targetSubject || null
+    const normalizedTargetSubject = normalizeSubject(targetSubjectParam)
+    const isFlp = isFlpCategory(context.subject)
+
     // Count existing MCQs to offset new question numbers
-    const replaceAll = req.query.replaceAll === 'true'
+    const replaceAll = req.query.replaceAll === 'true' || req.body.replaceAll === 'true'
     const existingMcqFilter = {
       courseId: context.course._id,
       chapterId: context.chapter.id,
     }
     if (context.topic?.id) {
       existingMcqFilter.topicId = context.topic.id
+    }
+    if (isFlp && replaceAll && normalizedTargetSubject) {
+      existingMcqFilter.subject = normalizedTargetSubject
     }
 
     const [existingMcqCount, existingMcqs] = await Promise.all([
@@ -2467,6 +2578,9 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
           reviewReason: null,
           isPastPaper: context.subject === 'Past Papers' || rowIsPastPaper === 'true',
           year: rowYear || null,
+          subject: isFlp
+            ? (normalizeSubject(getCsvValue(row, 'subject', 'sub', 'course_subject')) || normalizedTargetSubject || 'Biology')
+            : undefined,
         }),
       )
     })
@@ -2474,32 +2588,17 @@ exports.uploadChapterMcqsCsv = async (req, res) => {
     const uploadedNumbers = [...uploadedQuestionNumbers].filter(Boolean)
 
     if (replaceAll) {
-      const numberFilter = {
-        $or: [
-          { originalQuestionNumber: { $in: uploadedNumbers } },
-          { questionNumber: { $in: uploadedNumbers } },
-        ],
-      }
       const replaceFilter = {
         courseId: context.course._id,
         chapterId: context.chapter.id,
       }
-      
-      if (context.topic?.id) {
+      if (isFlp && normalizedTargetSubject) {
+        replaceFilter.subject = normalizedTargetSubject
+      } else if (context.topic?.id) {
         replaceFilter.topicId = context.topic.id
-        if (!replaceAll) replaceFilter.$or = numberFilter.$or
-      } else {
-        if (replaceAll) {
-          replaceFilter.$or = [{ topicId: null }, { topicId: { $exists: false } }]
-        } else {
-          replaceFilter.$and = [
-            { $or: [{ topicId: null }, { topicId: { $exists: false } }] },
-            numberFilter,
-          ]
-        }
       }
-      // CSV upload is source-of-truth for these question-number slots.
-      // If replaceAll is true, it wipes all existing MCQs for this chapter/topic.
+      // CSV upload is source-of-truth.
+      // If replaceAll is true, it wipes existing MCQs for this chapter/topic/subject.
       await MCQ.deleteMany(replaceFilter)
     }
 
@@ -2833,12 +2932,15 @@ exports.getLatestChapterAttempt = async (req, res) => {
     const context = await buildChapterMcqFilter(req.params.subject, req.params.chapterId, false, req.query.topicId || null)
     if (context.error) return res.status(400).json({ error: context.error })
     if (!context.course || !context.chapter) return res.status(404).json({ error: 'Chapter not found' })
+    const isFlp = Boolean(context.isFlp || isFlpCategory(context.subject) || context.course?.isFlp)
     const isPastPaper =
-      context.subject === 'Past Papers' ||
-      context.subject === 'past-papers' ||
-      Boolean(context.course?.isPastPaper)
-    const selectedTestPart = isPastPaper ? null : normalizeTestPart(req.query.testPart)
-    const chapterName = isPastPaper
+      !isFlp && (
+        context.subject === 'Past Papers' ||
+        context.subject === 'past-papers' ||
+        Boolean(context.course?.isPastPaper)
+      )
+    const selectedTestPart = isPastPaper || isFlp ? null : normalizeTestPart(req.query.testPart)
+    const chapterName = (isPastPaper || isFlp)
       ? context.chapter.name
       : selectedTestPart
         ? { $regex: ' - Test ' + selectedTestPart + '$' }
@@ -2847,7 +2949,7 @@ exports.getLatestChapterAttempt = async (req, res) => {
       studentId: req.user.id, courseId: context.course._id, chapterId: context.chapter.id,
       topicId: context.topic?.id || null, chapterName,
     })
-      .select('_id chapterName totalQuestions score finalScore percentage answers submittedAt')
+      .select('_id chapterName totalQuestions score finalScore percentage answers subjectBreakdown selectedSubjects submittedAt')
       .sort({ submittedAt: -1 })
       .lean()
     if (!session) return res.status(200).json({ success: true, result: null })
@@ -2856,21 +2958,49 @@ exports.getLatestChapterAttempt = async (req, res) => {
       .lean()
     const mcqMap = new Map(mcqs.map((mcq) => [String(mcq._id), mcq]))
     const detailed = session.answers.map((answer) => {
-      const mcq = serializeMcqMedia(mcqMap.get(String(answer.mcqId)))
+      const rawMcq = mcqMap.get(String(answer.mcqId))
+      const mcq = serializeMcqMedia(rawMcq)
       const selectedIndex = Number(answer.selectedIndex)
-      return { mcqId: answer.mcqId, questionNumber: mcq.questionNumber || null,
-        originalQuestionNumber: mcq.originalQuestionNumber || mcq.questionNumber || null, csvRowIndex: mcq.csvRowIndex || null,
-        question: mcq.questionText || mcq.question || '', questionText: mcq.questionText || mcq.question || '',
-        questionImages: mcq.questionImages || [], options: mcq.options || [], selectedIndex, correctIndex: Number(answer.correctIndex),
-        skipped: selectedIndex < 0, isCorrect: Boolean(answer.isCorrect), explanation: mcq.explanationText || mcq.explanation || '',
-        explanationText: mcq.explanationText || mcq.explanation || '', explanationImages: mcq.explanationImages || [] }
+      return {
+        mcqId: answer.mcqId,
+        subject: rawMcq?.subject || 'Biology',
+        questionNumber: mcq.questionNumber || null,
+        originalQuestionNumber: mcq.originalQuestionNumber || mcq.questionNumber || null,
+        csvRowIndex: mcq.csvRowIndex || null,
+        question: mcq.questionText || mcq.question || '',
+        questionText: mcq.questionText || mcq.question || '',
+        questionImages: mcq.questionImages || [],
+        options: mcq.options || [],
+        selectedIndex,
+        correctIndex: Number(answer.correctIndex),
+        skipped: selectedIndex < 0,
+        isCorrect: Boolean(answer.isCorrect),
+        explanation: mcq.explanationText || mcq.explanation || '',
+        explanationText: mcq.explanationText || mcq.explanation || '',
+        explanationImages: mcq.explanationImages || [],
+      }
     })
     const skipped = detailed.filter((item) => item.skipped).length
     const correct = detailed.filter((item) => item.isCorrect).length
-    return res.status(200).json({ success: true, result: { testSessionId: session._id, subject: context.subject,
-      chapter: { ...context.chapter, name: session.chapterName || context.chapter.name }, selectedTopic: context.topic,
-      totalQuestions: session.totalQuestions, correct, wrong: session.totalQuestions - correct - skipped, skipped,
-      score: session.finalScore ?? session.score, percentage: session.percentage, detailed } })
+    return res.status(200).json({
+      success: true,
+      result: {
+        testSessionId: session._id,
+        subject: context.subject,
+        chapter: { ...context.chapter, name: session.chapterName || context.chapter.name, isFlp, isPastPaper },
+        selectedTopic: context.topic,
+        totalQuestions: session.totalQuestions,
+        correct,
+        wrong: session.totalQuestions - correct - skipped,
+        skipped,
+        score: session.finalScore ?? session.score,
+        percentage: session.percentage,
+        subjectBreakdown: session.subjectBreakdown || null,
+        selectedSubjects: session.selectedSubjects || [],
+        isFlp,
+        detailed,
+      },
+    })
   } catch (error) { return res.status(500).json({ error: error.message }) }
 }
 
@@ -2900,18 +3030,21 @@ exports.submitChapterAttempt = async (req, res) => {
     const answerIds = Array.isArray(req.body.mcqIds) && req.body.mcqIds.length
       ? req.body.mcqIds.map(String)
       : Object.keys(answers).filter(Boolean)
+    const isFlp = Boolean(context.isFlp || isFlpCategory(context.subject) || context.course?.isFlp)
     const isPastPaper =
-      context.subject === 'Past Papers' ||
-      context.subject === 'past-papers' ||
-      Boolean(context.course?.isPastPaper)
+      !isFlp && (
+        context.subject === 'Past Papers' ||
+        context.subject === 'past-papers' ||
+        Boolean(context.course?.isPastPaper)
+      )
     const isRandomAttempt =
-      !isPastPaper &&
+      !isPastPaper && !isFlp &&
       Boolean(req.query.mode === 'random' || req.body.mode === 'random' || req.body.isRandom)
 
     let mcqs = []
     let allMcqs = []
 
-    if (isRandomAttempt && answerIds.length > 0) {
+    if ((isRandomAttempt || isFlp) && answerIds.length > 0) {
       const queriedMcqs = await MCQ.find({
         ...context.filter,
         _id: { $in: answerIds },
@@ -2927,7 +3060,17 @@ exports.submitChapterAttempt = async (req, res) => {
           .select('-createdBy -reviewReason -validationErrors -importBatchId')
           .lean(),
       )
-      const selectedTestPart = isPastPaper ? null : normalizeTestPart(req.query.testPart)
+      // If subjects filter passed in body/query for FLP
+      const subjectsQuery = req.body.subjects || req.query.subjects
+      if (isFlp && subjectsQuery && subjectsQuery !== 'all') {
+        const allowed = (Array.isArray(subjectsQuery) ? subjectsQuery : String(subjectsQuery).split(','))
+          .map((s) => s.trim().toLowerCase())
+          .filter(Boolean)
+        if (allowed.length > 0) {
+          allMcqs = allMcqs.filter((m) => allowed.includes(String(m.subject || '').trim().toLowerCase()))
+        }
+      }
+      const selectedTestPart = isPastPaper || isFlp ? null : normalizeTestPart(req.query.testPart)
       mcqs = selectedTestPart ? sliceMcqsForVirtualTest(allMcqs, selectedTestPart) : allMcqs
     }
 
@@ -2946,6 +3089,7 @@ exports.submitChapterAttempt = async (req, res) => {
       const isCorrect = !skipped && selectedIndex === correctIndex
       return {
         mcqId: mcq._id,
+        subject: rawMcq.subject || 'Biology',
         questionNumber: mcq.questionNumber || null,
         originalQuestionNumber: mcq.originalQuestionNumber || mcq.questionNumber || null,
         csvRowIndex: mcq.csvRowIndex || null,
@@ -2971,13 +3115,14 @@ exports.submitChapterAttempt = async (req, res) => {
     const responseTitleBase = context.topic
       ? `${context.chapter.name} - ${context.topic.name}`
       : context.chapter.name
-    const selectedTestPart = isPastPaper ? null : normalizeTestPart(req.query.testPart)
-    const responseChapter = isPastPaper
+    const selectedTestPart = isPastPaper || isFlp ? null : normalizeTestPart(req.query.testPart)
+    const responseChapter = (isPastPaper || isFlp)
       ? {
           ...context.chapter,
           name: context.chapter.name,
           originalName: context.chapter.name,
-          isPastPaper: true,
+          isPastPaper,
+          isFlp,
           totalChapterMcqs: allMcqs.length,
         }
       : isRandomAttempt
@@ -3014,6 +3159,35 @@ exports.submitChapterAttempt = async (req, res) => {
             : context.chapter
     const attemptChapterName = responseChapter.name || context.chapter.name
 
+    // Calculate subject-wise breakdown
+    const subjectBreakdown = {}
+    detailed.forEach((item) => {
+      const subj = item.subject || 'Biology'
+      if (!subjectBreakdown[subj]) {
+        subjectBreakdown[subj] = {
+          total: 0,
+          correct: 0,
+          wrong: 0,
+          skipped: 0,
+          score: 0,
+          percentage: 0,
+        }
+      }
+      subjectBreakdown[subj].total += 1
+      if (item.isCorrect) {
+        subjectBreakdown[subj].correct += 1
+        subjectBreakdown[subj].score += 1
+      } else if (item.skipped) {
+        subjectBreakdown[subj].skipped += 1
+      } else {
+        subjectBreakdown[subj].wrong += 1
+      }
+    })
+    Object.keys(subjectBreakdown).forEach((subj) => {
+      const b = subjectBreakdown[subj]
+      b.percentage = b.total > 0 ? Math.round((b.correct / b.total) * 100) : 0
+    })
+
     let newStreak = 0
     let newBadges = []
     let testSessionId = 'guest-session'
@@ -3024,51 +3198,47 @@ exports.submitChapterAttempt = async (req, res) => {
       today.setUTCHours(0, 0, 0, 0);
       const lastPractice = req.user.lastPracticeDate ? new Date(req.user.lastPracticeDate.getTime() + PKT_OFFSET) : null;
       if (lastPractice) lastPractice.setUTCHours(0, 0, 0, 0);
-    
-      const ONE_DAY = 24 * 60 * 60 * 1000;
-      newStreak = req.user.currentStreak || 0;
-    
-      if (!lastPractice) {
-        newStreak = 1;
-      } else {
-        const diffDays = Math.round((today - lastPractice) / ONE_DAY);
-        if (diffDays === 1) {
-          newStreak += 1;
-        } else if (diffDays > 1) {
-          newStreak = 1;
-        }
-      }
-    
-      newBadges = [...(req.user.badges || [])];
-      if (newStreak >= 7 && !newBadges.includes('7-Day Streak')) newBadges.push('7-Day Streak');
-      if (newStreak >= 30 && !newBadges.includes('30-Day Streak')) newBadges.push('30-Day Streak');
-      if (percentage === 100 && !newBadges.includes('Perfect Score')) newBadges.push('Perfect Score');
-    
-      await req.user.updateOne({
-        currentStreak: newStreak,
-        lastPracticeDate: new Date(),
-        badges: newBadges
-      });
-    
-      req.user.currentStreak = newStreak;
-      req.user.badges = newBadges;
 
+      let streak = req.user.currentStreak || 0;
+      if (!lastPractice) {
+        streak = 1;
+      } else {
+        const diffDays = Math.round((today - lastPractice) / (24 * 60 * 60 * 1000));
+        if (diffDays === 1) streak += 1;
+        else if (diffDays > 1) streak = 1;
+      }
+
+      req.user.currentStreak = streak;
+      req.user.longestStreak = Math.max(req.user.longestStreak || 0, streak);
+      req.user.lastPracticeDate = new Date();
+      await req.user.save();
+      newStreak = streak;
+
+      const rawTimeSpent = Number(req.body.timeSpentSeconds)
+      const sanitizedTimeSpent =
+        Number.isFinite(rawTimeSpent) && rawTimeSpent > 0
+          ? Math.min(Math.round(rawTimeSpent), 24 * 3600)
+          : null
+      const selectedSubjectsList = Array.isArray(req.body.subjects)
+        ? req.body.subjects
+        : req.query.subjects
+          ? String(req.query.subjects).split(',')
+          : []
       const testSession = await TestSession.create({
         studentId: req.user.id,
         courseId: context.course._id,
-        topic: context.topic?.name || attemptChapterName,
-        topicId: context.topic?.id || null,
         subject: context.subject,
         chapterId: context.chapter.id,
         chapterName: attemptChapterName,
+        topicId: context.topic?.id || null,
         totalQuestions: detailed.length,
         score: correct,
-        finalScore: correct,
         percentage,
-        timeLimitSeconds: req.body.timeLimitSeconds || detailed.length * 50,
-        timeSpentSeconds: req.body.timeSpentSeconds || null,
-        startedAt: Number.isNaN(startedAt.getTime()) ? new Date() : startedAt,
+        timeSpentSeconds: sanitizedTimeSpent,
+        startedAt,
         submittedAt: new Date(),
+        subjectBreakdown,
+        selectedSubjects: selectedSubjectsList,
         answers: detailed
           .map((item) => ({
             mcqId: item.mcqId,
@@ -3092,6 +3262,8 @@ exports.submitChapterAttempt = async (req, res) => {
       skipped,
       score: correct,
       percentage,
+      subjectBreakdown,
+      isFlp,
       detailed,
       newStreak,
       newBadges,

@@ -1,7 +1,9 @@
-const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers']
+const SUBJECTS = ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers', 'FLPs', 'Logical Reasoning']
 
 const normalizeSubject = (value) => {
   const raw = String(value || '').trim().toLowerCase().replace(/-/g, ' ')
+  if (raw === 'flps' || raw === 'flp' || raw === 'full length papers') return 'FLPs'
+  if (raw === 'logical reasoning' || raw === 'logical-reasoning') return 'Logical Reasoning'
   return SUBJECTS.find((subject) => subject.toLowerCase() === raw) || ''
 }
 
@@ -23,7 +25,7 @@ const getTeacherSubjects = (user) => {
 const canTeacherAccessSubject = (user, subject) => {
   const normalized = normalizeSubject(subject)
   if (!normalized) return false
-  if (normalized === 'Past Papers') return true
+  if (normalized === 'Past Papers' || normalized === 'FLPs') return true
   return getTeacherSubjects(user).includes(normalized)
 }
 

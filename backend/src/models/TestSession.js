@@ -45,7 +45,7 @@ const testSessionSchema = new mongoose.Schema(
     },
     subject: {
       type: String,
-      enum: ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers'],
+      enum: ['Biology', 'Chemistry', 'Physics', 'English', 'Past Papers', 'FLPs', 'Logical Reasoning'],
       default: null,
     },
     chapterId: {
@@ -99,6 +99,14 @@ const testSessionSchema = new mongoose.Schema(
     },
     answers: {
       type: [answerSchema],
+      default: [],
+    },
+    subjectBreakdown: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
+    },
+    selectedSubjects: {
+      type: [String],
       default: [],
     },
   },
