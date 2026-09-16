@@ -228,6 +228,11 @@ export default function TestReview() {
                 <div className="review-compact-header">
                   <div className="review-compact-left">
                     <span className="review-compact-qnum">Question #{qNum}</span>
+                    {item.subject && (
+                      <span className="flp-mcq-subject-badge" style={{ marginBottom: 0, marginLeft: '6px' }}>
+                        {item.subject}
+                      </span>
+                    )}
                     <button
                       type="button"
                       onClick={() => toggleFlashcard(itemId)}

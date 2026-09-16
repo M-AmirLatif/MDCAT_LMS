@@ -3823,8 +3823,8 @@ function QuizAttempt() {
 
         <div className="mcq-attempt-layout">
           <div className="mcq-question-card">
-            {isFlp && current.subject && (
-              <div className="flp-mcq-subject-badge" style={{ display: 'inline-block', padding: '3px 10px', borderRadius: '8px', background: 'rgba(168, 85, 247, 0.15)', color: '#c084fc', fontSize: '0.78rem', fontWeight: 700, marginBottom: '8px', letterSpacing: '0.03em' }}>
+            {current.subject && (
+              <div className="flp-mcq-subject-badge">
                 {current.subject}
               </div>
             )}
@@ -4299,6 +4299,11 @@ function ReviewSection({ title, items, savedStatus, toggleFlashcard, subjectName
             <div className="review-compact-header">
               <div className="review-compact-left">
                 <span className="review-compact-qnum">Question #{qNum}</span>
+                {item.subject && (
+                  <span className="flp-mcq-subject-badge" style={{ marginBottom: 0, marginLeft: '6px' }}>
+                    {item.subject}
+                  </span>
+                )}
                 <button
                   type="button"
                   onClick={() => toggleFlashcard(itemId, subjectName, chapterId)}
