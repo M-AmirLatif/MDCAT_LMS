@@ -1044,7 +1044,7 @@ html[data-theme="dark"] [class*="progress-track"] {
 
 html[data-theme="dark"] .badge,
 html[data-theme="dark"] .pill,
-html[data-theme="dark"] [class*="badge"]:not(.badge-teal):not(.badge-amber):not(.badge-coral):not(.badge-purple) {
+html[data-theme="dark"] .badge:not(.badge-teal):not(.badge-amber):not(.badge-coral):not(.badge-purple) {
   background: rgba(255,255,255,0.10) !important;
   color: rgba(240,238,255,0.80) !important;
   border-color: rgba(255,255,255,0.12) !important;

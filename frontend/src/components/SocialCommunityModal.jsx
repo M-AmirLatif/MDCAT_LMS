@@ -143,7 +143,7 @@ export default function SocialCommunityModal() {
         </button>
 
         <div className="social-modal-header">
-          <div className="social-modal-badge">
+          <div className="social-modal-header-tag">
             <WhatsAppIcon size={16} /> Official MDCAT Communities
           </div>
           <h2 id="social-modal-title" className="social-modal-title">
@@ -167,9 +167,9 @@ export default function SocialCommunityModal() {
               <MegaphoneIcon size={22} />
             </div>
             <div className="social-card-info">
-              <div className="social-card-badge-row">
-                <span className="social-card-badge">{SOCIAL_LINKS.whatsappChannel.badge}</span>
-                <span className="social-card-pill">Recommended 🔥</span>
+              <div className="social-card-tags-row">
+                <span className="social-card-tag-label">{SOCIAL_LINKS.whatsappChannel.badge}</span>
+                <span className="social-card-pill-tag">Recommended 🔥</span>
               </div>
               <strong className="social-card-title">{SOCIAL_LINKS.whatsappChannel.title}</strong>
               <span className="social-card-desc">{SOCIAL_LINKS.whatsappChannel.subtitle}</span>
@@ -191,7 +191,9 @@ export default function SocialCommunityModal() {
               <BellIcon size={22} />
             </div>
             <div className="social-card-info">
-              <span className="social-card-badge">{SOCIAL_LINKS.whatsappUpdatesGroup.badge}</span>
+              <div className="social-card-tags-row">
+                <span className="social-card-tag-label">{SOCIAL_LINKS.whatsappUpdatesGroup.badge}</span>
+              </div>
               <strong className="social-card-title">{SOCIAL_LINKS.whatsappUpdatesGroup.title}</strong>
               <span className="social-card-desc">{SOCIAL_LINKS.whatsappUpdatesGroup.subtitle}</span>
             </div>
@@ -212,7 +214,9 @@ export default function SocialCommunityModal() {
               <ChatIcon size={22} />
             </div>
             <div className="social-card-info">
-              <span className="social-card-badge">{SOCIAL_LINKS.whatsappDiscussionGroup.badge}</span>
+              <div className="social-card-tags-row">
+                <span className="social-card-tag-label">{SOCIAL_LINKS.whatsappDiscussionGroup.badge}</span>
+              </div>
               <strong className="social-card-title">{SOCIAL_LINKS.whatsappDiscussionGroup.title}</strong>
               <span className="social-card-desc">{SOCIAL_LINKS.whatsappDiscussionGroup.subtitle}</span>
             </div>

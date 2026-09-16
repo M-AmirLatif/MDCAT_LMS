@@ -101,7 +101,7 @@
   padding: 0 8px;
 }
 
-.social-modal-badge {
+.social-modal-header-tag {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -111,16 +111,16 @@
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  background: rgba(37, 211, 102, 0.14);
-  color: #059669;
-  border: 1px solid rgba(37, 211, 102, 0.35);
+  background: rgba(37, 211, 102, 0.14) !important;
+  color: #059669 !important;
+  border: 1px solid rgba(37, 211, 102, 0.35) !important;
   margin-bottom: 12px;
 }
 
-[data-theme="dark"] .social-modal-badge {
-  background: rgba(37, 211, 102, 0.18);
-  color: #4ade80;
-  border-color: rgba(37, 211, 102, 0.45);
+[data-theme="dark"] .social-modal-header-tag {
+  background: rgba(37, 211, 102, 0.18) !important;
+  color: #4ade80 !important;
+  border-color: rgba(37, 211, 102, 0.45) !important;
 }
 
 .social-modal-title {
@@ -129,6 +129,7 @@
   font-weight: 800;
   line-height: 1.25;
   letter-spacing: -0.02em;
+  background: transparent !important;
 }
 
 .social-modal-subtitle {
@@ -137,6 +138,7 @@
   font-size: 13.5px;
   line-height: 1.45;
   color: #64748b;
+  background: transparent !important;
 }
 
 [data-theme="dark"] .social-modal-subtitle {
@@ -237,38 +239,68 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  background: transparent !important;
 }
 
-.social-card-badge-row {
+.social-card-tags-row {
   display: flex;
   align-items: center;
   gap: 8px;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
-.social-card-badge {
+.social-card-tag-label {
   font-size: 11px;
   font-weight: 700;
-  color: #059669;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
-[data-theme="dark"] .social-card-badge {
-  color: #34d399;
+.social-card--channel .social-card-tag-label {
+  color: #059669 !important;
+}
+[data-theme="dark"] .social-card--channel .social-card-tag-label {
+  color: #34d399 !important;
 }
 
-.social-card-pill {
+.social-card--updates .social-card-tag-label {
+  color: #0284c7 !important;
+}
+[data-theme="dark"] .social-card--updates .social-card-tag-label {
+  color: #38bdf8 !important;
+}
+
+.social-card--discussion .social-card-tag-label {
+  color: #7c3aed !important;
+}
+[data-theme="dark"] .social-card--discussion .social-card-tag-label {
+  color: #a78bfa !important;
+}
+
+.social-card-pill-tag {
   font-size: 10px;
   font-weight: 800;
-  padding: 1px 6px;
+  padding: 2px 7px;
   border-radius: 999px;
-  background: #fef08a;
-  color: #854d0e;
+  background: #fef08a !important;
+  color: #854d0e !important;
+  border: 1px solid rgba(202, 138, 4, 0.25) !important;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.2;
 }
 
-[data-theme="dark"] .social-card-pill {
-  background: #ca8a04;
-  color: #fef9c3;
+[data-theme="dark"] .social-card-pill-tag {
+  background: rgba(202, 138, 4, 0.3) !important;
+  color: #fef08a !important;
+  border-color: rgba(234, 179, 8, 0.45) !important;
 }
 
 .social-card-title {
