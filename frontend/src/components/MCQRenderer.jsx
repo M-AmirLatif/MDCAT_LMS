@@ -54,8 +54,13 @@ const ENGLISH_STOPWORDS = new Set([
   'complex', 'activated', 'best', 'none', 'above', 'below', 'neither', 'either', 'both',
   'always', 'never', 'only', 'also', 'about', 'per', 'ratio', 'product', 'reactant', 'rate',
   'time', 'mass', 'charge', 'field', 'potential', 'current', 'voltage', 'power', 'work',
-  'heat', 'entropy', 'enthalpy', 'equilibrium', 'forward', 'reverse', 'direction', 'effect'
+  'time', 'mass', 'charge', 'field', 'potential', 'current', 'voltage', 'power', 'work',
+  'heat', 'entropy', 'enthalpy', 'equilibrium', 'forward', 'reverse', 'direction', 'effect',
+  'half', 'twice', 'times', 'double', 'triple', 'quarter', 'third', 'fourth', 'fifth',
+  'lesser', 'greater', 'becomes', 'doubled', 'tripled', 'halved', 'quadrupled'
 ])
+
+export const COMPARISON_PROSE_REGEX = /\b(is|was|are|were|becomes|become|equal to|equals|greater than|less than|lesser than|more than|half of|half|twice|times|double|triple|doubled|tripled|halved|quadrupled|proportional to|inversely proportional to|directly proportional to)\b/i
 
 export function isEnglishWord(word) {
   const clean = String(word || '').toLowerCase().replace(/[^a-z]/g, '')
@@ -99,24 +104,32 @@ export function cleanAiCitations(text) {
       .replace(/【[^】]*?】/g, '')
       .replace(/\\+\[([\s\S]*?)\\+\]/g, (m, inner) => {
         const trimmed = inner.trim()
+        const textCleaned = trimmed.replace(/\\text\{([^}]+)\}/g, '$1').replace(/\\[\s,;:]/g, ' ').replace(/\s+/g, ' ').trim()
+        const words = textCleaned.split(/\s+/).filter(Boolean)
+        if (words.length >= 2 && (words.filter(isEnglishWord).length >= 1 || COMPARISON_PROSE_REGEX.test(textCleaned))) {
+          return textCleaned
+        }
         if (!/[\\^_{}=<>+*\/±×÷≈≠≤≥~]/.test(trimmed)) {
-          const words = trimmed.split(/\s+/)
           if (words.length >= 2 && words.filter(isEnglishWord).length >= 1) return trimmed
         }
         return `$$${inner}$$`
       })
       .replace(/\\+\(([\s\S]*?)\\+\)/g, (m, inner) => {
         const trimmed = inner.trim()
+        const textCleaned = trimmed.replace(/\\text\{([^}]+)\}/g, '$1').replace(/\\[\s,;:]/g, ' ').replace(/\s+/g, ' ').trim()
+        const words = textCleaned.split(/\s+/).filter(Boolean)
+        if (words.length >= 2 && (words.filter(isEnglishWord).length >= 1 || COMPARISON_PROSE_REGEX.test(textCleaned))) {
+          return textCleaned
+        }
         if (!/[\\^_{}=<>+*\/±×÷≈≠≤≥~]/.test(trimmed)) {
-          const words = trimmed.split(/\s+/)
           if (words.length >= 2 || (words.length === 1 && isEnglishWord(words[0]))) return trimmed
         }
         const mixedMatch = trimmed.match(/^([A-Za-z\s,;:'"-]{3,}\s+)([\S\s]*)$/)
         if (mixedMatch && !mixedMatch[1].includes('\\')) {
           const prose = mixedMatch[1]
           const math = mixedMatch[2]
-          const words = prose.trim().split(/\s+/)
-          if (words.length >= 2 || (words.length >= 1 && isEnglishWord(words[0]))) {
+          const proseWords = prose.trim().split(/\s+/)
+          if (proseWords.length >= 2 || (proseWords.length >= 1 && isEnglishWord(proseWords[0]))) {
             return prose + '$' + math + '$'
           }
         }
@@ -154,8 +167,9 @@ export function unicodeToLatex(str) {
     '≥': '\\geq ',
     'Σ': '\\Sigma ',
     '∑': '\\sum ',
+    '√': '\\sqrt ',
   }
-  return str.replace(/[Δλθαβγμπσωρεφηνη∞±×÷≈≠≤≥Σ∑]/g, (ch) => map[ch] || ch)
+  return str.replace(/[Δλθαβγμπσωρεφηνη∞±×÷≈≠≤≥Σ∑√]/g, (ch) => map[ch] || ch)
 }
 
 export function sanitizeLatexForKaTeX(expr) {
@@ -171,6 +185,16 @@ export function sanitizeLatexForKaTeX(expr) {
   res = res.replace(/\^\\(Delta|Sigma|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|pi|rho|sigma|tau|phi|chi|psi|omega)\s*([a-zA-Z0-9])/g, '^{\\$1 $2}')
   res = res.replace(/\^\(([^)]+)\)/g, '^{$1}')
   res = res.replace(/\(([A-Za-z]{2,})\)/g, '(\\text{$1})')
+  res = res.replace(/\\sqrt\s*\(([^)]+)\)/g, (m, inner) => {
+    if (inner.includes('/')) {
+      const parts = inner.split('/')
+      return `\\sqrt{\\frac{${parts[0].trim()}}{${parts[1].trim()}}}`
+    }
+    return `\\sqrt{${inner}}`
+  })
+  res = res.replace(/\\sqrt\{([^}]+)\/([^}]+)\}/g, (m, num, den) => {
+    return `\\sqrt{\\frac{${num.trim()}}{${den.trim()}}}`
+  })
   return res.trim()
 }
 
@@ -314,6 +338,8 @@ function cleanGreekAndConstants(str) {
 
 function cleanAlgebraicTerm(term) {
   let res = cleanGreekAndConstants(term.trim())
+  res = res.replace(/(?:√|\\sqrt)\s*(?:\(([^)]+)\)|\{([^}]+)\})/g, (m, p, b) => `\\sqrt{${cleanAlgebraicTerm(p || b)}}`)
+  res = res.replace(/√\s*([A-Za-z0-9]+)/g, '\\sqrt{$1}')
   res = res.replace(/[²]/g, '^2').replace(/[³]/g, '^3').replace(/[¹]/g, '^1')
   res = res.replace(/\^([A-Za-z0-9+\-]+)/g, '^{$1}')
   return res.trim()
@@ -493,8 +519,27 @@ export function formatFormulasInText(text) {
     }
   }
 
-  // 13. Algebraic & Numerical fractions: e.g. "0.693/T", "T/0.693", "1/T^2", "1/T²", "Q^2/(4πε0a^2)", "-Q^2/(4πε0a^2)", "1/(4πε0)", "mv^2/r"
-  const fracRegex = /(?<![A-Za-z0-9$.])([+-]?)(?:\(([^)]+)\)|([A-Za-z0-9^_{}\\.πελθμΔσωραβγ²³]+))\s*\/\s*(?:\(([^)]+)\)|([A-Za-z0-9^_{}\\.πελθμΔσωραβγ²³]+))(?![A-Za-z0-9$.])/g
+  // 13. Grouped square roots in non-math text:
+  // e.g. "√(W/k)", "√(W / k)", "√{W/k}", "\sqrt(W/k)", "\sqrt{W/k}", "√(2gh)"
+  str = mapNonMath(str, (s) => {
+    let res = s
+    res = res.replace(/(?:√|\\sqrt)\s*(?:\(([^)]+)\)|\{([^}]+)\})/g, (m, paren, brace) => {
+      const inner = (paren || brace).trim()
+      if (inner.includes('/')) {
+        const parts = inner.split('/')
+        if (parts.length === 2) {
+          const cleanNum = cleanAlgebraicTerm(parts[0].trim())
+          const cleanDen = cleanAlgebraicTerm(parts[1].trim())
+          return `$\\sqrt{\\frac{${cleanNum}}{${cleanDen}}}$`
+        }
+      }
+      return `$\\sqrt{${cleanAlgebraicTerm(inner)}}$`
+    })
+    return res
+  })
+
+  // 14. Algebraic & Numerical fractions: e.g. "0.693/T", "T/0.693", "1/T^2", "1/T²", "Q^2/(4πε0a^2)", "-Q^2/(4πε0a^2)", "1/(4πε0)", "mv^2/r", "1/√2"
+  const fracRegex = /(?<![A-Za-z0-9$.])([+-]?)(?:\(([^)]+)\)|([A-Za-z0-9^_{}\\.πελθμΔσωραβγ²³√]+(?:\([^)]+\))?))\s*\/\s*(?:\(([^)]+)\)|([A-Za-z0-9^_{}\\.πελθμΔσωραβγ²³√]+(?:\([^)]+\))?))(?![A-Za-z0-9$.])/g
   str = mapNonMath(str, (s) =>
     s.replace(fracRegex, (match, sign, numParen, numRaw, denParen, denRaw) => {
       const num = numParen || numRaw
@@ -503,7 +548,7 @@ export function formatFormulasInText(text) {
       if (/^(?:and|or|yes|no|true|false|either|neither)$/i.test(num) || /^(?:and|or|yes|no|true|false|either|neither)$/i.test(den)) return match
       if (/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(match)) return match
 
-      const isMath = /[0-9^πελθμΔσωραβγ_²³\\]/.test(match) || /^[A-Za-z]\/[A-Za-z]$/.test(match) || /^[A-Za-z0-9.]+\/[A-Za-z0-9.]+$/.test(match)
+      const isMath = /[0-9^πελθμΔσωραβγ_²³\\√]/.test(match) || /^[A-Za-z]\/[A-Za-z]$/.test(match) || /^[A-Za-z0-9.]+\/[A-Za-z0-9.]+$/.test(match)
       if (!isMath) return match
 
       const cleanNum = cleanAlgebraicTerm(num)
@@ -514,6 +559,23 @@ export function formatFormulasInText(text) {
     })
   )
 
+  // 15. Standalone single-token square roots: e.g. "√2", "√3", "√x", "√g"
+  str = mapNonMath(str, (s) => {
+    let res = s
+    res = res.replace(/√\s*([A-Za-z0-9]+)/g, (m, token) => {
+      return `$\\sqrt{${token}}$`
+    })
+    return res
+  })
+
+  // 16. Fractions where numerator or denominator is already math (e.g. 1/$\sqrt{\frac{W}{k}}$):
+  str = str.replace(/(?<![A-Za-z0-9$])([0-9A-Za-z]+)\s*\/\s*\$([^$]+)\$/g, (m, num, mathDen) => {
+    return `$\\frac{${num}}{${mathDen}}$`
+  })
+  str = str.replace(/\$([^$]+)\$\s*\/\s*([0-9A-Za-z]+)(?![A-Za-z0-9$])/g, (m, mathNum, den) => {
+    return `$\\frac{${mathNum}}{${den}}$`
+  })
+
   let cleaned = cleanAiCitations(str)
   cleaned = splitByMathDelimiters(cleaned).map((seg) => {
     if (seg.type === 'math') return seg.content
@@ -523,8 +585,12 @@ export function formatFormulasInText(text) {
   // Clean any accidental English prose inside $ ... $
   cleaned = cleaned.replace(/(?<!\$)\$([^$\n]+?)\$(?!\$)/g, (m, inner) => {
     const trimmed = inner.trim()
+    const textCleaned = trimmed.replace(/\\text\{([^}]+)\}/g, '$1').replace(/\\[\s,;:]/g, ' ').replace(/\s+/g, ' ').trim()
+    const words = textCleaned.split(/\s+/).filter(Boolean)
+    if (words.length >= 2 && (words.filter(isEnglishWord).length >= 1 || COMPARISON_PROSE_REGEX.test(textCleaned))) {
+      return textCleaned
+    }
     if (!/[\\^_{}=<>+*\/±×÷≈≠≤≥~]/.test(trimmed)) {
-      const words = trimmed.split(/\s+/)
       if (words.length >= 2 && words.filter(isEnglishWord).length >= 1) {
         return trimmed
       }
@@ -533,8 +599,8 @@ export function formatFormulasInText(text) {
     if (mixedMatch && !mixedMatch[1].includes('\\')) {
       const prose = mixedMatch[1]
       const math = mixedMatch[2]
-      const words = prose.trim().split(/\s+/)
-      if (words.length >= 2 || (words.length >= 1 && isProseWord(words[0]))) {
+      const proseWords = prose.trim().split(/\s+/)
+      if (proseWords.length >= 2 || (proseWords.length >= 1 && isEnglishWord(proseWords[0]))) {
         return prose + '$' + math + '$'
       }
     }
@@ -1058,9 +1124,15 @@ export function parseLatexText(text) {
     const isDisplay = raw.startsWith('$$')
     const inner = raw.slice(isDisplay ? 2 : 1, isDisplay ? -2 : -1).trim()
 
-    // Safety check: If inner is purely prose (e.g. "a stable intermediate collected after reaction"), render as plain text!
+    // Safety check: If inner is prose or comparison sentence, render as plain text!
+    const textCleaned = inner.replace(/\\text\{([^}]+)\}/g, '$1').replace(/\\[\s,;:]/g, ' ').replace(/\s+/g, ' ').trim()
+    const words = textCleaned.split(/\s+/).filter(Boolean)
+    if (words.length >= 2 && (words.filter(isEnglishWord).length >= 1 || COMPARISON_PROSE_REGEX.test(textCleaned))) {
+      parts.push({ type: 'text', content: textCleaned })
+      last = match.index + raw.length
+      continue
+    }
     if (!/[\\^_{}=<>+*\/±×÷≈≠≤≥~]/.test(inner)) {
-      const words = inner.split(/\s+/)
       if (words.length >= 2 && words.filter(isEnglishWord).length >= 1) {
         parts.push({ type: 'text', content: inner })
         last = match.index + raw.length

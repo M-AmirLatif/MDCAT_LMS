@@ -6904,3 +6904,41 @@ html:not([data-theme="dark"]) body .student-quiz-summary-card {
   background: #ffffff !important;
   box-shadow: 0 10px 24px rgba(30, 41, 75, 0.08) !important;
 }
+
+/* ==========================================================================
+   HIGH CONTRAST EXPLANATION TOGGLE BUTTON (LIGHT & DARK MODE)
+   ========================================================================== */
+html:not([data-theme="dark"]) .review-toggle-expl-btn,
+html[data-theme="light"] .review-toggle-expl-btn,
+:root:not([data-theme="dark"]) .review-toggle-expl-btn {
+  background: #f1f5f9 !important;
+  color: #4f46e5 !important;
+  border: 1.5px solid #cbd5e1 !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+  cursor: pointer !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+html:not([data-theme="dark"]) .review-toggle-expl-btn:hover,
+html[data-theme="light"] .review-toggle-expl-btn:hover,
+:root:not([data-theme="dark"]) .review-toggle-expl-btn:hover {
+  background: #e2e8f0 !important;
+  color: #3730a3 !important;
+  border-color: #94a3b8 !important;
+}
+
+html[data-theme="dark"] .review-toggle-expl-btn {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #e2e8f0 !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  font-weight: 600 !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="dark"] .review-toggle-expl-btn:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
