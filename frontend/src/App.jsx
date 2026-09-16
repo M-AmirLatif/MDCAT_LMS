@@ -51,6 +51,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 
 import AppLayout from './components/layout/AppLayout'
+import SocialCommunityModal from './components/SocialCommunityModal'
 import VerifyEmail from './pages/VerifyEmail'
 import ForgotPassword from './pages/ForgotPassword'
 import SetPassword from './pages/SetPassword'
@@ -136,6 +137,7 @@ function App() {
     <HelmetProvider>
     <Router>
       <ScrollToTop />
+      <SocialCommunityModal />
       <GoogleAnalytics />
       <Suspense fallback={<RouteFallback />}>
         <Routes>

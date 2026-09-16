@@ -33,6 +33,8 @@ function MenuIcon() {
   )
 }
 
+import { openSocialCommunityModal } from '../SocialCommunityModal'
+
 export default function Topbar({ onMenuClick }) {
   const location = useLocation()
   const navigate = useNavigate()
@@ -91,6 +93,16 @@ export default function Topbar({ onMenuClick }) {
       </div>
 
       <div className="topbar-right">
+        <button
+          type="button"
+          className="topbar-community-btn"
+          onClick={openSocialCommunityModal}
+          title="Join Official WhatsApp Channel & Groups"
+        >
+          <span className="topbar-community-dot" />
+          <span>WhatsApp & Socials</span>
+        </button>
+
         <button
           className="topbar-action"
           onClick={() => navigate('/notifications')}

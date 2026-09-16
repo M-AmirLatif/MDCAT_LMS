@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import ThemeToggle from '../components/ThemeToggle'
 import { getAuthUser } from '../services/authStorage'
+import { openSocialCommunityModal } from '../components/SocialCommunityModal'
 import './Home.css'
 
 const PUBLIC_STATS_CACHE_KEY = 'mdcat-public-stats-v1'
@@ -257,6 +258,17 @@ export default function Home() {
         <nav className={`lp-links ${menuOpen ? 'lp-links--open' : ''}`} aria-label="Public navigation">
           <a href="#home" onClick={() => setMenuOpen(false)}>Home</a>
           <Link to="/past-papers/nums-2026-answer-key" onClick={() => setMenuOpen(false)} style={{ color: '#38bdf8', fontWeight: 700 }}>NUMS 2026 Key 🔥</Link>
+          <button
+            type="button"
+            className="lp-community-btn"
+            onClick={() => {
+              setMenuOpen(false)
+              openSocialCommunityModal()
+            }}
+          >
+            <span className="topbar-community-dot" />
+            <span>WhatsApp Groups 📢</span>
+          </button>
           <a href="#courses" onClick={() => setMenuOpen(false)}>Courses</a>
           <a href="#reviews" onClick={() => setMenuOpen(false)}>About</a>
           <div className="lp-mobile-actions">
@@ -271,6 +283,15 @@ export default function Home() {
           </div>
         </nav>
         <div className="lp-actions">
+          <button
+            type="button"
+            className="topbar-community-btn"
+            onClick={openSocialCommunityModal}
+            title="Join Official WhatsApp Channel & Groups"
+          >
+            <span className="topbar-community-dot" />
+            <span>WhatsApp Groups 📢</span>
+          </button>
           <ThemeToggle className="theme-toggle--public" />
           {user ? (
             <Link className="lp-btn lp-btn-primary lp-btn-sm" to="/dashboard">Go to Dashboard</Link>
