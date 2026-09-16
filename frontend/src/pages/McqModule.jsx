@@ -3186,49 +3186,105 @@ function McqList() {
           title="📤 Upload Subject CSV for FLP"
           onClose={() => setCsvUploadModal(false)}
         >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div className="floating-field">
-              <label htmlFor="csv-target-subject">Target Subject</label>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '4px 0' }}>
+            <div>
+              <label
+                htmlFor="csv-target-subject"
+                style={{
+                  display: 'block',
+                  fontSize: '0.82rem',
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  color: '#c084fc',
+                  marginBottom: '8px',
+                }}
+              >
+                Target Subject
+              </label>
               <select
                 id="csv-target-subject"
                 value={csvTargetSubject}
                 onChange={(e) => setCsvTargetSubject(e.target.value)}
-                style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', background: 'var(--bg-card, #1a1a2e)', color: 'var(--text-primary, #e0e0e0)', border: '1px solid rgba(168, 85, 247, 0.3)', fontSize: '0.95rem' }}
+                style={{
+                  width: '100%',
+                  padding: '12px 14px',
+                  borderRadius: '10px',
+                  background: 'rgba(26, 26, 46, 0.95)',
+                  color: '#ffffff',
+                  border: '1.5px solid rgba(168, 85, 247, 0.35)',
+                  fontSize: '0.95rem',
+                  fontWeight: 600,
+                }}
               >
                 {FLP_SUBJECTS.map((s) => (
                   <option key={s} value={s}>{s} ({flpSubjectCounts[s] || 0} existing)</option>
                 ))}
               </select>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                All MCQs in this CSV will be assigned to <strong>{csvTargetSubject}</strong>.
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary, #94a3b8)', marginTop: '6px', marginInline: 0 }}>
+                All MCQs in this CSV will be assigned to <strong style={{ color: '#c084fc' }}>{csvTargetSubject}</strong>.
               </p>
             </div>
-            <div className="floating-field">
-              <label>Upload Mode</label>
-              <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+
+            <div>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.82rem',
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  color: '#c084fc',
+                  marginBottom: '8px',
+                }}
+              >
+                Upload Mode
+              </label>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                 <button
                   type="button"
                   className={`btn btn-sm ${csvUploadMode === 'append' ? 'btn-primary' : 'btn-secondary'}`}
                   onClick={() => setCsvUploadMode('append')}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    fontWeight: 700,
+                    fontSize: '0.88rem',
+                  }}
                 >
                   ➕ Append (Add to existing)
                 </button>
                 <button
                   type="button"
-                  className={`btn btn-sm ${csvUploadMode === 'replace' ? 'btn-primary' : 'btn-secondary'}`}
+                  className={`btn btn-sm ${csvUploadMode === 'replace' ? 'btn-danger' : 'btn-secondary'}`}
                   onClick={() => setCsvUploadMode('replace')}
-                  style={csvUploadMode === 'replace' ? { background: '#ef4444' } : {}}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    fontWeight: 700,
+                    fontSize: '0.88rem',
+                    ...(csvUploadMode === 'replace' ? { background: '#ef4444', color: '#ffffff' } : {}),
+                  }}
                 >
                   🔄 Replace {csvTargetSubject} MCQs
                 </button>
               </div>
-              <p style={{ fontSize: '0.8rem', color: csvUploadMode === 'replace' ? '#f87171' : 'var(--text-muted)', marginTop: '4px' }}>
+              <p
+                style={{
+                  fontSize: '0.82rem',
+                  color: csvUploadMode === 'replace' ? '#f87171' : 'var(--text-secondary, #94a3b8)',
+                  marginTop: '6px',
+                  marginInline: 0,
+                  lineHeight: 1.4,
+                }}
+              >
                 {csvUploadMode === 'append'
-                  ? `New MCQs will be added after existing ${csvTargetSubject} questions. Existing MCQs are preserved.`
+                  ? `New MCQs will be appended to ${csvTargetSubject}. Existing questions from all subjects are preserved.`
                   : `⚠️ All existing ${csvTargetSubject} MCQs in this paper will be DELETED and replaced with the new CSV.`}
               </p>
             </div>
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', paddingTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
               <button className="btn btn-secondary" type="button" onClick={() => setCsvUploadModal(false)}>
                 Cancel
               </button>
@@ -3237,13 +3293,13 @@ function McqList() {
                 type="button"
                 onClick={() => {
                   if (csvUploadMode === 'replace') {
-                    if (!window.confirm(`This will DELETE all existing ${csvTargetSubject} MCQs and replace them. Continue?`)) return
+                    if (!window.confirm(`This will DELETE all existing ${csvTargetSubject} MCQs and replace them with the new CSV. Continue?`)) return
                   }
                   setCsvUploadModal(false)
                   fileRef.current?.click()
                 }}
               >
-                Choose CSV File
+                Choose CSV File &rarr;
               </button>
             </div>
           </div>
