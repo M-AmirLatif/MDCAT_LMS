@@ -847,64 +847,67 @@ exports.getStudentActivity = async (req, res) => {
       matchFilter.submittedAt = { $gte: thirtyDaysAgo }
     }
 
-    // Pipeline to fetch test activities with student details and search support
-    const pipeline = [
-      { $match: matchFilter },
-      {
-        $lookup: {
-          from: 'users',
-          localField: 'studentId',
-          foreignField: '_id',
-          as: 'student',
-        },
-      },
-      { $unwind: { path: '$student', preserveNullAndEmptyArrays: true } },
-    ]
-
+    // Handle search query if present
     if (search && search.trim()) {
       const searchRegex = new RegExp(search.trim(), 'i')
-      pipeline.push({
-        $match: {
-          $or: [
-            { 'student.firstName': searchRegex },
-            { 'student.lastName': searchRegex },
-            { 'student.email': searchRegex },
-            { chapterName: searchRegex },
-            { subject: searchRegex },
-          ],
-        },
-      })
+      const matchingUsers = await User.find({
+        $or: [
+          { firstName: searchRegex },
+          { lastName: searchRegex },
+          { email: searchRegex },
+        ],
+      }).select('_id').lean()
+
+      const matchingUserIds = matchingUsers.map((u) => u._id)
+      matchFilter.$or = [
+        { studentId: { $in: matchingUserIds } },
+        { chapterName: searchRegex },
+        { topic: searchRegex },
+        { subject: searchRegex },
+      ]
     }
 
-    const countPipeline = [...pipeline, { $count: 'total' }]
-    const dataPipeline = [
-      ...pipeline,
-      { $sort: { submittedAt: -1, createdAt: -1 } },
-      { $skip: skip },
-      { $limit: limitNum },
-    ]
-
-    const [countResult, sessions] = await Promise.all([
-      TestSession.aggregate(countPipeline),
-      TestSession.aggregate(dataPipeline),
+    const [total, sessions] = await Promise.all([
+      TestSession.countDocuments(matchFilter),
+      TestSession.find(matchFilter)
+        .populate('studentId', 'firstName lastName email createdAt')
+        .sort({ submittedAt: -1, createdAt: -1 })
+        .skip(skip)
+        .limit(limitNum)
+        .lean(),
     ])
 
-    const total = countResult[0]?.total || 0
-
     const activities = sessions.map((session) => {
-      const studentName = [session.student?.firstName, session.student?.lastName].filter(Boolean).join(' ') || 'Student'
+      const student = session.studentId && typeof session.studentId === 'object' ? session.studentId : null
+      const studentName = student
+        ? `${student.firstName || ''} ${student.lastName || ''}`.trim() || student.email || 'Student'
+        : 'Student'
+      const studentEmail = student?.email || 'N/A'
+      const studentCreatedAt = student?.createdAt || null
+      const studentIdStr = student ? String(student._id) : String(session.studentId || '')
+      const finalScore = session.finalScore ?? session.score ?? 0
+
       return {
+        _id: String(session._id),
         id: String(session._id),
-        type: 'test_attempt',
-        studentId: String(session.studentId),
+        studentId: studentIdStr,
+        student: {
+          _id: studentIdStr,
+          firstName: student?.firstName || '',
+          lastName: student?.lastName || '',
+          name: studentName,
+          email: studentEmail,
+          createdAt: studentCreatedAt,
+        },
         studentName,
-        studentEmail: session.student?.email || 'N/A',
-        studentCreatedAt: session.student?.createdAt || null,
+        studentEmail,
+        studentCreatedAt,
         subject: session.subject || 'General Practice',
         chapterId: session.chapterId || '',
         chapterName: session.chapterName || session.topic || 'Practice Test',
         totalQuestions: session.totalQuestions || 0,
-        score: session.finalScore ?? session.score ?? 0,
+        score: finalScore,
+        finalScore,
         percentage: session.percentage || 0,
         accuracy: session.percentage || 0,
         timeSpentSeconds: session.timeSpentSeconds || null,
@@ -915,6 +918,13 @@ exports.getStudentActivity = async (req, res) => {
 
     res.status(200).json({
       success: true,
+      stats: {
+        activeStudentsToday: activeStudentsTodayCount,
+        activeStudentsWeek: activeStudentsWeekCount,
+        testsToday: testsTodayCount,
+        totalRegistered: totalRegisteredStudents,
+        registeredToday: registeredTodayCount,
+      },
       metrics: {
         activeStudentsToday: activeStudentsTodayCount,
         activeStudentsWeek: activeStudentsWeekCount,
@@ -948,7 +958,7 @@ exports.getStudentDetailActivity = async (req, res) => {
         .populate('role', 'name')
         .lean(),
       TestSession.find({ studentId })
-        .sort({ submittedAt: -1 })
+        .sort({ submittedAt: -1, createdAt: -1 })
         .limit(200)
         .lean(),
     ])
@@ -961,6 +971,7 @@ exports.getStudentDetailActivity = async (req, res) => {
     const totalScore = sessions.reduce((sum, s) => sum + (s.finalScore ?? s.score ?? 0), 0)
     const totalQuestions = sessions.reduce((sum, s) => sum + (s.totalQuestions || 0), 0)
     const overallAccuracy = totalQuestions > 0 ? Math.round((totalScore / totalQuestions) * 100) : 0
+    const bestPercentage = sessions.reduce((max, s) => Math.max(max, s.percentage || 0), 0)
 
     // Subject breakdown
     const subjectStats = {}
@@ -980,32 +991,52 @@ exports.getStudentDetailActivity = async (req, res) => {
       accuracy: stats.questions > 0 ? Math.round((stats.score / stats.questions) * 100) : 0,
     }))
 
+    const studentName = `${student.firstName || ''} ${student.lastName || ''}`.trim() || student.email || 'Student'
+    const formattedSessions = sessions.map((s) => ({
+      _id: String(s._id),
+      id: String(s._id),
+      subject: s.subject || 'Practice',
+      chapterId: s.chapterId || '',
+      chapterName: s.chapterName || s.topic || 'Practice Test',
+      totalQuestions: s.totalQuestions || 0,
+      score: s.finalScore ?? s.score ?? 0,
+      finalScore: s.finalScore ?? s.score ?? 0,
+      percentage: s.percentage || 0,
+      timeSpentSeconds: s.timeSpentSeconds || null,
+      submittedAt: s.submittedAt || s.createdAt,
+    }))
+
     res.status(200).json({
       success: true,
       student: {
         ...student,
+        name: studentName,
         role: student.role?.name || 'student',
+      },
+      metrics: {
+        totalTests,
+        totalQuestions,
+        totalScore,
+        overallAccuracy,
+        avgPercentage: overallAccuracy,
+        bestPercentage,
+        registeredAt: student.createdAt,
+        lastAttemptAt: sessions[0]?.submittedAt || null,
+        subjectBreakdown,
       },
       summary: {
         totalTests,
         totalQuestions,
         totalScore,
         overallAccuracy,
+        avgPercentage: overallAccuracy,
+        bestPercentage,
         registeredAt: student.createdAt,
         lastAttemptAt: sessions[0]?.submittedAt || null,
         subjectBreakdown,
       },
-      sessions: sessions.map((s) => ({
-        id: String(s._id),
-        subject: s.subject || 'Practice',
-        chapterId: s.chapterId || '',
-        chapterName: s.chapterName || s.topic || 'Practice Test',
-        totalQuestions: s.totalQuestions || 0,
-        score: s.finalScore ?? s.score ?? 0,
-        percentage: s.percentage || 0,
-        timeSpentSeconds: s.timeSpentSeconds || null,
-        submittedAt: s.submittedAt || s.createdAt,
-      })),
+      history: formattedSessions,
+      sessions: formattedSessions,
     })
   } catch (error) {
     res.status(500).json({ error: error.stack || error.message })

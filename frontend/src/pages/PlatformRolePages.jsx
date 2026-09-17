@@ -1110,7 +1110,7 @@ export function AdminActivityPage() {
     setStudentDetail(null)
   }
 
-  const stats = data.stats || {}
+  const stats = data.stats || data.metrics || {}
   const activities = data.activities || []
   const pagination = data.pagination || {}
 
@@ -1293,20 +1293,24 @@ export function AdminActivityPage() {
                 </thead>
                 <tbody>
                   {activities.map((item) => {
-                    const pct = Math.round(item.percentage || 0)
+                    const pct = Math.round(item.percentage || item.accuracy || 0)
                     const badgeClass = pct >= 70 ? 'badge-teal' : pct >= 50 ? 'badge-amber' : 'badge-coral'
                     return (
-                      <tr key={item._id}>
+                      <tr key={item._id || item.id}>
                         <td style={{ whiteSpace: 'nowrap', fontSize: '0.88rem' }}>
-                          <span style={{ fontWeight: 600 }}>{formatDateTime(item.submittedAt)}</span>
+                          <span style={{ fontWeight: 600 }}>{formatDateTime(item.submittedAt || item.timestamp)}</span>
                         </td>
                         <td>
                           <div className="table-primary-cell">
-                            <strong>{item.student?.firstName} {item.student?.lastName}</strong>
-                            <small style={{ color: 'var(--text-muted, #718096)' }}>{item.student?.email}</small>
-                            {item.student?.createdAt ? (
+                            <strong>
+                              {item.studentName || `${item.student?.firstName || ''} ${item.student?.lastName || ''}`.trim() || item.studentEmail || item.student?.email || 'Student'}
+                            </strong>
+                            <small style={{ color: 'var(--text-muted, #718096)' }}>
+                              {item.studentEmail || item.student?.email || 'N/A'}
+                            </small>
+                            {(item.studentCreatedAt || item.student?.createdAt) ? (
                               <small style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                                Joined: {formatDate(item.student.createdAt)}
+                                Joined: {formatDate(item.studentCreatedAt || item.student?.createdAt)}
                               </small>
                             ) : null}
                           </div>
@@ -1322,7 +1326,7 @@ export function AdminActivityPage() {
                           </div>
                         </td>
                         <td style={{ fontWeight: 600 }}>
-                          {item.finalScore} / {item.totalQuestions}
+                          {item.finalScore ?? item.score ?? 0} / {item.totalQuestions || 0}
                         </td>
                         <td>
                           <span className={`badge ${badgeClass}`}>
@@ -1336,7 +1340,7 @@ export function AdminActivityPage() {
                           <button
                             className="btn btn-outline-primary"
                             style={{ padding: '4px 10px', fontSize: '0.8rem', borderRadius: 6 }}
-                            onClick={() => openStudentDetail(item.student?._id || item.studentId)}
+                            onClick={() => openStudentDetail(item.studentId || item.student?._id || item._id)}
                             type="button"
                           >
                             Full Timeline
@@ -1413,10 +1417,10 @@ export function AdminActivityPage() {
               <div>
                 <div className="label-xs">Student Complete Activity Record</div>
                 <h3 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 700 }}>
-                  {studentDetail?.student ? `${studentDetail.student.firstName} ${studentDetail.student.lastName}` : 'Student Timeline'}
+                  {studentDetail?.student?.name || (studentDetail?.student?.firstName ? `${studentDetail.student.firstName} ${studentDetail.student.lastName || ''}`.trim() : studentDetail?.student?.email || 'Student Timeline')}
                 </h3>
                 <p style={{ margin: '4px 0 0', color: 'var(--text-muted, #718096)', fontSize: '0.9rem' }}>
-                  {studentDetail?.student?.email} • Registered on: {formatDateTime(studentDetail?.student?.createdAt)}
+                  {studentDetail?.student?.email || ''} {studentDetail?.student?.createdAt ? `• Registered on: ${formatDateTime(studentDetail.student.createdAt)}` : ''}
                 </p>
               </div>
               <button
@@ -1464,16 +1468,16 @@ export function AdminActivityPage() {
 
                 {/* Chronological History List */}
                 <h4 style={{ fontSize: '1.05rem', fontWeight: 600, marginBottom: 12 }}>
-                  All Test Submissions ({studentDetail.history?.length || 0})
+                  All Test Submissions ({studentDetail.history?.length || studentDetail.sessions?.length || 0})
                 </h4>
 
-                {studentDetail.history?.length === 0 ? (
+                {(!studentDetail.history?.length && !studentDetail.sessions?.length) ? (
                   <p style={{ color: 'var(--text-muted, #718096)' }}>No test sessions recorded for this student yet.</p>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 380, overflowY: 'auto' }}>
-                    {studentDetail.history.map((session, idx) => (
+                    {(studentDetail.history || studentDetail.sessions || []).map((session, idx) => (
                       <div
-                        key={session._id || idx}
+                        key={session._id || session.id || idx}
                         style={{
                           padding: 12,
                           borderRadius: 10,
@@ -1500,7 +1504,7 @@ export function AdminActivityPage() {
 
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                           <span style={{ fontWeight: 600, fontSize: '0.95rem' }}>
-                            {session.finalScore} / {session.totalQuestions} MCQs
+                            {session.finalScore ?? session.score ?? 0} / {session.totalQuestions || 0} MCQs
                           </span>
                           <span className={`badge ${session.percentage >= 70 ? 'badge-teal' : session.percentage >= 50 ? 'badge-amber' : 'badge-coral'}`}>
                             {session.percentage}%
