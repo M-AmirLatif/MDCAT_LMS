@@ -326,22 +326,15 @@ export default function Home() {
         </div>
 
         <div className="lp-hero-content reveal">
-          <Link
-            to="/past-papers/nums-2026-answer-key"
-            className="lp-batch-pill"
-            style={{
-              textDecoration: 'none',
-              background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(2, 132, 199, 0.15))',
-              borderColor: 'rgba(56, 189, 248, 0.4)',
-              color: '#38bdf8',
-              marginBottom: '1rem',
-              display: 'inline-flex',
-              fontWeight: 700,
-            }}
-          >
-            <span style={{ marginRight: '6px' }}>🔥</span> NUMS MDCAT 2026 Official Answer Key & Solved Paper is OUT! Check Score →
-          </Link>
-          <div className="lp-batch-pill"><i /> MDCAT 2026 Batch Now Open</div>
+          <div className="lp-hero-pills">
+            <Link
+              to="/past-papers/nums-2026-answer-key"
+              className="lp-batch-pill lp-batch-pill--fire"
+            >
+              <span style={{ marginRight: '6px' }}>🔥</span> NUMS MDCAT 2026 Solved Paper & Answer Key OUT! →
+            </Link>
+            <div className="lp-batch-pill"><i /> MDCAT 2026 Batch Now Open</div>
+          </div>
           <h1>
             <span>{seo.heading}</span>
             <span className="lp-gradient-text">{seo.subheading}</span>
@@ -480,7 +473,7 @@ export default function Home() {
                 <article className="lp-subject-card lp-subject-card--bio">
                   <div className="lp-subject-card-top">
                     <span className="lp-subject-icon">🧬</span>
-                    <span className="lp-subject-weight">68 MCQs · 34% Weightage</span>
+                    <span className="lp-subject-weight">68 MCQs · 34%</span>
                   </div>
                   <h3 className="lp-subject-title">Biology</h3>
                   <p className="lp-subject-desc">
@@ -494,7 +487,7 @@ export default function Home() {
                   </div>
                   <div className="lp-subject-card-footer">
                     <Link className="lp-btn lp-btn-primary lp-btn-sm" to="/mcqs/biology">
-                      Practice Biology MCQs →
+                      Practice Biology →
                     </Link>
                   </div>
                 </article>
@@ -503,7 +496,7 @@ export default function Home() {
                 <article className="lp-subject-card lp-subject-card--chem">
                   <div className="lp-subject-card-top">
                     <span className="lp-subject-icon">⚗️</span>
-                    <span className="lp-subject-weight">54 MCQs · 27% Weightage</span>
+                    <span className="lp-subject-weight">54 MCQs · 27%</span>
                   </div>
                   <h3 className="lp-subject-title">Chemistry</h3>
                   <p className="lp-subject-desc">
@@ -517,7 +510,7 @@ export default function Home() {
                   </div>
                   <div className="lp-subject-card-footer">
                     <Link className="lp-btn lp-btn-primary lp-btn-sm" to="/mcqs/chemistry">
-                      Practice Chemistry MCQs →
+                      Practice Chemistry →
                     </Link>
                   </div>
                 </article>
@@ -526,7 +519,7 @@ export default function Home() {
                 <article className="lp-subject-card lp-subject-card--phy">
                   <div className="lp-subject-card-top">
                     <span className="lp-subject-icon">⚡</span>
-                    <span className="lp-subject-weight">54 MCQs · 27% Weightage</span>
+                    <span className="lp-subject-weight">54 MCQs · 27%</span>
                   </div>
                   <h3 className="lp-subject-title">Physics</h3>
                   <p className="lp-subject-desc">
@@ -540,7 +533,7 @@ export default function Home() {
                   </div>
                   <div className="lp-subject-card-footer">
                     <Link className="lp-btn lp-btn-primary lp-btn-sm" to="/mcqs/physics">
-                      Practice Physics MCQs →
+                      Practice Physics →
                     </Link>
                   </div>
                 </article>
@@ -549,7 +542,7 @@ export default function Home() {
                 <article className="lp-subject-card lp-subject-card--eng">
                   <div className="lp-subject-card-top">
                     <span className="lp-subject-icon">📖</span>
-                    <span className="lp-subject-weight">18 MCQs · 9% Weightage</span>
+                    <span className="lp-subject-weight">18 MCQs · 9%</span>
                   </div>
                   <h3 className="lp-subject-title">English</h3>
                   <p className="lp-subject-desc">
@@ -563,7 +556,7 @@ export default function Home() {
                   </div>
                   <div className="lp-subject-card-footer">
                     <Link className="lp-btn lp-btn-primary lp-btn-sm" to="/mcqs/english">
-                      Practice English MCQs →
+                      Practice English →
                     </Link>
                   </div>
                 </article>
@@ -572,7 +565,7 @@ export default function Home() {
                 <article className="lp-subject-card lp-subject-card--logic">
                   <div className="lp-subject-card-top">
                     <span className="lp-subject-icon">🧠</span>
-                    <span className="lp-subject-weight">6 MCQs · 3% Weightage</span>
+                    <span className="lp-subject-weight">6 MCQs · 3%</span>
                   </div>
                   <h3 className="lp-subject-title">Logical Reasoning</h3>
                   <p className="lp-subject-desc">
@@ -586,7 +579,7 @@ export default function Home() {
                   </div>
                   <div className="lp-subject-card-footer">
                     <Link className="lp-btn lp-btn-primary lp-btn-sm" to="/mcqs/logical-reasoning">
-                      Practice Logical Reasoning →
+                      Practice Logic →
                     </Link>
                   </div>
                 </article>

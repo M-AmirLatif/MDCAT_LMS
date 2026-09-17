@@ -27,6 +27,10 @@
   margin: 0 auto;
 }
 
+/* ===============================================
+   Navigation
+   =============================================== */
+
 .lp-nav {
   position: fixed;
   z-index: 80;
@@ -54,17 +58,25 @@
   text-decoration: none;
 }
 
+/* Perfect square M mark: never stretch, flex: 0 0 42px, aspect-ratio: 1 */
 .lp-mark {
-  width: 42px;
-  height: 42px;
-  border-radius: 13px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #6c47ff, #4a90e2);
-  color: #fff;
-  font-weight: 900;
-  box-shadow: 0 18px 36px rgba(108, 71, 255, 0.35);
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  min-height: 42px !important;
+  max-width: 42px !important;
+  max-height: 42px !important;
+  flex: 0 0 42px !important;
+  aspect-ratio: 1 / 1 !important;
+  border-radius: 13px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  align-self: center !important;
+  background: linear-gradient(135deg, #6c47ff, #4a90e2) !important;
+  color: #fff !important;
+  font-weight: 900 !important;
+  box-shadow: 0 18px 36px rgba(108, 71, 255, 0.35) !important;
 }
 
 .lp-links {
@@ -144,6 +156,10 @@
   box-shadow: 0 4px 18px rgba(37, 211, 102, 0.35);
 }
 
+/* ===============================================
+   Buttons
+   =============================================== */
+
 .lp-hero-ctas,
 .lp-row-actions {
   display: flex;
@@ -205,6 +221,10 @@
   margin-top: 24px;
 }
 
+/* ===============================================
+   Hero Section
+   =============================================== */
+
 .lp-hero {
   position: relative;
   min-height: 100vh;
@@ -236,6 +256,15 @@
   text-align: center;
 }
 
+.lp-hero-pills {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
 .lp-batch-pill {
   display: inline-flex;
   align-items: center;
@@ -247,6 +276,20 @@
   color: #dcd5ff;
   font-size: 13px;
   font-weight: 800;
+  text-decoration: none;
+}
+
+.lp-batch-pill--fire {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.18), rgba(2, 132, 199, 0.18)) !important;
+  border-color: rgba(56, 189, 248, 0.45) !important;
+  color: #38bdf8 !important;
+  transition: all 0.2s ease;
+}
+
+.lp-batch-pill--fire:hover {
+  border-color: #38bdf8 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.3);
 }
 
 .lp-batch-pill i,
@@ -357,6 +400,10 @@
   border: 2px solid rgba(255, 255, 255, 0.7);
   font-size: 12px;
 }
+
+/* ===============================================
+   Sections General
+   =============================================== */
 
 .lp-section {
   position: relative;
@@ -739,6 +786,10 @@
   line-height: 1.7;
 }
 
+/* ===============================================
+   Footer
+   =============================================== */
+
 .lp-footer {
   padding: 40px 0 26px;
   background: #0a0a1a;
@@ -752,10 +803,25 @@
   gap: 24px;
 }
 
+.lp-footer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.lp-footer-brand strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
 .lp-footer-brand small {
   display: block;
-  margin-top: 4px;
-  color: rgba(255, 255, 255, 0.42);
+  margin-top: 2px;
+  color: rgba(255, 255, 255, 0.5);
   font-size: 13px;
 }
 
@@ -772,6 +838,10 @@
   text-align: right;
   font-size: 13px;
 }
+
+/* ===============================================
+   Animations
+   =============================================== */
 
 .reveal {
   animation: revealUp 400ms ease both;
@@ -837,12 +907,19 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .lp-footer-brand {
+    justify-content: center;
+  }
+
   .lp-footer p {
     text-align: center;
   }
 }
 
-/* Mobile Hamburger Menu Toggle Button */
+/* ===============================================
+   Mobile Hamburger Menu Toggle Button
+   =============================================== */
+
 .lp-menu-toggle {
   display: none;
   flex-direction: column;
@@ -1060,9 +1137,9 @@
   }
 }
 
-/* ═══════════════════════════════════════════════
+/* ===============================================
    Landing Dark Mode
-   ═══════════════════════════════════════════════ */
+   =============================================== */
 
 [data-theme="dark"] .lp-section-light {
   background:
@@ -1129,7 +1206,6 @@
   border-color: rgba(139, 111, 255, 0.28);
 }
 
-
 .lp-faq-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -1173,9 +1249,9 @@
   color: #9ca3af;
 }
 
-/* ══════════════════════════════════════════════════════════════════
+/* ==================================================================
    NEW HOMEPAGE SECTIONS: SUBJECTS, FLPS, PAST PAPERS & SMART TOOLS
-   ══════════════════════════════════════════════════════════════════ */
+   ================================================================== */
 
 .lp-section-header {
   text-align: center;
@@ -1243,11 +1319,17 @@
   min-width: 260px;
 }
 
-/* ── 1. Subjects Grid ── */
+/* -- 1. Subjects Grid: 5 columns on desktop, clean wrapping -- */
 .lp-subjects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 18px;
+}
+
+@media (min-width: 1100px) {
+  .lp-subjects-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
 }
 
 .lp-subject-card {
@@ -1255,7 +1337,7 @@
   background: var(--bg-card, #ffffff);
   border: 1px solid var(--border-card, #e2e8f0);
   border-radius: 20px;
-  padding: 24px;
+  padding: 22px 18px;
   display: flex;
   flex-direction: column;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
@@ -1312,7 +1394,7 @@
 
 .lp-subject-title {
   margin: 0 0 8px;
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 800;
   color: var(--heading, #0f172a);
 }
@@ -1323,7 +1405,7 @@
 
 .lp-subject-desc {
   margin: 0 0 16px;
-  font-size: 13.5px;
+  font-size: 13px;
   line-height: 1.55;
   color: #64748b;
   flex: 1;
@@ -1336,14 +1418,14 @@
 .lp-subject-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 20px;
+  gap: 5px;
+  margin-bottom: 18px;
 }
 
 .lp-subject-tags span {
   font-size: 11px;
   font-weight: 600;
-  padding: 3px 8px;
+  padding: 3px 7px;
   border-radius: 6px;
   background: rgba(108, 71, 255, 0.06);
   color: #4338ca;
@@ -1360,6 +1442,7 @@
 
 .lp-subject-card-footer .lp-btn {
   width: 100%;
+  white-space: nowrap;
 }
 
 [data-theme="dark"] .lp-subject-card {
@@ -1372,7 +1455,7 @@
   border-color: rgba(139, 92, 246, 0.4);
 }
 
-/* ── 2. FLPs Grid ── */
+/* -- 2. FLPs Grid -- */
 .lp-flps-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
@@ -1456,7 +1539,7 @@
   width: 100%;
 }
 
-/* ── 3. Past Papers Grid ── */
+/* -- 3. Past Papers Grid -- */
 .lp-pastpapers-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
@@ -1547,7 +1630,7 @@
   color: #a78bfa;
 }
 
-/* ── 4. Smart Tools Grid ── */
+/* -- 4. Smart Tools Grid -- */
 .lp-tools-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -1597,4 +1680,3 @@
 .lp-tool-card .lp-btn {
   width: 100%;
 }
-
