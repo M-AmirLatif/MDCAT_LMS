@@ -570,29 +570,67 @@ exports.getSubjectWisePerformance = async (req, res) => {
   }
 }
 
+const isFlpCategory = (subject) => {
+  const s = String(subject || '').toLowerCase().trim()
+  return s === 'flps' || s === 'flp' || s === "flp's" || s === 'full length papers' || s === 'full-length-papers'
+}
+
 const normalizeAnalyticsSubject = (session) => {
   const raw = String(
-    session?.subject || session?.courseId?.category || session?.courseId?.subject || '',
+    session?.subject || session?.courseId?.category || session?.courseId?.subject || session?.courseId?.name || '',
   ).trim().toLowerCase()
+  if (isFlpCategory(raw)) {
+    return 'FLPs'
+  }
+  if (raw === 'past papers' || raw === 'past-papers' || raw === 'pastpapers') {
+    return 'Past Papers'
+  }
+  if (raw === 'logical reasoning' || raw === 'logical-reasoning' || raw === 'logicalreasoning') {
+    return 'Logical Reasoning'
+  }
   return SUBJECTS.find((subject) => subject.toLowerCase() === raw) || ''
 }
 
 const getCompactSubjectBank = async (allowedSubjects = SUBJECTS) => {
-  const courses = await Course.find({ category: { $in: allowedSubjects } })
-    .select('_id category chapters')
+  const courses = await Course.find({
+    $or: [
+      { category: { $in: allowedSubjects } },
+      { subject: { $in: allowedSubjects } },
+      { name: { $in: ['Full Length Papers', 'FLPs', 'Past Papers'] } },
+    ],
+  })
+    .select('_id category subject name chapters')
     .lean()
+
+  const courseBySubject = new Map()
+  courses.forEach((course) => {
+    if (course.category) courseBySubject.set(course.category, course)
+    if (course.subject) courseBySubject.set(course.subject, course)
+    if (isFlpCategory(course.category) || isFlpCategory(course.subject) || isFlpCategory(course.name)) {
+      courseBySubject.set('FLPs', course)
+      courseBySubject.set('Full Length Papers', course)
+    }
+    if (course.category === 'Past Papers' || course.subject === 'Past Papers' || /past paper/i.test(course.name)) {
+      courseBySubject.set('Past Papers', course)
+    }
+  })
+  const courseIds = courses.map((course) => course._id)
+
   const counts = await MCQ.aggregate([
-    { $match: { courseId: { $in: courses.map((course) => course._id) } } },
-    { $group: { _id: '$subject', totalMcqs: { $sum: 1 } } },
+    { $match: { courseId: { $in: courseIds } } },
+    { $group: { _id: '$courseId', totalMcqs: { $sum: 1 } } },
   ])
-  const courseBySubject = new Map(courses.map((course) => [course.category, course]))
-  const countBySubject = new Map(counts.map((row) => [row._id, row.totalMcqs]))
-  return allowedSubjects.map((subject) => ({
-    id: subject.toLowerCase(),
-    name: subject,
-    totalChapters: courseBySubject.get(subject)?.chapters?.length || 0,
-    totalMcqs: countBySubject.get(subject) || 0,
-  }))
+  const countByCourseId = new Map(counts.map((row) => [String(row._id), row.totalMcqs]))
+
+  return allowedSubjects.map((subject) => {
+    const course = courseBySubject.get(subject)
+    return {
+      id: subject.toLowerCase().replace(/\s+/g, '-'),
+      name: subject,
+      totalChapters: course?.chapters?.length || 0,
+      totalMcqs: course ? (countByCourseId.get(String(course._id)) || 0) : 0,
+    }
+  })
 }
 
 const compactSession = (session) => ({
