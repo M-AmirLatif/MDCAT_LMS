@@ -114,13 +114,17 @@ export function useGoogleSignIn({
             `Signing you in as ${getRoleLabel(user?.role)}.`,
             { icon: 'i' },
           )
-          sessionStorage.setItem('pending_social_popup_after_login', '1')
+          if (user?.role === 'student') {
+            sessionStorage.setItem('pending_social_popup_after_login', '1')
+          }
           login(token, user, remember)
           navigate(getDefaultRouteForRole(user?.role), { replace: true })
           return
         }
 
-        sessionStorage.setItem('pending_social_popup_after_login', '1')
+        if (user?.role === 'student') {
+          sessionStorage.setItem('pending_social_popup_after_login', '1')
+        }
         if (mode === 'signup') {
           if (user.needsPasswordSetup) {
             login(token, user, remember)

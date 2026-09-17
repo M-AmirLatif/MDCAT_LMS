@@ -92,15 +92,17 @@ export default function Topbar({ onMenuClick }) {
       </div>
 
       <div className="topbar-right">
-        <button
-          type="button"
-          className="topbar-community-btn"
-          onClick={openSocialCommunityModal}
-          title="Join Official WhatsApp Channel & Groups"
-        >
-          <span className="topbar-community-dot" />
-          <span>WhatsApp & Socials</span>
-        </button>
+        {(!user || (typeof user?.role === 'string' ? user.role : user?.role?.name) === 'student') && (
+          <button
+            type="button"
+            className="topbar-community-btn"
+            onClick={openSocialCommunityModal}
+            title="Join Official WhatsApp Channel & Groups"
+          >
+            <span className="topbar-community-dot" />
+            <span>WhatsApp & Socials</span>
+          </button>
+        )}
 
         <button
           className="topbar-action"

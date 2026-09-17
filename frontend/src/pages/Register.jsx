@@ -78,7 +78,9 @@ export default function Register() {
       }
 
       if (res.data.token && res.data.user) {
-        sessionStorage.setItem('pending_social_popup_after_login', '1')
+        if (res.data.user?.role === 'student') {
+          sessionStorage.setItem('pending_social_popup_after_login', '1')
+        }
         login(res.data.token, res.data.user, true)
         navigate(nextPath || '/dashboard', { replace: true })
       } else {

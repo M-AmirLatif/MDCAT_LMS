@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import { SOCIAL_COMMUNITY_LIST, SOCIAL_LINKS } from '../constants/socialLinks'
 import './SocialCommunityModal.css'
 
@@ -89,20 +90,32 @@ function getSocialIcon(type) {
 }
 
 export default function SocialCommunityModal() {
+  const { user } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
   const [hasInteracted, setHasInteracted] = useState(false)
   const location = useLocation()
 
-  // 1. Initial page load / browser refresh / new tab load:
+  const roleName = String(typeof user?.role === 'string' ? user.role : user?.role?.name || '').toLowerCase()
+  const isNonStudentRole = roleName === 'admin' || roleName === 'teacher' || roleName === 'superadmin'
+
+  // 1. Initial page load / browser refresh / new tab load (only for students / prospective guests):
   useEffect(() => {
+    if (isNonStudentRole) return
     const timer = setTimeout(() => {
       setIsOpen(true)
     }, 1200)
     return () => clearTimeout(timer)
-  }, [])
+  }, [isNonStudentRole])
 
   // 2. React to route transitions if pending post-login or post-test-submit flags exist:
   useEffect(() => {
+    if (isNonStudentRole) {
+      try {
+        sessionStorage.removeItem('pending_social_popup_after_login')
+        sessionStorage.removeItem('pending_social_popup_after_test_submit')
+      } catch {}
+      return
+    }
     try {
       if (sessionStorage.getItem('pending_social_popup_after_login')) {
         sessionStorage.removeItem('pending_social_popup_after_login')
@@ -119,14 +132,18 @@ export default function SocialCommunityModal() {
         return () => clearTimeout(timer)
       }
     } catch {}
-  }, [location.pathname, location.search])
+  }, [location.pathname, location.search, isNonStudentRole])
 
   // 3. Explicit event listener for manual or programmatic triggers:
   useEffect(() => {
-    const handleOpen = () => setIsOpen(true)
+    const handleOpen = () => {
+      if (!isNonStudentRole) {
+        setIsOpen(true)
+      }
+    }
     window.addEventListener('open-social-community-modal', handleOpen)
     return () => window.removeEventListener('open-social-community-modal', handleOpen)
-  }, [])
+  }, [isNonStudentRole])
 
   const handleClose = () => {
     setIsOpen(false)
@@ -136,7 +153,7 @@ export default function SocialCommunityModal() {
     setHasInteracted(true)
   }
 
-  if (!isOpen) return null
+  if (isNonStudentRole || !isOpen) return null
 
   return (
     <div className="social-modal-backdrop" onClick={handleClose} role="dialog" aria-modal="true" aria-labelledby="social-modal-title">
