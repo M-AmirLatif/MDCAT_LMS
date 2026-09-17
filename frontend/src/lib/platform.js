@@ -45,6 +45,7 @@ export const PLATFORM_NAV = {
       items: [
         { key: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
         { key: 'my-courses', label: 'MCQ Management', path: '/teacher/mcqs', icon: 'courses' },
+        { key: 'reported-mcqs', label: '🚩 Reported MCQs', path: '/teacher/reported-mcqs', icon: 'assignments' },
         { key: 'flps', label: 'Full Length Papers (FLPs)', path: '/mcqs/flps', icon: 'assignments' },
         { key: 'past-papers', label: 'Past Papers', path: '/mcqs/past-papers', icon: 'courses' },
         { key: 'students', label: 'Student Attempts', path: '/teacher/students', icon: 'students' },
@@ -66,6 +67,7 @@ export const PLATFORM_NAV = {
       items: [
         { key: 'dashboard', label: 'Admin Overview', path: '/dashboard', icon: 'dashboard' },
         { key: 'activity', label: 'Activity Tracker', path: '/admin/activity', icon: 'analytics' },
+        { key: 'reported-mcqs', label: '🚩 Reported MCQs', path: '/admin/reported-mcqs', icon: 'assignments' },
         { key: 'flps', label: 'Full Length Papers (FLPs)', path: '/mcqs/flps', icon: 'assignments' },
         { key: 'past-papers', label: 'Past Papers', path: '/mcqs/past-papers', icon: 'courses' },
         { key: 'students', label: 'Students & Access', path: '/admin/students', icon: 'students' },

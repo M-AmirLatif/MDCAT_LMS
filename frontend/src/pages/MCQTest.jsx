@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import MCQRenderer from '../components/MCQRenderer'
+import ReportMcqModal from '../components/ReportMcqModal'
 import { openSocialCommunityModal } from '../components/SocialCommunityModal'
 import './MCQTest.css'
 
@@ -95,6 +96,27 @@ export default function MCQTest() {
       return false
     }
   })
+
+  const [showExitConfirm, setShowExitConfirm] = useState(false)
+  const [reportingMcq, setReportingMcq] = useState(null)
+
+  useEffect(() => {
+    if (!mcqs.length || submitted) return undefined
+
+    // Push dummy state to catch mobile back button
+    window.history.pushState({ mcqCourseTestActive: true }, '')
+
+    const handlePopState = () => {
+      // Re-push history entry so back button doesn't exit website
+      window.history.pushState({ mcqCourseTestActive: true }, '')
+      setShowExitConfirm(true)
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+    }
+  }, [mcqs.length, submitted])
 
   useEffect(() => {
     if (!mcqs.length) return
@@ -206,9 +228,32 @@ export default function MCQTest() {
 
         {!submitted ? (
           <div className="mcq-question-card">
-            <div className="mcq-question-meta">
-              <span className="state-chip state-chip--neutral">{subject.name}</span>
-              <span className="state-chip state-chip--warning">{chapter.name}</span>
+            <div className="mcq-question-meta" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: '8px' }}>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <span className="state-chip state-chip--neutral">{subject.name}</span>
+                <span className="state-chip state-chip--warning">{chapter.name}</span>
+              </div>
+              <button
+                type="button"
+                className="mcq-report-action-btn"
+                onClick={() => setReportingMcq(currentMcq)}
+                title="Report issue in this MCQ to subject teacher"
+                style={{
+                  background: 'rgba(239, 68, 68, 0.12)',
+                  border: '1px solid rgba(239, 68, 68, 0.35)',
+                  borderRadius: '8px',
+                  padding: '4px 10px',
+                  color: '#fca5a5',
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+              >
+                🚩 Report Issue
+              </button>
             </div>
             <div className="mcq-question-title">
               <MCQRenderer text={currentMcq.questionText || currentMcq.question} images={mcqQuestionImages(currentMcq)} />
@@ -232,8 +277,27 @@ export default function MCQTest() {
               })}
             </div>
 
-            <div className="mcq-nav-actions">
+            <div className="mcq-nav-actions" style={{ flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
               <button className="btn btn-secondary" type="button" disabled={currentIndex === 0} onClick={() => setCurrentIndex((current) => current - 1)}>Previous</button>
+              <button
+                type="button"
+                onClick={() => setReportingMcq(currentMcq)}
+                style={{
+                  background: 'rgba(239, 68, 68, 0.08)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  borderRadius: '8px',
+                  padding: '8px 14px',
+                  color: '#f87171',
+                  fontSize: '0.84rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                🚩 Report Question
+              </button>
               {currentIndex < mcqs.length - 1 ? (
                 <button className="btn btn-primary" type="button" onClick={() => setCurrentIndex((current) => current + 1)}>Next</button>
               ) : (
@@ -259,6 +323,80 @@ export default function MCQTest() {
           </div>
         )}
       </section>
+
+      {/* Exit Confirmation Modal */}
+      {showExitConfirm && (
+        <div
+          className="report-modal-backdrop"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(5, 7, 15, 0.88)',
+            backdropFilter: 'blur(8px)',
+            zIndex: 10000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '16px',
+          }}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '460px',
+              backgroundColor: '#121422',
+              border: '1.5px solid rgba(239, 68, 68, 0.4)',
+              borderRadius: '16px',
+              padding: '24px',
+              color: '#f8fafc',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+              <span style={{ fontSize: '1.6rem' }}>⚠️</span>
+              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#fca5a5' }}>
+                Leave Test in Progress?
+              </h3>
+            </div>
+            <p style={{ fontSize: '0.9rem', color: '#cbd5e1', lineHeight: 1.5, margin: '0 0 20px 0' }}>
+              Your test is currently active ({answeredCount}/{mcqs.length} answered). Leaving now will save your progress so you can resume later.
+            </p>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setShowExitConfirm(false)}
+                style={{ padding: '10px 18px', fontWeight: 700 }}
+              >
+                ▶ Continue Test
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={() => {
+                  setShowExitConfirm(false)
+                  navigate(`/course/${subject.id}`)
+                }}
+                style={{ padding: '10px 18px', fontWeight: 700 }}
+              >
+                ⏸ Save & Exit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Report Modal */}
+      {reportingMcq && (
+        <ReportMcqModal
+          isOpen={Boolean(reportingMcq)}
+          onClose={() => setReportingMcq(null)}
+          mcq={reportingMcq}
+          subjectName={subject.name}
+          chapterName={chapter.name}
+          topicName={chapter.name}
+        />
+      )}
     </div>
   )
 }

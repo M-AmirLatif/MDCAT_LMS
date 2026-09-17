@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext'
 import { useSearch } from '../context/SearchContext'
 import { Helmet } from 'react-helmet-async'
 import MCQRenderer, { formatFormulasInText } from '../components/MCQRenderer'
+import ReportMcqModal from '../components/ReportMcqModal'
 import { openSocialCommunityModal } from '../components/SocialCommunityModal'
 import { normalizeImageUrl } from '../utils/mediaUrls'
 import './PlatformPages.css'
@@ -3406,6 +3407,8 @@ function QuizAttempt() {
   })
   const [submitting, setSubmitting] = useState(false)
   const [showQuestionPanel, setShowQuestionPanel] = useState(false)
+  const [showExitConfirm, setShowExitConfirm] = useState(false)
+  const [reportingMcq, setReportingMcq] = useState(null)
   const currentIndexRef = useRef(0)
   const quizUserKey = useMemo(
     () => user?.email || user?._id || user?.id || 'guest',
@@ -3629,29 +3632,20 @@ function QuizAttempt() {
   useEffect(() => {
     if (loading || !mcqs.length) return undefined
 
-    const baseState = {
-      ...(window.history.state || {}),
-      mcqAttemptBase: true,
-    }
-    window.history.replaceState(baseState, '')
-    window.history.pushState({ ...baseState, mcqAttemptGuard: true }, '')
+    // Push dummy state so back button doesn't leave the page immediately
+    window.history.pushState({ mcqQuizActive: true }, '')
 
-    const handleBack = (event) => {
-      if (event.state?.mcqAttemptGuard) return
-
-      const current = currentIndexRef.current
+    const handlePopState = () => {
+      // Re-push history entry so the trap stays alive and user doesn't jump backwards or exit website
+      window.history.pushState({ mcqQuizActive: true }, '')
       setShowQuestionPanel(false)
-      if (current > 0) {
-        const previous = current - 1
-        currentIndexRef.current = previous
-        setCurrentIndex(previous)
-      }
-
-      window.history.forward()
+      setShowExitConfirm(true)
     }
 
-    window.addEventListener('popstate', handleBack)
-    return () => window.removeEventListener('popstate', handleBack)
+    window.addEventListener('popstate', handlePopState)
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+    }
   }, [loading, mcqs.length])
 
   const submit = async ({ force = false } = {}) => {
@@ -3861,11 +3855,42 @@ function QuizAttempt() {
 
         <div className="mcq-attempt-layout">
           <div className="mcq-question-card">
-            {current.subject && (
-              <div className={`flp-mcq-subject-badge flp-mcq-subject-badge--${String(current.subject).toLowerCase().replace(/[^a-z]/g, '')}`}>
-                {current.subject}
+            {/* Top Bar: Subject Badge + Question Number + Report Button */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {current.subject && (
+                  <div className={`flp-mcq-subject-badge flp-mcq-subject-badge--${String(current.subject).toLowerCase().replace(/[^a-z]/g, '')}`} style={{ margin: 0 }}>
+                    {current.subject}
+                  </div>
+                )}
+                <span style={{ fontSize: '0.82rem', color: '#94a3b8', fontWeight: 600 }}>
+                  Question {currentIndex + 1} of {mcqs.length}
+                </span>
               </div>
-            )}
+              <button
+                type="button"
+                className="mcq-report-action-btn"
+                onClick={() => setReportingMcq(current)}
+                title="Report issue in this MCQ to subject teacher"
+                style={{
+                  background: 'rgba(239, 68, 68, 0.12)',
+                  border: '1px solid rgba(239, 68, 68, 0.35)',
+                  borderRadius: '8px',
+                  padding: '5px 12px',
+                  color: '#fca5a5',
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                🚩 Report Issue
+              </button>
+            </div>
+
             <div className="mcq-question-title">
               <MCQRenderer text={current.questionText || current.question} images={mcqQuestionImages(current)} />
             </div>
@@ -3890,7 +3915,7 @@ function QuizAttempt() {
                 </button>
               ))}
             </div>
-            <div className="mcq-nav-actions">
+            <div className="mcq-nav-actions" style={{ flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
               <button
                 className="btn btn-secondary"
                 type="button"
@@ -3905,6 +3930,26 @@ function QuizAttempt() {
                 onClick={skipQuestion}
               >
                 Skip
+              </button>
+              <button
+                type="button"
+                onClick={() => setReportingMcq(current)}
+                title="Report issue in this MCQ to subject teacher"
+                style={{
+                  background: 'rgba(239, 68, 68, 0.08)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  borderRadius: '8px',
+                  padding: '8px 14px',
+                  color: '#f87171',
+                  fontSize: '0.84rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                🚩 Report Question
               </button>
               <button
                 className="btn btn-primary"
@@ -3972,6 +4017,80 @@ function QuizAttempt() {
           </aside>
         </div>
       </section>
+
+      {/* Exit Confirmation Modal */}
+      {showExitConfirm && (
+        <div
+          className="report-modal-backdrop"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(5, 7, 15, 0.88)',
+            backdropFilter: 'blur(8px)',
+            zIndex: 10000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '16px',
+          }}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '460px',
+              backgroundColor: '#121422',
+              border: '1.5px solid rgba(239, 68, 68, 0.4)',
+              borderRadius: '16px',
+              padding: '24px',
+              color: '#f8fafc',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+              <span style={{ fontSize: '1.6rem' }}>⚠️</span>
+              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#fca5a5' }}>
+                Leave Quiz in Progress?
+              </h3>
+            </div>
+            <p style={{ fontSize: '0.9rem', color: '#cbd5e1', lineHeight: 1.5, margin: '0 0 20px 0' }}>
+              Your test is currently active ({Object.keys(answers).length}/{mcqs.length} answered). Leaving now will save your progress so you can resume later.
+            </p>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setShowExitConfirm(false)}
+                style={{ padding: '10px 18px', fontWeight: 700 }}
+              >
+                ▶ Continue Quiz
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={() => {
+                  setShowExitConfirm(false)
+                  pauseAndExitQuiz()
+                }}
+                style={{ padding: '10px 18px', fontWeight: 700 }}
+              >
+                ⏸ Save & Exit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Report MCQ Modal */}
+      {reportingMcq && (
+        <ReportMcqModal
+          isOpen={Boolean(reportingMcq)}
+          onClose={() => setReportingMcq(null)}
+          mcq={reportingMcq}
+          subjectName={reportingMcq.subject || meta?.name || subject}
+          chapterName={chapter?.name || ''}
+          topicName={reportingMcq.topic || ''}
+        />
+      )}
     </div>
   )
 }
@@ -4228,6 +4347,7 @@ function ReviewSection({ title, items, savedStatus, toggleFlashcard, subjectName
   const [activeFilter, setActiveFilter] = useState(() => (wrongCount > 0 ? 'wrong' : 'all'))
   const [expandedExplanations, setExpandedExplanations] = useState({})
   const [allExpanded, setAllExpanded] = useState(false)
+  const [reportingItem, setReportingItem] = useState(null)
 
   const toggleExplanation = (mcqId) => {
     setExpandedExplanations((prev) => ({
@@ -4367,6 +4487,15 @@ function ReviewSection({ title, items, savedStatus, toggleFlashcard, subjectName
                 >
                   {savedStatus[itemId] ? '⭐ Saved' : '☆ Save'}
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setReportingItem(item)}
+                  className="review-save-btn"
+                  title="Report issue in this MCQ to subject teacher"
+                  style={{ color: '#fca5a5', border: '1px solid rgba(239, 68, 68, 0.3)', background: 'rgba(239, 68, 68, 0.08)' }}
+                >
+                  🚩 Report
+                </button>
               </div>
 
               <div className="review-compact-status">
@@ -4424,15 +4553,36 @@ function ReviewSection({ title, items, savedStatus, toggleFlashcard, subjectName
               })}
             </div>
 
-            {/* Bottom Row: Toggle Explanation */}
+            {/* Bottom Row: Toggle Explanation + Report Button */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-              <button
-                type="button"
-                className="review-toggle-expl-btn"
-                onClick={() => toggleExplanation(itemId)}
-              >
-                {isExpanded ? '▲ Hide Explanation' : '▼ Show Explanation'}
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button
+                  type="button"
+                  className="review-toggle-expl-btn"
+                  onClick={() => toggleExplanation(itemId)}
+                >
+                  {isExpanded ? '▲ Hide Explanation' : '▼ Show Explanation'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setReportingItem(item)}
+                  style={{
+                    background: 'transparent',
+                    border: '1px solid rgba(239, 68, 68, 0.3)',
+                    borderRadius: '6px',
+                    padding: '4px 10px',
+                    color: '#f87171',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                  }}
+                >
+                  🚩 Report Issue
+                </button>
+              </div>
 
               <span style={{ fontSize: '0.82rem', color: 'var(--text-muted, #94a3b8)' }}>
                 Official Key: <strong style={{ color: '#10b981' }}>Option {correctLetter}</strong>
@@ -4452,6 +4602,17 @@ function ReviewSection({ title, items, savedStatus, toggleFlashcard, subjectName
           </article>
         )
       })}
+
+      {reportingItem && (
+        <ReportMcqModal
+          isOpen={Boolean(reportingItem)}
+          onClose={() => setReportingItem(null)}
+          mcq={reportingItem}
+          subjectName={reportingItem.subject || subjectName || ''}
+          chapterName={chapterId || ''}
+          topicName={reportingItem.topic || ''}
+        />
+      )}
     </div>
   )
 }

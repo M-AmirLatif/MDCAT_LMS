@@ -99,6 +99,7 @@ function ScrollToTop() {
 // ==================== EAGER IMPORTS ====================
 import { CourseSelection as LazyMcqCourseSelection, ChapterList as LazyMcqChapterList, McqList as LazyMcqMcqList, QuizAttempt as LazyMcqQuizAttempt, QuizResult as LazyMcqQuizResult } from './pages/McqModule'
 import { AdminCoursesPage as LazyAdminCoursesPage, AdminStudentsPage as LazyAdminStudentsPage, AdminTeachersPage as LazyAdminTeachersPage, AdminAnnouncementsPage as LazyAdminAnnouncementsPage, AdminReportsPage as LazyAdminReportsPage, AdminSettingsPage as LazyAdminSettingsPage, TeacherStudentsPage as LazyTeacherStudentsPage, TeacherAnalyticsPage as LazyTeacherAnalyticsPage, AdminActivityPage as LazyAdminActivityPage } from './pages/PlatformRolePages'
+import TeacherReportedMcqsPage from './pages/TeacherReportedMcqsPage'
 
 function PastPaperRedirect() {
   const { chapterId } = useParams()
@@ -263,12 +264,28 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/teacher/reported-mcqs"
+              element={
+                <ProtectedRoute roles={['teacher', 'admin']}>
+                  <TeacherReportedMcqsPage />
+                </ProtectedRoute>
+              }
+            />
 
             <Route
               path="/admin"
               element={
                 <ProtectedRoute roles={['admin']}>
                   <PlatformDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/reported-mcqs"
+              element={
+                <ProtectedRoute roles={['admin']}>
+                  <TeacherReportedMcqsPage />
                 </ProtectedRoute>
               }
             />
