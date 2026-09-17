@@ -1236,24 +1236,6 @@ function normalizeForSearch(str) {
     .trim()
 }
 
-function hasMathOrFormula(text) {
-  if (!text) return false
-  const str = String(text).trim()
-  if (!str) return false
-  if (/(\$\$?|[\\^_{}]|[×*·]|10\^|10[⁻−–]|°|[Δλθαβγμπσω]|\b[A-Za-z]+\/[A-Za-z]+[-−–]?\d*\b)/.test(str)) {
-    return true
-  }
-  if (/\b[VEIRPFQvq][ABCD\d]\b|\bF[egbncrt]\b|\bE[pkm]\b|\b[VvIip][ifo0ps]\b|\b(?:Ceq|Req|Leq|Irms|Vrms|Erms)\b|\b(?:lesser|less|greater|more|equal)\s+than\b/i.test(str)) {
-    return true
-  }
-  try {
-    const formatted = formatFormulasInText(str)
-    return formatted !== str && formatted.includes('$')
-  } catch {
-    return false
-  }
-}
-
 function mcqToForm(mcq) {
   if (!mcq) return { ...emptyMcqForm }
   if (Array.isArray(mcq.options) && mcq.options.length > 0) {
@@ -1420,7 +1402,6 @@ function McqForm({ initial, onSubmit, isFlp = false }) {
           {letters.map((letter) => {
             const isCorrect = form.correctAnswer === letter
             const optVal = form[`option${letter}`] || ''
-            const hasMath = hasMathOrFormula(optVal)
             return (
               <div
                 key={letter}
@@ -1442,21 +1423,14 @@ function McqForm({ initial, onSubmit, isFlp = false }) {
                 >
                   {letter}
                 </button>
-                <div className="teacher-compact-option-input-col">
-                  <input
-                    id={`option-${letter.toLowerCase()}`}
-                    className="teacher-compact-option-input"
-                    value={optVal}
-                    onChange={(event) => setField(`option${letter}`, event.target.value)}
-                    placeholder={`Option ${letter}...`}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                  {hasMath ? (
-                    <div className="teacher-compact-option-math-badge" title="Live Formula Preview">
-                      <MCQRenderer text={optVal} />
-                    </div>
-                  ) : null}
-                </div>
+                <input
+                  id={`option-${letter.toLowerCase()}`}
+                  className="teacher-compact-option-input"
+                  value={optVal}
+                  onChange={(event) => setField(`option${letter}`, event.target.value)}
+                  placeholder={`Option ${letter}...`}
+                  onClick={(e) => e.stopPropagation()}
+                />
                 {isCorrect && (
                   <span className="teacher-compact-correct-tag">
                     ✓ Correct Key
@@ -1823,7 +1797,6 @@ function TeacherInlineMcqCard({ mcq, index, displayNumberOffset = 0, chapterId, 
             {letters.map((letter) => {
               const isCorrect = form.correctAnswer === letter
               const optVal = form[`option${letter}`] || ''
-              const hasMath = hasMathOrFormula(optVal)
               return (
                 <div
                   key={letter}
@@ -1850,22 +1823,15 @@ function TeacherInlineMcqCard({ mcq, index, displayNumberOffset = 0, chapterId, 
                       <MCQRenderer text={optVal} />
                     </div>
                   ) : (
-                    <div className="teacher-compact-option-input-col">
-                      <input
-                        id={`option-${letter.toLowerCase()}-${mcq._id}`}
-                        className="teacher-compact-option-input"
-                        value={optVal}
-                        onChange={(event) => setField(`option${letter}`, event.target.value)}
-                        placeholder={`Option ${letter}...`}
-                        aria-label={`Option ${letter}`}
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                      {hasMath ? (
-                        <div className="teacher-compact-option-math-badge" title="Live Formula Preview">
-                          <MCQRenderer text={optVal} />
-                        </div>
-                      ) : null}
-                    </div>
+                    <input
+                      id={`option-${letter.toLowerCase()}-${mcq._id}`}
+                      className="teacher-compact-option-input"
+                      value={optVal}
+                      onChange={(event) => setField(`option${letter}`, event.target.value)}
+                      placeholder={`Option ${letter}...`}
+                      aria-label={`Option ${letter}`}
+                      onClick={(e) => e.stopPropagation()}
+                    />
                   )}
                   {isCorrect && (
                     <span className="teacher-compact-correct-tag">
