@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { useGoogleSignIn } from '../hooks/useGoogleSignIn'
 import { useAuth } from '../context/AuthContext'
@@ -27,8 +27,10 @@ function GoogleIcon() {
 
 export default function Register() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const nextPath = searchParams.get('next')
   const { login } = useAuth()
-  const googleSignIn = useGoogleSignIn({ remember: true, mode: 'signup' })
+  const googleSignIn = useGoogleSignIn({ remember: true, nextPath, mode: 'signup' })
   const [role, setRole] = useState('student')
   const [form, setForm] = useState({
     firstName: '',
@@ -76,11 +78,12 @@ export default function Register() {
       }
 
       if (res.data.token && res.data.user) {
+        sessionStorage.setItem('pending_social_popup_after_login', '1')
         login(res.data.token, res.data.user, true)
-        navigate('/dashboard', { replace: true })
+        navigate(nextPath || '/dashboard', { replace: true })
       } else {
         toast.success('Account created. Please log in.')
-        navigate('/login', { replace: true })
+        navigate(nextPath ? `/login?next=${encodeURIComponent(nextPath)}` : '/login', { replace: true })
       }
     } catch (error) {
       toast.error(getUserFriendlyErrorMessage(error, 'Registration failed.'))
@@ -213,7 +216,7 @@ export default function Register() {
               ) : null}
 
               <p className="auth-footer" style={{ marginTop: '1.5rem' }}>
-                Already have an account? <Link to="/login">Log in</Link>
+                Already have an account? <Link to={nextPath ? `/login?next=${encodeURIComponent(nextPath)}` : '/login'}>Log in</Link>
               </p>
             </div>
           </div>

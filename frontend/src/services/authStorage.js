@@ -30,16 +30,54 @@ export const clearAuth = () => {
   }
 }
 
+export const migrateGuestQuizData = (user) => {
+  if (!user) return
+  const userKey = user.email || user._id || user.id
+  if (!userKey || userKey === 'guest') return
+
+  try {
+    for (const store of [localStorage, sessionStorage]) {
+      const keysToMigrate = []
+      for (let i = 0; i < store.length; i++) {
+        const key = store.key(i)
+        if (
+          key &&
+          (key.startsWith('mcq-result-guest-') ||
+            key.startsWith('mcq-draft-guest-') ||
+            key.startsWith('mcq-course-test-guest-'))
+        ) {
+          keysToMigrate.push(key)
+        }
+      }
+
+      keysToMigrate.forEach((oldKey) => {
+        const value = store.getItem(oldKey)
+        if (!value) return
+        const newKey = oldKey.replace('-guest-', `-${userKey}-`)
+        store.setItem(newKey, value)
+      })
+    }
+  } catch (err) {
+    console.error('Error migrating guest quiz data:', err)
+  }
+}
+
 export const setAuth = ({ token, user, remember }) => {
   clearAuth()
   const store = remember ? localStorage : sessionStorage
   store.setItem(TOKEN_KEY, token)
   store.setItem(USER_KEY, JSON.stringify(user))
+  if (user) {
+    migrateGuestQuizData(user)
+  }
 }
 
 export const setStoredUser = (user) => {
   const store = hasSessionToken() ? sessionStorage : localStorage
   store.setItem(USER_KEY, JSON.stringify(user))
+  if (user) {
+    migrateGuestQuizData(user)
+  }
 }
 
 export const getRememberedCredentials = () => {

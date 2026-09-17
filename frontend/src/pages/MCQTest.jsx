@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import MCQRenderer from '../components/MCQRenderer'
+import { openSocialCommunityModal } from '../components/SocialCommunityModal'
 import './MCQTest.css'
 
 const compactImageList = (...values) => values.flatMap((value) => {
@@ -60,7 +61,11 @@ export default function MCQTest() {
 
   const [currentIndex, setCurrentIndex] = useState(() => {
     try {
-      const saved = JSON.parse(localStorage.getItem(quizStorageKey) || 'null')
+      let saved = JSON.parse(localStorage.getItem(quizStorageKey) || 'null')
+      if (!saved && quizUserKey !== 'guest') {
+        const guestKey = `mcq-course-test-guest-${courseId}-${chapterId}`
+        saved = JSON.parse(localStorage.getItem(guestKey) || 'null')
+      }
       return Number(saved?.currentIndex) || 0
     } catch {
       return 0
@@ -68,7 +73,11 @@ export default function MCQTest() {
   })
   const [answers, setAnswers] = useState(() => {
     try {
-      const saved = JSON.parse(localStorage.getItem(quizStorageKey) || 'null')
+      let saved = JSON.parse(localStorage.getItem(quizStorageKey) || 'null')
+      if (!saved && quizUserKey !== 'guest') {
+        const guestKey = `mcq-course-test-guest-${courseId}-${chapterId}`
+        saved = JSON.parse(localStorage.getItem(guestKey) || 'null')
+      }
       return saved?.answers || {}
     } catch {
       return {}
@@ -76,7 +85,11 @@ export default function MCQTest() {
   })
   const [submitted, setSubmitted] = useState(() => {
     try {
-      const saved = JSON.parse(localStorage.getItem(quizStorageKey) || 'null')
+      let saved = JSON.parse(localStorage.getItem(quizStorageKey) || 'null')
+      if (!saved && quizUserKey !== 'guest') {
+        const guestKey = `mcq-course-test-guest-${courseId}-${chapterId}`
+        saved = JSON.parse(localStorage.getItem(guestKey) || 'null')
+      }
       return Boolean(saved?.submitted)
     } catch {
       return false
@@ -145,7 +158,11 @@ export default function MCQTest() {
   }
 
   const submit = () => {
+    sessionStorage.setItem('pending_social_popup_after_test_submit', '1')
     setSubmitted(true)
+    setTimeout(() => {
+      openSocialCommunityModal()
+    }, 1200)
   }
 
   const handleRetake = () => {

@@ -155,6 +155,7 @@ export default function Login() {
       if (remember && formData.email) setRememberedCredentials({ email: formData.email, remember })
       else clearRememberedCredentials()
 
+      sessionStorage.setItem('pending_social_popup_after_login', '1')
       login(response.data.token, user, remember)
       navigate(nextPath || getDefaultRouteForRole(user?.role || requestedRole))
     } catch (error) {

@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext'
 import { useSearch } from '../context/SearchContext'
 import { Helmet } from 'react-helmet-async'
 import MCQRenderer, { formatFormulasInText } from '../components/MCQRenderer'
+import { openSocialCommunityModal } from '../components/SocialCommunityModal'
 import { normalizeImageUrl } from '../utils/mediaUrls'
 import './PlatformPages.css'
 import './MCQTest.css'
@@ -141,7 +142,20 @@ const getLegacyQuizResultStorageKey = (subject, chapterId) =>
 const readStoredQuizResult = (userKey, subject, chapterId) => {
   const key = getQuizResultStorageKey(userKey, subject, chapterId)
   try {
-    return JSON.parse(localStorage.getItem(key) || sessionStorage.getItem(key) || 'null')
+    const direct = JSON.parse(localStorage.getItem(key) || sessionStorage.getItem(key) || 'null')
+    if (direct) return direct
+    if (userKey !== 'guest') {
+      const guestKey = getQuizResultStorageKey('guest', subject, chapterId)
+      const guestResult = JSON.parse(localStorage.getItem(guestKey) || sessionStorage.getItem(guestKey) || 'null')
+      if (guestResult) {
+        const payload = JSON.stringify(guestResult)
+        localStorage.setItem(key, payload)
+        sessionStorage.setItem(key, payload)
+        return guestResult
+      }
+    }
+    const legacyKey = getLegacyQuizResultStorageKey(subject, chapterId)
+    return JSON.parse(sessionStorage.getItem(legacyKey) || 'null')
   } catch {
     // Ignore corrupt browser storage so a fresh quiz can start normally.
     return null
@@ -3447,6 +3461,14 @@ function QuizAttempt() {
         let activeDraft = null
         try {
           activeDraft = JSON.parse(localStorage.getItem(quizStorageKey) || 'null')
+          if (!activeDraft && quizUserKey !== 'guest') {
+            const guestDraftKey = `mcq-draft-guest-${subject}-${chapterAttemptId}`
+            activeDraft = JSON.parse(localStorage.getItem(guestDraftKey) || 'null')
+            if (activeDraft) {
+              activeDraft.ownerKey = quizUserKey
+              localStorage.setItem(quizStorageKey, JSON.stringify(activeDraft))
+            }
+          }
         } catch {
           activeDraft = null
         }
@@ -3712,6 +3734,7 @@ function QuizAttempt() {
         }
       }
       localStorage.removeItem(quizStorageKey)
+      sessionStorage.setItem('pending_social_popup_after_test_submit', '1')
       const resultPayload = JSON.stringify(res.data)
       const resultKey = getQuizResultStorageKey(quizUserKey, subject, chapterAttemptId)
       const legacyResultKey = getLegacyQuizResultStorageKey(subject, chapterAttemptId)
@@ -4034,6 +4057,16 @@ function QuizResult() {
   const [savedStatus, setSavedStatus] = useState({})
 
   useEffect(() => {
+    if (sessionStorage.getItem('pending_social_popup_after_test_submit')) {
+      sessionStorage.removeItem('pending_social_popup_after_test_submit')
+      const timer = setTimeout(() => {
+        openSocialCommunityModal()
+      }, 1200)
+      return () => clearTimeout(timer)
+    }
+  }, [])
+
+  useEffect(() => {
     if (!user || !result?.detailed) return
     const ids = result.detailed.map(d => d.mcqId || d.id).filter(Boolean)
     if (!ids.length) return
@@ -4083,6 +4116,8 @@ function QuizResult() {
         ? 'Good effort. Review the mistakes below to improve.'
         : 'Keep practicing, and review every explanation carefully.'
 
+  const nextUrl = encodeURIComponent(location.pathname + location.search)
+
   return (
     <div className="mcq-review-page animate-fade-up">
       <section className="mcq-review-shell">
@@ -4104,12 +4139,17 @@ function QuizResult() {
             <div>
               <strong style={{ color: '#38bdf8', fontSize: '1rem' }}>🎉 Test Completed as Guest!</strong>
               <p style={{ margin: '0.25rem 0 0', color: '#cbd5e1', fontSize: '0.88rem' }}>
-                Create a free account to save your scores, track your streak, and access 10,000+ MDCAT MCQs.
+                Log in or create a free account to save your scores, track your streak, and access 10,000+ MDCAT MCQs.
               </p>
             </div>
-            <Link to="/register" className="btn btn-primary btn-sm">
-              Save My Score (Free Sign Up)
-            </Link>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+              <Link to={`/login?next=${nextUrl}`} className="btn btn-secondary btn-sm">
+                Log In
+              </Link>
+              <Link to={`/register?next=${nextUrl}`} className="btn btn-primary btn-sm">
+                Save My Score (Free Sign Up)
+              </Link>
+            </div>
           </div>
         )}
         <div className="mcq-review-top">

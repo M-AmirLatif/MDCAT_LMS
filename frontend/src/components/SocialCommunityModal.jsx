@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { SOCIAL_COMMUNITY_LIST, SOCIAL_LINKS } from '../constants/socialLinks'
 import './SocialCommunityModal.css'
-
-const POPUP_ACK_KEY = 'mdcat_social_community_modal_ack_v1'
 
 export function openSocialCommunityModal() {
   if (typeof window !== 'undefined') {
@@ -92,23 +91,37 @@ function getSocialIcon(type) {
 export default function SocialCommunityModal() {
   const [isOpen, setIsOpen] = useState(false)
   const [hasInteracted, setHasInteracted] = useState(false)
+  const location = useLocation()
 
+  // 1. Initial page load / browser refresh / new tab load:
   useEffect(() => {
-    // Check if user has already acknowledged or dismissed recently
+    const timer = setTimeout(() => {
+      setIsOpen(true)
+    }, 1200)
+    return () => clearTimeout(timer)
+  }, [])
+
+  // 2. React to route transitions if pending post-login or post-test-submit flags exist:
+  useEffect(() => {
     try {
-      const ack = localStorage.getItem(POPUP_ACK_KEY)
-      // If never acknowledged, pop up on initial visit after a brief 1.2s delay
-      if (!ack) {
+      if (sessionStorage.getItem('pending_social_popup_after_login')) {
+        sessionStorage.removeItem('pending_social_popup_after_login')
+        const timer = setTimeout(() => {
+          setIsOpen(true)
+        }, 1000)
+        return () => clearTimeout(timer)
+      }
+      if (sessionStorage.getItem('pending_social_popup_after_test_submit')) {
+        sessionStorage.removeItem('pending_social_popup_after_test_submit')
         const timer = setTimeout(() => {
           setIsOpen(true)
         }, 1200)
         return () => clearTimeout(timer)
       }
-    } catch {
-      // ignore storage error
-    }
-  }, [])
+    } catch {}
+  }, [location.pathname, location.search])
 
+  // 3. Explicit event listener for manual or programmatic triggers:
   useEffect(() => {
     const handleOpen = () => setIsOpen(true)
     window.addEventListener('open-social-community-modal', handleOpen)
@@ -116,11 +129,6 @@ export default function SocialCommunityModal() {
   }, [])
 
   const handleClose = () => {
-    try {
-      localStorage.setItem(POPUP_ACK_KEY, JSON.stringify({ acknowledgedAt: Date.now() }))
-    } catch {
-      // ignore
-    }
     setIsOpen(false)
   }
 
