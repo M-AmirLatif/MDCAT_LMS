@@ -60,7 +60,7 @@ function LeaderboardTable({ rows = [], currentStudent, showSubject = false }) {
                   <span className="leaderboard-avatar">{String(row.name || 'S').slice(0, 1).toUpperCase()}</span>
                   <div>
                     <strong>{row.name}</strong>
-                    {row.isCurrentUser ? <small>Your position</small> : <small>{row.email || 'Student'}</small>}
+                    {row.isCurrentUser ? <small style={{ color: 'var(--teal)' }}>Your position</small> : <small>MDCAT Aspirant</small>}
                   </div>
                 </div>
               </td>

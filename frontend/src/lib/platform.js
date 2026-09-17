@@ -65,6 +65,7 @@ export const PLATFORM_NAV = {
       label: 'Operations',
       items: [
         { key: 'dashboard', label: 'Admin Overview', path: '/dashboard', icon: 'dashboard' },
+        { key: 'activity', label: 'Activity Tracker', path: '/admin/activity', icon: 'analytics' },
         { key: 'flps', label: 'Full Length Papers (FLPs)', path: '/mcqs/flps', icon: 'assignments' },
         { key: 'past-papers', label: 'Past Papers', path: '/mcqs/past-papers', icon: 'courses' },
         { key: 'students', label: 'Students & Access', path: '/admin/students', icon: 'students' },

@@ -1032,8 +1032,489 @@ export function SuperAdminAnnouncementsPage() {
   )
 }
 
+export function AdminActivityPage() {
+  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState({
+    stats: {
+      activeStudentsToday: 0,
+      activeStudentsWeek: 0,
+      testsToday: 0,
+      totalRegistered: 0,
+      registeredToday: 0,
+    },
+    activities: [],
+    pagination: { page: 1, limit: 25, total: 0, pages: 1 },
+  })
+  const [range, setRange] = useState('today')
+  const [subject, setSubject] = useState('all')
+  const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
 
+  // Student drill-down state
+  const [selectedStudentId, setSelectedStudentId] = useState(null)
+  const [studentDetail, setStudentDetail] = useState(null)
+  const [loadingDetail, setLoadingDetail] = useState(false)
 
+  const fetchActivity = async () => {
+    try {
+      setLoading(true)
+      const res = await API.get('/admin/student-activity', {
+        params: {
+          page,
+          limit: 25,
+          range,
+          subject,
+          search: search.trim() || undefined,
+        },
+      })
+      if (res.data?.success) {
+        setData(res.data)
+      }
+    } catch (err) {
+      toast.error(getUserFriendlyErrorMessage(err, 'Could not fetch student activity.'))
+    } finally {
+      setLoading(false)
+    }
+  }
 
+  useEffect(() => {
+    fetchActivity()
+  }, [page, range, subject])
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPage(1)
+      fetchActivity()
+    }, 400)
+    return () => clearTimeout(timer)
+  }, [search])
 
+  const openStudentDetail = async (studentId) => {
+    if (!studentId) return
+    setSelectedStudentId(studentId)
+    setLoadingDetail(true)
+    try {
+      const res = await API.get(`/admin/students/${studentId}/activity`)
+      if (res.data?.success) {
+        setStudentDetail(res.data)
+      }
+    } catch (err) {
+      toast.error(getUserFriendlyErrorMessage(err, 'Failed to load student activity details.'))
+    } finally {
+      setLoadingDetail(false)
+    }
+  }
+
+  const closeStudentDetail = () => {
+    setSelectedStudentId(null)
+    setStudentDetail(null)
+  }
+
+  const stats = data.stats || {}
+  const activities = data.activities || []
+  const pagination = data.pagination || {}
+
+  const formatDateTime = (value) => {
+    if (!value) return 'N/A'
+    const d = new Date(value)
+    if (Number.isNaN(d.getTime())) return 'N/A'
+    return d.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    })
+  }
+
+  const formatDuration = (seconds) => {
+    if (!seconds || seconds <= 0) return '-'
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    if (mins === 0) return `${secs}s`
+    return `${mins}m ${secs}s`
+  }
+
+  return (
+    <div className="workspace-page admin-activity-page animate-fade-up">
+      {/* Top Stat Grid */}
+      <div className="card-grid">
+        <div className="stat-tile stat-tile--purple">
+          <div className="stat-tile-top">
+            <span>Active Students Today</span>
+            <span className="badge badge-purple">Live</span>
+          </div>
+          <strong>{loading && !activities.length ? '...' : stats.activeStudentsToday || 0}</strong>
+          <small>{stats.activeStudentsWeek || 0} active in last 7 days</small>
+        </div>
+
+        <div className="stat-tile stat-tile--teal">
+          <div className="stat-tile-top">
+            <span>Tests Solved Today</span>
+            <span className="badge badge-teal">Today</span>
+          </div>
+          <strong>{loading && !activities.length ? '...' : stats.testsToday || 0}</strong>
+          <small>Total MCQ sessions submitted today</small>
+        </div>
+
+        <div className="stat-tile stat-tile--amber">
+          <div className="stat-tile-top">
+            <span>New Signups Today</span>
+            <span className="badge badge-amber">Registrations</span>
+          </div>
+          <strong>{loading && !activities.length ? '...' : stats.registeredToday || 0}</strong>
+          <small>New student accounts created today</small>
+        </div>
+
+        <div className="stat-tile stat-tile--coral">
+          <div className="stat-tile-top">
+            <span>Total Registered</span>
+            <span className="badge badge-coral">All Time</span>
+          </div>
+          <strong>{loading && !activities.length ? '...' : stats.totalRegistered || 0}</strong>
+          <small>Total students on platform</small>
+        </div>
+      </div>
+
+      {/* Main Activity Controls & Table */}
+      <div className="workspace-card">
+        <div className="workspace-card-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+          <div>
+            <div className="label-xs">Live Student Activity & Audit Logs</div>
+            <h2 className="workspace-card-title">Real-Time MCQ & Test Submissions</h2>
+          </div>
+          <button
+            className="btn btn-outline-secondary"
+            onClick={() => fetchActivity()}
+            disabled={loading}
+            type="button"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+          >
+            {loading ? 'Refreshing...' : '🔄 Refresh Activity'}
+          </button>
+        </div>
+
+        <div className="workspace-card-body">
+          <div className="split-toolbar" style={{ display: 'flex', flexWrap: 'wrap', gap: 14, alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+            {/* Date Range Filter Pills */}
+            <div className="filter-pills" style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              <button
+                className={`filter-pill ${range === 'today' ? 'filter-pill--active' : ''}`}
+                onClick={() => { setRange('today'); setPage(1) }}
+                type="button"
+              >
+                Today
+              </button>
+              <button
+                className={`filter-pill ${range === 'yesterday' ? 'filter-pill--active' : ''}`}
+                onClick={() => { setRange('yesterday'); setPage(1) }}
+                type="button"
+              >
+                Yesterday
+              </button>
+              <button
+                className={`filter-pill ${range === '7d' ? 'filter-pill--active' : ''}`}
+                onClick={() => { setRange('7d'); setPage(1) }}
+                type="button"
+              >
+                Last 7 Days
+              </button>
+              <button
+                className={`filter-pill ${range === '30d' ? 'filter-pill--active' : ''}`}
+                onClick={() => { setRange('30d'); setPage(1) }}
+                type="button"
+              >
+                Last 30 Days
+              </button>
+              <button
+                className={`filter-pill ${range === 'all' ? 'filter-pill--active' : ''}`}
+                onClick={() => { setRange('all'); setPage(1) }}
+                type="button"
+              >
+                All Time
+              </button>
+            </div>
+
+            {/* Subject Selector & Search Input */}
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+              <select
+                value={subject}
+                onChange={(e) => { setSubject(e.target.value); setPage(1) }}
+                style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid var(--border-color, #e2e8f0)', background: 'var(--bg-surface, #fff)', fontSize: '0.9rem' }}
+              >
+                <option value="all">All Subjects</option>
+                <option value="biology">Biology</option>
+                <option value="chemistry">Chemistry</option>
+                <option value="physics">Physics</option>
+                <option value="english">English</option>
+                <option value="flp">Full Length Papers (FLPs)</option>
+                <option value="past_paper">Past Papers</option>
+              </select>
+
+              <div className="floating-field" style={{ minWidth: 240, margin: 0 }}>
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search student, email, topic..."
+                  style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid var(--border-color, #e2e8f0)', width: '100%', fontSize: '0.9rem' }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Activity Table */}
+          {loading && !activities.length ? (
+            <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted, #718096)' }}>
+              <p>Loading activity logs...</p>
+            </div>
+          ) : activities.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '48px 0', background: 'rgba(0,0,0,0.02)', borderRadius: 12 }}>
+              <p style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-heading, #2d3748)', marginBottom: 6 }}>No activity records found</p>
+              <p style={{ color: 'var(--text-muted, #718096)', fontSize: '0.9rem' }}>
+                {range === 'today' ? 'No students have submitted tests yet today.' : 'Try changing the date range or search query.'}
+              </p>
+            </div>
+          ) : (
+            <div className="table-responsive" style={{ overflowX: 'auto' }}>
+              <table className="simple-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr>
+                    <th>Date & Time</th>
+                    <th>Student Name & Email</th>
+                    <th>Subject</th>
+                    <th>Chapter / Topic</th>
+                    <th>Score / MCQs</th>
+                    <th>Accuracy</th>
+                    <th>Duration</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {activities.map((item) => {
+                    const pct = Math.round(item.percentage || 0)
+                    const badgeClass = pct >= 70 ? 'badge-teal' : pct >= 50 ? 'badge-amber' : 'badge-coral'
+                    return (
+                      <tr key={item._id}>
+                        <td style={{ whiteSpace: 'nowrap', fontSize: '0.88rem' }}>
+                          <span style={{ fontWeight: 600 }}>{formatDateTime(item.submittedAt)}</span>
+                        </td>
+                        <td>
+                          <div className="table-primary-cell">
+                            <strong>{item.student?.firstName} {item.student?.lastName}</strong>
+                            <small style={{ color: 'var(--text-muted, #718096)' }}>{item.student?.email}</small>
+                            {item.student?.createdAt ? (
+                              <small style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                                Joined: {formatDate(item.student.createdAt)}
+                              </small>
+                            ) : null}
+                          </div>
+                        </td>
+                        <td>
+                          <span className="badge badge-purple" style={{ textTransform: 'capitalize' }}>
+                            {item.subject || item.course?.category || 'General'}
+                          </span>
+                        </td>
+                        <td>
+                          <div style={{ maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={item.chapterName || item.topic || 'General Practice'}>
+                            <strong>{item.chapterName || item.topic || 'General Practice'}</strong>
+                          </div>
+                        </td>
+                        <td style={{ fontWeight: 600 }}>
+                          {item.finalScore} / {item.totalQuestions}
+                        </td>
+                        <td>
+                          <span className={`badge ${badgeClass}`}>
+                            {pct}%
+                          </span>
+                        </td>
+                        <td style={{ fontSize: '0.88rem', color: 'var(--text-muted, #718096)' }}>
+                          {formatDuration(item.timeSpentSeconds)}
+                        </td>
+                        <td>
+                          <button
+                            className="btn btn-outline-primary"
+                            style={{ padding: '4px 10px', fontSize: '0.8rem', borderRadius: 6 }}
+                            onClick={() => openStudentDetail(item.student?._id || item.studentId)}
+                            type="button"
+                          >
+                            Full Timeline
+                          </button>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Pagination */}
+          {pagination.pages > 1 ? (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 18, paddingTop: 14, borderTop: '1px solid var(--border-color, #e2e8f0)' }}>
+              <span style={{ fontSize: '0.88rem', color: 'var(--text-muted, #718096)' }}>
+                Showing page {pagination.page} of {pagination.pages} ({pagination.total} total submissions)
+              </span>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button
+                  className="btn btn-outline-secondary"
+                  style={{ padding: '5px 12px', fontSize: '0.85rem' }}
+                  disabled={page <= 1}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  type="button"
+                >
+                  Previous
+                </button>
+                <button
+                  className="btn btn-outline-secondary"
+                  style={{ padding: '5px 12px', fontSize: '0.85rem' }}
+                  disabled={page >= pagination.pages}
+                  onClick={() => setPage((p) => p + 1)}
+                  type="button"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      {/* Student Drilldown Modal */}
+      {selectedStudentId ? (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0, 0, 0, 0.55)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 20,
+          }}
+          onClick={closeStudentDetail}
+        >
+          <div
+            style={{
+              background: 'var(--bg-surface, #fff)',
+              borderRadius: 16,
+              maxWidth: 780,
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              padding: 24,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border-color, #e2e8f0)', paddingBottom: 16, marginBottom: 18 }}>
+              <div>
+                <div className="label-xs">Student Complete Activity Record</div>
+                <h3 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 700 }}>
+                  {studentDetail?.student ? `${studentDetail.student.firstName} ${studentDetail.student.lastName}` : 'Student Timeline'}
+                </h3>
+                <p style={{ margin: '4px 0 0', color: 'var(--text-muted, #718096)', fontSize: '0.9rem' }}>
+                  {studentDetail?.student?.email} • Registered on: {formatDateTime(studentDetail?.student?.createdAt)}
+                </p>
+              </div>
+              <button
+                onClick={closeStudentDetail}
+                type="button"
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  fontSize: '1.5rem',
+                  cursor: 'pointer',
+                  padding: 4,
+                  lineHeight: 1,
+                  color: 'var(--text-muted, #718096)',
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            {loadingDetail ? (
+              <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                <p>Loading student activity history...</p>
+              </div>
+            ) : studentDetail ? (
+              <div>
+                {/* Metric cards */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12, marginBottom: 20 }}>
+                  <div style={{ padding: 12, borderRadius: 10, background: 'rgba(99, 102, 241, 0.08)', border: '1px solid rgba(99, 102, 241, 0.2)' }}>
+                    <span style={{ fontSize: '0.78rem', color: '#6366f1', fontWeight: 600 }}>Total Tests Taken</span>
+                    <h4 style={{ margin: '4px 0 0', fontSize: '1.3rem' }}>{studentDetail.metrics?.totalTests || 0}</h4>
+                  </div>
+                  <div style={{ padding: 12, borderRadius: 10, background: 'rgba(20, 184, 166, 0.08)', border: '1px solid rgba(20, 184, 166, 0.2)' }}>
+                    <span style={{ fontSize: '0.78rem', color: '#14b8a6', fontWeight: 600 }}>Total MCQs Solved</span>
+                    <h4 style={{ margin: '4px 0 0', fontSize: '1.3rem' }}>{studentDetail.metrics?.totalQuestions || 0}</h4>
+                  </div>
+                  <div style={{ padding: 12, borderRadius: 10, background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.2)' }}>
+                    <span style={{ fontSize: '0.78rem', color: '#f59e0b', fontWeight: 600 }}>Average Score</span>
+                    <h4 style={{ margin: '4px 0 0', fontSize: '1.3rem' }}>{Math.round(studentDetail.metrics?.avgPercentage || 0)}%</h4>
+                  </div>
+                  <div style={{ padding: 12, borderRadius: 10, background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+                    <span style={{ fontSize: '0.78rem', color: '#ef4444', fontWeight: 600 }}>Best Score</span>
+                    <h4 style={{ margin: '4px 0 0', fontSize: '1.3rem' }}>{studentDetail.metrics?.bestPercentage || 0}%</h4>
+                  </div>
+                </div>
+
+                {/* Chronological History List */}
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 600, marginBottom: 12 }}>
+                  All Test Submissions ({studentDetail.history?.length || 0})
+                </h4>
+
+                {studentDetail.history?.length === 0 ? (
+                  <p style={{ color: 'var(--text-muted, #718096)' }}>No test sessions recorded for this student yet.</p>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 380, overflowY: 'auto' }}>
+                    {studentDetail.history.map((session, idx) => (
+                      <div
+                        key={session._id || idx}
+                        style={{
+                          padding: 12,
+                          borderRadius: 10,
+                          border: '1px solid var(--border-color, #e2e8f0)',
+                          background: 'var(--bg-card, #fafafa)',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          flexWrap: 'wrap',
+                          gap: 8,
+                        }}
+                      >
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                            <span className="badge badge-purple" style={{ textTransform: 'capitalize', fontSize: '0.75rem' }}>
+                              {session.subject || 'Test'}
+                            </span>
+                            <strong style={{ fontSize: '0.95rem' }}>{session.chapterName || session.topic || 'General MCQs'}</strong>
+                          </div>
+                          <small style={{ color: 'var(--text-muted, #718096)', fontSize: '0.8rem' }}>
+                            📅 {formatDateTime(session.submittedAt)} • Duration: {formatDuration(session.timeSpentSeconds)}
+                          </small>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                          <span style={{ fontWeight: 600, fontSize: '0.95rem' }}>
+                            {session.finalScore} / {session.totalQuestions} MCQs
+                          </span>
+                          <span className={`badge ${session.percentage >= 70 ? 'badge-teal' : session.percentage >= 50 ? 'badge-amber' : 'badge-coral'}`}>
+                            {session.percentage}%
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  )
+}

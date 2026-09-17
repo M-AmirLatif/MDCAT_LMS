@@ -784,3 +784,230 @@ exports.restrictTeacher = async (req, res) => {
     res.status(500).json({ error: error.stack || error.message })
   }
 }
+
+// ==================== STUDENT ACTIVITY & AUDIT TRACKER ====================
+exports.getStudentActivity = async (req, res) => {
+  try {
+    const { studentId, subject, dateRange = 'all', search = '', page = 1, limit = 50 } = req.query
+    const pageNum = Math.max(1, parseInt(page, 10) || 1)
+    const limitNum = Math.min(200, Math.max(1, parseInt(limit, 10) || 50))
+    const skip = (pageNum - 1) * limitNum
+
+    const studentRole = await Role.findOne({ name: 'student' }).select('_id').lean()
+    const studentRoleId = studentRole?._id || null
+
+    // Date range boundaries
+    const now = new Date()
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    const startOfYesterday = new Date(startOfToday.getTime() - 24 * 60 * 60 * 1000)
+    const sevenDaysAgo = new Date(startOfToday.getTime() - 7 * 24 * 60 * 60 * 1000)
+    const thirtyDaysAgo = new Date(startOfToday.getTime() - 30 * 24 * 60 * 60 * 1000)
+
+    // Calculate High-level Summary Metrics
+    const [
+      activeStudentsTodayCount,
+      activeStudentsWeekCount,
+      testsTodayCount,
+      totalRegisteredStudents,
+      registeredTodayCount,
+    ] = await Promise.all([
+      TestSession.distinct('studentId', { submittedAt: { $gte: startOfToday } }).then((ids) => ids.length),
+      TestSession.distinct('studentId', { submittedAt: { $gte: sevenDaysAgo } }).then((ids) => ids.length),
+      TestSession.countDocuments({ submittedAt: { $gte: startOfToday } }),
+      studentRoleId ? User.countDocuments({ role: studentRoleId }) : 0,
+      studentRoleId ? User.countDocuments({ role: studentRoleId, createdAt: { $gte: startOfToday } }) : 0,
+    ])
+
+    // Build Match filter for activities
+    const matchFilter = {}
+
+    if (studentId && mongoose.Types.ObjectId.isValid(studentId)) {
+      matchFilter.studentId = new mongoose.Types.ObjectId(studentId)
+    }
+
+    if (subject && subject !== 'all') {
+      const isFlp = subject.toLowerCase() === 'flps' || subject.toLowerCase() === 'flp'
+      const isPastPaper = subject.toLowerCase() === 'past-papers' || subject.toLowerCase() === 'past papers'
+      if (isFlp) {
+        matchFilter.$or = [{ subject: 'FLPs' }, { subject: /flp/i }]
+      } else if (isPastPaper) {
+        matchFilter.$or = [{ subject: 'Past Papers' }, { subject: /past paper/i }]
+      } else {
+        matchFilter.subject = new RegExp(`^${subject}$`, 'i')
+      }
+    }
+
+    if (dateRange === 'today') {
+      matchFilter.submittedAt = { $gte: startOfToday }
+    } else if (dateRange === 'yesterday') {
+      matchFilter.submittedAt = { $gte: startOfYesterday, $lt: startOfToday }
+    } else if (dateRange === '7d') {
+      matchFilter.submittedAt = { $gte: sevenDaysAgo }
+    } else if (dateRange === '30d') {
+      matchFilter.submittedAt = { $gte: thirtyDaysAgo }
+    }
+
+    // Pipeline to fetch test activities with student details and search support
+    const pipeline = [
+      { $match: matchFilter },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'studentId',
+          foreignField: '_id',
+          as: 'student',
+        },
+      },
+      { $unwind: { path: '$student', preserveNullAndEmptyArrays: true } },
+    ]
+
+    if (search && search.trim()) {
+      const searchRegex = new RegExp(search.trim(), 'i')
+      pipeline.push({
+        $match: {
+          $or: [
+            { 'student.firstName': searchRegex },
+            { 'student.lastName': searchRegex },
+            { 'student.email': searchRegex },
+            { chapterName: searchRegex },
+            { subject: searchRegex },
+          ],
+        },
+      })
+    }
+
+    const countPipeline = [...pipeline, { $count: 'total' }]
+    const dataPipeline = [
+      ...pipeline,
+      { $sort: { submittedAt: -1, createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limitNum },
+    ]
+
+    const [countResult, sessions] = await Promise.all([
+      TestSession.aggregate(countPipeline),
+      TestSession.aggregate(dataPipeline),
+    ])
+
+    const total = countResult[0]?.total || 0
+
+    const activities = sessions.map((session) => {
+      const studentName = [session.student?.firstName, session.student?.lastName].filter(Boolean).join(' ') || 'Student'
+      return {
+        id: String(session._id),
+        type: 'test_attempt',
+        studentId: String(session.studentId),
+        studentName,
+        studentEmail: session.student?.email || 'N/A',
+        studentCreatedAt: session.student?.createdAt || null,
+        subject: session.subject || 'General Practice',
+        chapterId: session.chapterId || '',
+        chapterName: session.chapterName || session.topic || 'Practice Test',
+        totalQuestions: session.totalQuestions || 0,
+        score: session.finalScore ?? session.score ?? 0,
+        percentage: session.percentage || 0,
+        accuracy: session.percentage || 0,
+        timeSpentSeconds: session.timeSpentSeconds || null,
+        submittedAt: session.submittedAt || session.createdAt,
+        timestamp: session.submittedAt || session.createdAt,
+      }
+    })
+
+    res.status(200).json({
+      success: true,
+      metrics: {
+        activeStudentsToday: activeStudentsTodayCount,
+        activeStudentsWeek: activeStudentsWeekCount,
+        testsToday: testsTodayCount,
+        totalRegistered: totalRegisteredStudents,
+        registeredToday: registeredTodayCount,
+      },
+      activities,
+      pagination: {
+        total,
+        page: pageNum,
+        limit: limitNum,
+        pages: Math.ceil(total / limitNum) || 1,
+      },
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.stack || error.message })
+  }
+}
+
+exports.getStudentDetailActivity = async (req, res) => {
+  try {
+    const { studentId } = req.params
+    if (!mongoose.Types.ObjectId.isValid(studentId)) {
+      return res.status(400).json({ error: 'Invalid student ID' })
+    }
+
+    const [student, sessions] = await Promise.all([
+      User.findById(studentId)
+        .select('firstName lastName email phone isActive subscriptionPlan subscriptionStatus subscriptionEndDate accessStatus createdAt lastActiveAt currentStreak badges')
+        .populate('role', 'name')
+        .lean(),
+      TestSession.find({ studentId })
+        .sort({ submittedAt: -1 })
+        .limit(200)
+        .lean(),
+    ])
+
+    if (!student) {
+      return res.status(404).json({ error: 'Student not found' })
+    }
+
+    const totalTests = sessions.length
+    const totalScore = sessions.reduce((sum, s) => sum + (s.finalScore ?? s.score ?? 0), 0)
+    const totalQuestions = sessions.reduce((sum, s) => sum + (s.totalQuestions || 0), 0)
+    const overallAccuracy = totalQuestions > 0 ? Math.round((totalScore / totalQuestions) * 100) : 0
+
+    // Subject breakdown
+    const subjectStats = {}
+    sessions.forEach((s) => {
+      const subj = s.subject || 'Other'
+      if (!subjectStats[subj]) {
+        subjectStats[subj] = { attempts: 0, questions: 0, score: 0 }
+      }
+      subjectStats[subj].attempts += 1
+      subjectStats[subj].questions += s.totalQuestions || 0
+      subjectStats[subj].score += s.finalScore ?? s.score ?? 0
+    })
+
+    const subjectBreakdown = Object.entries(subjectStats).map(([name, stats]) => ({
+      name,
+      attempts: stats.attempts,
+      accuracy: stats.questions > 0 ? Math.round((stats.score / stats.questions) * 100) : 0,
+    }))
+
+    res.status(200).json({
+      success: true,
+      student: {
+        ...student,
+        role: student.role?.name || 'student',
+      },
+      summary: {
+        totalTests,
+        totalQuestions,
+        totalScore,
+        overallAccuracy,
+        registeredAt: student.createdAt,
+        lastAttemptAt: sessions[0]?.submittedAt || null,
+        subjectBreakdown,
+      },
+      sessions: sessions.map((s) => ({
+        id: String(s._id),
+        subject: s.subject || 'Practice',
+        chapterId: s.chapterId || '',
+        chapterName: s.chapterName || s.topic || 'Practice Test',
+        totalQuestions: s.totalQuestions || 0,
+        score: s.finalScore ?? s.score ?? 0,
+        percentage: s.percentage || 0,
+        timeSpentSeconds: s.timeSpentSeconds || null,
+        submittedAt: s.submittedAt || s.createdAt,
+      })),
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.stack || error.message })
+  }
+}

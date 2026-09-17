@@ -449,12 +449,14 @@ const getLeaderboardRows = async (match, currentUserId) => {
 
   return rows.map((row, index) => {
     const name = `${row.firstName || ''} ${row.lastName || ''}`.trim() || 'Student'
+    const isCurrentUser = currentUserId ? String(row.studentId) === String(currentUserId) : false
     return {
       ...row,
       studentId: String(row.studentId),
       rank: index + 1,
       name,
-      isCurrentUser: currentUserId ? String(row.studentId) === String(currentUserId) : false,
+      isCurrentUser,
+      email: isCurrentUser ? row.email : undefined,
     }
   })
 }
