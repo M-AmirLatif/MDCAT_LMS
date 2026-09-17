@@ -854,6 +854,8 @@ function FlpSubjectSelectModal({ chapter, onClose, onStartTest }) {
   )
 }
 
+const CHAPTER_CACHE = new Map()
+
 function ChapterList() {
   const { subject } = useParams()
   const navigate = useNavigate()
@@ -861,8 +863,9 @@ function ChapterList() {
   const meta = subjectById(subject)
   const isPastPapers = subject === 'past-papers'
   const isFlp = subject === 'flps' || subject === 'flp'
-  const [chapters, setChapters] = useState([])
-  const [loading, setLoading] = useState(true)
+  const initialCache = CHAPTER_CACHE.get(subject)
+  const [chapters, setChapters] = useState(initialCache || [])
+  const [loading, setLoading] = useState(!initialCache)
   const [modal, setModal] = useState(null)
   const [flpModalChapter, setFlpModalChapter] = useState(null)
 
@@ -887,12 +890,16 @@ function ChapterList() {
   }
 
   const load = async (forceRefresh = false) => {
-    setLoading(true)
+    const hasCache = CHAPTER_CACHE.has(subject)
+    if (!hasCache || forceRefresh) {
+      setLoading(true)
+    }
     try {
       const res = await API.get(`/mcqs/${subject}/chapters`, {
         skipQueryCache: Boolean(forceRefresh),
       })
       const loadedChapters = res.data.chapters || []
+      CHAPTER_CACHE.set(subject, loadedChapters)
       setChapters(loadedChapters)
       const firstAvailable = loadedChapters.find(
         (chapter) => isTeacher || !chapter.isLocked,
@@ -908,6 +915,14 @@ function ChapterList() {
   }
 
   useEffect(() => {
+    const cached = CHAPTER_CACHE.get(subject)
+    if (cached) {
+      setChapters(cached)
+      setLoading(false)
+    } else {
+      setChapters([])
+      setLoading(true)
+    }
     load()
   }, [subject]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -1016,13 +1031,27 @@ function ChapterList() {
         </div>
       </section>
 
-      {loading ? <LoadingCard label={isPastPapers ? 'Loading past papers...' : 'Loading chapters...'} /> : null}
-      <div className="chapter-browser-grid">
-        {chapters.map((chapter) => (
-          <article
-            key={`${chapter.id}-${chapter.topicId || 'chapter'}-${chapter.testPart || 'base'}`}
-            className={`workspace-card chapter-practice-card ${chapter.isLocked ? 'chapter-practice-card--locked' : ''}`}
-            onPointerEnter={() => prefetchChapter(chapter)}
+      {loading && chapters.length === 0 ? (
+        <div key={`loading-${subject}`} className="chapter-browser-grid animate-fade-in" style={{ opacity: 0.75 }}>
+          {[1, 2, 3, 4, 5, 6].map((idx) => (
+            <article key={idx} className="workspace-card chapter-practice-card skeleton-card" style={{ minHeight: '170px' }}>
+              <div className="workspace-card-head">
+                <div style={{ width: '100%' }}>
+                  <div style={{ width: '28%', height: '11px', marginBottom: '10px', borderRadius: '4px', background: 'rgba(128,128,128,0.15)' }} />
+                  <div style={{ width: '65%', height: '20px', marginBottom: '10px', borderRadius: '6px', background: 'rgba(128,128,128,0.2)' }} />
+                  <div style={{ width: '85%', height: '13px', borderRadius: '4px', background: 'rgba(128,128,128,0.12)' }} />
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div key={subject} className="chapter-browser-grid animate-fade-in">
+          {chapters.map((chapter) => (
+            <article
+              key={`${chapter.id}-${chapter.topicId || 'chapter'}-${chapter.testPart || 'base'}`}
+              className={`workspace-card chapter-practice-card ${chapter.isLocked ? 'chapter-practice-card--locked' : ''}`}
+              onPointerEnter={() => prefetchChapter(chapter)}
             onFocus={() => prefetchChapter(chapter)}
             onTouchStart={() => prefetchChapter(chapter)}
           >
@@ -1097,6 +1126,8 @@ function ChapterList() {
           </article>
         ))}
       </div>
+      )}
+
       {!loading && chapters.length === 0 ? (
         <EmptyState
           title={isFlp ? 'No FLP papers added yet' : isPastPapers ? 'No past papers added yet' : 'No chapters added yet'}
