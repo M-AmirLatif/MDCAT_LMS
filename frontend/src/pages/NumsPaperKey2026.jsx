@@ -238,14 +238,14 @@ export default function NumsPaperKey2026() {
           <div className="nums-nav-actions">
             <Link
               to={`/mcqs/past-papers/${chapterId}/attempt`}
-              className="nums-cta-primary"
+              className="btn nums-cta-primary"
               style={{ padding: '0.5rem 1rem', fontSize: '0.88rem' }}
             >
               ⚡ Solve Online Test
             </Link>
             <Link
               to="/login"
-              className="nums-cta-secondary"
+              className="btn nums-cta-secondary"
               style={{ padding: '0.5rem 0.9rem', fontSize: '0.85rem' }}
             >
               Log In
@@ -271,7 +271,7 @@ export default function NumsPaperKey2026() {
         <div className="nums-cta-cluster">
           <Link
             to={`/mcqs/past-papers/${chapterId}/attempt`}
-            className="nums-cta-primary"
+            className="btn nums-cta-primary"
           >
             ⚡ Solve 150 MCQs Online (Timed Exam Mode)
           </Link>
@@ -279,7 +279,7 @@ export default function NumsPaperKey2026() {
             href={whatsappShareUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="nums-cta-whatsapp"
+            className="btn nums-cta-whatsapp"
           >
             💬 Share with Friends on WhatsApp
           </a>
@@ -289,7 +289,7 @@ export default function NumsPaperKey2026() {
               const el = document.getElementById('answer-key-section')
               el?.scrollIntoView({ behavior: 'smooth' })
             }}
-            className="nums-cta-secondary"
+            className="btn nums-cta-secondary"
           >
             📋 Jump to Answer Key (Q1–Q150)
           </button>
@@ -505,13 +505,13 @@ export default function NumsPaperKey2026() {
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
               <Link
                 to={`/mcqs/past-papers/${chapterId}/attempt`}
-                className="nums-cta-primary"
+                className="btn nums-cta-primary"
               >
                 ⚡ Start Timed Online Test Now
               </Link>
               <Link
                 to="/register"
-                className="nums-cta-secondary"
+                className="btn nums-cta-secondary"
               >
                 Create Free AceMDCAT Account
               </Link>

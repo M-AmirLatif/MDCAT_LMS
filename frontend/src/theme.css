@@ -359,12 +359,12 @@ html[data-theme="dark"] b {
   opacity: 1 !important;
 }
 
-html[data-theme="dark"] a:not(.btn):not(.button):not(.lp-btn) {
-  color: #A590FF !important;
+html[data-theme="dark"] a:not(.btn):not(.button):not(.lp-btn):not([class*="btn"]):not([class*="cta"]):not([class*="badge"]):not([class*="card"]):not([class*="brand"]):not([class*="pill"]):not([class*="item"]):not([class*="logo"]) {
+  color: #A590FF;
 }
 
-html[data-theme="dark"] a:hover {
-  color: #C4B5FF !important;
+html[data-theme="dark"] a:not(.btn):not(.button):not(.lp-btn):not([class*="btn"]):not([class*="cta"]):not([class*="badge"]):not([class*="card"]):not([class*="brand"]):not([class*="pill"]):not([class*="item"]):not([class*="logo"]):hover {
+  color: #C4B5FF;
 }
 
 html[data-theme="dark"] input,
