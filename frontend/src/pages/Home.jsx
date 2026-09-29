@@ -159,8 +159,8 @@ export default function Home() {
         };
       default:
         return {
-          title: "MDCAT LMS - Free MDCAT 2026 Preparation & MCQs",
-          desc: "Prepare for MDCAT 2026 with free chapter-wise Biology, Chemistry, Physics, and English MCQs, timed tests, explanations, and performance tracking.",
+          title: "Ace MDCAT - Free MDCAT 2026 Preparation & MCQs | MDCAT LMS",
+          desc: "Ace MDCAT — Prepare for MDCAT 2026 with free chapter-wise Biology, Chemistry, Physics, and English MCQs, timed tests, explanations, and performance tracking.",
           heading: "MDCAT 2026:",
           subheading: "Faster, Smarter",
           headingLine3: "Preparation at Home",
