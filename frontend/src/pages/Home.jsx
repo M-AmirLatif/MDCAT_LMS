@@ -159,7 +159,7 @@ export default function Home() {
         };
       default:
         return {
-          title: "MDCAT LMS â€“ Free MDCAT 2026 Preparation & MCQs",
+          title: "MDCAT LMS - Free MDCAT 2026 Preparation & MCQs",
           desc: "Prepare for MDCAT 2026 with free chapter-wise Biology, Chemistry, Physics, and English MCQs, timed tests, explanations, and performance tracking.",
           heading: "MDCAT 2026:",
           subheading: "Faster, Smarter",
