@@ -18656,17 +18656,56 @@ html body .subject-chapter-header .subject-chapter-header-actions {
   flex-shrink: 0 !important;
 }
 
-html body .subject-chapter-header .subject-chapter-header-actions .btn {
+html body .subject-chapter-header .subject-chapter-header-actions .btn,
+html body .workspace-page .subject-chapter-header .subject-chapter-header-actions .btn,
+html body .workspace-page > .workspace-card.subject-chapter-header .workspace-card-head .inline-actions .btn,
+html body .workspace-page .workspace-card.subject-chapter-header .inline-actions .btn {
   width: auto !important;
-  min-width: 0 !important;
+  min-width: max-content !important;
+  max-width: none !important;
   height: 38px !important;
   min-height: 38px !important;
-  padding: 0 16px !important;
+  padding: 0 18px !important;
   border-radius: 10px !important;
   margin: 0 !important;
-  font-size: 0.88rem !important;
+  font-size: 0.9rem !important;
   font-weight: 700 !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
+  white-space: nowrap !important;
+  overflow-wrap: normal !important;
+  word-break: keep-all !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+}
+
+html[data-theme="dark"] body .subject-chapter-header .subject-chapter-header-actions .btn-secondary,
+html[data-theme="dark"] body .workspace-page .subject-chapter-header .subject-chapter-header-actions .btn-secondary {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  background: rgba(45, 30, 93, 0.96) !important;
+  border: 2px solid rgba(167, 139, 250, 0.75) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25) !important;
+}
+
+html[data-theme="dark"] body .subject-chapter-header .subject-chapter-header-actions .btn-secondary:hover,
+html[data-theme="dark"] body .workspace-page .subject-chapter-header .subject-chapter-header-actions .btn-secondary:hover {
+  background: rgba(58, 38, 120, 0.95) !important;
+  border-color: #c4b5fd !important;
+}
+
+html:not([data-theme="dark"]) body .subject-chapter-header .subject-chapter-header-actions .btn-secondary,
+html:not([data-theme="dark"]) body .workspace-page .subject-chapter-header .subject-chapter-header-actions .btn-secondary {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+  background: #ffffff !important;
+  border: 2px solid #64748b !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+html:not([data-theme="dark"]) body .subject-chapter-header .subject-chapter-header-actions .btn-secondary:hover,
+html:not([data-theme="dark"]) body .workspace-page .subject-chapter-header .subject-chapter-header-actions .btn-secondary:hover {
+  background: #f1f5f9 !important;
+  border-color: #334155 !important;
 }

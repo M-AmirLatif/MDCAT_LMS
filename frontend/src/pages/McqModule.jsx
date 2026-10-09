@@ -1032,7 +1032,7 @@ function ChapterList() {
             </p>
           </div>
           <div className="inline-actions subject-chapter-header-actions" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-            <Link className="btn btn-secondary" to="/mcqs" style={{ height: '38px', borderRadius: '10px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '0 16px', whiteSpace: 'nowrap' }}>
+            <Link className="btn btn-secondary" to="/mcqs" style={{ height: '38px', borderRadius: '10px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '0 18px', whiteSpace: 'nowrap', width: 'auto', minWidth: 'max-content', flexShrink: 0 }}>
               ← Back to Subjects
             </Link>
             {isTeacher ? (
