@@ -14350,7 +14350,7 @@ html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn {
   opacity: 1 !important;
   filter: none !important;
   transform: none !important;
-  transition: all 0.15s ease !important;
+  transition: none !important;
   text-shadow: none !important;
   display: inline-flex !important;
   align-items: center !important;

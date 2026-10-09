@@ -496,7 +496,7 @@
   line-height: 1 !important;
   flex-shrink: 0 !important;
   white-space: nowrap !important;
-  transition: all 0.15s ease !important;
+  transition: none !important;
 }
 
 .mcq-report-action-btn:hover {
@@ -660,7 +660,7 @@ html[data-theme="dark"] body .mcq-attempt-layout .mcq-nav-actions .btn {
   justify-content: center !important;
   box-sizing: border-box !important;
   white-space: nowrap !important;
-  transition: all 0.15s ease !important;
+  transition: none !important;
 }
 
 @media (max-width: 640px) {
