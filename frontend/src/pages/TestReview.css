@@ -1160,6 +1160,20 @@ html[data-theme="dark"] .quick-count-pill.is-selected {
   color: #ffffff !important;
 }
 
+.custom-practice-quick-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.custom-practice-action-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .custom-count-select {
   padding: 9px 16px !important;
   border-radius: 10px !important;
@@ -1176,6 +1190,50 @@ html[data-theme="dark"] .custom-count-select {
   border: 1.5px solid rgba(167, 139, 250, 0.45) !important;
   background: #151238 !important;
   color: #f1f5f9 !important;
+}
+
+.custom-practice-launch-btn {
+  padding: 10px 24px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #8B6FFF, #6C47FF);
+  box-shadow: 0 4px 14px rgba(108, 71, 255, 0.35);
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  color: #ffffff !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.custom-practice-launch-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(108, 71, 255, 0.45);
+  color: #ffffff !important;
+}
+
+@media (max-width: 640px) {
+  .custom-practice-action-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .custom-count-select {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+  }
+
+  .custom-practice-launch-btn {
+    width: 100% !important;
+    justify-content: center !important;
+    box-sizing: border-box;
+    text-align: center;
+  }
 }
 
 /* ==================== COMPACT NUMS-STYLE REVIEW CARDS ==================== */

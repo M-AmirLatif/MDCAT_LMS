@@ -2964,7 +2964,7 @@ function McqList() {
                   <div className="workspace-card-body" style={{ paddingTop: '12px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                       {/* Quick Select Buttons */}
-                      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px' }}>
+                      <div className="custom-practice-quick-row">
                         <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>
                           Quick Options:
                         </span>
@@ -2984,7 +2984,7 @@ function McqList() {
                       </div>
 
                       {/* Dropdown Selector + Launch Button */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                      <div className="custom-practice-action-row">
                         <label htmlFor="custom-mcq-dropdown" style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                           Select Count:
                         </label>
@@ -3002,21 +3002,7 @@ function McqList() {
                         </select>
 
                         <Link
-                          className="btn btn-primary"
-                          style={{
-                            padding: '10px 24px',
-                            fontSize: '0.95rem',
-                            fontWeight: 800,
-                            background: 'linear-gradient(135deg, #8B6FFF, #6C47FF)',
-                            boxShadow: '0 4px 14px rgba(108, 71, 255, 0.35)',
-                            borderRadius: '10px',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            cursor: 'pointer',
-                            textDecoration: 'none',
-                            color: '#ffffff',
-                          }}
+                          className="btn btn-primary custom-practice-launch-btn"
                           to={`/mcqs/${subject}/${chapterId}/attempt?mode=random&count=${customCount}${selectedTopicId ? `&topicId=${selectedTopicId}` : ''}`}
                           state={{ retake: true, mode: 'random', count: customCount }}
                         >
