@@ -14436,8 +14436,8 @@ html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-ghos
 
   html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions {
     display: grid !important;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    gap: 8px !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
   }
 
   html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .mcq-nav-actions-group {
@@ -14445,12 +14445,16 @@ html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-ghos
   }
 
   html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn {
-    height: 40px !important;
-    min-height: 40px !important;
+    width: 100% !important;
+    height: 42px !important;
+    min-height: 42px !important;
     border-radius: 10px !important;
-    padding: 0 4px !important;
-    font-size: clamp(0.72rem, 3vw, 0.86rem) !important;
+    padding: 0 10px !important;
+    font-size: 0.88rem !important;
     white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 }
 
@@ -15881,25 +15885,25 @@ html:not([data-theme="dark"]) body .mcq-practice-page .mcq-option-card {
 
 html:not([data-theme="dark"]) body .mcq-practice-page .mcq-option-card:hover,
 html:not([data-theme="dark"]) body .mcq-practice-page .mcq-option-card:focus-visible {
-  border-color: #8ea3cc !important;
-  background: #ffffff !important;
-  box-shadow: 0 12px 26px rgba(48, 66, 110, 0.14) !important;
+  border-color: #8b5cf6 !important;
+  background: #f8fafc !important;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1) !important;
 }
 
 html:not([data-theme="dark"]) body .mcq-practice-page .mcq-option-letter {
-  border: 3px solid #b6c4df !important;
-  background: #edf3ff !important;
-  box-shadow: 0 8px 18px rgba(48, 66, 110, 0.12) !important;
+  border: 1.5px solid #cbd5e1 !important;
+  background: #f1f5f9 !important;
+  color: #334155 !important;
 }
 
 @media (max-width: 640px) {
   html:not([data-theme="dark"]) body .mcq-practice-page .mcq-question-card {
-    border-width: 2.5px !important;
+    border-width: 1.5px !important;
   }
 
   html:not([data-theme="dark"]) body .mcq-practice-page .mcq-question-title,
   html:not([data-theme="dark"]) body .mcq-practice-page .mcq-option-card {
-    border-width: 2.5px !important;
+    border-width: 1.5px !important;
   }
 }
 

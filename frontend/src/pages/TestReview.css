@@ -424,8 +424,9 @@
   justify-content: space-between !important;
   align-items: center !important;
   margin-bottom: 16px !important;
-  flex-wrap: wrap !important;
+  flex-wrap: nowrap !important;
   gap: 10px !important;
+  width: 100% !important;
 }
 
 .mcq-attempt-meta-left {

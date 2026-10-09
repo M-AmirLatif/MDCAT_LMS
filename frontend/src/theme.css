@@ -5925,8 +5925,8 @@ html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-option-card {
   html .mcq-attempt-layout .mcq-nav-actions,
   html[data-theme="dark"] .mcq-attempt-layout .mcq-nav-actions {
     display: grid !important;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    gap: 8px !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
     align-items: center !important;
     width: 100% !important;
   }
@@ -5940,10 +5940,10 @@ html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-option-card {
   html[data-theme="dark"] .mcq-attempt-layout .mcq-nav-actions .btn {
     width: 100% !important;
     min-width: 0 !important;
-    height: 40px !important;
-    padding: 0 6px !important;
+    height: 42px !important;
+    padding: 0 10px !important;
     border-radius: 10px !important;
-    font-size: clamp(11px, 3.2vw, 14px) !important;
+    font-size: 0.88rem !important;
     font-weight: 700 !important;
     line-height: 1 !important;
     white-space: nowrap !important;
