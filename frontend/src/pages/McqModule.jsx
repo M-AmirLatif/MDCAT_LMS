@@ -2941,80 +2941,73 @@ function McqList() {
               ) : (
                 <>
                   {/* FEATURE 1: Custom Random Practice */}
-                <section
-                  className="workspace-card"
-                  style={{
-                    border: '2px solid rgba(139, 111, 255, 0.4)',
-                    background: 'linear-gradient(135deg, rgba(139, 111, 255, 0.1), rgba(45, 217, 155, 0.05))',
-                    borderRadius: '16px',
-                    overflow: 'hidden',
-                  }}
-                >
-                  <div className="workspace-card-head" style={{ borderBottom: 'none', paddingBottom: '4px' }}>
-                    <div>
-                      <div className="label-xs" style={{ color: '#8B6FFF', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  <section className="custom-practice-card">
+                    <div className="custom-practice-header">
+                      <div className="custom-practice-tag">
                         ⚡ Custom Random Practice
                       </div>
-                      <h3 className="workspace-card-title" style={{ fontSize: '1.25rem', marginTop: '4px' }}>
+                      <h3 className="custom-practice-title">
                         Solve Any Number of Random MCQs
                       </h3>
-                      <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '4px' }}>
+                      <p className="custom-practice-desc">
                         Select how many questions you want to solve. Every time you practice, questions are picked completely at random from this chapter's MCQ bank.
                       </p>
                     </div>
-                  </div>
-                  <div className="workspace-card-body" style={{ paddingTop: '12px' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+                    <div className="custom-practice-body">
                       {/* Quick Select Buttons */}
-                      <div className="custom-practice-quick-row">
-                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>
-                          Quick Options:
+                      <div className="custom-practice-section">
+                        <span className="custom-practice-label">
+                          Quick Options
                         </span>
-                        {presetOptions.map((countVal) => {
-                          const isSelected = customCount === countVal
-                          return (
-                            <button
-                              key={countVal}
-                              type="button"
-                              onClick={() => setCustomCount(countVal)}
-                              className={`quick-count-pill ${isSelected ? 'is-selected' : ''}`}
-                            >
-                              {countVal === totalBankCount ? `All (${countVal})` : `${countVal} MCQs`}
-                            </button>
-                          )
-                        })}
+                        <div className="custom-practice-pills-grid">
+                          {presetOptions.map((countVal) => {
+                            const isSelected = customCount === countVal
+                            return (
+                              <button
+                                key={countVal}
+                                type="button"
+                                onClick={() => setCustomCount(countVal)}
+                                className={`quick-count-pill ${isSelected ? 'is-selected' : ''}`}
+                              >
+                                {countVal === totalBankCount ? `All (${countVal})` : `${countVal} MCQs`}
+                              </button>
+                            )
+                          })}
+                        </div>
                       </div>
 
                       {/* Dropdown Selector + Launch Button */}
-                      <div className="custom-practice-action-row">
-                        <label htmlFor="custom-mcq-dropdown" style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                          Select Count:
+                      <div className="custom-practice-section">
+                        <label htmlFor="custom-mcq-dropdown" className="custom-practice-label">
+                          Select Count
                         </label>
-                        <select
-                          id="custom-mcq-dropdown"
-                          className="custom-count-select"
-                          value={customCount}
-                          onChange={(e) => setCustomCount(Number(e.target.value))}
-                        >
-                          {allCountOptions.map((opt) => (
-                            <option key={opt} value={opt}>
-                              {opt === totalBankCount ? `All ${opt} MCQs (Approx. ${Math.ceil((opt * 50) / 60)} mins)` : `${opt} MCQs (Approx. ${Math.ceil((opt * 50) / 60)} mins)`}
-                            </option>
-                          ))}
-                        </select>
+                        <div className="custom-practice-action-row">
+                          <select
+                            id="custom-mcq-dropdown"
+                            className="custom-count-select"
+                            value={customCount}
+                            onChange={(e) => setCustomCount(Number(e.target.value))}
+                          >
+                            {allCountOptions.map((opt) => (
+                              <option key={opt} value={opt}>
+                                {opt === totalBankCount ? `All ${opt} MCQs (Approx. ${Math.ceil((opt * 50) / 60)} mins)` : `${opt} MCQs (Approx. ${Math.ceil((opt * 50) / 60)} mins)`}
+                              </option>
+                            ))}
+                          </select>
 
-                        <Link
-                          className="btn btn-primary custom-practice-launch-btn"
-                          to={`/mcqs/${subject}/${chapterId}/attempt?mode=random&count=${customCount}${selectedTopicId ? `&topicId=${selectedTopicId}` : ''}`}
-                          state={{ retake: true, mode: 'random', count: customCount }}
-                        >
-                          <span>⚡ Start Random Test ({customCount} MCQs)</span>
-                          <span aria-hidden="true">→</span>
-                        </Link>
+                          <Link
+                            className="btn btn-primary custom-practice-launch-btn"
+                            to={`/mcqs/${subject}/${chapterId}/attempt?mode=random&count=${customCount}${selectedTopicId ? `&topicId=${selectedTopicId}` : ''}`}
+                            state={{ retake: true, mode: 'random', count: customCount }}
+                          >
+                            <span>⚡ Start Random Test ({customCount} MCQs)</span>
+                            <span aria-hidden="true">→</span>
+                          </Link>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </section>
+                  </section>
 
                 {/* FEATURE 2: Standard Chapter Tests */}
                 <section style={{ marginTop: '10px' }}>
