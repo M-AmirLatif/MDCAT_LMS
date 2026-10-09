@@ -635,11 +635,11 @@ html[data-theme="dark"] body .mcq-attempt-layout .mcq-nav-actions {
 .mcq-nav-actions .btn,
 html body .mcq-attempt-layout .mcq-nav-actions .btn,
 html[data-theme="dark"] body .mcq-attempt-layout .mcq-nav-actions .btn {
-  height: 42px !important;
-  min-height: 42px !important;
-  border-radius: 999px !important;
-  padding: 0 22px !important;
-  font-size: 0.92rem !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  border-radius: 10px !important;
+  padding: 0 18px !important;
+  font-size: 0.9rem !important;
   font-weight: 700 !important;
   display: inline-flex !important;
   align-items: center !important;

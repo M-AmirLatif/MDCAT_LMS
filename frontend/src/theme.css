@@ -5940,9 +5940,9 @@ html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-option-card {
   html[data-theme="dark"] .mcq-attempt-layout .mcq-nav-actions .btn {
     width: 100% !important;
     min-width: 0 !important;
-    height: 44px !important;
+    height: 40px !important;
     padding: 0 6px !important;
-    border-radius: 999px !important;
+    border-radius: 10px !important;
     font-size: clamp(11px, 3.2vw, 14px) !important;
     font-weight: 700 !important;
     line-height: 1 !important;
@@ -6039,11 +6039,12 @@ html:not([data-theme="dark"]) .mcq-attempt-layout .mcq-option-card {
 
   html .mcq-attempt-layout .mcq-nav-actions .btn,
   html[data-theme="dark"] .mcq-attempt-layout .mcq-nav-actions .btn {
-    min-height: 42px !important;
-    height: 42px !important;
-    padding: 0 22px !important;
-    border-radius: 999px !important;
+    min-height: 40px !important;
+    height: 40px !important;
+    padding: 0 18px !important;
+    border-radius: 10px !important;
     font-size: 15px !important;
+    font-weight: 700 !important;
   }
 }
 
