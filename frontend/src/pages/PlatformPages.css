@@ -15960,19 +15960,36 @@ html:not([data-theme="dark"]) body .mcq-practice-page .mcq-option-letter {
     box-shadow: 0 12px 22px rgba(255, 122, 26, 0.28) !important;
   }
 
-  html body .workspace-page > .workspace-card:first-of-type .workspace-card-head .inline-actions .btn-secondary,
-  html body .workspace-page .workspace-card:not(.chapter-practice-card) > .workspace-card-head .inline-actions .btn-secondary,
-  html body .workspace-page .workspace-hero-actions .btn-secondary,
-  html body .workspace-page .teacher-hero-actions .btn-secondary,
-  html body .workspace-page > .workspace-card:first-of-type .workspace-card-head .inline-actions .btn-secondary:visited,
-  html body .workspace-page .workspace-card:not(.chapter-practice-card) > .workspace-card-head .inline-actions .btn-secondary:visited,
-  html body .workspace-page .workspace-hero-actions .btn-secondary:visited,
-  html body .workspace-page .teacher-hero-actions .btn-secondary:visited {
+  html[data-theme="dark"] body .workspace-page > .workspace-card:first-of-type .workspace-card-head .inline-actions .btn-secondary,
+  html[data-theme="dark"] body .workspace-page .workspace-card:not(.chapter-practice-card) > .workspace-card-head .inline-actions .btn-secondary,
+  html[data-theme="dark"] body .workspace-page .workspace-hero-actions .btn-secondary,
+  html[data-theme="dark"] body .workspace-page .teacher-hero-actions .btn-secondary,
+  html[data-theme="dark"] body .workspace-page > .workspace-card:first-of-type .workspace-card-head .inline-actions .btn-secondary:visited,
+  html[data-theme="dark"] body .workspace-page .workspace-card:not(.chapter-practice-card) > .workspace-card-head .inline-actions .btn-secondary:visited,
+  html[data-theme="dark"] body .workspace-page .workspace-hero-actions .btn-secondary:visited,
+  html[data-theme="dark"] body .workspace-page .teacher-hero-actions .btn-secondary:visited {
     color: #ffffff !important;
     -webkit-text-fill-color: #ffffff !important;
     background: rgba(45, 30, 93, 0.96) !important;
     border: 1.5px solid rgba(183, 166, 255, 0.76) !important;
+    border-radius: 10px !important;
     box-shadow: 0 10px 22px rgba(25, 15, 58, 0.25) !important;
+  }
+
+  html:not([data-theme="dark"]) body .workspace-page > .workspace-card:first-of-type .workspace-card-head .inline-actions .btn-secondary,
+  html:not([data-theme="dark"]) body .workspace-page .workspace-card:not(.chapter-practice-card) > .workspace-card-head .inline-actions .btn-secondary,
+  html:not([data-theme="dark"]) body .workspace-page .workspace-hero-actions .btn-secondary,
+  html:not([data-theme="dark"]) body .workspace-page .teacher-hero-actions .btn-secondary,
+  html:not([data-theme="dark"]) body .workspace-page > .workspace-card:first-of-type .workspace-card-head .inline-actions .btn-secondary:visited,
+  html:not([data-theme="dark"]) body .workspace-page .workspace-card:not(.chapter-practice-card) > .workspace-card-head .inline-actions .btn-secondary:visited,
+  html:not([data-theme="dark"]) body .workspace-page .workspace-hero-actions .btn-secondary:visited,
+  html:not([data-theme="dark"]) body .workspace-page .teacher-hero-actions .btn-secondary:visited {
+    color: #1e293b !important;
+    -webkit-text-fill-color: #1e293b !important;
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
   }
 
   html body .chapter-browser-grid > article.chapter-practice-card .inline-actions,

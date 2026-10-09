@@ -1615,41 +1615,72 @@ html[data-theme="dark"] body #root .mcq-attempt-layout .mcq-question-card .mcq-o
 
 /* ==================== FLP (FULL LENGTH PAPERS) STYLES ==================== */
 .flp-subject-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding: 0 1.25rem 0.5rem;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+  padding: 0 1.25rem 0.85rem !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
 }
 
 .flp-subject-chip {
-  font-size: 0.78rem;
-  font-weight: 700;
-  padding: 3px 10px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  transition: all 0.15s ease;
+  font-size: 0.8rem !important;
+  font-weight: 700 !important;
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+  transition: all 0.15s ease !important;
+}
+
+.flp-subject-chip--wide {
+  grid-column: span 2 !important;
+}
+
+.flp-subject-chip-name {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.flp-subject-chip-count {
+  font-weight: 800 !important;
+  font-size: 0.82rem !important;
+  padding: 2px 7px !important;
+  border-radius: 6px !important;
+  min-width: 22px !important;
+  text-align: center !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 /* Dark theme chips */
 html[data-theme="dark"] .flp-subject-chip {
-  background: rgba(139, 92, 246, 0.16);
-  color: #c4b5fd;
-  border: 1px solid rgba(139, 92, 246, 0.35);
+  background: rgba(139, 92, 246, 0.14) !important;
+  color: #c4b5fd !important;
+  border: 1px solid rgba(139, 92, 246, 0.3) !important;
 }
+html[data-theme="dark"] .flp-subject-chip .flp-subject-chip-count,
 html[data-theme="dark"] .flp-subject-chip strong {
-  color: #ffffff;
+  background: rgba(139, 92, 246, 0.35) !important;
+  color: #ffffff !important;
 }
 
 /* Light theme chips */
 html:not([data-theme="dark"]) .flp-subject-chip {
-  background: #f3e8ff;
-  color: #6b21a8;
-  border: 1px solid #d8b4fe;
+  background: #f5f3ff !important;
+  color: #5b21b6 !important;
+  border: 1.5px solid #c4b5fd !important;
 }
+html:not([data-theme="dark"]) .flp-subject-chip .flp-subject-chip-count,
 html:not([data-theme="dark"]) .flp-subject-chip strong {
-  color: #4c1d95;
+  background: #ede9fe !important;
+  color: #4c1d95 !important;
 }
 
 .flp-modal-overlay {

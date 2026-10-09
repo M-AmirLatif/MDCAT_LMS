@@ -1017,29 +1017,32 @@ function ChapterList() {
         </script>
       </Helmet>
       <section className="workspace-card">
-        <div className="workspace-card-head">
-          <div>
-            <div className="label-xs" style={{ color: meta.accent }}>
+        <div className="workspace-card-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+          <div style={{ flex: '1 1 280px' }}>
+            <div className="label-xs" style={{ color: meta.accent, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>
               {isPastPapers ? 'MDCAT > Past Papers' : 'Subject > Chapters'}
             </div>
-            <h2 className="workspace-card-title">{isPastPapers ? 'MDCAT Past Papers' : `${meta.name} Chapters`}</h2>
-            <p>
+            <h2 className="workspace-card-title" style={{ margin: '0 0 6px 0', fontSize: '1.45rem', fontWeight: 800 }}>
+              {isPastPapers ? 'MDCAT Past Papers' : `${meta.name} Chapters`}
+            </h2>
+            <p style={{ margin: 0, color: 'var(--text-secondary, #64748b)', fontSize: '0.92rem', lineHeight: 1.5 }}>
               {isPastPapers
                 ? 'Open a past paper to practice or manage MCQs. Teachers can upload past paper tests via CSV or add questions manually.'
                 : 'Open a chapter to view MCQs. Teachers can add, rename, or delete chapters with confirmation before removal.'}
             </p>
           </div>
-          <div className="inline-actions">
-            <Link className="btn btn-secondary" to="/mcqs">
-              Back to Subjects
+          <div className="inline-actions" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            <Link className="btn btn-secondary" to="/mcqs" style={{ height: '38px', borderRadius: '10px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '0 16px' }}>
+              ← Back to Subjects
             </Link>
             {isTeacher ? (
               <button
                 className="btn btn-primary"
                 type="button"
                 onClick={() => setModal({ type: 'chapter' })}
+                style={{ height: '38px', borderRadius: '10px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '0 16px' }}
               >
-                {isPastPapers ? 'Add Past Paper' : 'Add Chapter'}
+                {isPastPapers ? '+ Add Past Paper' : '+ Add Chapter'}
               </button>
             ) : null}
           </div>
@@ -1077,7 +1080,7 @@ function ChapterList() {
                 </div>
                 <h3 className="workspace-card-title">{chapter.name}</h3>
                 <p>
-                  {chapter.description || (isPastPapers ? 'Official MDCAT past paper MCQ practice bank.' : 'Chapter based MCQ practice bank.')}
+                  {(chapter.description || (isPastPapers ? 'Official MDCAT past paper MCQ practice bank.' : 'Chapter based MCQ practice bank.')).replace(/\bFul\s+Length\b/gi, 'Full Length')}
                 </p>
               </div>
               <span className="state-chip state-chip--neutral">
@@ -1089,9 +1092,13 @@ function ChapterList() {
                 {FLP_SUBJECTS.map((subj) => {
                   const count = chapter.subjectCounts[subj] || 0
                   return (
-                    <span key={subj} className="flp-subject-chip">
-                      {subj}: <strong>{count}</strong>
-                    </span>
+                    <div
+                      key={subj}
+                      className={`flp-subject-chip ${subj === 'Logical Reasoning' ? 'flp-subject-chip--wide' : ''}`}
+                    >
+                      <span className="flp-subject-chip-name">{subj}</span>
+                      <strong className="flp-subject-chip-count">{count}</strong>
+                    </div>
                   )
                 })}
               </div>
