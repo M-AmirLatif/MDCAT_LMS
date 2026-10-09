@@ -1016,9 +1016,9 @@ function ChapterList() {
           `}
         </script>
       </Helmet>
-      <section className="workspace-card">
-        <div className="workspace-card-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-          <div style={{ flex: '1 1 280px' }}>
+      <section className="workspace-card subject-chapter-header">
+        <div className="workspace-card-head subject-chapter-header-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+          <div className="subject-chapter-header-info" style={{ flex: '1 1 280px' }}>
             <div className="label-xs" style={{ color: meta.accent, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>
               {isPastPapers ? 'MDCAT > Past Papers' : 'Subject > Chapters'}
             </div>
@@ -1031,8 +1031,8 @@ function ChapterList() {
                 : 'Open a chapter to view MCQs. Teachers can add, rename, or delete chapters with confirmation before removal.'}
             </p>
           </div>
-          <div className="inline-actions" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-            <Link className="btn btn-secondary" to="/mcqs" style={{ height: '38px', borderRadius: '10px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '0 16px' }}>
+          <div className="inline-actions subject-chapter-header-actions" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            <Link className="btn btn-secondary" to="/mcqs" style={{ height: '38px', borderRadius: '10px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '0 16px', whiteSpace: 'nowrap' }}>
               ← Back to Subjects
             </Link>
             {isTeacher ? (
@@ -1040,7 +1040,7 @@ function ChapterList() {
                 className="btn btn-primary"
                 type="button"
                 onClick={() => setModal({ type: 'chapter' })}
-                style={{ height: '38px', borderRadius: '10px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '0 16px' }}
+                style={{ height: '38px', borderRadius: '10px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '0 16px', whiteSpace: 'nowrap' }}
               >
                 {isPastPapers ? '+ Add Past Paper' : '+ Add Chapter'}
               </button>
