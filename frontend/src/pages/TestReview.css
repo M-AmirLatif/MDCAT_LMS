@@ -425,15 +425,18 @@
   align-items: center !important;
   margin-bottom: 16px !important;
   flex-wrap: nowrap !important;
-  gap: 10px !important;
+  gap: 8px !important;
   width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .mcq-attempt-meta-left {
   display: inline-flex !important;
   align-items: center !important;
-  gap: 12px !important;
+  gap: 8px !important;
   line-height: 1 !important;
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
 }
 
 .mcq-attempt-meta-left .flp-mcq-subject-badge,
@@ -445,22 +448,29 @@
   align-items: center !important;
   justify-content: center !important;
   line-height: 1 !important;
+  font-size: 0.78rem !important;
+  padding: 4px 10px !important;
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
 }
 
 .mcq-attempt-question-counter {
-  font-size: 0.92rem !important;
+  font-size: 0.86rem !important;
   font-weight: 600 !important;
   color: var(--text-secondary, #64748b) !important;
   display: inline-flex !important;
   align-items: center !important;
   line-height: 1 !important;
   margin: 0 !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
 }
 
 .mcq-attempt-question-counter strong {
   color: var(--text-primary, #0f172a) !important;
   font-weight: 800 !important;
-  margin: 0 3px !important;
+  margin: 0 4px !important;
+  display: inline !important;
 }
 
 [data-theme="dark"] .mcq-attempt-question-counter {
@@ -473,28 +483,31 @@
 
 .mcq-report-action-btn {
   background: rgba(239, 68, 68, 0.08) !important;
-  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+  border: 1.5px solid rgba(239, 68, 68, 0.35) !important;
   border-radius: 8px !important;
-  padding: 5px 12px !important;
+  padding: 5px 10px !important;
   color: #ef4444 !important;
-  font-size: 0.8rem !important;
+  font-size: 0.78rem !important;
   font-weight: 700 !important;
   cursor: pointer !important;
   display: inline-flex !important;
   align-items: center !important;
   gap: 5px !important;
+  line-height: 1 !important;
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
   transition: all 0.15s ease !important;
 }
 
 .mcq-report-action-btn:hover {
   background: rgba(239, 68, 68, 0.16) !important;
-  border-color: rgba(239, 68, 68, 0.45) !important;
+  border-color: rgba(239, 68, 68, 0.5) !important;
   color: #dc2626 !important;
 }
 
 [data-theme="dark"] .mcq-report-action-btn {
   background: rgba(239, 68, 68, 0.14) !important;
-  border-color: rgba(239, 68, 68, 0.35) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
   color: #fca5a5 !important;
 }
 
