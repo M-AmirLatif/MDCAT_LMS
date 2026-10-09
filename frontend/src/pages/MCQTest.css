@@ -2015,14 +2015,16 @@ html:not([data-theme="dark"]) .flp-test-tab-btn:hover {
 .flp-mcq-subject-badge {
   display: inline-flex !important;
   align-items: center !important;
+  justify-content: center !important;
   font-size: 0.85rem !important;
   font-weight: 800 !important;
   padding: 5px 16px !important;
   border-radius: 9999px !important;
-  margin-bottom: 14px !important;
+  margin: 0 !important;
+  margin-bottom: 0 !important;
   letter-spacing: 0.06em !important;
   text-transform: uppercase !important;
-  line-height: 1.25 !important;
+  line-height: 1 !important;
   border-width: 1.5px !important;
   border-style: solid !important;
   transition: all 0.2s ease !important;

@@ -20,7 +20,7 @@ export default function ReportMcqModal({ isOpen, onClose, mcq, subjectName, chap
   if (!isOpen || !mcq) return null
 
   const mcqId = mcq._id || mcq.id
-  const questionSnippet = mcq.questionText || mcq.question || ''
+  const questionSnippet = mcq.questionText || mcq.question || mcq.q || mcq.title || mcq.text || mcq.questionSnapshot || ''
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -127,22 +127,27 @@ export default function ReportMcqModal({ isOpen, onClose, mcq, subjectName, chap
         </div>
 
         {/* Question preview snippet */}
-        <div
-          style={{
-            background: 'rgba(0, 0, 0, 0.35)',
-            border: '1px solid rgba(255, 255, 255, 0.06)',
-            borderRadius: '10px',
-            padding: '12px 14px',
-            fontSize: '0.86rem',
-            color: '#cbd5e1',
-            maxHeight: '90px',
-            overflowY: 'auto',
-          }}
-        >
-          <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#f87171', fontWeight: 700, marginBottom: '4px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#f87171', fontWeight: 800 }}>
             Question Preview:
           </div>
-          <MCQRenderer text={questionSnippet} />
+          <div
+            style={{
+              background: 'rgba(0, 0, 0, 0.45)',
+              border: '1.5px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '12px',
+              padding: '12px 16px',
+              fontSize: '0.88rem',
+              color: '#e2e8f0',
+              lineHeight: 1.5,
+              maxHeight: '110px',
+              minHeight: '44px',
+              overflowY: 'auto',
+              boxSizing: 'border-box',
+            }}
+          >
+            <MCQRenderer text={questionSnippet || 'Question text not available.'} />
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
