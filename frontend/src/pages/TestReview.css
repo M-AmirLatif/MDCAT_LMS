@@ -15,7 +15,7 @@
 .mcq-review-top,
 .review-question-card {
   background: var(--bg-surface, #fff);
-  border: 1px solid var(--border-card, rgba(108, 71, 255, 0.12));
+  border: 1.5px solid var(--border-card, #94A3B8);
   border-radius: 20px;
   box-shadow: var(--shadow-card);
 }
@@ -48,7 +48,7 @@
   padding: 20px;
   border-radius: 18px;
   background: var(--bg-surface, #fff);
-  border: 1px solid var(--border-card, rgba(108, 71, 255, 0.12));
+  border: 1.5px solid var(--border-card, #94A3B8);
   box-shadow: var(--shadow-card);
   transition: transform 200ms ease, box-shadow 200ms ease;
   position: relative;
@@ -2643,3 +2643,23 @@ html body .teacher-compact-card .teacher-compact-pill input:-webkit-autofill:foc
 
 
 
+
+
+/* ═══════════════════════════════════════════════════
+   High-Contrast Strong Borders in Light Mode
+   ═══════════════════════════════════════════════════ */
+html:not([data-theme="dark"]) .mcq-review-top,
+html:not([data-theme="dark"]) .review-stat-card,
+html:not([data-theme="dark"]) .review-question-card,
+html:not([data-theme="dark"]) .review-compact-card,
+html:not([data-theme="dark"]) .review-filter-bar,
+html:not([data-theme="dark"]) .custom-practice-card,
+html:not([data-theme="dark"]) .chapter-test-card,
+html:not([data-theme="dark"]) .workspace-card {
+  border: 1.5px solid #94A3B8 !important;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.07) !important;
+}
+
+html:not([data-theme="dark"]) .review-filter-tab {
+  border: 1.5px solid #94A3B8 !important;
+}

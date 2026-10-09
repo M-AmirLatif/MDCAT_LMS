@@ -52,9 +52,9 @@
   --bg-hover:     #E8EBF4;
 
   /* ── Borders ── */
-  --border:       rgba(15, 23, 42, 0.14);
-  --border-hover: rgba(15, 23, 42, 0.16);
-  --border-card:  #C0C5D8;
+  --border:       #94A3B8;
+  --border-hover: #64748B;
+  --border-card:  #94A3B8;
 
   /* ── Subject Colors ── */
   --subj-english:   #6C47FF;
@@ -181,10 +181,10 @@
   --bg-navbar:        #ECEEF5;
   --bg-input:         #FFFFFF;
   --bg-input-hover:   #F8F9FC;
-  --border-color:     #A8AECA;
-  --border-default:   #A8AECA;
-  --border-input:     #B8BDD0;
-  --border-subtle:    #B8BDD2;
+  --border-color:     #94A3B8;
+  --border-default:   #94A3B8;
+  --border-input:     #94A3B8;
+  --border-subtle:    #CBD5E1;
   --text-primary:     #1A1A2E;
   --text-secondary:   #3D3D5C;
   --text-muted:       #6B7280;
@@ -195,7 +195,7 @@
   --color-teal:       #1DB884;
   --color-amber:      #F59E0B;
   --color-coral:      #FF6B6B;
-  --shadow-card:      0 1px 4px rgba(0,0,0,0.08), 0 0 0 1.5px #C0C5D8;
+  --shadow-card:      0 2px 8px rgba(15, 23, 42, 0.08), 0 0 0 1.5px #94A3B8;
   --shadow-button:    0 4px 16px rgba(108, 71, 255, 0.20);
   --shadow-navbar:    0 1px 0 rgba(15, 23, 42, 0.04);
   --navbar-blur:      blur(0px);
@@ -311,9 +311,7 @@ input, textarea, select,
 .sidebar, .topbar, .navbar,
 body, .app-layout {
   transition:
-    background-color 300ms ease,
-    border-color 300ms ease,
-    color 300ms ease;
+    none !important;
 }
 
 .theme-switching,
