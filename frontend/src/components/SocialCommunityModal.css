@@ -56,18 +56,52 @@
   box-shadow: 0 28px 70px rgba(0, 0, 0, 0.65), 0 0 0 1.5px rgba(139, 111, 255, 0.28);
 }
 
+/* ── Top Row (Tag + Perfectly Leveled Close Button) ── */
+.social-modal-top-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.social-modal-header-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: rgba(37, 211, 102, 0.14) !important;
+  color: #059669 !important;
+  border: 1px solid rgba(37, 211, 102, 0.35) !important;
+  margin: 0;
+  max-width: calc(100% - 48px);
+}
+
+[data-theme="dark"] .social-modal-header-tag {
+  background: rgba(37, 211, 102, 0.18) !important;
+  color: #4ade80 !important;
+  border-color: rgba(37, 211, 102, 0.45) !important;
+}
+
 /* ── Close Button ── */
 .social-modal-close {
   position: absolute;
-  top: 16px;
-  right: 16px;
-  width: 36px;
-  height: 36px;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: 1px solid rgba(0, 0, 0, 0.08);
   background: rgba(0, 0, 0, 0.04);
   color: #475569;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   display: flex;
@@ -101,28 +135,6 @@
   text-align: center;
   margin-bottom: 22px;
   padding: 0 8px;
-}
-
-.social-modal-header-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  background: rgba(37, 211, 102, 0.14) !important;
-  color: #059669 !important;
-  border: 1px solid rgba(37, 211, 102, 0.35) !important;
-  margin-bottom: 12px;
-}
-
-[data-theme="dark"] .social-modal-header-tag {
-  background: rgba(37, 211, 102, 0.18) !important;
-  color: #4ade80 !important;
-  border-color: rgba(37, 211, 102, 0.45) !important;
 }
 
 .social-modal-title {
@@ -486,23 +498,26 @@
     overflow-x: hidden;
   }
 
+  .social-modal-top-row {
+    margin-bottom: 10px;
+  }
+
   .social-modal-close {
-    top: 10px;
-    right: 10px;
-    width: 32px;
-    height: 32px;
-    font-size: 14px;
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
+    right: 0;
   }
 
   .social-modal-header {
-    margin-bottom: 16px;
-    padding: 0 28px;
+    margin-bottom: 14px;
+    padding: 0 4px;
   }
 
   .social-modal-header-tag {
     font-size: 11px;
     padding: 4px 10px;
-    max-width: 100%;
+    max-width: calc(100% - 36px);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

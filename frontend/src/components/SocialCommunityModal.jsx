@@ -158,19 +158,21 @@ export default function SocialCommunityModal() {
   return (
     <div className="social-modal-backdrop" onClick={handleClose} role="dialog" aria-modal="true" aria-labelledby="social-modal-title">
       <div className="social-modal-container" onClick={(e) => e.stopPropagation()}>
-        <button
-          type="button"
-          className="social-modal-close"
-          onClick={handleClose}
-          aria-label="Close community dialog"
-        >
-          ✕
-        </button>
-
-        <div className="social-modal-header">
+        <div className="social-modal-top-row">
           <div className="social-modal-header-tag">
             <WhatsAppIcon size={16} /> Official MDCAT Communities
           </div>
+          <button
+            type="button"
+            className="social-modal-close"
+            onClick={handleClose}
+            aria-label="Close community dialog"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="social-modal-header">
           <h2 id="social-modal-title" className="social-modal-title">
             Join Our WhatsApp Groups & Channel
           </h2>
