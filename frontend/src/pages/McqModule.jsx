@@ -2616,10 +2616,12 @@ function McqList() {
         </div>
       </section>
 
-      {loading ? <LoadingCard label="Loading MCQs..." /> : null}
-
-      {isTeacher && viewMode === 'review' ? (
-        <section className="workspace-card review-queue-card">
+      {loading ? (
+        <LoadingCard label="Loading MCQs..." />
+      ) : (
+        <>
+          {isTeacher && viewMode === 'review' ? (
+            <section className="workspace-card review-queue-card">
           <div className="workspace-card-head review-queue-head">
             <div>
               <div className="label-xs">CSV Review Queue</div>
@@ -3177,6 +3179,8 @@ function McqList() {
           </div>
         )
       ) : null}
+      </>
+      )}
       {modal ? (
         <Modal
           title={
@@ -3842,15 +3846,15 @@ function QuizAttempt() {
         <div className="mcq-attempt-layout">
           <div className="mcq-question-card">
             {/* Top Bar: Subject Badge + Question Number + Report Button */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="mcq-attempt-top-bar">
+              <div className="mcq-attempt-meta-left">
                 {current.subject && (
-                  <div className={`flp-mcq-subject-badge flp-mcq-subject-badge--${String(current.subject).toLowerCase().replace(/[^a-z]/g, '')}`} style={{ margin: 0 }}>
+                  <div className={`flp-mcq-subject-badge flp-mcq-subject-badge--${String(current.subject).toLowerCase().replace(/[^a-z]/g, '')}`}>
                     {current.subject}
                   </div>
                 )}
-                <span style={{ fontSize: '0.82rem', color: '#94a3b8', fontWeight: 600 }}>
-                  Question {currentIndex + 1} of {mcqs.length}
+                <span className="mcq-attempt-question-counter">
+                  Question <strong>{currentIndex + 1}</strong> of {mcqs.length}
                 </span>
               </div>
               <button
@@ -3858,20 +3862,6 @@ function QuizAttempt() {
                 className="mcq-report-action-btn"
                 onClick={() => setReportingMcq(current)}
                 title="Report issue in this MCQ to subject teacher"
-                style={{
-                  background: 'rgba(239, 68, 68, 0.12)',
-                  border: '1px solid rgba(239, 68, 68, 0.35)',
-                  borderRadius: '8px',
-                  padding: '5px 12px',
-                  color: '#fca5a5',
-                  fontSize: '0.8rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '5px',
-                  transition: 'all 0.15s ease',
-                }}
               >
                 🚩 Report Issue
               </button>
@@ -3901,58 +3891,42 @@ function QuizAttempt() {
                 </button>
               ))}
             </div>
-            <div className="mcq-nav-actions" style={{ flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
-              <button
-                className="btn btn-secondary"
-                type="button"
-                disabled={currentIndex === 0}
-                onClick={() => setCurrentIndex((index) => index - 1)}
-              >
-                Previous
-              </button>
-              <button
-                className="btn btn-ghost"
-                type="button"
-                onClick={skipQuestion}
-              >
-                Skip
-              </button>
-              <button
-                type="button"
-                onClick={() => setReportingMcq(current)}
-                title="Report issue in this MCQ to subject teacher"
-                style={{
-                  background: 'rgba(239, 68, 68, 0.08)',
-                  border: '1px solid rgba(239, 68, 68, 0.3)',
-                  borderRadius: '8px',
-                  padding: '8px 14px',
-                  color: '#f87171',
-                  fontSize: '0.84rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                }}
-              >
-                🚩 Report Question
-              </button>
-              <button
-                className="btn btn-primary"
-                type="button"
-                disabled={currentIndex === mcqs.length - 1}
-                onClick={nextQuestion}
-              >
-                Next
-              </button>
-              <button
-                className="btn btn-danger"
-                type="button"
-                onClick={() => submit()}
-                disabled={submitting}
-              >
-                Submit
-              </button>
+            <div className="mcq-nav-actions">
+              <div className="mcq-nav-actions-group">
+                <button
+                  className="btn btn-secondary"
+                  type="button"
+                  disabled={currentIndex === 0}
+                  onClick={() => setCurrentIndex((index) => index - 1)}
+                >
+                  ← Previous
+                </button>
+                <button
+                  className="btn btn-ghost"
+                  type="button"
+                  onClick={skipQuestion}
+                >
+                  Skip
+                </button>
+              </div>
+              <div className="mcq-nav-actions-group">
+                <button
+                  className="btn btn-primary"
+                  type="button"
+                  disabled={currentIndex === mcqs.length - 1}
+                  onClick={nextQuestion}
+                >
+                  Next →
+                </button>
+                <button
+                  className="btn btn-danger mcq-submit-btn"
+                  type="button"
+                  onClick={() => submit()}
+                  disabled={submitting}
+                >
+                  Submit Test
+                </button>
+              </div>
             </div>
           </div>
 
