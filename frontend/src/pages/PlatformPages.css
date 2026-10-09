@@ -14340,7 +14340,8 @@ html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions-group {
   gap: 10px !important;
 }
 
-html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn {
+html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn,
+html:not([data-theme="dark"]) body .mcq-attempt-layout .mcq-nav-actions .btn {
   height: 40px !important;
   min-height: 40px !important;
   border-radius: 10px !important;
@@ -14358,24 +14359,30 @@ html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn {
   box-sizing: border-box !important;
 }
 
+/* Light mode Previous & Skip */
 html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-secondary,
-html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-ghost {
+html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-ghost,
+html:not([data-theme="dark"]) body .mcq-attempt-layout .mcq-nav-actions .btn-secondary,
+html:not([data-theme="dark"]) body .mcq-attempt-layout .mcq-nav-actions .btn-ghost {
   background: #ffffff !important;
-  border: 2px solid #94a3b8 !important;
+  border: 2px solid #64748b !important;
   color: #0f172a !important;
   -webkit-text-fill-color: #0f172a !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
 }
 
 html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-secondary:hover:not(:disabled),
-html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-ghost:hover:not(:disabled) {
+html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-ghost:hover:not(:disabled),
+html:not([data-theme="dark"]) body .mcq-attempt-layout .mcq-nav-actions .btn-secondary:hover:not(:disabled),
+html:not([data-theme="dark"]) body .mcq-attempt-layout .mcq-nav-actions .btn-ghost:hover:not(:disabled) {
   background: #f1f5f9 !important;
-  border-color: #64748b !important;
+  border-color: #334155 !important;
   color: #0f172a !important;
   -webkit-text-fill-color: #0f172a !important;
 }
 
-html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-primary {
+html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-primary,
+html:not([data-theme="dark"]) body .mcq-attempt-layout .mcq-nav-actions .btn-primary {
   background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
   border: 2px solid #4338ca !important;
   color: #ffffff !important;
@@ -14383,7 +14390,8 @@ html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-prim
   box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3) !important;
 }
 
-html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-danger {
+html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-danger,
+html:not([data-theme="dark"]) body .mcq-attempt-layout .mcq-nav-actions .btn-danger {
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
   border: 2px solid #b91c1c !important;
   color: #ffffff !important;
@@ -14393,13 +14401,91 @@ html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-dang
 
 html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn:disabled,
 html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-secondary:disabled,
-html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-ghost:disabled {
+html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-ghost:disabled,
+html:not([data-theme="dark"]) body .mcq-attempt-layout .mcq-nav-actions .btn:disabled,
+html:not([data-theme="dark"]) body .mcq-attempt-layout .mcq-nav-actions .btn-secondary:disabled,
+html:not([data-theme="dark"]) body .mcq-attempt-layout .mcq-nav-actions .btn-ghost:disabled {
   background: #f8fafc !important;
   border: 2px solid #cbd5e1 !important;
   border-color: #cbd5e1 !important;
   color: #94a3b8 !important;
   -webkit-text-fill-color: #94a3b8 !important;
-  opacity: 0.7 !important;
+  opacity: 0.65 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+}
+
+/* Dark mode Previous & Skip */
+html[data-theme="dark"] body .mcq-practice-page .mcq-nav-actions .btn,
+html[data-theme="dark"] body .mcq-attempt-layout .mcq-nav-actions .btn {
+  height: 40px !important;
+  min-height: 40px !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  font-size: 0.9rem !important;
+  padding: 0 18px !important;
+  opacity: 1 !important;
+  filter: none !important;
+  transform: none !important;
+  transition: none !important;
+  text-shadow: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+}
+
+html[data-theme="dark"] body .mcq-practice-page .mcq-nav-actions .btn-secondary,
+html[data-theme="dark"] body .mcq-practice-page .mcq-nav-actions .btn-ghost,
+html[data-theme="dark"] body .mcq-attempt-layout .mcq-nav-actions .btn-secondary,
+html[data-theme="dark"] body .mcq-attempt-layout .mcq-nav-actions .btn-ghost {
+  background: rgba(36, 26, 75, 0.95) !important;
+  border: 2px solid rgba(167, 139, 250, 0.75) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25) !important;
+}
+
+html[data-theme="dark"] body .mcq-practice-page .mcq-nav-actions .btn-secondary:hover:not(:disabled),
+html[data-theme="dark"] body .mcq-practice-page .mcq-nav-actions .btn-ghost:hover:not(:disabled),
+html[data-theme="dark"] body .mcq-attempt-layout .mcq-nav-actions .btn-secondary:hover:not(:disabled),
+html[data-theme="dark"] body .mcq-attempt-layout .mcq-nav-actions .btn-ghost:hover:not(:disabled) {
+  background: rgba(58, 38, 120, 0.95) !important;
+  border-color: #c4b5fd !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+html[data-theme="dark"] body .mcq-practice-page .mcq-nav-actions .btn-primary,
+html[data-theme="dark"] body .mcq-attempt-layout .mcq-nav-actions .btn-primary {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+  border: 2px solid #818cf8 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4) !important;
+}
+
+html[data-theme="dark"] body .mcq-practice-page .mcq-nav-actions .btn-danger,
+html[data-theme="dark"] body .mcq-attempt-layout .mcq-nav-actions .btn-danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  border: 2px solid #f87171 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4) !important;
+}
+
+html[data-theme="dark"] body .mcq-practice-page .mcq-nav-actions .btn:disabled,
+html[data-theme="dark"] body .mcq-practice-page .mcq-nav-actions .btn-secondary:disabled,
+html[data-theme="dark"] body .mcq-practice-page .mcq-nav-actions .btn-ghost:disabled,
+html[data-theme="dark"] body .mcq-attempt-layout .mcq-nav-actions .btn:disabled,
+html[data-theme="dark"] body .mcq-attempt-layout .mcq-nav-actions .btn-secondary:disabled,
+html[data-theme="dark"] body .mcq-attempt-layout .mcq-nav-actions .btn-ghost:disabled {
+  background: rgba(26, 20, 52, 0.5) !important;
+  border: 2px solid rgba(255, 255, 255, 0.18) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  color: rgba(255, 255, 255, 0.35) !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.35) !important;
+  opacity: 0.6 !important;
   cursor: not-allowed !important;
   box-shadow: none !important;
 }
@@ -14602,11 +14688,11 @@ html:not([data-theme="dark"]) body .mcq-practice-page .mcq-options-grid {
 html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn:disabled,
 html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-secondary:disabled,
 html:not([data-theme="dark"]) body .mcq-practice-page .mcq-nav-actions .btn-ghost:disabled {
-  background: #ffffff !important;
-  border: 2.4px solid #c7cfdd !important;
-  color: #475569 !important;
-  -webkit-text-fill-color: #475569 !important;
-  opacity: 1 !important;
+  background: #f8fafc !important;
+  border: 2px solid #cbd5e1 !important;
+  color: #94a3b8 !important;
+  -webkit-text-fill-color: #94a3b8 !important;
+  opacity: 0.65 !important;
   cursor: not-allowed !important;
 }
 
